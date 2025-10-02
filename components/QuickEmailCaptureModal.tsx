@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { CheckCircle, ArrowRight, Gift, Zap, Target, Users, Sparkles } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "sonner@2.0.3";
 import { motion, AnimatePresence } from "motion/react";
 
 interface QuickEmailCaptureModalProps {

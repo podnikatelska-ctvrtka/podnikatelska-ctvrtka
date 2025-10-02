@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Mail, ArrowRight, CheckCircle, Clock, Users, Gift, Star, Zap, Target, TrendingUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { toast } from "sonner";
+import { toast } from "sonner@2.0.3";
 
 export function EarlyAccessSale() {
   const [email, setEmail] = useState("");

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Mail, ArrowRight, CheckCircle, Clock, Users, Gift, Star } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { toast } from "sonner";
+import { toast } from "sonner@2.0.3";
 import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
 

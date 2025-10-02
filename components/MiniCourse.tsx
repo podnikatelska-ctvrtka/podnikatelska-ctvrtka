@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, ArrowRight, ArrowLeft, Copy, Check, MessageCircle, TrendingUp, Sparkles, Download, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 interface Lesson {
   day: number;
