@@ -1,0 +1,136 @@
+  {
+    day: 3,
+    title: "Napište nabídku která prodává",
+    subtitle: "Jasná komunikace + 5 marketingových triků",
+    icon: Sparkles,
+    problem: "Zákazníci nevědí CO nabízíte a PROČ si vybrat právě vás → prodeje stagnují.",
+    solution: "Jasná šablona na nabídku + 5 komunikačních triků které fungují. 15 minut práce = okamžitě lepší komunikace.",
+    why: "90% podnikatelů mluví obecně ('kvalita, zkušenost'). Vy budete konkrétní = vynikáte a prodáváte víc.",
+    action: {
+      title: "AKCE: Jasná nabídka + komunikační triky",
+      steps: [
+        {
+          step: 1,
+          title: "Krok 1: Napište jasnou nabídku (7 min)",
+          description: "Použijte šablonu + 10 příkladů níže jako inspiraci.",
+          templateType: 'copy',
+          template: `ŠABLONA:
+
+"Pomáhám [KOMU] [DĚLAT CO] bez [PROBLÉM]"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+10 PŘÍKLADŮ:
+
+1. Fitness trenér:
+"Pomáhám zaneprázdněným manažerům zhubnout 10 kg bez hladovění a hodin v posilovně"
+
+2. Účetní:
+"Pomáhám živnostníkům zvládnout daně bez stresu a pokut"
+
+3. Kavárna:
+"Pomáháme milovníkům kávy začít den skvěle bez čekání ve frontě"
+
+4. Webdesigner:
+"Pomáhám podnikatelům získat zákazníky z webu bez technických znalostí"
+
+5. Kosmetička:
+"Pomáhám ženám 40+ vypadat mladší bez botoxu a drahých zákroků"
+
+6. Autoservis:
+"Pomáháme řidičům udržet auto v kondici bez překvapení a nechtěných nákladů"
+
+7. Realitka:
+"Pomáháme rodinám najít vysněný byt bez měsíců hledání a stresu"
+
+8. Copywriter:
+"Pomáhám firmám prodávat víc bez snižování cen"
+
+9. Fotograf:
+"Pomáhám rodinám zachytit vzpomínky bez nepřirozených póz"
+
+10. Kurzy angličtiny:
+"Pomáháme profesionálům mluvit anglicky bez ostychu a gramatických chyb"`,
+          input: "nabidka",
+          placeholder: "",
+          defaultValue: "Pomáhám "
+        },
+        {
+          step: 2,
+          title: "Krok 2: 5 komunikačních triků (5 min)",
+          description: "Aplikujte alespoň 2 z těchto triků.",
+          templateType: 'checklist',
+          template: `✅ 5 TRIKŮ KTERÉ PRODÁVAJÍ:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣ MLUVTE K JEDNOMU ČLOVĚKU
+
+❌ "Pomáháme firmám..."
+✅ "Pomáhám vám..."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2️⃣ KONKRÉTNÍ ČÍSLA > OBECNÉ FRÁZE
+
+❌ "Rychlé dodání"
+✅ "Dodání za 2 dny"
+
+❌ "Spousta zákazníků"
+✅ "200+ spokojených zákazníků"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3️⃣ UKAŽTE VÝSLEDEK, NE PROCES
+
+❌ "30 lekcí angličtiny"
+✅ "Mluvte anglicky za 3 měsíce"
+
+❌ "Kompletní účetní služby"
+✅ "Žádné pokuty od finančáku"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4️⃣ ODSTRAŇTE RIZIKO
+
+Šablona:
+"[NABÍDKA] + pokud nejste spokojeni, [GARANCE]"
+
+Příklady:
+✅ "První úklid zdarma"
+✅ "14 dní vrácení peněz"
+✅ "Nezlepší se výsledek? Vrátíme peníze"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5️⃣ DEJTE DŮVOD PROČ KOUPIT TEĎKA
+
+❌ "Sleva!"
+✅ "Sleva 20% jen do neděle"
+
+❌ "Omezená nabídka"
+✅ "Jen 5 míst tento měsíc"`,
+          input: "komunikacni-triky",
+          placeholder: "",
+          defaultValue: "Které triky použijete?\n\n✅ CO ZMĚNÍM:\n\n\n\n✅ KDE TO POUŽIJU:\n"
+        },
+        {
+          step: 3,
+          title: "Krok 3: Akční plán (3 min)",
+          description: "Co změníte dnes? Kde to použijete?",
+          input: "akcni-plan",
+          placeholder: "",
+          defaultValue: "✅ CO ZMĚNÍM DNES:\n\n\n\n✅ KDE TO POUŽIJU:\n□ Web\n□ Facebook/Instagram\n□ Letáky\n□ Email\n□ Faktury"
+        }
+      ]
+    },
+    bonus: {
+      title: "TIPY PRO LEPŠÍ KOMUNIKACI",
+      items: [
+        "Testujte! Pošlete novou nabídku 3 kamarádům - rozumí jí hned?",
+        "Čtěte nahlas - zní to přirozeně nebo jako robot?",
+        "Inspirujte se konkurencí (z Dne 2) - co dělají dobře v komunikaci?",
+        "Méně = víc. Kratší věty = silnější dopad."
+      ]
+    }
+  }
