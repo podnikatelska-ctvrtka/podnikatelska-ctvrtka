@@ -36,7 +36,7 @@
     "input-otp": "^1.4.2",
     "react-day-picker": "^8.10.1",
     "react-resizable-panels": "^2.1.7",
-    "react-hook-form": "^7.55.0",
+    "react-hook-form": "7.55.0",
     "recharts": "^2.15.2",
     "vaul": "^1.1.2"
   },
