@@ -189,21 +189,6 @@ export function HeroSection() {
                 </p>
               </motion.div>
 
-              {/* 🎯 DEMO: Checklist button (můžeš smazat po testování) */}
-              <motion.div 
-                className="text-center mt-4 hidden md:block"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
-              >
-                <a
-                  href="#priprava"
-                  className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium underline"
-                >
-                  🎯 DEMO: Zobrazit interaktivní checklist
-                </a>
-              </motion.div>
-
             </motion.div>
 
             {/* Pravá strana - Interactive Canvas */}
@@ -311,7 +296,7 @@ export function HeroSection() {
                     relationships: { icon: "🤝", title: "Vztahy", color: "from-blue-500 to-blue-600" },
                     segments: { icon: "🎯", title: "Zákazníci", color: "from-purple-500 to-purple-600" },
                     resources: { icon: "🔧", title: "Zdroje", color: "from-violet-500 to-violet-600" },
-                    channels: { icon: "📢", title: "Kanály", color: "from-sky-500 to-sky-600" },
+                    channels: { icon: "���", title: "Kanály", color: "from-sky-500 to-sky-600" },
                     costs: { icon: "💰", title: "Náklady", color: "from-red-500 to-red-600" },
                     revenue: { icon: "💸", title: "Příjmy", color: "from-emerald-500 to-emerald-600" }
                   }).map(([key, block]) => (

@@ -1559,7 +1559,25 @@ export function MiniCourse() {
             </div>
           </div>
 
-          {/* Motivační zpráva na konci Dne 3 */}
+          {/* Bonus Tips - NAHORU (praktické tipy před gratulací) */}
+          {currentLesson.bonus && (
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-8 mb-8">
+              <h3 className="text-gray-900 mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-600" />
+                {currentLesson.bonus.title}
+              </h3>
+              <ul className="space-y-3">
+                {currentLesson.bonus.items.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3 text-sm text-gray-700">
+                    <span className="text-amber-600 font-bold flex-shrink-0 mt-0.5">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Motivační zpráva - DOLŮ (závěrečná gratulace po tipech) */}
           {currentLesson.day === 3 && isDayCompleted && (
             <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl p-8 mb-8">
               <div className="text-center">
@@ -1583,24 +1601,6 @@ export function MiniCourse() {
                   </p>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Bonus Tips */}
-          {currentLesson.bonus && (
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-8 mb-8">
-              <h3 className="text-gray-900 mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-600" />
-                {currentLesson.bonus.title}
-              </h3>
-              <ul className="space-y-3">
-                {currentLesson.bonus.items.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-sm text-gray-700">
-                    <span className="text-amber-600 font-bold flex-shrink-0 mt-0.5">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           )}
 

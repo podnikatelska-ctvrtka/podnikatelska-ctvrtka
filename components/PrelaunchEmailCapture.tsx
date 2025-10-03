@@ -300,16 +300,6 @@ export function PrelaunchEmailCapture() {
                 Rezervujte si místo mezi <strong className="text-blue-300">prvními 50 lidmi</strong><br/>
                 a získejte <strong className="text-white">exkluzivní bonusy ZDARMA</strong>
               </p>
-              
-              {/* 🎯 DEMO: Checklist link */}
-              <div className="mt-4">
-                <a
-                  href="#priprava"
-                  className="inline-flex items-center gap-2 text-sm text-blue-200 hover:text-white transition-colors underline"
-                >
-                  🎯 Připravte se na kurz - Interaktivní checklist
-                </a>
-              </div>
             </div>
           </motion.div>
 
