@@ -29,6 +29,7 @@ import { Toaster } from "./components/ui/sonner";
 import { useEffect, useState } from "react";
 
 export default function App() {
+  // 🚀 READY TO DEPLOY - Fresh version with all ads and improvements!
   // Toggle between modes: early-access / prelaunch / normal-sale  
   const saleMode = "prelaunch"; // "early-access" | "prelaunch" | "normal-sale"
   
