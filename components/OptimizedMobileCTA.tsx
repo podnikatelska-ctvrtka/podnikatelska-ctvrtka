@@ -47,21 +47,21 @@ export function OptimizedMobileCTA() {
         debug += `Win: ${windowHeight}px\n`;
         debug += `Ben: ${Math.round(benefitsTop)} to ${Math.round(benefitsBottom)}\n`;
         
-        // SUPER JEDNODUCHÁ LOGIKA:
-        // Zobrazit když benefits je viditelná alespoň 200px na obrazovce
+        // Zobrazit když benefits je viditelná alespoň 200px
         const benefitsVisibleHeight = Math.min(benefitsBottom, windowHeight) - Math.max(benefitsTop, 0);
         const inBenefits = benefitsVisibleHeight > 200;
         
         debug += `Vis: ${Math.round(benefitsVisibleHeight)}px\n`;
         debug += `InBen: ${inBenefits}\n`;
         
-        // Skrýt když testimonials začínají
-        let inTestimonials = false;
+        // OPRAVA: Testimonials jsou PŘED benefits, takže kontroluj jestli jsme PO nich
+        let afterTestimonials = true; // default true
         if (testimonialsSection) {
           const testimonialsRect = testimonialsSection.getBoundingClientRect();
-          inTestimonials = testimonialsRect.top < windowHeight - 100;
-          debug += `Test: ${Math.round(testimonialsRect.top)}\n`;
-          debug += `InTest: ${inTestimonials}\n`;
+          // afterTestimonials = testimonials bottom je NAHOŘE (už jsme prošli)
+          afterTestimonials = testimonialsRect.bottom < 0;
+          debug += `Test bottom: ${Math.round(testimonialsRect.bottom)}\n`;
+          debug += `AfterTest: ${afterTestimonials}\n`;
         }
         
         // Skrýt když order je blízko
@@ -73,7 +73,7 @@ export function OptimizedMobileCTA() {
           debug += `NearOrd: ${nearOrder}\n`;
         }
         
-        shouldShow = inBenefits && !inTestimonials && !nearOrder;
+        shouldShow = inBenefits && afterTestimonials && !nearOrder;
         debug += `SHOW: ${shouldShow}\n`;
       } else {
         debug = 'Benefits not found!';
