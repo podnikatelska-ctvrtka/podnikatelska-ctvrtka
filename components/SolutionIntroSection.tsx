@@ -94,19 +94,21 @@ export function SolutionIntroSection() {
                 </div>
               
                 {/* GAINS - Pozitivní budoucnost */}
-                <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl p-8 mb-10 border-2 border-green-300 shadow-lg max-w-3xl mx-auto">
-                  <p className="text-xl text-gray-800 mb-4 leading-relaxed">
-                    ✅ <strong className="text-green-700">Zítra ráno vstanete a víte PŘESNĚ, co dělat.</strong>
-                  </p>
-                  <p className="text-xl text-gray-800 mb-4 leading-relaxed">
-                    ✅ <strong className="text-green-700">Víte, kam zaměřit své úsilí</strong> – žádné plýtvání časem a penězi.
-                  </p>
-                  <p className="text-xl text-gray-800 mb-4 leading-relaxed">
-                    ✅ <strong className="text-green-700">Víte, kdo jsou vaši správní zákazníci</strong> – a jak je oslovit.
-                  </p>
-                  <p className="text-xl text-gray-800 leading-relaxed">
-                    ✅ <strong className="text-green-700">Víte, jak otestovat nápady DŘÍV</strong>, než utratíte čas a peníze.
-                  </p>
+                <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl p-6 md:p-8 mb-10 border-2 border-green-300 shadow-lg max-w-3xl mx-auto">
+                  <div className="space-y-3 md:space-y-4">
+                    <p className="text-base md:text-xl text-gray-800 leading-relaxed">
+                      ✅ <strong className="text-green-700">Zítra ráno vstanete a víte PŘESNĚ, co dělat.</strong>
+                    </p>
+                    <p className="text-base md:text-xl text-gray-800 leading-relaxed">
+                      ✅ <strong className="text-green-700">Víte, kam zaměřit své úsilí</strong> – žádné plýtvání časem a penězi.
+                    </p>
+                    <p className="text-base md:text-xl text-gray-800 leading-relaxed">
+                      ✅ <strong className="text-green-700">Víte, kdo jsou vaši správní zákazníci</strong> – a jak je oslovit.
+                    </p>
+                    <p className="text-base md:text-xl text-gray-800 leading-relaxed">
+                      ✅ <strong className="text-green-700">Víte, jak otestovat nápady DŘÍV</strong>, než utratíte čas a peníze.
+                    </p>
+                  </div>
                 </div>
               
                 <div className="grid md:grid-cols-3 gap-8 mb-10">

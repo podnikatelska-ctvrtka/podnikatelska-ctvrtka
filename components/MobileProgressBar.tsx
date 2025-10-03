@@ -67,8 +67,8 @@ export function MobileProgressBar() {
               {sections[currentSection]?.label || '🎯 Úvod'}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-blue-600 font-semibold flex-shrink-0 ml-2">
-            <span>✨</span>
+          <div className="flex items-center gap-1.5 text-xs text-blue-600 font-semibold flex-shrink-0 ml-2 overflow-hidden">
+            <span className="flex-shrink-0">✨</span>
             <span className="hidden xs:inline">Registrace</span>
           </div>
         </div>

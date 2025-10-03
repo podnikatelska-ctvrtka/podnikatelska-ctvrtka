@@ -129,10 +129,6 @@ export function OptimizedMobileCTA() {
 
   return (
     <>
-      {/* DEBUG OVERLAY - AKTIVNÍ pro testování */}
-      <div className="fixed top-20 left-2 bg-black/90 text-white text-xs p-2 rounded z-50 md:hidden max-w-[200px] font-mono whitespace-pre-wrap leading-tight">
-        {debugInfo}
-      </div>
       
       <AnimatePresence>
         {isVisible && (
