@@ -44,33 +44,39 @@ export function OptimizedMobileCTA() {
         const benefitsTop = benefitsRect.top;
         const benefitsBottom = benefitsRect.bottom;
         
-        debug += `Benefits: top=${Math.round(benefitsTop)}, bottom=${Math.round(benefitsBottom)}\n`;
+        debug += `Win: ${windowHeight}px\n`;
+        debug += `Ben: ${Math.round(benefitsTop)} to ${Math.round(benefitsBottom)}\n`;
         
-        // ZJEDNODUŠENÁ LOGIKA:
-        // Zobrazit když benefits sekce je na obrazovce (top < windowHeight a bottom > 0)
-        const inBenefits = benefitsTop < windowHeight && benefitsBottom > 0;
+        // SUPER JEDNODUCHÁ LOGIKA:
+        // Zobrazit když benefits je viditelná alespoň 200px na obrazovce
+        const benefitsVisibleHeight = Math.min(benefitsBottom, windowHeight) - Math.max(benefitsTop, 0);
+        const inBenefits = benefitsVisibleHeight > 200;
         
-        // Skrýt když jsme PO benefits sekci (testimonials nebo níž)
-        let afterBenefits = false;
+        debug += `Vis: ${Math.round(benefitsVisibleHeight)}px\n`;
+        debug += `InBen: ${inBenefits}\n`;
+        
+        // Skrýt když testimonials začínají
+        let inTestimonials = false;
         if (testimonialsSection) {
           const testimonialsRect = testimonialsSection.getBoundingClientRect();
-          // Skrýt když testimonials začíná být viditelná na 50% obrazovky
-          afterBenefits = testimonialsRect.top < windowHeight * 0.5;
-          debug += `Testimonials: top=${Math.round(testimonialsRect.top)}, afterBenefits=${afterBenefits}\n`;
+          inTestimonials = testimonialsRect.top < windowHeight - 100;
+          debug += `Test: ${Math.round(testimonialsRect.top)}\n`;
+          debug += `InTest: ${inTestimonials}\n`;
         }
         
-        // Skrýt když jsme blízko order sekce
+        // Skrýt když order je blízko
         let nearOrder = false;
         if (orderSection) {
           const orderRect = orderSection.getBoundingClientRect();
-          nearOrder = orderRect.top < windowHeight + 200;
-          debug += `Order: top=${Math.round(orderRect.top)}, nearOrder=${nearOrder}\n`;
+          nearOrder = orderRect.top < windowHeight;
+          debug += `Ord: ${Math.round(orderRect.top)}\n`;
+          debug += `NearOrd: ${nearOrder}\n`;
         }
         
-        shouldShow = inBenefits && !afterBenefits && !nearOrder;
-        debug += `shouldShow=${shouldShow}\n`;
+        shouldShow = inBenefits && !inTestimonials && !nearOrder;
+        debug += `SHOW: ${shouldShow}\n`;
       } else {
-        debug = 'Benefits section not found!';
+        debug = 'Benefits not found!';
       }
       
       setDebugInfo(debug);
@@ -123,10 +129,10 @@ export function OptimizedMobileCTA() {
 
   return (
     <>
-      {/* DEBUG OVERLAY - odkomentuj pro testování */}
-      {/* <div className="fixed top-20 left-2 bg-black/80 text-white text-xs p-2 rounded z-50 md:hidden max-w-[200px] font-mono whitespace-pre-wrap">
+      {/* DEBUG OVERLAY - AKTIVNÍ pro testování */}
+      <div className="fixed top-20 left-2 bg-black/90 text-white text-xs p-2 rounded z-50 md:hidden max-w-[200px] font-mono whitespace-pre-wrap leading-tight">
         {debugInfo}
-      </div> */}
+      </div>
       
       <AnimatePresence>
         {isVisible && (

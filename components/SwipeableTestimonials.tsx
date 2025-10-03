@@ -192,25 +192,21 @@ export function SwipeableTestimonials() {
 
         {/* Mobile Carousel */}
         <div className="md:hidden">
-          <div className="relative touch-pan-x">
-            <AnimatePresence mode="wait">
+          <div className="relative overflow-hidden">
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={currentIndex}
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
                 onDragEnd={handleDragEnd}
-                onDragStart={(e) => {
-                  // Zabraň scroll během swipe
-                  e.preventDefault();
-                }}
                 initial={{ opacity: 0, x: 300 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -300 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100"
-                style={{ touchAction: 'pan-x' }}
+                className="px-2"
               >
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
                 {(() => {
                   const testimonial = testimonials[currentIndex];
                   const Icon = testimonial.icon;
@@ -266,42 +262,43 @@ export function SwipeableTestimonials() {
                     </>
                   );
                 })()}
+                </div>
               </motion.div>
             </AnimatePresence>
+          </div>
 
-            {/* Mobile Navigation */}
-            <div className="flex items-center justify-between mt-6">
-              <button
-                onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                aria-label="Previous testimonial"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
-              </button>
+          {/* Mobile Navigation */}
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <button
+              onClick={prevTestimonial}
+              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
 
-              <div className="flex gap-2">
-                {testimonials.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === currentIndex 
-                        ? 'bg-blue-600 w-6' 
-                        : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
-                    aria-label={`Go to testimonial ${index + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                aria-label="Next testimonial"
-              >
-                <ChevronRight className="w-5 h-5 text-gray-600" />
-              </button>
+            <div className="flex gap-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === currentIndex 
+                      ? 'bg-blue-600 w-6' 
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                />
+              ))}
             </div>
+
+            <button
+              onClick={nextTestimonial}
+              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+              aria-label="Next testimonial"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
           </div>
         </div>
       </div>
