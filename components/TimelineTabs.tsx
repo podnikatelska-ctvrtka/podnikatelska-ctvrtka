@@ -230,7 +230,7 @@ export function TimelineTabs() {
               <div className="bg-green-50 rounded-lg p-4 text-center shadow-sm">
                 <div className="text-green-600 font-bold mb-2 text-sm md:text-base">✅ PO 2 TÝDNECH</div>
                 <div className="text-3xl md:text-4xl font-bold text-green-700 mb-2">85%</div>
-                <div className="text-green-600 text-sm md:text-base">+15k K��/měsíc</div>
+                <div className="text-green-600 text-sm md:text-base">+15k Kč/měsíc</div>
               </div>
             </div>
           </div>
@@ -393,7 +393,7 @@ export function TimelineTabs() {
                   <div className="flex-1">
                     <p className="text-gray-900 font-bold mb-1 text-base md:text-lg">Social media strategie</p>
                     <p className="text-gray-700 text-sm md:text-base mb-1">
-                      Instagram a TikTok s novým menu, Stories s nabídkou dne, kr��tká videa ze 
+                      Instagram a TikTok s novým menu, Stories s nabídkou dne, krátká videa ze 
                       zákulisí. Zaměření na mladé zákazníky.
                     </p>
                     <span className="inline-block px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold">

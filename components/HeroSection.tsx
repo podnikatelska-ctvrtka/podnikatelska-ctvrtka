@@ -296,7 +296,7 @@ export function HeroSection() {
                     relationships: { icon: "🤝", title: "Vztahy", color: "from-blue-500 to-blue-600" },
                     segments: { icon: "🎯", title: "Zákazníci", color: "from-purple-500 to-purple-600" },
                     resources: { icon: "🔧", title: "Zdroje", color: "from-violet-500 to-violet-600" },
-                    channels: { icon: "����", title: "Kanály", color: "from-sky-500 to-sky-600" },
+                    channels: { icon: "📢", title: "Kanály", color: "from-sky-500 to-sky-600" },
                     costs: { icon: "💰", title: "Náklady", color: "from-red-500 to-red-600" },
                     revenue: { icon: "💸", title: "Příjmy", color: "from-emerald-500 to-emerald-600" }
                   }).map(([key, block]) => (

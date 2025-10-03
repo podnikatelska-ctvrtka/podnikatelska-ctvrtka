@@ -80,15 +80,15 @@ export function SolutionIntroSection() {
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-center mb-8">
+                <div className="flex flex-col md:flex-row items-center justify-center mb-8 gap-4">
                   <motion.div 
-                    className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-4 mr-4 shadow-2xl"
+                    className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-3 shadow-2xl"
                     animate={{ rotate: [0, 360] }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                   >
-                    <Lightbulb className="w-12 h-12 md:w-8 md:h-8 text-white" />
+                    <Lightbulb className="w-10 h-10 md:w-8 md:h-8 text-white" />
                   </motion.div>
-                  <h3 className="text-3xl md:text-4xl text-gray-900 font-black leading-tight">
+                  <h3 className="text-2xl md:text-4xl text-gray-900 font-black leading-tight text-center md:text-left">
                     Co kdyby za tím vším nebyla <span className="text-blue-600">vaše chyba</span>, ale jen <span className="text-green-600">chybějící plán</span>? ✨
                   </h3>
                 </div>
@@ -125,7 +125,7 @@ export function SolutionIntroSection() {
                       transition={{ duration: 0.4, delay: 0.2 }}
                     >
                       <motion.div
-                        animate={{ rotate: [0, 10, -10, 0] }}
+                        animate={{ scale: [1, 1.1, 1] }}
                         transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
                       >
                         <Target className="w-12 h-12 text-blue-600 mx-auto mb-3" />

@@ -27,36 +27,35 @@ export function OptimizedMobileCTA() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Najít benefits sekci (OptimizedCombinedSectionV2)
+      // Najít benefits sekci
       const benefitsSection = document.querySelector('[data-section="benefits"]');
       const testimonialsSection = document.querySelector('[data-section="testimonials"]');
       const orderSection = document.getElementById('order');
       
       let shouldShow = false;
       
-      // POUZE V BENEFITS SEKCI
       if (benefitsSection) {
         const benefitsRect = benefitsSection.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
         
-        // Zobrazit když jsme scrollnuli alespoň 200px do benefits sekce
-        const isInBenefits = benefitsRect.top < window.innerHeight - 200 && benefitsRect.bottom > 0;
+        // Zobrazit když benefits sekce je alespoň 30% viditelná
+        const benefitsVisible = benefitsRect.top < windowHeight * 0.7 && benefitsRect.bottom > windowHeight * 0.3;
         
-        // Skrýt pokud jsme v testimonials nebo blíž k order sekci
-        let shouldHide = false;
-        
+        // Skrýt když testimonials sekce začíná být viditelná
+        let inTestimonials = false;
         if (testimonialsSection) {
           const testimonialsRect = testimonialsSection.getBoundingClientRect();
-          // Skrýt když testimonials začíná být viditelný (200px před koncem benefitů)
-          shouldHide = testimonialsRect.top < window.innerHeight;
+          inTestimonials = testimonialsRect.top < windowHeight * 0.8;
         }
         
-        if (orderSection && !shouldHide) {
+        // Skrýt když order sekce je blízko
+        let nearOrder = false;
+        if (orderSection) {
           const orderRect = orderSection.getBoundingClientRect();
-          // Skrýt když se blížíme k order sekci (500px před ní)
-          shouldHide = orderRect.top < window.innerHeight + 500;
+          nearOrder = orderRect.top < windowHeight + 300;
         }
         
-        shouldShow = isInBenefits && !shouldHide;
+        shouldShow = benefitsVisible && !inTestimonials && !nearOrder;
       }
       
       setIsVisible(shouldShow);
