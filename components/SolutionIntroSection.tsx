@@ -86,7 +86,7 @@ export function SolutionIntroSection() {
                     animate={{ rotate: [0, 360] }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                   >
-                    <Lightbulb className="w-8 h-8 text-white" />
+                    <Lightbulb className="w-12 h-12 md:w-8 md:h-8 text-white" />
                   </motion.div>
                   <h3 className="text-3xl md:text-4xl text-gray-900 font-black leading-tight">
                     Co kdyby za tím vším nebyla <span className="text-blue-600">vaše chyba</span>, ale jen <span className="text-green-600">chybějící plán</span>? ✨
@@ -112,35 +112,74 @@ export function SolutionIntroSection() {
                 <div className="grid md:grid-cols-3 gap-8 mb-10">
                   <motion.div 
                     className="text-center"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
                     whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-6 shadow-xl mb-4 border-2 border-blue-300">
-                      <Target className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                    <motion.div 
+                      className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-6 shadow-xl mb-4 border-2 border-blue-300"
+                      whileInView={{ scale: [0.8, 1] }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.2 }}
+                    >
+                      <motion.div
+                        animate={{ rotate: [0, 10, -10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                      >
+                        <Target className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                      </motion.div>
                       <div className="text-3xl font-black text-blue-700">90 min</div>
-                    </div>
+                    </motion.div>
                     <div className="text-base font-medium text-gray-700">Čas na vyřešení všech problémů</div>
                   </motion.div>
                   <motion.div 
                     className="text-center"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
                     whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-6 shadow-xl mb-4 border-2 border-green-300">
-                      <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
+                    <motion.div 
+                      className="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-6 shadow-xl mb-4 border-2 border-green-300"
+                      whileInView={{ scale: [0.8, 1] }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.3 }}
+                    >
+                      <motion.div
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                      >
+                        <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
+                      </motion.div>
                       <div className="text-3xl font-black text-green-700">1 list</div>
-                    </div>
+                    </motion.div>
                     <div className="text-base font-medium text-gray-700">Kompletní strategie na jedné stránce</div>
                   </motion.div>
                   <motion.div 
                     className="text-center"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
                     whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl p-6 shadow-xl mb-4 border-2 border-purple-300">
-                      <Wrench className="w-12 h-12 text-purple-600 mx-auto mb-3" />
+                    <motion.div 
+                      className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl p-6 shadow-xl mb-4 border-2 border-purple-300"
+                      whileInView={{ scale: [0.8, 1] }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.4 }}
+                    >
+                      <motion.div
+                        animate={{ rotate: [0, -15, 15, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                      >
+                        <Wrench className="w-12 h-12 text-purple-600 mx-auto mb-3" />
+                      </motion.div>
                       <div className="text-3xl font-black text-purple-700">Bez nástrojů</div>
-                    </div>
+                    </motion.div>
                     <div className="text-base font-medium text-gray-700">Jen čtvrtka a štítky</div>
                   </motion.div>
                 </div>

@@ -27,27 +27,36 @@ export function OptimizedMobileCTA() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Počkat až uživatel projde solution sekci (tam se dozví o co jde)
-      const solutionSection = document.querySelector('[data-section="solution"]');
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollProgress = (window.scrollY / totalHeight) * 100;
+      // Najít benefits sekci (OptimizedCombinedSectionV2)
+      const benefitsSection = document.querySelector('[data-section="benefits"]');
+      const testimonialsSection = document.querySelector('[data-section="testimonials"]');
+      const orderSection = document.getElementById('order');
       
       let shouldShow = false;
       
-      if (solutionSection) {
-        const solutionRect = solutionSection.getBoundingClientRect();
+      // POUZE V BENEFITS SEKCI
+      if (benefitsSection) {
+        const benefitsRect = benefitsSection.getBoundingClientRect();
         
-        // Zkontrolovat jestli jsme v case study sekci - pokud ano, skrýt CTA
-        const caseStudySection = document.querySelector('[data-section="case-study"]');
-        let isInCaseStudy = false;
-        if (caseStudySection) {
-          const caseStudyRect = caseStudySection.getBoundingClientRect();
-          // Jsme v case study pokud je sekce viditelná na obrazovce
-          isInCaseStudy = caseStudyRect.top < window.innerHeight && caseStudyRect.bottom > 0;
+        // Zobrazit když jsme scrollnuli alespoň 200px do benefits sekce
+        const isInBenefits = benefitsRect.top < window.innerHeight - 200 && benefitsRect.bottom > 0;
+        
+        // Skrýt pokud jsme v testimonials nebo blíž k order sekci
+        let shouldHide = false;
+        
+        if (testimonialsSection) {
+          const testimonialsRect = testimonialsSection.getBoundingClientRect();
+          // Skrýt když testimonials začíná být viditelný (200px před koncem benefitů)
+          shouldHide = testimonialsRect.top < window.innerHeight;
         }
         
-        // Zobrazit když prošel alespoň 50% solution sekce, skrýt na 96% scrollu, A skrýt v case study
-        shouldShow = solutionRect.bottom < window.innerHeight * 0.5 && scrollProgress < 96 && !isInCaseStudy;
+        if (orderSection && !shouldHide) {
+          const orderRect = orderSection.getBoundingClientRect();
+          // Skrýt když se blížíme k order sekci (500px před ní)
+          shouldHide = orderRect.top < window.innerHeight + 500;
+        }
+        
+        shouldShow = isInBenefits && !shouldHide;
       }
       
       setIsVisible(shouldShow);
