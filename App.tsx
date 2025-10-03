@@ -8,6 +8,10 @@ import { CountdownBanner } from "./components/CountdownBanner";
 import { PrelaunchEmailCapture } from "./components/PrelaunchEmailCapture";
 import { EarlyAccessSale } from "./components/EarlyAccessSale";
 import { MiniCourse } from "./components/MiniCourse";
+import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
+import { AdCreativesVariant2Showcase } from "./components/AdCreativesVariant2";
+import { AdCreativesVariant3Showcase } from "./components/AdCreativesVariant3";
+import { FinalAdSetsShowcase } from "./components/FinalAdSets";
 
 import { Analytics } from "./components/Analytics";
 import { CriticalCSS } from "./components/CriticalCSS";
@@ -31,6 +35,12 @@ export default function App() {
   // 🧪 DEMO MODE: Pro testování Step 2 v modalu (změň na true)
   const demoModalStep2 = false; // true = vidíš rovnou Step 2 success screen
   
+  // 🎨 AD CREATIVES MODE: Pro zobrazení FB reklam (změň na true)
+  const showAdCreatives = false; // ✅ VYPNUTO - Landing page je aktivní!
+  const showVariant2 = false; // Varianty 4-6 (Pain, Value, Transform)
+  const showVariant3 = false; // Varianty 7-9 (Curiosity, Direct, Quick Win)
+  const showFinalAdSets = true; // 3 FINÁLNÍ AD SETY (Problem, Value, Social Proof)
+  
   // 🎯 CHECKLIST PAGE MODE: Pro zobrazení checklist stránky
   const [showChecklist, setShowChecklist] = useState(false);
   
@@ -52,6 +62,17 @@ export default function App() {
     
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
+  
+  // Show ad creatives if enabled
+  if (showAdCreatives) {
+    return (
+      <>
+        <CriticalCSS />
+        {showFinalAdSets ? <FinalAdSetsShowcase /> : (showVariant3 ? <AdCreativesVariant3Showcase /> : (showVariant2 ? <AdCreativesVariant2Showcase /> : <AdCreativesShowcase />))}
+        <Toaster position="top-right" />
+      </>
+    );
+  }
   
   // Show mini course if URL has #priprava
   if (showChecklist) {

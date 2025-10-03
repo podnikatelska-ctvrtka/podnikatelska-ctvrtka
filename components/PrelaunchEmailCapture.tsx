@@ -7,6 +7,19 @@ import { toast } from "sonner";
 import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
 
+// 🎯 MAKE.COM WEBHOOK - Posílá notifikace na tvůj email
+const WEBHOOK_CONFIG = {
+  enabled: true, // ✅ ZAPNUTO!
+  url: 'https://hook.eu2.make.com/t4mtz2jjps6e2fgjoktqtotwgseuqmj2',
+  productId: 'podnikatelska-ctvrtka-predprodej',
+};
+
+// 🎯 FLOWLANCE - Čekáme na odpověď ohledně API/email integrace
+// Možnosti po odpovědi:
+// 1. API/webhook → Make.com automatizace
+// 2. Email předvyplnění → redirect (pokud zjistíme jak)
+// 3. Manuální import → CSV export z Make.com
+
 // Dynamic availability tracker
 const getAvailableSpots = () => {
   if (typeof window === 'undefined') return 50;
@@ -63,21 +76,72 @@ export function PrelaunchEmailCapture() {
 
     setIsLoading(true);
 
-    // Simulate API call (Replace with real API later)
+    // Save to localStorage for tracking
+    registeredEmails.push(email.toLowerCase());
+    localStorage.setItem('pvs_registered_emails', JSON.stringify(registeredEmails));
+    
+    // Track conversion - Google Analytics
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'generate_lead', {
+        event_category: 'prelaunch',
+        event_label: 'email_capture',
+        value: 1
+      });
+    }
+    
+    // Track conversion - Facebook Pixel
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'Lead', {
+        content_name: 'Průkopník Prelaunch',
+        content_category: 'prelaunch_email_capture',
+        value: 7999, // Hodnota úspory
+        currency: 'CZK'
+      });
+    }
+
+    // 🎯 POŠLI EMAIL DO MAKE.COM → Notifikace na tvůj email
+    if (WEBHOOK_CONFIG.enabled && WEBHOOK_CONFIG.url) {
+      try {
+        console.log('🚀 Posílám data do Make.com...', {
+          url: WEBHOOK_CONFIG.url,
+          email: email,
+        });
+        
+        const response = await fetch(WEBHOOK_CONFIG.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            timestamp: new Date().toISOString(),
+            source: 'landing_page_prelaunch',
+            spotNumber: 50 - availableSpots + 1,
+            productId: WEBHOOK_CONFIG.productId,
+          }),
+        });
+        
+        console.log('📊 Response status:', response.status);
+        console.log('✅ Email sent to Make.com webhook - SUCCESS!');
+      } catch (error) {
+        console.error('⚠️ Webhook error:', error);
+        console.error('❌ Full error details:', JSON.stringify(error, null, 2));
+        // I když webhook selže, stále zobraz success
+      }
+    } else {
+      console.warn('⚠️ Webhook není enabled nebo nemá URL!');
+    }
+    
+    // Zobraz success screen (user ZŮSTANE na naší stránce!)
     setTimeout(() => {
-      // Save to localStorage
-      registeredEmails.push(email.toLowerCase());
-      localStorage.setItem('pvs_registered_emails', JSON.stringify(registeredEmails));
-      
       setIsSubmitted(true);
       setIsLoading(false);
-      // Decrease available spots
       setAvailableSpots(prev => Math.max(35, prev - 1));
       
-      toast.success("🎉 Úspěšně registrováno! Sledujte svůj email.", {
+      toast.success("🎉 Úspěšně! Sledujte svůj email pro mini kurz!", {
         duration: 5000,
       });
-    }, 1000);
+    }, 500);
   };
 
   if (isSubmitted) {
@@ -101,12 +165,13 @@ export function PrelaunchEmailCapture() {
             </h2>
             <p className="text-lg text-gray-600 mb-6">
               <strong className="text-red-600">Gratulujeme!</strong> Právě jste se stali oficiálním PRŮKOPNÍKEM české podnikatelské revoluce!<br/>
-              <strong className="text-orange-600">Za pár hodin</strong> dostanete exkluzivní email s:<br/>
-              • 🎁 <strong>Link na mini kurz</strong> (2.999 Kč ZDARMA) - HNED!<br/>
-              • 🚀 <strong>Datum kdy kurz startuje</strong><br/>
+              <strong className="text-orange-600">Teď získejte</strong> exkluzivní přístup:<br/>
+              • 🎁 <strong>3-denní mini kurz</strong> (2.999 Kč) - ZDARMA!<br/>
+              • 🚀 <strong>Info o spuštění hlavního kurzu</strong><br/>
               • 🎯 <strong>Průkopnická cena</strong> - ušetříte 7.999 Kč (62%)<br/>
-              • 💎 <strong>Info o konzultaci</strong> (prvních 50 kupujících • 1.500 Kč)
+              • 💎 <strong>Konzultace ZDARMA</strong> (prvních 50 kupujících • 1.500 Kč)
             </p>
+
             
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
@@ -131,6 +196,33 @@ export function PrelaunchEmailCapture() {
                 <p className="text-sm text-green-600 font-medium">7.999 Kč (62%)</p>
               </div>
             </div>
+            
+            {/* 🎯 ZÁLOŽNÍ PLÁN: Tlačítko pro Flowlance redirect (pokud nemají email/API) */}
+            {FLOWLANCE_REDIRECT_CONFIG.enabled && FLOWLANCE_REDIRECT_CONFIG.showButton && (
+              <motion.div
+                className="mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Button
+                  onClick={() => {
+                    const flowlanceUrl = `${FLOWLANCE_OPTIN_URL}?email=${encodeURIComponent(email)}&ref=landing&spot=${50 - availableSpots + 1}`;
+                    window.location.href = flowlanceUrl;
+                  }}
+                  className="group w-full md:w-auto md:min-w-96 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-6 px-8 text-xl font-bold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 border border-green-400/50 relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-400/0 via-white/20 to-green-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                  <span className="relative z-10">
+                    🎁 CHCI MINI KURZ ZDARMA!
+                  </span>
+                  <ArrowRight className="ml-2 w-6 h-6 inline-block relative z-10" />
+                </Button>
+                <p className="text-sm text-gray-500 mt-3 text-center">
+                  ✅ Okamžitý přístup • Žádná platba • Mini kurz v hodnotě 2.999 Kč
+                </p>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </motion.section>
@@ -351,7 +443,7 @@ export function PrelaunchEmailCapture() {
                   </div>
                   
                   <div className="text-center border-t border-white/20 pt-4">
-                    <div className="text-purple-300 font-medium text-sm mb-2">🎁 PO REGISTRACI ZÍSKÁTE:</div>
+                    <div className="text-purple-300 font-medium text-sm mb-2">PO REGISTRACI ZÍSKÁTE:</div>
                     <div className="text-white/90 text-sm space-y-1">
                       <div>✅ Mini kurz ZDARMA HNED (2.999 Kč)</div>
                       <div>✅ Průkopnická cena kurzu (4.999 Kč)</div>

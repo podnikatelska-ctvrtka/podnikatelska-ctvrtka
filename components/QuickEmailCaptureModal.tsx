@@ -6,6 +6,13 @@ import { CheckCircle, ArrowRight, Gift, Zap, Target, Users, Sparkles } from "luc
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
+// 🎯 MAKE.COM WEBHOOK - STEJNÝ JAKO V PrelaunchEmailCapture
+const WEBHOOK_CONFIG = {
+  enabled: true,
+  url: 'https://hook.eu2.make.com/t4mtz2jjps6e2fgjoktqtotwgseuqmj2',
+  productId: 'podnikatelska-ctvrtka-predprodej', // 🎯 ID produktu pro routing
+};
+
 interface QuickEmailCaptureModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -33,16 +40,41 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
 
     setIsLoading(true);
 
-    // Simulate API call
+    // 🎯 POŠLI DO MAKE.COM WEBHOOKU
+    if (WEBHOOK_CONFIG.enabled && WEBHOOK_CONFIG.url) {
+      try {
+        console.log('🚀 [Hero Modal] Posílám data do Make.com...', { email });
+        
+        await fetch(WEBHOOK_CONFIG.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            timestamp: new Date().toISOString(),
+            source: 'hero_modal',
+            spotNumber: 0, // Hero modal nemá spot tracking
+            productId: WEBHOOK_CONFIG.productId, // 🎯 ID produktu pro routing
+          }),
+        });
+        
+        console.log('✅ [Hero Modal] Email sent to Make.com webhook');
+      } catch (error) {
+        console.error('⚠️ [Hero Modal] Webhook error:', error);
+      }
+    }
+
+    // Zobraz step 2
     setTimeout(() => {
       setIsLoading(false);
-      setStep(2); // Move to step 2 after successful submission
+      setStep(2);
       
       toast.success("🎉 Úspěšně registrováno!", {
         description: "Sledujte svůj email pro další instrukce",
         duration: 5000,
       });
-    }, 1000);
+    }, 500);
   };
 
   const handleContinue = () => {

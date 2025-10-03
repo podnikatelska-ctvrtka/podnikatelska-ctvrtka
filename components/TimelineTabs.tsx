@@ -181,7 +181,7 @@ export function TimelineTabs() {
               </div>
               
               <h4 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                Ob��dové menu pro firmy - spuštěno za 2 týdny
+                Obědové menu pro firmy - spuštěno za 2 týdny
               </h4>
               
               <p className="text-gray-700 text-base md:text-lg leading-relaxed">
@@ -208,7 +208,7 @@ export function TimelineTabs() {
                   <span className="text-orange-600 text-xl md:text-2xl">📄</span>
                   <div>
                     <p className="text-gray-900 font-bold text-base md:text-lg mb-1">Místní marketing</p>
-                    <p className="text-gray-700 text-sm md:text-base">Letáky do kanceláří + su��enka zdarma při 1. objednávce</p>
+                    <p className="text-gray-700 text-sm md:text-base">Letáky do kanceláří + sušenka zdarma při 1. objednávce</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 md:gap-4">
