@@ -6,6 +6,7 @@ export function OptimizedMobileCTA() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(0);
   const [hasScrolledPastHero, setHasScrolledPastHero] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
 
   const messages = [
     { 
@@ -27,39 +28,54 @@ export function OptimizedMobileCTA() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Najít benefits sekci
       const benefitsSection = document.querySelector('[data-section="benefits"]');
       const testimonialsSection = document.querySelector('[data-section="testimonials"]');
       const orderSection = document.getElementById('order');
       
       let shouldShow = false;
+      const windowHeight = window.innerHeight;
+      const scrollY = window.scrollY;
+      
+      // Debug info
+      let debug = '';
       
       if (benefitsSection) {
         const benefitsRect = benefitsSection.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
+        const benefitsTop = benefitsRect.top;
+        const benefitsBottom = benefitsRect.bottom;
         
-        // Zobrazit když benefits sekce je alespoň 30% viditelná
-        const benefitsVisible = benefitsRect.top < windowHeight * 0.7 && benefitsRect.bottom > windowHeight * 0.3;
+        debug += `Benefits: top=${Math.round(benefitsTop)}, bottom=${Math.round(benefitsBottom)}\n`;
         
-        // Skrýt když testimonials sekce začíná být viditelná
-        let inTestimonials = false;
+        // ZJEDNODUŠENÁ LOGIKA:
+        // Zobrazit když benefits sekce je na obrazovce (top < windowHeight a bottom > 0)
+        const inBenefits = benefitsTop < windowHeight && benefitsBottom > 0;
+        
+        // Skrýt když jsme PO benefits sekci (testimonials nebo níž)
+        let afterBenefits = false;
         if (testimonialsSection) {
           const testimonialsRect = testimonialsSection.getBoundingClientRect();
-          inTestimonials = testimonialsRect.top < windowHeight * 0.8;
+          // Skrýt když testimonials začíná být viditelná na 50% obrazovky
+          afterBenefits = testimonialsRect.top < windowHeight * 0.5;
+          debug += `Testimonials: top=${Math.round(testimonialsRect.top)}, afterBenefits=${afterBenefits}\n`;
         }
         
-        // Skrýt když order sekce je blízko
+        // Skrýt když jsme blízko order sekce
         let nearOrder = false;
         if (orderSection) {
           const orderRect = orderSection.getBoundingClientRect();
-          nearOrder = orderRect.top < windowHeight + 300;
+          nearOrder = orderRect.top < windowHeight + 200;
+          debug += `Order: top=${Math.round(orderRect.top)}, nearOrder=${nearOrder}\n`;
         }
         
-        shouldShow = benefitsVisible && !inTestimonials && !nearOrder;
+        shouldShow = inBenefits && !afterBenefits && !nearOrder;
+        debug += `shouldShow=${shouldShow}\n`;
+      } else {
+        debug = 'Benefits section not found!';
       }
       
+      setDebugInfo(debug);
       setIsVisible(shouldShow);
-      setHasScrolledPastHero(window.scrollY > window.innerHeight * 0.8);
+      setHasScrolledPastHero(scrollY > windowHeight * 0.8);
     };
 
     // Rotace zpráv každé 4 sekundy
@@ -106,15 +122,21 @@ export function OptimizedMobileCTA() {
   };
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed bottom-4 left-4 right-4 z-40 md:hidden"
-        >
+    <>
+      {/* DEBUG OVERLAY - odkomentuj pro testování */}
+      {/* <div className="fixed top-20 left-2 bg-black/80 text-white text-xs p-2 rounded z-50 md:hidden max-w-[200px] font-mono whitespace-pre-wrap">
+        {debugInfo}
+      </div> */}
+      
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-4 left-4 right-4 z-40 md:hidden"
+          >
           <motion.button
             onClick={scrollToOrder}
             className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl shadow-lg 
@@ -185,7 +207,8 @@ export function OptimizedMobileCTA() {
             </div>
           </motion.button>
         </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

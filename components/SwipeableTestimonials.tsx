@@ -192,7 +192,7 @@ export function SwipeableTestimonials() {
 
         {/* Mobile Carousel */}
         <div className="md:hidden">
-          <div className="relative">
+          <div className="relative touch-pan-x">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
@@ -200,11 +200,16 @@ export function SwipeableTestimonials() {
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
                 onDragEnd={handleDragEnd}
+                onDragStart={(e) => {
+                  // Zabraň scroll během swipe
+                  e.preventDefault();
+                }}
                 initial={{ opacity: 0, x: 300 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -300 }}
                 transition={{ duration: 0.3 }}
                 className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100"
+                style={{ touchAction: 'pan-x' }}
               >
                 {(() => {
                   const testimonial = testimonials[currentIndex];
