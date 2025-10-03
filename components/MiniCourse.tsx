@@ -984,6 +984,12 @@ export function MiniCourse() {
       setIsAnimating(false);
       setValidationError(null);
       
+      // 🚀 SCROLL NAHORU po dokončení dne
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      
       // Gamifikovaný toast podle progressu
       if (isComplete) {
         toast.success('🎉 Gratulujeme!', {
@@ -1591,8 +1597,8 @@ export function MiniCourse() {
             </div>
           )}
 
-          {/* Export Data */}
-          {currentDay === 3 && completedDays.size >= 2 && (
+          {/* Export Data - zobrazí se AŽ PO DOKONČENÍ Dne 3 */}
+          {currentDay === 3 && completedDays.has(3) && (
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
               <h3 className="text-gray-900 mb-3 flex items-center gap-2">
                 <Download className="w-5 h-5 text-blue-600" />
