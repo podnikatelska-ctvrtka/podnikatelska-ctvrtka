@@ -390,6 +390,20 @@ export function MiniCourse() {
     // Načti token z URL (?token=abc123)
     const urlParams = new URLSearchParams(window.location.search);
     const urlToken = urlParams.get('token');
+    const resetParam = urlParams.get('reset');
+    
+    // 🔄 RESET FUNKCIONALITA (pro testování) - ?reset=true
+    if (resetParam === 'true') {
+      localStorage.removeItem('pvs_minicourse_progress');
+      localStorage.removeItem('pvs_minicourse_started');
+      // Nechej token aby zůstal přístup
+      // localStorage.removeItem('pvs_minicourse_token'); 
+      
+      // Refresh stránky bez ?reset parametru
+      const newUrl = window.location.pathname + '?token=' + (urlToken || localStorage.getItem('pvs_minicourse_token') || 'minicourse2025');
+      window.location.href = newUrl;
+      return;
+    }
     
     // Načti uložený token z localStorage
     const savedToken = localStorage.getItem('pvs_minicourse_token');
@@ -984,11 +998,14 @@ export function MiniCourse() {
       setIsAnimating(false);
       setValidationError(null);
       
-      // 🚀 SCROLL NAHORU po dokončení dne
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      // 🚀 SCROLL NAHORU po dokončení dne (KROMĚ Dne 3)
+      // U Dne 3 zůstaneme dole aby viděli gratulaci + tlačítko stažení
+      if (currentDay < 3) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
       
       // Gamifikovaný toast podle progressu
       if (isComplete) {
