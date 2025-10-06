@@ -10,6 +10,7 @@ import { EarlyAccessSale } from "./components/EarlyAccessSale";
 import { MiniCourse } from "./components/MiniCourse";
 import { CourseDemo } from "./components/CourseDemo";
 import { TestFlowSimulator } from "./components/TestFlowSimulator";
+import { FAPITest } from "./components/FAPITest";
 import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
 import { AdCreativesVariant2Showcase } from "./components/AdCreativesVariant2";
 import { AdCreativesVariant3Showcase } from "./components/AdCreativesVariant3";
@@ -50,26 +51,37 @@ export default function App() {
   const [showCourseDemo, setShowCourseDemo] = useState(false);
   // 🧪 TEST FLOW MODE: Pro testování platebního flow
   const [showTestFlow, setShowTestFlow] = useState(false);
+  // 🧪 FAPI TEST MODE: Pro testování FAPI API
+  const [showFAPITest, setShowFAPITest] = useState(false);
   
   useEffect(() => {
-    // Check URL hash for #priprava, #course, or #test-flow
+    // Check URL hash for #priprava, #course, #test-flow, or #fapi-test
     const checkHash = () => {
       if (window.location.hash === '#priprava' || window.location.pathname === '/priprava') {
         setShowChecklist(true);
         setShowCourseDemo(false);
         setShowTestFlow(false);
+        setShowFAPITest(false);
       } else if (window.location.hash === '#course' || window.location.pathname === '/course') {
         setShowCourseDemo(true);
         setShowChecklist(false);
         setShowTestFlow(false);
+        setShowFAPITest(false);
       } else if (window.location.hash === '#test-flow' || window.location.pathname === '/test-flow') {
         setShowTestFlow(true);
         setShowChecklist(false);
         setShowCourseDemo(false);
+        setShowFAPITest(false);
+      } else if (window.location.hash === '#fapi-test' || window.location.pathname === '/fapi-test') {
+        setShowFAPITest(true);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowTestFlow(false);
       } else {
         setShowChecklist(false);
         setShowCourseDemo(false);
         setShowTestFlow(false);
+        setShowFAPITest(false);
       }
     };
     
@@ -121,6 +133,17 @@ export default function App() {
       <>
         <CriticalCSS />
         <TestFlowSimulator />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show FAPI test if URL has #fapi-test
+  if (showFAPITest) {
+    return (
+      <>
+        <CriticalCSS />
+        <FAPITest />
         <Toaster position="top-right" />
       </>
     );

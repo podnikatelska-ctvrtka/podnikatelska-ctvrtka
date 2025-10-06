@@ -1,10 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+// Supabase client helper
+async function createSupabaseClient() {
+  const { createClient } = await import('@supabase/supabase-js');
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
+  );
+}
 
 // Resend email sending function
 async function sendEmail(to, subject, html) {
@@ -30,6 +31,31 @@ async function sendEmail(to, subject, html) {
   return response.json();
 }
 
+// FAPI API helper - fetch invoice details
+async function getInvoiceDetails(invoiceId) {
+  // FAPI uses Basic Authentication: username + API key
+  const username = process.env.FAPI_USERNAME; // cipera@iting.cz
+  const apiKey = process.env.FAPI_API_KEY; // BWrfhdLmc0Z0APdn3XNAiExq0
+  
+  // Create Basic Auth token: Base64(username:password)
+  const authToken = Buffer.from(`${username}:${apiKey}`).toString('base64');
+  
+  const response = await fetch(`https://api.fapi.cz/invoices/${invoiceId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Basic ${authToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`FAPI API failed: ${error}`);
+  }
+  
+  return response.json();
+}
+
 // Main webhook handler
 export async function handler(event, context) {
   // Only accept POST requests
@@ -41,37 +67,62 @@ export async function handler(event, context) {
   }
   
   try {
-    // Parse FAPI webhook data
-    const data = JSON.parse(event.body);
+    // Parse FAPI webhook data (URL encoded format: id=123&time=456&security=hash)
+    const params = new URLSearchParams(event.body);
+    const invoiceId = params.get('id');
+    const webhookTime = params.get('time');
+    const security = params.get('security');
     
-    console.log('📥 FAPI webhook received:', data);
+    console.log('📥 FAPI webhook received:', { invoiceId, webhookTime, security });
     
-    // Verify payment is completed
-    if (data.status !== 'paid' && data.payment_status !== 'paid') {
-      console.log('⚠️ Payment not completed yet, skipping...');
+    if (!invoiceId) {
+      throw new Error('Missing invoice ID in webhook');
+    }
+    
+    // ──────────────────────────────────────────
+    // 🔍 FETCH INVOICE DETAILS FROM FAPI API
+    // ──────────────────────────────────────────
+    console.log('🔍 Fetching invoice details from FAPI API...');
+    const invoice = await getInvoiceDetails(invoiceId);
+    
+    console.log('📄 Invoice details:', invoice);
+    
+    // Check if invoice is paid (FAPI uses boolean 'paid' field)
+    const isPaid = invoice.paid === true;
+    
+    if (!isPaid) {
+      console.log('⚠️ Invoice not paid yet, skipping...');
       return {
         statusCode: 200,
-        body: JSON.stringify({ message: 'Payment not completed' })
+        body: JSON.stringify({ message: 'Invoice not paid yet' })
       };
     }
     
-    // Extract user data
-    const email = data.email || data.customer_email || data.buyer_email;
-    const name = data.name || data.customer_name || data.buyer_name || 'Zákazník';
-    const orderId = data.id || data.order_id || 'unknown';
-    const amount = data.amount || data.total || 0;
+    // Extract customer data from invoice (FAPI structure: customer.email, customer.first_name, etc.)
+    const email = invoice.customer?.email;
+    const firstName = invoice.customer?.first_name || '';
+    const lastName = invoice.customer?.last_name || '';
+    const name = `${firstName} ${lastName}`.trim() || 'Zákazník';
+    const orderId = invoice.id || invoiceId;
+    const amount = invoice.total || 0;
+    const productName = invoice.items?.[0]?.name || 'Podnikatelská Čtvrtka';
     
-    console.log('👤 User data:', { email, name, orderId, amount });
+    if (!email) {
+      throw new Error('Missing customer email in invoice');
+    }
+    
+    console.log('👤 Customer data:', { email, name, orderId, amount, productName });
     
     // ──────────────────────────────────────────
     // 🔑 GENERATE UNIQUE ACCESS TOKEN
     // ──────────────────────────────────────────
-    const accessToken = crypto.randomUUID();
+    const accessToken = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
     console.log('🔑 Generated token:', accessToken);
     
     // ──────────────────────────────────────────
     // 💾 SAVE TO SUPABASE
     // ──────────────────────────────────────────
+    const supabase = await createSupabaseClient();
     const { data: user, error: insertError } = await supabase
       .from('users')
       .insert({
