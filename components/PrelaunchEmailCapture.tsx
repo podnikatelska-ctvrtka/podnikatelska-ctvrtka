@@ -14,11 +14,13 @@ const WEBHOOK_CONFIG = {
   productId: 'podnikatelska-ctvrtka-predprodej',
 };
 
-// 🎯 FLOWLANCE - Čekáme na odpověď ohledně API/email integrace
-// Možnosti po odpovědi:
-// 1. API/webhook → Make.com automatizace
-// 2. Email předvyplnění → redirect (pokud zjistíme jak)
-// 3. Manuální import → CSV export z Make.com
+// 🎯 FLOWLANCE - Redirect na Flowlance optin (Flowlance nemá API)
+const FLOWLANCE_REDIRECT_CONFIG = {
+  enabled: true, // ✅ ZAPNUTO - redirect do Flowlance!
+  showButton: true, // Zobrazit tlačítko "CHCI MINI KURZ" na success screen
+};
+
+const FLOWLANCE_OPTIN_URL = 'https://my.flowlance.com/TVOJE-PRODUKT-URL'; // ← NAHRAĎ svým Flowlance optin URL!
 
 // Dynamic availability tracker
 const getAvailableSpots = () => {

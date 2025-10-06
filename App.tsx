@@ -8,6 +8,8 @@ import { CountdownBanner } from "./components/CountdownBanner";
 import { PrelaunchEmailCapture } from "./components/PrelaunchEmailCapture";
 import { EarlyAccessSale } from "./components/EarlyAccessSale";
 import { MiniCourse } from "./components/MiniCourse";
+import { CourseDemo } from "./components/CourseDemo";
+import { TestFlowSimulator } from "./components/TestFlowSimulator";
 import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
 import { AdCreativesVariant2Showcase } from "./components/AdCreativesVariant2";
 import { AdCreativesVariant3Showcase } from "./components/AdCreativesVariant3";
@@ -44,14 +46,30 @@ export default function App() {
   
   // 🎯 CHECKLIST PAGE MODE: Pro zobrazení checklist stránky
   const [showChecklist, setShowChecklist] = useState(false);
+  // 🎓 COURSE DEMO MODE: Pro zobrazení LMS demo
+  const [showCourseDemo, setShowCourseDemo] = useState(false);
+  // 🧪 TEST FLOW MODE: Pro testování platebního flow
+  const [showTestFlow, setShowTestFlow] = useState(false);
   
   useEffect(() => {
-    // Check URL hash for #priprava
+    // Check URL hash for #priprava, #course, or #test-flow
     const checkHash = () => {
       if (window.location.hash === '#priprava' || window.location.pathname === '/priprava') {
         setShowChecklist(true);
+        setShowCourseDemo(false);
+        setShowTestFlow(false);
+      } else if (window.location.hash === '#course' || window.location.pathname === '/course') {
+        setShowCourseDemo(true);
+        setShowChecklist(false);
+        setShowTestFlow(false);
+      } else if (window.location.hash === '#test-flow' || window.location.pathname === '/test-flow') {
+        setShowTestFlow(true);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
       } else {
         setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowTestFlow(false);
       }
     };
     
@@ -81,6 +99,28 @@ export default function App() {
       <>
         <CriticalCSS />
         <MiniCourse />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show course demo if URL has #course
+  if (showCourseDemo) {
+    return (
+      <>
+        <CriticalCSS />
+        <CourseDemo />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show test flow simulator if URL has #test-flow
+  if (showTestFlow) {
+    return (
+      <>
+        <CriticalCSS />
+        <TestFlowSimulator />
         <Toaster position="top-right" />
       </>
     );
