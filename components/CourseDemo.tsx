@@ -6,8 +6,36 @@ import { Progress } from "./ui/progress";
 import { BusinessModelCanvas } from "./BusinessModelCanvas";
 import { toast } from "sonner";
 
-// 🔐 SIMPLE AUTH - Token check
-const AUTH_TOKEN = "demo2025"; // Simple token pro demo
+// Supabase client helper
+async function createSupabaseClient() {
+  const { createClient } = await import('@supabase/supabase-js');
+  return createClient(
+    'https://shxinaeqbyjxhqnhrlmb.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoeGluYWVxYnlqeGhxbmhybG1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4ODE5NzgsImV4cCI6MjA0MzQ1Nzk3OH0.6U8VuP-Md3nP9bGx_7ZRphxCp7n-F3fqUNv3KlWkpfU'
+  );
+}
+
+// Verify token in Supabase
+async function verifyToken(token: string) {
+  const supabase = await createSupabaseClient();
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('access_token', token)
+    .single();
+  
+  if (error || !data) {
+    return null;
+  }
+  
+  // Update last_login
+  await supabase
+    .from('users')
+    .update({ last_login: new Date().toISOString() })
+    .eq('id', data.id);
+  
+  return data;
+}
 
 interface Module {
   id: number;
@@ -21,6 +49,8 @@ interface Module {
 
 export function CourseDemo() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
+  const [userData, setUserData] = useState<any>(null);
   const [authToken, setAuthToken] = useState("");
   const [modules, setModules] = useState<Module[]>([
     {
@@ -54,16 +84,58 @@ export function CourseDemo() {
   const [notes, setNotes] = useState("");
   const [showCanvas, setShowCanvas] = useState(false);
 
-  // Check auth on mount
+  // Check auth on mount - verify token with Supabase
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-    const savedAuth = localStorage.getItem("course_demo_auth");
+    const checkAuth = async () => {
+      setIsVerifying(true);
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      
+      // Try token from URL first
+      if (token) {
+        try {
+          const user = await verifyToken(token);
+          if (user) {
+            setIsAuthenticated(true);
+            setUserData(user);
+            setAuthToken(token);
+            localStorage.setItem("course_access_token", token);
+            localStorage.setItem("course_user_email", user.email);
+            toast.success(`Vítejte zpět, ${user.name || 'v kurzu'}! 🎉`);
+          } else {
+            toast.error("Neplatný přístupový token!");
+          }
+        } catch (error) {
+          console.error("Auth error:", error);
+          toast.error("Chyba při ověřování přístupu");
+        }
+      } 
+      // Try saved token
+      else {
+        const savedToken = localStorage.getItem("course_access_token");
+        if (savedToken) {
+          try {
+            const user = await verifyToken(savedToken);
+            if (user) {
+              setIsAuthenticated(true);
+              setUserData(user);
+              setAuthToken(savedToken);
+            } else {
+              // Token expired or invalid, clear localStorage
+              localStorage.removeItem("course_access_token");
+              localStorage.removeItem("course_user_email");
+            }
+          } catch (error) {
+            console.error("Saved token verification error:", error);
+          }
+        }
+      }
+      
+      setIsVerifying(false);
+    };
     
-    if (token === AUTH_TOKEN || savedAuth === "true") {
-      setIsAuthenticated(true);
-      localStorage.setItem("course_demo_auth", "true");
-    }
+    checkAuth();
   }, []);
 
   // Load progress from localStorage
@@ -123,7 +195,25 @@ export function CourseDemo() {
     toast.success("Odhlášení úspěšné");
   };
 
-  // Login screen
+  // Loading screen while verifying token
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <BookOpen className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-gray-600">Ověřuji přístup...</p>
+        </motion.div>
+      </div>
+    );
+  }
+  
+  // Error screen - invalid or missing token
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
@@ -133,55 +223,44 @@ export function CourseDemo() {
           className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full"
         >
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-red-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Podnikatelská Čtvrtka
+              Přístup zamčen
             </h1>
             <p className="text-gray-600">
-              LMS Demo - Přihlášení
+              Pro přístup do kurzu potřebujete platný přístupový token.
             </p>
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Přístupový token
-              </label>
-              <input
-                type="text"
-                value={authToken}
-                onChange={(e) => setAuthToken(e.target.value)}
-                placeholder="Zadejte token..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-              />
-            </div>
-
-            <Button
-              onClick={handleLogin}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-            >
-              Přihlásit se
-            </Button>
-
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-600 text-center mb-2">
-                🔑 Pro demo použijte token:
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900 mb-2">📧 Kde najdu token?</h3>
+              <p className="text-sm text-blue-700">
+                Token vám přišel emailem po zakoupení kurzu. Hledejte email s předmětem "Váš přístup do kurzu je ready!"
               </p>
-              <code className="block text-center bg-gray-100 px-4 py-2 rounded-lg text-sm font-mono">
-                demo2025
-              </code>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <h3 className="font-semibold text-amber-900 mb-2">❓ Nemáte přístup?</h3>
+              <p className="text-sm text-amber-700 mb-3">
+                Kurz si můžete zakoupit na naší landing page.
+              </p>
+              <Button
+                onClick={() => window.location.href = "/"}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              >
+                Přejít na objednávku
+              </Button>
             </div>
 
             <Button
-              variant="ghost"
-              onClick={() => window.location.hash = ""}
-              className="w-full mt-4"
+              variant="outline"
+              onClick={() => window.location.href = "mailto:cipera@byznysuj.cz"}
+              className="w-full"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Zpět na landing page
+              Kontaktovat podporu
             </Button>
           </div>
         </motion.div>
@@ -319,7 +398,9 @@ export function CourseDemo() {
                 <h1 className="text-2xl font-bold text-gray-900">
                   Podnikatelská Čtvrtka
                 </h1>
-                <p className="text-sm text-gray-600">LMS Demo</p>
+                <p className="text-sm text-gray-600">
+                  Vítejte, {userData?.name || 'v kurzu'}! 👋
+                </p>
               </div>
             </div>
 

@@ -9,11 +9,7 @@ import { PrelaunchEmailCapture } from "./components/PrelaunchEmailCapture";
 import { EarlyAccessSale } from "./components/EarlyAccessSale";
 import { MiniCourse } from "./components/MiniCourse";
 import { CourseDemo } from "./components/CourseDemo";
-import { TestFlowSimulator } from "./components/TestFlowSimulator";
-import { FAPITest } from "./components/FAPITest";
 import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
-import { AdCreativesVariant2Showcase } from "./components/AdCreativesVariant2";
-import { AdCreativesVariant3Showcase } from "./components/AdCreativesVariant3";
 import { FinalAdSetsShowcase } from "./components/FinalAdSets";
 
 import { Analytics } from "./components/Analytics";
@@ -41,47 +37,25 @@ export default function App() {
   
   // 🎨 AD CREATIVES MODE: Pro zobrazení FB reklam (změň na true)
   const showAdCreatives = false; // ✅ VYPNUTO - Landing page je aktivní!
-  const showVariant2 = false; // Varianty 4-6 (Pain, Value, Transform)
-  const showVariant3 = false; // Varianty 7-9 (Curiosity, Direct, Quick Win)
   const showFinalAdSets = true; // 3 FINÁLNÍ AD SETY (Problem, Value, Social Proof)
   
   // 🎯 CHECKLIST PAGE MODE: Pro zobrazení checklist stránky
   const [showChecklist, setShowChecklist] = useState(false);
   // 🎓 COURSE DEMO MODE: Pro zobrazení LMS demo
   const [showCourseDemo, setShowCourseDemo] = useState(false);
-  // 🧪 TEST FLOW MODE: Pro testování platebního flow
-  const [showTestFlow, setShowTestFlow] = useState(false);
-  // 🧪 FAPI TEST MODE: Pro testování FAPI API
-  const [showFAPITest, setShowFAPITest] = useState(false);
   
   useEffect(() => {
-    // Check URL hash for #priprava, #course, #test-flow, or #fapi-test
+    // Check URL hash for #priprava or #course
     const checkHash = () => {
       if (window.location.hash === '#priprava' || window.location.pathname === '/priprava') {
         setShowChecklist(true);
         setShowCourseDemo(false);
-        setShowTestFlow(false);
-        setShowFAPITest(false);
       } else if (window.location.hash === '#course' || window.location.pathname === '/course') {
         setShowCourseDemo(true);
         setShowChecklist(false);
-        setShowTestFlow(false);
-        setShowFAPITest(false);
-      } else if (window.location.hash === '#test-flow' || window.location.pathname === '/test-flow') {
-        setShowTestFlow(true);
-        setShowChecklist(false);
-        setShowCourseDemo(false);
-        setShowFAPITest(false);
-      } else if (window.location.hash === '#fapi-test' || window.location.pathname === '/fapi-test') {
-        setShowFAPITest(true);
-        setShowChecklist(false);
-        setShowCourseDemo(false);
-        setShowTestFlow(false);
       } else {
         setShowChecklist(false);
         setShowCourseDemo(false);
-        setShowTestFlow(false);
-        setShowFAPITest(false);
       }
     };
     
@@ -99,7 +73,7 @@ export default function App() {
     return (
       <>
         <CriticalCSS />
-        {showFinalAdSets ? <FinalAdSetsShowcase /> : (showVariant3 ? <AdCreativesVariant3Showcase /> : (showVariant2 ? <AdCreativesVariant2Showcase /> : <AdCreativesShowcase />))}
+        {showFinalAdSets ? <FinalAdSetsShowcase /> : <AdCreativesShowcase />}
         <Toaster position="top-right" />
       </>
     );
@@ -122,28 +96,6 @@ export default function App() {
       <>
         <CriticalCSS />
         <CourseDemo />
-        <Toaster position="top-right" />
-      </>
-    );
-  }
-  
-  // Show test flow simulator if URL has #test-flow
-  if (showTestFlow) {
-    return (
-      <>
-        <CriticalCSS />
-        <TestFlowSimulator />
-        <Toaster position="top-right" />
-      </>
-    );
-  }
-  
-  // Show FAPI test if URL has #fapi-test
-  if (showFAPITest) {
-    return (
-      <>
-        <CriticalCSS />
-        <FAPITest />
         <Toaster position="top-right" />
       </>
     );

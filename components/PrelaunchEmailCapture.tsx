@@ -7,11 +7,28 @@ import { toast } from "sonner";
 import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
 
-// 🎯 MAKE.COM WEBHOOK - Posílá notifikace na tvůj email
-const WEBHOOK_CONFIG = {
-  enabled: true, // ✅ ZAPNUTO!
-  url: 'https://hook.eu2.make.com/t4mtz2jjps6e2fgjoktqtotwgseuqmj2',
-  productId: 'podnikatelska-ctvrtka-predprodej',
+// 🎯 EMAIL SERVICE CONFIG - Choose your method!
+const EMAIL_SERVICE = {
+  method: 'mailerlite', // 'make' | 'ecomail' | 'mailerlite' | 'both'
+  
+  // Make.com webhook (easier, already setup!)
+  make: {
+    enabled: false,
+    url: 'https://hook.eu2.make.com/t4mtz2jjps6e2fgjoktqtotwgseuqmj2',
+    productId: 'podnikatelska-ctvrtka-predprodej',
+  },
+  
+  // Ecomail direct (via Netlify Function)
+  ecomail: {
+    enabled: false,
+    functionUrl: '/.netlify/functions/ecomail-subscribe',
+  },
+  
+  // MailerLite direct (via Netlify Function) ⭐ RECOMMENDED!
+  mailerlite: {
+    enabled: true, // ✅ AKTIVNÍ!
+    functionUrl: '/.netlify/functions/mailerlite-subscribe',
+  }
 };
 
 // 🎯 FLOWLANCE - Redirect na Flowlance optin (Flowlance nemá API)
@@ -101,37 +118,97 @@ export function PrelaunchEmailCapture() {
       });
     }
 
-    // 🎯 POŠLI EMAIL DO MAKE.COM → Notifikace na tvůj email
-    if (WEBHOOK_CONFIG.enabled && WEBHOOK_CONFIG.url) {
-      try {
-        console.log('🚀 Posílám data do Make.com...', {
-          url: WEBHOOK_CONFIG.url,
-          email: email,
-        });
-        
-        const response = await fetch(WEBHOOK_CONFIG.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+    // 🎯 POŠLI EMAIL - podle konfigurace
+    
+    // OPTION 1: Make.com
+    if (EMAIL_SERVICE.method === 'make' || EMAIL_SERVICE.method === 'both') {
+      if (EMAIL_SERVICE.make.enabled && EMAIL_SERVICE.make.url) {
+        try {
+          console.log('🚀 Posílám data do Make.com...', {
+            url: EMAIL_SERVICE.make.url,
             email: email,
-            timestamp: new Date().toISOString(),
-            source: 'landing_page_prelaunch',
-            spotNumber: 50 - availableSpots + 1,
-            productId: WEBHOOK_CONFIG.productId,
-          }),
-        });
-        
-        console.log('📊 Response status:', response.status);
-        console.log('✅ Email sent to Make.com webhook - SUCCESS!');
-      } catch (error) {
-        console.error('⚠️ Webhook error:', error);
-        console.error('❌ Full error details:', JSON.stringify(error, null, 2));
-        // I když webhook selže, stále zobraz success
+          });
+          
+          const response = await fetch(EMAIL_SERVICE.make.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              timestamp: new Date().toISOString(),
+              source: 'landing_page_prelaunch',
+              spotNumber: 50 - availableSpots + 1,
+              productId: EMAIL_SERVICE.make.productId,
+            }),
+          });
+          
+          console.log('📊 Make.com response status:', response.status);
+          console.log('✅ Email sent to Make.com webhook - SUCCESS!');
+        } catch (error) {
+          console.error('⚠️ Make.com webhook error:', error);
+        }
       }
-    } else {
-      console.warn('⚠️ Webhook není enabled nebo nemá URL!');
+    }
+    
+    // OPTION 2: Ecomail direct
+    if (EMAIL_SERVICE.method === 'ecomail' || EMAIL_SERVICE.method === 'both') {
+      if (EMAIL_SERVICE.ecomail.enabled) {
+        try {
+          console.log('📧 Posílám data do Ecomail...');
+          
+          const response = await fetch(EMAIL_SERVICE.ecomail.functionUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              name: '',
+            }),
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Ecomail subscription failed');
+          }
+          
+          console.log('✅ Email sent to Ecomail - SUCCESS!', data);
+        } catch (error) {
+          console.error('⚠️ Ecomail error:', error);
+        }
+      }
+    }
+    
+    // OPTION 3: MailerLite direct ⭐ RECOMMENDED!
+    if (EMAIL_SERVICE.method === 'mailerlite' || EMAIL_SERVICE.method === 'both') {
+      if (EMAIL_SERVICE.mailerlite.enabled) {
+        try {
+          console.log('📧 Posílám data do MailerLite...');
+          
+          const response = await fetch(EMAIL_SERVICE.mailerlite.functionUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              name: '',
+            }),
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'MailerLite subscription failed');
+          }
+          
+          console.log('✅ Email sent to MailerLite - SUCCESS!', data);
+        } catch (error) {
+          console.error('⚠️ MailerLite error:', error);
+        }
+      }
     }
     
     // Zobraz success screen (user ZŮSTANE na naší stránce!)
