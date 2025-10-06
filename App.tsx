@@ -45,7 +45,7 @@ export default function App() {
   const [showCourseDemo, setShowCourseDemo] = useState(false);
   
   useEffect(() => {
-    // Check URL hash for #priprava or #course
+    // Check URL hash for #priprava, #course
     const checkHash = () => {
       if (window.location.hash === '#priprava' || window.location.pathname === '/priprava') {
         setShowChecklist(true);
@@ -90,16 +90,14 @@ export default function App() {
     );
   }
   
-   // Show course demo if URL has #course
+  // Show course demo if URL has #course
   if (showCourseDemo) {
     return (
       <>
         <CriticalCSS />
-        <SimpleCourseDemo />
+        <CourseDemo />
         <Toaster position="top-right" />
       </>
-    );
-  }
     );
   }
   
