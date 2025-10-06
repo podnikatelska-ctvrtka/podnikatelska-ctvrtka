@@ -16,7 +16,7 @@ async function sendEmail(to, subject, html) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Podnikatelská Čtvrtka <kurz@podnikatelskactvrtka.cz>',
+      from: 'Podnikatelská Čtvrtka <onboarding@resend.dev>',
       to: [to],
       subject: subject,
       html: html,
@@ -131,7 +131,8 @@ export async function handler(event, context) {
         order_id: orderId,
         access_token: accessToken,
         purchased_at: new Date().toISOString(),
-        amount: parseFloat(amount)
+        amount: parseFloat(amount),
+        last_login: null // Webhook creates user, but they haven't logged in yet
       })
       .select()
       .single();
