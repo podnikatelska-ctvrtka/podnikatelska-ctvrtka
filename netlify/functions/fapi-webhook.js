@@ -244,13 +244,72 @@ export async function handler(event, context) {
       </html>
     `;
     
-    await sendEmail(
-      email,
-      '✅ Váš přístup do kurzu je ready!',
-      emailHtml
-    );
-    
-    console.log('📧 Email sent to:', email);
+    // Try to send email to customer
+    try {
+      await sendEmail(
+        email,
+        '✅ Váš přístup do kurzu je ready!',
+        emailHtml
+      );
+      console.log('📧 Email sent to customer:', email);
+    } catch (emailError) {
+      console.error('⚠️ Failed to send email to customer, sending to admin instead:', emailError.message);
+      
+      // If Resend test mode blocks customer email, send to admin with customer info
+      const adminEmail = process.env.ADMIN_EMAIL || 'cipera@byznysuj.cz';
+      const adminNotification = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .alert { background: #fef2f2; border: 2px solid #fecaca; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+            .info { background: #dbeafe; border: 2px solid #93c5fd; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+            .token { background: #f3f4f6; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; word-break: break-all; margin: 15px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="alert">
+              <h2>⚠️ Email se nepodařilo poslat zákazníkovi</h2>
+              <p><strong>Důvod:</strong> Resend test mód - může posílat jen na tvůj email</p>
+              <p><strong>Řešení:</strong> Ověř doménu v Resend nebo pošli zákazníkovi link ručně</p>
+            </div>
+            
+            <div class="info">
+              <h3>📋 Informace o zákazníkovi:</h3>
+              <p><strong>Jméno:</strong> ${name}</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Objednávka:</strong> #${orderId}</p>
+              <p><strong>Částka:</strong> ${amount} Kč</p>
+              <p><strong>Produkt:</strong> ${productName}</p>
+            </div>
+            
+            <div class="info">
+              <h3>🔑 Přístupový link pro zákazníka:</h3>
+              <p>Pošli tento link zákazníkovi na email <strong>${email}</strong>:</p>
+              <div class="token">${courseUrl}</div>
+            </div>
+            
+            <hr style="margin: 30px 0;">
+            
+            <h3>📧 Email který měl obdržet:</h3>
+            ${emailHtml}
+          </div>
+        </body>
+        </html>
+      `;
+      
+      await sendEmail(
+        adminEmail,
+        `⚠️ Nový zákazník - pošli mu přístup ručně (${name})`,
+        adminNotification
+      );
+      
+      console.log('📧 Admin notification sent to:', adminEmail);
+    }
     
     // ──────────────────────────────────────────
     // ✅ SUCCESS RESPONSE
