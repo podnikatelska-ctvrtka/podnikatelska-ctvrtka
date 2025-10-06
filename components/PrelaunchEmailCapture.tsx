@@ -9,13 +9,19 @@ import { TouchFeedback } from "./TouchFeedback";
 
 // 🎯 EMAIL SERVICE CONFIG - Choose your method!
 const EMAIL_SERVICE = {
-  method: 'mailerlite', // 'make' | 'ecomail' | 'mailerlite' | 'both'
+  method: 'smartemailing', // 'make' | 'ecomail' | 'mailerlite' | 'smartemailing' | 'both'
   
-  // Make.com webhook (easier, already setup!)
+  // Make.com webhook
   make: {
     enabled: false,
     url: 'https://hook.eu2.make.com/t4mtz2jjps6e2fgjoktqtotwgseuqmj2',
     productId: 'podnikatelska-ctvrtka-predprodej',
+  },
+  
+  // Smartemailing (via Netlify Function) 🏆 #1 DORUČITELNOST! (160 Kč deal!)
+  smartemailing: {
+    enabled: true, // ✅ AKTIVNÍ!
+    functionUrl: '/.netlify/functions/smartemailing-subscribe',
   },
   
   // Ecomail direct (via Netlify Function)
@@ -24,9 +30,9 @@ const EMAIL_SERVICE = {
     functionUrl: '/.netlify/functions/ecomail-subscribe',
   },
   
-  // MailerLite direct (via Netlify Function) ⭐ RECOMMENDED!
+  // MailerLite direct (via Netlify Function)
   mailerlite: {
-    enabled: true, // ✅ AKTIVNÍ!
+    enabled: false,
     functionUrl: '/.netlify/functions/mailerlite-subscribe',
   }
 };
@@ -181,7 +187,7 @@ export function PrelaunchEmailCapture() {
       }
     }
     
-    // OPTION 3: MailerLite direct ⭐ RECOMMENDED!
+    // OPTION 3: MailerLite direct
     if (EMAIL_SERVICE.method === 'mailerlite' || EMAIL_SERVICE.method === 'both') {
       if (EMAIL_SERVICE.mailerlite.enabled) {
         try {
@@ -207,6 +213,36 @@ export function PrelaunchEmailCapture() {
           console.log('✅ Email sent to MailerLite - SUCCESS!', data);
         } catch (error) {
           console.error('⚠️ MailerLite error:', error);
+        }
+      }
+    }
+    
+    // OPTION 4: Smartemailing 🏆 #1 DORUČITELNOST!
+    if (EMAIL_SERVICE.method === 'smartemailing' || EMAIL_SERVICE.method === 'both') {
+      if (EMAIL_SERVICE.smartemailing.enabled) {
+        try {
+          console.log('📧 Posílám data do Smartemailing...');
+          
+          const response = await fetch(EMAIL_SERVICE.smartemailing.functionUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              name: '',
+            }),
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Smartemailing subscription failed');
+          }
+          
+          console.log('✅ Email sent to Smartemailing - SUCCESS!', data);
+        } catch (error) {
+          console.error('⚠️ Smartemailing error:', error);
         }
       }
     }
@@ -515,7 +551,7 @@ export function PrelaunchEmailCapture() {
                     <div className="text-purple-300 font-medium text-sm mb-2">PO REGISTRACI ZÍSKÁTE:</div>
                     <div className="text-white/90 text-sm space-y-1">
                       <div>✅ Mini kurz ZDARMA HNED (2.999 Kč)</div>
-                      <div>✅ Průkopnická cena kurzu (4.999 Kč)</div>
+                      <div>�� Průkopnická cena kurzu (4.999 Kč)</div>
                     </div>
                     <div className="mt-3 pt-3 border-t border-white/10">
                       <div className="text-green-300 font-medium text-sm mb-1">🔥 BONUS PO KOUPI KURZU:</div>
