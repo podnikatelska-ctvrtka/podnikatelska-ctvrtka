@@ -15,18 +15,24 @@ async function createSupabaseClient() {
   );
 }
 
-// Verify token in Supabase
+// HARDCODED TOKENS - Simple verification
+const VALID_TOKENS = {
+  "TEST123": { id: 1, name: "Test User", email: "test@example.com" },
+  "CIPERA2024": { id: 2, name: "Josef Cipera", email: "cipera@byznysuj.cz" },
+};
+
 async function verifyToken(token: string) {
-  const supabase = await createSupabaseClient();
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('access_token', token)
-    .single();
+  // Simple hardcoded check - no Supabase!
+  const user = VALID_TOKENS[token as keyof typeof VALID_TOKENS];
   
-  if (error || !data) {
-    return null;
+  if (user) {
+    console.log("✅ Token valid:", token, user);
+    return user;
   }
+  
+  console.log("❌ Token invalid:", token);
+  return null;
+}
   
   // Update last_login
   await supabase
