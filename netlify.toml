@@ -1,11 +1,10 @@
 [build]
-  command = "npm run build"
+  command = "npm ci --prefer-offline --no-audit --no-fund && npm run build"
   publish = "dist"
 
 # 🚀 OPTIMALIZACE BUILD ČASU!
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--prefer-offline --no-audit --no-fund"
   NODE_ENV = "production"
 
 # SPA routing
