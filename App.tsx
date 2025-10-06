@@ -90,14 +90,16 @@ export default function App() {
     );
   }
   
-  // Show course demo if URL has #course
+   // Show course demo if URL has #course
   if (showCourseDemo) {
     return (
       <>
         <CriticalCSS />
-        <CourseDemo />
+        <SimpleCourseDemo />
         <Toaster position="top-right" />
       </>
+    );
+  }
     );
   }
   
