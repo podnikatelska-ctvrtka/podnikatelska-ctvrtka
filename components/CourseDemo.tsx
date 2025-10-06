@@ -141,9 +141,7 @@ export function CourseDemo() {
               <h3 className="font-semibold text-green-900 mb-2">🧪 Testovací tokeny:</h3>
               <p className="text-xs text-green-700 font-mono">TEST123<br/>CIPERA2024</p>
             </div>
-            <Button onClick={() => window.location.href = "/"} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600">
-              Přejít na objednávku
-            </Button>
+            <Button onClick={() => window.location.href = "/"} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600">Přejít na objednávku</Button>
           </div>
         </motion.div>
       </div>
@@ -251,6 +249,10 @@ export function CourseDemo() {
                     </div>
                   </motion.div>
                 ))}
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                <h3 className="font-bold text-blue-900 mb-2">ℹ️ Toto je DEMO verze</h3>
+                <p className="text-blue-800 text-sm">V plné verzi budete mít přístup ke všem 9 modulům, interaktivní Business Model Canvas, worksheety k vytisknutí, certifikát po dokončení a mnoho dalšího!</p>
               </div>
             </motion.div>
           )}
