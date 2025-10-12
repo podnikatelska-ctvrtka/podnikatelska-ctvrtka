@@ -6,6 +6,23 @@
 -- Pro: Podnikatelská Čtvrtka LMS
 
 -- ====================================
+-- 0. USERS TABLE (zákazníci s přístupem)
+-- ====================================
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  access_token TEXT UNIQUE NOT NULL,
+  name TEXT,
+  order_id TEXT,
+  amount NUMERIC,
+  purchased_at TIMESTAMPTZ DEFAULT NOW(),
+  last_login TIMESTAMPTZ,
+  login_count INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ====================================
 -- 1. COURSE MODULES (moduly kurzu)
 -- ====================================
 CREATE TABLE IF NOT EXISTS course_modules (
@@ -174,12 +191,22 @@ ON CONFLICT DO NOTHING;
 -- ====================================
 
 -- Enable RLS
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_modules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_lessons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_materials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_canvas_data ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_achievements ENABLE ROW LEVEL SECURITY;
+
+-- USERS: Anyone can read (token auth happens in app)
+CREATE POLICY "Users can view own data"
+  ON users FOR SELECT
+  USING (true);
+
+CREATE POLICY "Service can insert users"
+  ON users FOR INSERT
+  WITH CHECK (true);
 
 -- COURSE CONTENT: Všichni můžou číst aktivní obsah
 CREATE POLICY "Anyone can read active modules"
@@ -264,6 +291,8 @@ $$ LANGUAGE plpgsql;
 -- INDEXES (pro performance)
 -- ====================================
 
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_token ON users(access_token);
 CREATE INDEX IF NOT EXISTS idx_lessons_module ON course_lessons(module_id);
 CREATE INDEX IF NOT EXISTS idx_materials_lesson ON course_materials(lesson_id);
 CREATE INDEX IF NOT EXISTS idx_progress_user ON user_progress(user_id);
