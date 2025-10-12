@@ -1,5 +1,5 @@
 // ====================================
-// FAPI WEBHOOK - WITH API FETCH
+// FAPI WEBHOOK - ORIGINAL WORKING VERSION
 // ====================================
 // Webhook pro FAPI platební notifikace
 // URL: https://podnikatelskactvrtka.cz/.netlify/functions/fapi-webhook
@@ -48,25 +48,22 @@ export async function handler(event, context) {
   }
   
   try {
-    console.log('🎯 FAPI webhook START');
-    console.log('📦 Raw body:', event.body);
+    console.log('🎯 FAPI webhook received');
     
     // Parse FAPI webhook data (URL encoded format)
     const params = new URLSearchParams(event.body);
-    
-    // Extract invoice ID
     const invoiceId = params.get('id');
     
     if (!invoiceId) {
-      throw new Error('Missing invoice ID in webhook');
+      throw new Error('Missing invoice ID');
     }
     
-    console.log('🆔 Invoice ID:', invoiceId);
+    console.log('📋 Invoice ID:', invoiceId);
     
     // ──────────────────────────────────────────
-    // 📞 FETCH INVOICE DATA FROM FAPI API
+    // 📞 FETCH INVOICE FROM FAPI API
     // ──────────────────────────────────────────
-    console.log('📞 Fetching invoice from FAPI API...');
+    console.log('📞 Fetching invoice from FAPI...');
     const fapiResponse = await fetch(`https://api.fapi.cz/invoices/${invoiceId}`, {
       method: 'GET',
       headers: {
@@ -76,37 +73,34 @@ export async function handler(event, context) {
     });
     
     if (!fapiResponse.ok) {
-      const errorText = await fapiResponse.text();
-      throw new Error(`FAPI API error: ${fapiResponse.status} - ${errorText}`);
+      throw new Error(`FAPI API error: ${fapiResponse.status}`);
     }
     
     const invoice = await fapiResponse.json();
-    console.log('📄 Invoice data:', JSON.stringify(invoice, null, 2));
+    console.log('✅ Invoice fetched');
     
-    // Extract data from invoice
-    const email = invoice.user?.email || invoice.customer?.email || invoice.email;
-    const name = invoice.user?.name || invoice.customer?.name || invoice.name || 'Zákazník';
-    const amount = parseFloat(invoice.total || invoice.amount || 0);
-    
-    console.log('👤 Extracted data:', { email, name, amount, invoiceId });
+    // Extract customer data
+    const email = invoice.user?.email || invoice.email;
+    const name = invoice.user?.name || invoice.name || 'Zákazník';
+    const amount = parseFloat(invoice.total || 0);
     
     if (!email) {
-      throw new Error('No email found in invoice data');
+      throw new Error('No email in invoice');
     }
     
+    console.log('👤 Customer:', { email, name });
+    
     // ──────────────────────────────────────────
-    // 🔑 GENERATE UNIQUE ACCESS TOKEN
+    // 🔑 GENERATE ACCESS TOKEN
     // ──────────────────────────────────────────
     const accessToken = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
-    console.log('🔑 Generated token:', accessToken);
     
     // ──────────────────────────────────────────
     // 💾 SAVE TO SUPABASE
     // ──────────────────────────────────────────
-    console.log('💾 Connecting to Supabase...');
+    console.log('💾 Saving to Supabase...');
     const supabase = await createSupabaseClient();
     
-    console.log('💾 Inserting user...');
     const { data: user, error: insertError } = await supabase
       .from('users')
       .insert({
@@ -122,22 +116,21 @@ export async function handler(event, context) {
       .single();
     
     if (insertError) {
-      // Check if user already exists (duplicate)
+      // User already exists
       if (insertError.code === '23505') {
-        console.log('⚠️ User already exists, skipping...');
+        console.log('⚠️ User already exists');
         return {
           statusCode: 200,
           body: JSON.stringify({ message: 'User already exists' })
         };
       }
-      console.error('❌ Supabase insert error:', insertError);
       throw insertError;
     }
     
-    console.log('✅ User saved to Supabase:', user.id);
+    console.log('✅ User saved:', user.id);
     
     // ──────────────────────────────────────────
-    // 📧 SEND ACCESS EMAIL
+    // 📧 SEND EMAIL
     // ──────────────────────────────────────────
     const accessUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${accessToken}`;
     
@@ -182,37 +175,34 @@ export async function handler(event, context) {
       </html>
     `;
     
-    console.log('📧 Sending email to:', email);
+    console.log('📧 Sending email...');
     await sendEmail(
       email,
       '🎉 Přístup do kurzu Podnikatelská Čtvrtka',
       emailHtml
     );
     
-    console.log('✅ Email sent successfully!');
+    console.log('✅ Email sent!');
     
     // ──────────────────────────────────────────
-    // ✅ SUCCESS RESPONSE
+    // ✅ SUCCESS
     // ──────────────────────────────────────────
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
         message: 'User created and email sent',
-        userId: user.id,
-        email: email
+        userId: user.id
       })
     };
     
   } catch (error) {
     console.error('❌ Webhook error:', error);
     
-    // Return error response
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: error.message,
-        details: error.toString()
+        error: error.message
       })
     };
   }
