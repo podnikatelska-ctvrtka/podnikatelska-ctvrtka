@@ -103,16 +103,16 @@ export async function handler(event, context) {
     console.log('✅ Invoice fetched successfully');
     console.log('📄 Invoice data:', JSON.stringify(invoice, null, 2));
     
-    // Extract customer data
-    const email = invoice.user?.email || invoice.email;
-    const name = invoice.user?.name || invoice.name || 'Zákazník';
+    // Extract customer data from invoice.customer
+    const email = invoice.customer?.email;
+    const name = invoice.customer?.name || invoice.customer?.first_name || 'Zákazník';
     const amount = parseFloat(invoice.total || 0);
     
     if (!email) {
-      throw new Error('No email in invoice');
+      throw new Error('No email in invoice.customer');
     }
     
-    console.log('👤 Customer:', { email, name });
+    console.log('👤 Customer:', { email, name, amount });
     
     // ──────────────────────────────────────────
     // 🔑 GENERATE ACCESS TOKEN
@@ -202,7 +202,7 @@ export async function handler(event, context) {
     console.log('📧 Sending email...');
     await sendEmail(
       email,
-      '🎉 Přístup do kurzu Podnikatelská Čtvrtka',
+      '🎉 Přístup do kurzu Podnikatelsk�� Čtvrtka',
       emailHtml
     );
     
