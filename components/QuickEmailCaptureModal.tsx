@@ -34,7 +34,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      toast.error("Zadejte prosím emailovou adresu");
+      // ❌ Odstraněno - duplicitní toast (form validation stačí)
       return;
     }
 

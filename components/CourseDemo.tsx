@@ -5,12 +5,38 @@ import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { BusinessModelCanvas } from "./BusinessModelCanvas";
 import { toast } from "sonner";
+import { verifyAccessToken } from "../lib/supabase";
 
-// HARDCODED TOKENS
-const VALID_TOKENS: Record<string, { name: string; email: string }> = {
+// FALLBACK TOKENS (pouze pro testování)
+const TEST_TOKENS: Record<string, { name: string; email: string }> = {
   "TEST123": { name: "Test User", email: "test@example.com" },
   "CIPERA2024": { name: "Josef Cipera", email: "cipera@byznysuj.cz" },
 };
+
+// Token verification (Supabase with fallback)
+async function verifyToken(token: string) {
+  console.log("🔍 Verifying token:", token);
+  
+  // Try Supabase first
+  try {
+    const user = await verifyAccessToken(token);
+    if (user) {
+      console.log("✅ Supabase user found:", user);
+      return user;
+    }
+  } catch (err) {
+    console.error("❌ Supabase error, trying fallback:", err);
+  }
+  
+  // Fallback to test tokens
+  if (TEST_TOKENS[token]) {
+    console.log("✅ Test token valid:", TEST_TOKENS[token]);
+    return TEST_TOKENS[token];
+  }
+  
+  console.log("❌ Token not found");
+  return null;
+}
 
 interface Module {
   id: number;
@@ -58,21 +84,43 @@ export function CourseDemo() {
   const [showCanvas, setShowCanvas] = useState(false);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
+    let hasShownToast = false; // Prevent double toast
     
-    if (token && VALID_TOKENS[token]) {
-      setIsAuthenticated(true);
-      setUserData(VALID_TOKENS[token]);
-      localStorage.setItem("course_token", token);
-      toast.success(`Vítejte zpět, ${VALID_TOKENS[token].name}! 🎉`);
-    } else {
-      const saved = localStorage.getItem("course_token");
-      if (saved && VALID_TOKENS[saved]) {
-        setIsAuthenticated(true);
-        setUserData(VALID_TOKENS[saved]);
+    const checkAuth = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      
+      // Try token from URL
+      if (token) {
+        const user = await verifyToken(token);
+        if (user) {
+          console.log("🎉 User authenticated:", user);
+          setIsAuthenticated(true);
+          setUserData(user);
+          localStorage.setItem("course_token", token);
+          
+          // Show toast only once
+          if (!hasShownToast) {
+            hasShownToast = true;
+            toast.success(`Vítejte zpět, ${user.name}! 🎉`);
+          }
+          return;
+        }
       }
-    }
+      
+      // Try saved token (silent login - no toast)
+      const saved = localStorage.getItem("course_token");
+      if (saved) {
+        const user = await verifyToken(saved);
+        if (user) {
+          console.log("🔄 Silent login from saved token:", user);
+          setIsAuthenticated(true);
+          setUserData(user);
+        }
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   useEffect(() => {

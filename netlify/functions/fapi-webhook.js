@@ -154,7 +154,7 @@ export async function handler(event, context) {
     // ──────────────────────────────────────────
     // 📧 SEND ACCESS EMAIL
     // ──────────────────────────────────────────
-    const courseUrl = `https://podnikatelskactvrtka.cz/course?token=${accessToken}`;
+    const courseUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${accessToken}`;
     
     const emailHtml = `
       <!DOCTYPE html>

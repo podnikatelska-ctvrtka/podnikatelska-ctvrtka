@@ -159,7 +159,7 @@ export function CompactCaseStudySection() {
               </div>
             </motion.div>
 
-            {/* Klíčov�� faktory */}
+            {/* Klíčové faktory */}
             <motion.div
               className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-5 shadow-md"
               initial={{ opacity: 0, y: 20 }}

@@ -312,32 +312,24 @@ export function PrelaunchEmailCapture() {
               </div>
             </div>
             
-            {/* 🎯 ZÁLOŽNÍ PLÁN: Tlačítko pro Flowlance redirect (pokud nemají email/API) */}
-            {FLOWLANCE_REDIRECT_CONFIG.enabled && FLOWLANCE_REDIRECT_CONFIG.showButton && (
-              <motion.div
-                className="mt-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Button
-                  onClick={() => {
-                    const flowlanceUrl = `${FLOWLANCE_OPTIN_URL}?email=${encodeURIComponent(email)}&ref=landing&spot=${50 - availableSpots + 1}`;
-                    window.location.href = flowlanceUrl;
-                  }}
-                  className="group w-full md:w-auto md:min-w-96 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-6 px-8 text-xl font-bold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 border border-green-400/50 relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-400/0 via-white/20 to-green-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                  <span className="relative z-10">
-                    🎁 CHCI MINI KURZ ZDARMA!
-                  </span>
-                  <ArrowRight className="ml-2 w-6 h-6 inline-block relative z-10" />
-                </Button>
-                <p className="text-sm text-gray-500 mt-3 text-center">
-                  ✅ Okamžitý přístup • Žádná platba • Mini kurz v hodnotě 2.999 Kč
-                </p>
-              </motion.div>
-            )}
+            {/* Informace o dalších krocích */}
+            <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-xl">
+              <h3 className="text-xl font-bold text-blue-900 mb-3">📧 Co dál?</h3>
+              <ul className="text-left space-y-2 text-blue-700">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>Zkontrolujte email</strong> (i spam složku!)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>První email</strong> přijde do pár minut</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>Mini kurz</strong> začíná hned po otevření!</span>
+                </li>
+              </ul>
+            </div>
           </motion.div>
         </div>
       </motion.section>

@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Toaster } from "./ui/sonner";
 import { supabase, verifyAccessToken } from "../lib/supabase";
-import { loadCourseProgress, saveLessonProgress } from "../lib/courseProgress";
+import { loadCourseProgress, saveLessonProgress, resetAllProgress } from "../lib/courseProgress";
 import { BusinessModelCanvasSimple } from "./BusinessModelCanvasSimple";
 import { GuidedTour, scrollToSection } from "./GuidedTour";
 import { SimpleDashboard } from "./SimpleDashboard";
@@ -345,7 +345,7 @@ const MODULE_1 = {
       tips: [
         "🌐 Základní činnosti = globální (vaření, opravy, stříhání)",
         "🎨 Specifické pro segment = barva segmentu (🔵 IG marketing)",
-        "📝 Ptejte se: Co dělám DENNĚ? To je klíčová aktivita!"
+        "��� Ptejte se: Co dělám DENNĚ? To je klíčová aktivita!"
       ]
     },
     {
@@ -595,23 +595,14 @@ export function CourseDemoV3() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Parse token from hash (e.g. #course-v3?token=abc123)
-      const hash = window.location.hash;
-      const queryStart = hash.indexOf('?');
-      let token = null;
-      
-      if (queryStart !== -1) {
-        const queryString = hash.substring(queryStart + 1);
-        const urlParams = new URLSearchParams(queryString);
-        token = urlParams.get("token");
-      }
-      
-      // DEV MODE: Allow access without token (add ?dev=true to URL)
+      // Parse token from URL query params
       const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
       const isDev = urlParams.get('dev') === 'true';
       
+      // DEV MODE: Allow access without token (add ?dev=true to URL)
       if (isDev) {
-        const devUser = { id: 999, email: 'dev@admin.cz', name: 'Dev User' };
+        const devUser = { id: 'dev-user-999', email: 'dev@admin.cz', name: 'Dev User' };
         setIsAuthenticated(true);
         setUserData(devUser);
         setIsVerifying(false);
@@ -621,21 +612,10 @@ export function CourseDemoV3() {
         return;
       }
       
-      // DEMO MODE: Accept test token
-      if (token === "test-token-123") {
-        const demoUser = { id: 999, email: "demo@test.cz", name: "Demo User" };
-        setIsAuthenticated(true);
-        setUserData(demoUser);
-        setIsVerifying(false);
-        // Load progress for demo user
-        const progress = await loadCourseProgress(demoUser.id);
-        setCompletedLessons(progress);
-        return;
-      }
-      
       // Real token verification
       if (token) {
-        const user = await verifyToken(token);
+        const user = await verifyAccessToken(token);
+        
         if (user) {
           setIsAuthenticated(true);
           setUserData(user);
@@ -643,17 +623,18 @@ export function CourseDemoV3() {
           // Load progress for real user
           const progress = await loadCourseProgress(user.id);
           setCompletedLessons(progress);
-          // 🎉 Load achievements
+          // Load achievements
           const achievements = loadUnlockedAchievements(user.id);
           setUnlockedAchievements(achievements);
           return;
         }
       }
       
-   ❌ No valid token - deny access
-   setIsAuthenticated(false);
-   setIsVerifying(false);
-   
+      // No valid token - deny access
+      setIsAuthenticated(false);
+      setIsVerifying(false);
+    };
+    
     checkAuth();
   }, []);
   
@@ -1019,12 +1000,10 @@ export function CourseDemoV3() {
   };
   
   const handleShowDashboard = async () => {
-    // 🔄 RELOAD progress from Supabase (fixes 14/16 bug!)
+    // Reload progress from Supabase
     if (userData?.id) {
-      console.log('🔄 Reloading progress from Supabase...');
       const freshProgress = await loadCourseProgress(userData.id);
       setCompletedLessons(freshProgress);
-      console.log('✅ Fresh progress loaded:', freshProgress.size, 'lessons');
     }
     
     setShowMainDashboard(true);

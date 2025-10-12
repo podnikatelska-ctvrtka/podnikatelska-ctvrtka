@@ -4,8 +4,11 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  # ⚡ Optimalizace: prefer cache, skip audit
-  NPM_FLAGS = "--prefer-offline --no-audit"
+  # ⚡ Optimalizace: prefer cache, skip audit, skip optional
+  NPM_FLAGS = "--prefer-offline --no-audit --no-optional --no-fund"
+  # Vypnout progress bar (šetří CPU)
+  NPM_CONFIG_PROGRESS = "false"
+  NPM_CONFIG_LOGLEVEL = "error"
 
 # SPA routing
 [[redirects]]
