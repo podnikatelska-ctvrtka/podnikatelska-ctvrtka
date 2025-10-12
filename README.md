@@ -1,6 +1,10 @@
 # Podnikatelská čtvrtka
 
-Landing page + 3-denní minikurz "Získejte víc zákazníků za 3 dny"
+Kompletní business řešení s vlastním LMS systémem pro online kurz "Podnikatelská čtvrtka"
+
+## 🎓 O projektu
+
+Automatický systém: Landing page → Platba → Webhook → Supabase → Email s přístupem → LMS se třemi moduly
 
 ## 🚀 Technologie
 
@@ -32,7 +36,11 @@ npm run build
 
 ## 🌐 Deployment
 
-Automatický deployment na Vercel přes GitHub.
+Optimalizovaný deployment na Netlify s build optimalizacemi:
+- **Target:** 1-2 build kredity (down from 15)
+- **Build time:** ~10 sekund
+- **NPM cache:** Enabled via --prefer-offline
+- **Code splitting:** 5 vendor chunks pro rychlejší build
 
 ## 📄 Struktura
 

@@ -1,9 +1,11 @@
 [build]
-  command = "npm install && npm run build"
+  command = "npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
+  # ⚡ Optimalizace: prefer cache, skip audit
+  NPM_FLAGS = "--prefer-offline --no-audit"
 
 # SPA routing
 [[redirects]]
@@ -25,3 +27,8 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Netlify Functions optimalizace
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
