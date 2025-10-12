@@ -1,14 +1,10 @@
 [build]
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
-  # ⚡ Optimalizace: prefer cache, skip audit, skip optional
-  NPM_FLAGS = "--prefer-offline --no-audit --no-optional --no-fund"
-  # Vypnout progress bar (šetří CPU)
-  NPM_CONFIG_PROGRESS = "false"
-  NPM_CONFIG_LOGLEVEL = "error"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # SPA routing
 [[redirects]]
