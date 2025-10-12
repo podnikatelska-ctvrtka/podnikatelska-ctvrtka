@@ -9,6 +9,10 @@ import { PrelaunchEmailCapture } from "./components/PrelaunchEmailCapture";
 import { EarlyAccessSale } from "./components/EarlyAccessSale";
 import { MiniCourse } from "./components/MiniCourse";
 import { CourseDemo } from "./components/CourseDemo";
+import { CourseDemoV2 } from "./components/CourseDemoV2";
+import { CourseDemoV3 } from "./components/CourseDemoV3";
+import { AdminCourse } from "./components/AdminCourse";
+import { InteractiveCourseDemo } from "./components/InteractiveCourseDemo";
 import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
 import { FinalAdSetsShowcase } from "./components/FinalAdSets";
 
@@ -43,19 +47,71 @@ export default function App() {
   const [showChecklist, setShowChecklist] = useState(false);
   // 🎓 COURSE DEMO MODE: Pro zobrazení LMS demo
   const [showCourseDemo, setShowCourseDemo] = useState(false);
+  // 🎓 COURSE V2 MODE: Plná verze LMS se Supabase tracking
+  const [showCourseV2, setShowCourseV2] = useState(false);
+  // 🎓 COURSE V3 MODE: Interaktivní verze s guided tour
+  const [showCourseV3, setShowCourseV3] = useState(false);
+  // 🛠️ ADMIN MODE: Pro správu kurzu
+  const [showAdmin, setShowAdmin] = useState(false);
+  // 🎓 INTERACTIVE COURSE: Guided tour demo
+  const [showInteractiveCourse, setShowInteractiveCourse] = useState(false);
+
   
   useEffect(() => {
-    // Check URL hash for #priprava, #course
+    // Check URL hash for different modes
     const checkHash = () => {
-      if (window.location.hash === '#priprava' || window.location.pathname === '/priprava') {
+      const hash = window.location.hash;
+      const path = window.location.pathname;
+      
+      if (hash.startsWith('#priprava') || path === '/priprava') {
         setShowChecklist(true);
         setShowCourseDemo(false);
-      } else if (window.location.hash === '#course' || window.location.pathname === '/course') {
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#course') && !hash.startsWith('#course-v') || path === '/course') {
         setShowCourseDemo(true);
         setShowChecklist(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#course-v2') || path === '/course-v2') {
+        setShowCourseV2(true);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#course-v3') || path === '/course-v3') {
+        setShowCourseV3(true);
+        setShowCourseV2(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#admin-course') || path === '/admin-course') {
+        setShowAdmin(true);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#interactive-course') || path === '/interactive-course') {
+        setShowInteractiveCourse(true);
+        setShowAdmin(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
       } else {
         setShowChecklist(false);
         setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
       }
     };
     
@@ -96,6 +152,50 @@ export default function App() {
       <>
         <CriticalCSS />
         <CourseDemo />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show course V2 if URL has #course-v2
+  if (showCourseV2) {
+    return (
+      <>
+        <CriticalCSS />
+        <CourseDemoV2 />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show course V3 if URL has #course-v3
+  if (showCourseV3) {
+    return (
+      <>
+        <CriticalCSS />
+        <CourseDemoV3 />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show admin if URL has #admin-course
+  if (showAdmin) {
+    return (
+      <>
+        <CriticalCSS />
+        <AdminCourse />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show interactive course if URL has #interactive-course
+  if (showInteractiveCourse) {
+    return (
+      <>
+        <CriticalCSS />
+        <InteractiveCourseDemo />
         <Toaster position="top-right" />
       </>
     );
