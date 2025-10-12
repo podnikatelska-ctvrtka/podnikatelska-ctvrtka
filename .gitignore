@@ -1,6 +1,26 @@
+<<<<<<< HEAD
 node_modules
 dist
 .env
 .env.local
 .vite
 package-lock.json
+=======
+node_modules/
+   dist/
+   build/
+   .cache/
+   .env
+   .env.local
+   .env.production
+   .netlify/
+   .vscode/
+   .idea/
+   .DS_Store
+   Thumbs.db
+   *.log
+   npm-debug.log*
+   coverage/
+   *.tmp
+   *.temp
+>>>>>>> 7e80aeaca0800f4f5121ee442ba342ce2569c561
