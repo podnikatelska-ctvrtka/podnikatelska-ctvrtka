@@ -69,18 +69,23 @@ export async function handler(event, context) {
     // ──────────────────────────────────────────
     // 📞 FETCH INVOICE FROM FAPI API
     // ──────────────────────────────────────────
-    const apiKey = process.env.FAPI_API_KEY;
+    const fapiUsername = process.env.FAPI_USERNAME;
+    const fapiApiKey = process.env.FAPI_API_KEY;
+    
     console.log('📞 Fetching invoice from FAPI...');
-    console.log('🔑 API Key exists:', !!apiKey);
-    console.log('🔑 API Key length:', apiKey?.length);
-    console.log('🔑 API Key preview:', apiKey ? `${apiKey.substring(0, 5)}...${apiKey.substring(apiKey.length - 5)}` : 'MISSING');
+    console.log('🔑 Username exists:', !!fapiUsername);
+    console.log('🔑 API Key exists:', !!fapiApiKey);
     console.log('🌐 Request URL:', `https://api.fapi.cz/invoices/${invoiceId}`);
+    
+    // FAPI používá HTTP Basic Authentication
+    const authString = Buffer.from(`${fapiUsername}:${fapiApiKey}`).toString('base64');
+    console.log('🔐 Auth header prepared');
     
     const fapiResponse = await fetch(`https://api.fapi.cz/invoices/${invoiceId}`, {
       method: 'GET',
       headers: {
-        'accept': 'application/json',
-        'api-token': apiKey
+        'Accept': 'application/json',
+        'Authorization': `Basic ${authString}`
       }
     });
     
