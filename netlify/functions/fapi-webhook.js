@@ -1,8 +1,9 @@
 // ====================================
-// FAPI WEBHOOK - ORIGINAL WORKING VERSION
+// FAPI WEBHOOK - PRODUCTION VERSION
 // ====================================
 // Webhook pro FAPI platební notifikace
 // URL: https://podnikatelskactvrtka.cz/.netlify/functions/fapi-webhook
+// Updated: 2025-10-12 - Fixed environment variables
 
 // Supabase client helper
 async function createSupabaseClient() {
@@ -48,7 +49,12 @@ export async function handler(event, context) {
   }
   
   try {
-    console.log('🎯 FAPI webhook received');
+    console.log('🎯 FAPI webhook received - v2.0');
+    console.log('🔑 ENV check:', {
+      hasSupabaseUrl: !!process.env.SUPABASE_URL,
+      hasFapiKey: !!process.env.FAPI_API_KEY,
+      supabaseUrlPrefix: process.env.SUPABASE_URL?.substring(0, 30)
+    });
     
     // Parse FAPI webhook data (URL encoded format)
     const params = new URLSearchParams(event.body);
