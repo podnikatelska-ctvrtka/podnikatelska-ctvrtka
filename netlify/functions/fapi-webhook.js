@@ -1,5 +1,5 @@
 // ====================================
-// FAPI WEBHOOK - SIMPLIFIED VERSION
+// FAPI WEBHOOK - WITH API FETCH
 // ====================================
 // Webhook pro FAPI platební notifikace
 // URL: https://podnikatelskactvrtka.cz/.netlify/functions/fapi-webhook
@@ -54,14 +54,6 @@ export async function handler(event, context) {
     // Parse FAPI webhook data (URL encoded format)
     const params = new URLSearchParams(event.body);
     
-    // Log ALL parameters
-    console.log('📋 ALL PARAMS:');
-    const allParams = {};
-    for (const [key, value] of params.entries()) {
-      console.log(`  ${key}: ${value}`);
-      allParams[key] = value;
-    }
-    
     // Extract invoice ID
     const invoiceId = params.get('id');
     
@@ -71,30 +63,35 @@ export async function handler(event, context) {
     
     console.log('🆔 Invoice ID:', invoiceId);
     
-    // Try to get email from various possible field names
-    let email = params.get('user_email') 
-             || params.get('email') 
-             || params.get('customer_email')
-             || params.get('buyer_email')
-             || params.get('contact_email');
+    // ──────────────────────────────────────────
+    // 📞 FETCH INVOICE DATA FROM FAPI API
+    // ──────────────────────────────────────────
+    console.log('📞 Fetching invoice from FAPI API...');
+    const fapiResponse = await fetch(`https://api.fapi.cz/invoices/${invoiceId}`, {
+      method: 'GET',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${process.env.FAPI_API_KEY}`
+      }
+    });
     
-    // Try to get name
-    let name = params.get('user_name') 
-            || params.get('name')
-            || params.get('customer_name')
-            || params.get('buyer_name')
-            || params.get('contact_name')
-            || 'Zákazník';
+    if (!fapiResponse.ok) {
+      const errorText = await fapiResponse.text();
+      throw new Error(`FAPI API error: ${fapiResponse.status} - ${errorText}`);
+    }
     
-    // Try to get amount
-    let amount = parseFloat(params.get('total') || params.get('amount') || params.get('price') || 0);
+    const invoice = await fapiResponse.json();
+    console.log('📄 Invoice data:', JSON.stringify(invoice, null, 2));
     
-    console.log('👤 Parsed data:', { email, name, amount, invoiceId });
+    // Extract data from invoice
+    const email = invoice.user?.email || invoice.customer?.email || invoice.email;
+    const name = invoice.user?.name || invoice.customer?.name || invoice.name || 'Zákazník';
+    const amount = parseFloat(invoice.total || invoice.amount || 0);
     
-    // If no email found, use admin email as fallback for testing
+    console.log('👤 Extracted data:', { email, name, amount, invoiceId });
+    
     if (!email) {
-      console.warn('⚠️ No email in webhook params! Using admin email for testing.');
-      email = process.env.ADMIN_EMAIL || 'cipera@byznysuj.cz';
+      throw new Error('No email found in invoice data');
     }
     
     // ──────────────────────────────────────────
