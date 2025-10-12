@@ -650,19 +650,10 @@ export function CourseDemoV3() {
         }
       }
       
-      // ✅ AUTO DEMO MODE: Pokud není token, použij demo user 999! (FORCE REBUILD)
-      const autoDemoUser = { id: 999, email: 'demo@podnikatelska-cvrtka.cz', name: 'Demo Uživatel' };
-      setIsAuthenticated(true);
-      setUserData(autoDemoUser);
-      setIsVerifying(false);
-      // Load progress for auto demo user
-      const progress = await loadCourseProgress(autoDemoUser.id);
-      setCompletedLessons(progress);
-      // 🎉 Load achievements
-      const achievements = loadUnlockedAchievements(autoDemoUser.id);
-      setUnlockedAchievements(achievements);
-    };
-    
+   ❌ No valid token - deny access
+   setIsAuthenticated(false);
+   setIsVerifying(false);
+   
     checkAuth();
   }, []);
   
