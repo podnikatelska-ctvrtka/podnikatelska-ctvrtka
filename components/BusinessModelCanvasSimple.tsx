@@ -8,7 +8,7 @@ import { hexToColorName } from "../lib/colorUtils";
 
 interface CanvasItem {
   text: string;
-  color: 'blue' | 'green' | 'yellow' | 'pink' | 'purple' | 'gray' | 'global' | 'red' | 'orange' | string; // Podporuje hex i názvy
+  color: 'blue' | 'green' | 'yellow' | 'pink' | 'purple' | 'global' | 'red' | 'orange' | 'gray' | string; // Podporuje hex i názvy (gray = fallback)
   value?: number; // Jen pro value, costs, revenue (bez TEĎ/CÍL!)
 }
 
@@ -23,6 +23,7 @@ interface CanvasSection {
 // 🎨 Barvy pro sticky notes
 // ❌ BÍLÁ ODSTRANĚNA - matoucí (hodnota vs globální zdroj)
 // ✅ GLOBAL (šedá + 🌐) - jen pro byznysové sekce
+// ❌ GRAY ODSTRANĚNA - používáme jen GLOBAL s ikonou 🌐
 const STICKY_COLORS = {
   blue: { bg: 'bg-blue-100', border: 'border-blue-300', text: 'text-blue-900' },
   green: { bg: 'bg-green-100', border: 'border-green-300', text: 'text-green-900' },
@@ -30,7 +31,7 @@ const STICKY_COLORS = {
   pink: { bg: 'bg-pink-100', border: 'border-pink-300', text: 'text-pink-900' },
   purple: { bg: 'bg-purple-100', border: 'border-purple-300', text: 'text-purple-900' },
   global: { bg: 'bg-gray-50', border: 'border-gray-300', text: 'text-gray-800' }, // 🌐 Pro celý byznys
-  gray: { bg: 'bg-gray-100', border: 'border-gray-400', text: 'text-gray-700' }, // Backward compatibility
+  gray: { bg: 'bg-gray-50', border: 'border-gray-300', text: 'text-gray-800' }, // Backward compatibility - fallback na global
   red: { bg: 'bg-red-100', border: 'border-red-300', text: 'text-red-900' },
   orange: { bg: 'bg-orange-100', border: 'border-orange-300', text: 'text-orange-900' },
 };
@@ -46,7 +47,7 @@ const INITIAL_CANVAS: CanvasSection[] = [
   { id: "relationships", title: "Vztahy se zákazníky", items: [], gridArea: "relationships" },
   { id: "channels", title: "Kanály", items: [], gridArea: "channels" },
   { id: "segments", title: "Zákaznické segmenty", items: [], gridArea: "segments" },
-  { id: "costs", title: "Struktura nákladů", items: [], gridArea: "costs", valueLabel: "Náklady (Kč/měsíc)" },
+  { id: "costs", title: "Struktura nákladů", items: [], gridArea: "costs", valueLabel: "Náklady (Kč/m��síc)" },
   { id: "revenue", title: "Zdroje příjmů", items: [], gridArea: "revenue", valueLabel: "Příjmy (Kč/měsíc)" },
 ];
 
@@ -467,7 +468,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
               <strong>• Barvy = souvislost:</strong> Všechny modré položky spolu souvisí (produkt A)
             </div>
             <div>
-              <strong>• ⚪ Stejná (bílá) = sdílená:</strong> Vztahuje se k VÍCE barevným skupinám
+              <strong>• Double klik = editace:</strong> Dvakrát klikněte na štítek pro editaci textu a barvy
             </div>
             <div>
               <strong>• Zákaznické segmenty:</strong> Popište své zákazníky konkrétně
@@ -479,7 +480,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
               <strong>• Náklady a příjmy:</strong> Uvádějte měsíční částky
             </div>
             <div>
-              <strong>• ⚫ Šedá = neutrální:</strong> Zatím nezařazené položky
+              <strong>• 🌐 Globální (šedá):</strong> Pro celý byznys model
             </div>
           </div>
         </div>
@@ -549,25 +550,19 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                   </div>
                 </div>
                 
-                {/* Řádek 2: Globální/Sdílené */}
+                {/* Řádek 2: Globální */}
                 <div>
                   <p className="text-xs text-gray-600 mb-1">Globální (celý byznys):</p>
                   <div className="flex gap-2 flex-wrap">
-                    {['global', 'gray'].map((color) => {
-                      const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
-                      return (
-                        <button
-                          key={color}
-                          onClick={() => setEditItemColor(color)}
-                          className={`w-10 h-10 rounded ${classes.bg} ${classes.border} border-2 hover:scale-110 transition-transform ${
-                            editItemColor === color ? 'ring-2 ring-gray-900' : ''
-                          }`}
-                          title={color === 'global' ? '🌐 Pro celý byznys' : 'Neutrální'}
-                        >
-                          {color === 'global' && <span className="text-xs">🌐</span>}
-                        </button>
-                      );
-                    })}
+                    <button
+                      onClick={() => setEditItemColor('global')}
+                      className={`w-10 h-10 rounded ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border-2 hover:scale-110 transition-transform ${
+                        editItemColor === 'global' ? 'ring-2 ring-gray-900' : ''
+                      }`}
+                      title="�� Pro celý byznys"
+                    >
+                      <span className="text-xs">🌐</span>
+                    </button>
                   </div>
                 </div>
                 

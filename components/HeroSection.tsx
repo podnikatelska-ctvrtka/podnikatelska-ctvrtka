@@ -162,7 +162,7 @@ export function HeroSection() {
                 transition={{ delay: 0.55 }}
               >
                 <p className="text-sm text-gray-700 text-center leading-relaxed">
-                  <span className="font-semibold text-indigo-700">Založeno na metodě Business Model Canvas,</span><br className="hidden sm:block" />
+                  <span className="font-semibold text-indigo-700">Podnikatelská Čtvrtka,</span><br className="hidden sm:block" />
                   kterou používají firmy jako Google, Airbnb a Spotify
                 </p>
               </motion.div>
@@ -181,11 +181,11 @@ export function HeroSection() {
                     className="w-full"
                     onClick={() => setIsModalOpen(true)}
                   >
-                    Získat předběžný přístup + Bonus
+                    Chci ten list papíru
                   </EnhancedCTA>
                 </TouchFeedback>
                 <p className="text-xs text-gray-600 mt-2 font-medium">
-                  🎁 3-denní mini kurz v hodnotě 2.999 Kč ZDARMA
+                  🎁 Začni 3-denním mini kurzem ZDARMA
                 </p>
               </motion.div>
 
@@ -201,7 +201,7 @@ export function HeroSection() {
               {/* Moderní interaktivní čtvrtka */}
               <div className="text-center mb-8">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  Toto je čtvrtka, kterou se naučíte vyplnit
+                  Toto je Čtvrtka, kterou se naučíte vyplnit
                 </h3>
                 <p className="text-sm text-gray-600 hidden md:block">
                   Klikněte na jakýkoli blok a zjistěte, co vám každý segment přinese

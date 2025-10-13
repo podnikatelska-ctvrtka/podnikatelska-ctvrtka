@@ -6,11 +6,13 @@ import { CheckCircle, ArrowRight, Gift, Zap, Target, Users, Sparkles } from "luc
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
-// 🎯 MAKE.COM WEBHOOK - STEJNÝ JAKO V PrelaunchEmailCapture
-const WEBHOOK_CONFIG = {
-  enabled: true,
-  url: 'https://hook.eu2.make.com/t4mtz2jjps6e2fgjoktqtotwgseuqmj2',
-  productId: 'podnikatelska-ctvrtka-predprodej', // 🎯 ID produktu pro routing
+// 🎯 EMAIL SERVICE CONFIG - Smartemailing
+const EMAIL_SERVICE = {
+  method: 'smartemailing', // Using Smartemailing!
+  smartemailing: {
+    enabled: true,
+    functionUrl: '/.netlify/functions/smartemailing-subscribe',
+  }
 };
 
 interface QuickEmailCaptureModalProps {
@@ -40,28 +42,31 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
 
     setIsLoading(true);
 
-    // 🎯 POŠLI DO MAKE.COM WEBHOOKU
-    if (WEBHOOK_CONFIG.enabled && WEBHOOK_CONFIG.url) {
+    // 🎯 POŠLI DO SMARTEMAILING
+    if (EMAIL_SERVICE.method === 'smartemailing' && EMAIL_SERVICE.smartemailing.enabled) {
       try {
-        console.log('🚀 [Hero Modal] Posílám data do Make.com...', { email });
+        console.log('📧 [Hero Modal] Posílám data do Smartemailing...', { email });
         
-        await fetch(WEBHOOK_CONFIG.url, {
+        const response = await fetch(EMAIL_SERVICE.smartemailing.functionUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             email: email,
-            timestamp: new Date().toISOString(),
-            source: 'hero_modal',
-            spotNumber: 0, // Hero modal nemá spot tracking
-            productId: WEBHOOK_CONFIG.productId, // 🎯 ID produktu pro routing
+            name: '',
           }),
         });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Smartemailing subscription failed');
+        }
         
-        console.log('✅ [Hero Modal] Email sent to Make.com webhook');
+        console.log('✅ [Hero Modal] Email sent to Smartemailing - SUCCESS!', data);
       } catch (error) {
-        console.error('⚠️ [Hero Modal] Webhook error:', error);
+        console.error('⚠️ [Hero Modal] Smartemailing error:', error);
       }
     }
 
@@ -97,54 +102,52 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-center mb-2">
                   <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    🚀 Předběžný přístup
+                    🔥 BUĎTE MEZI PRVNÍMI!
                   </span>
                 </DialogTitle>
-                <DialogDescription className="text-sm text-gray-600 text-center">
-                  Buďte mezi prvními kdo získá strategii za 90 minut
+                <DialogDescription className="text-sm text-gray-600 text-center leading-relaxed">
+                  <span className="font-semibold text-gray-800">Od prvního úspěšného podnikání vás dělí 90 minut.</span><br/>
+                  První kurz s Podnikatelskou Čtvrtkou v ČR.
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6 pt-4">
-                {/* Co získáte HNED */}
-                <motion.div 
-                  className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border-2 border-purple-200"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <Gift className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-bold text-purple-900 mb-1">🎁 DOSTANETE HNED:</div>
-                      <div className="text-sm text-purple-800 font-medium">
-                        3-denní mini kurz ZDARMA (hodnota 2.999 Kč)
-                      </div>
-                      <div className="text-xs text-purple-600 mt-1">
-                        Přístup do emailu během pár minut!
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
                 {/* Cena kurzu */}
                 <motion.div 
                   className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-5 border-2 border-indigo-200"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
+                  transition={{ delay: 0.1 }}
                 >
                   <div className="text-center">
-                    <div className="text-indigo-600 text-sm font-black mb-2">⚡ PRŮKOPNICKÁ CENA</div>
+                    <div className="text-indigo-600 text-sm font-black mb-2">🔥 BUĎTE PRVNÍ - NEJNIŽŠÍ CENA</div>
                     <div className="flex items-center justify-center gap-3 mb-2">
-                      <span className="text-gray-400 line-through text-lg">8.499 Kč</span>
-                      <span className="text-3xl font-black text-indigo-600">4.999 Kč</span>
+                      <span className="text-gray-400 line-through text-lg">8.499,- Kč</span>
+                      <span className="text-3xl font-black text-indigo-600">4.999,- Kč</span>
                     </div>
-                    <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold mb-3">
-                      💰 Celková úspora: 6.499 Kč
+                    <div className="text-xs text-indigo-600 mb-2">(bez DPH)</div>
+                    <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold">
+                      💰 Ušetříte: 3.500,- Kč (jen pro první!)
                     </div>
-                    <div className="text-xs text-indigo-600 bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-200">
-                      🔥 + Prvních 50 kupujících dostane konzultaci (1.500 Kč)
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border-2 border-purple-200"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <Gift className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-purple-900 mb-1">🎁 BONUS PRO PRVNÍ:</div>
+                      <div className="text-sm text-purple-800 font-medium">
+                        3-denní mini kurz ZDARMA (hodnota 2.999,- Kč)
+                      </div>
+                      <div className="text-xs text-purple-600 mt-1">
+                        Začněte ještě dnes! Zlepšete podnikání hned.
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -177,14 +180,14 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                       "Odesílám..."
                     ) : (
                       <>
-                        Rezervovat místo
+                        Budu mezi prvními! 🔥
                         <ArrowRight className="w-5 h-5 ml-2" />
                       </>
                     )}
                   </Button>
 
                   <p className="text-xs text-center text-gray-500">
-                    🎁 Okamžitě dostanete přístup k mini kurzu + info o launchi
+                    📧 Okamžitě dostanete přístup k 3-dennímu mini kurzu ZDARMA
                   </p>
                 </motion.form>
 
@@ -196,18 +199,18 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                   transition={{ delay: 0.3 }}
                 >
                   <div className="text-center">
-                    <div className="text-2xl font-black text-indigo-600">1</div>
-                    <div className="text-xs text-gray-600">Čtvrtka</div>
+                    <div className="text-2xl font-black text-indigo-600">3</div>
+                    <div className="text-xs text-gray-600">Moduly</div>
                   </div>
                   <div className="h-8 w-px bg-gray-300"></div>
                   <div className="text-center">
-                    <div className="text-2xl font-black text-purple-600">9</div>
-                    <div className="text-xs text-gray-600">Prvků</div>
+                    <div className="text-2xl font-black text-purple-600">16</div>
+                    <div className="text-xs text-gray-600">Lekcí</div>
                   </div>
                   <div className="h-8 w-px bg-gray-300"></div>
                   <div className="text-center">
-                    <div className="text-2xl font-black text-green-600">41%</div>
-                    <div className="text-xs text-gray-600">Sleva</div>
+                    <div className="text-2xl font-black text-green-600">3.500,-</div>
+                    <div className="text-xs text-gray-600">Úspora (Kč)</div>
                   </div>
                 </motion.div>
               </div>
@@ -227,7 +230,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                   </span>
                 </DialogTitle>
                 <DialogDescription className="text-sm text-gray-600 text-center">
-                  Co vás čeká v kurzu Podnikatelská čtvrtka
+                  Co vás čeká v kurzu Podnikatelská Čtvrtka
                 </DialogDescription>
               </DialogHeader>
 
@@ -285,13 +288,13 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border-2 border-amber-200">
-                    <div className="bg-amber-100 p-2 rounded-lg">
-                      <Gift className="w-5 h-5 text-amber-600" />
+                  <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
+                    <div className="bg-purple-100 p-2 rounded-lg">
+                      <Sparkles className="w-5 h-5 text-purple-600" />
                     </div>
                     <div className="flex-1">
-                      <div className="font-bold text-amber-900">BONUS: Konzultace ZDARMA</div>
-                      <div className="text-sm text-amber-700 font-medium">Pro prvních 50 lidí (hodnota 3.000 Kč)</div>
+                      <div className="font-bold text-purple-900">🎁 BONUS: 3-denní mini kurz ZDARMA</div>
+                      <div className="text-sm text-purple-700 font-medium">Začněte hned! První lekce už čeká v emailu (hodnota 2.999,- Kč)</div>
                     </div>
                   </div>
                 </motion.div>

@@ -294,7 +294,7 @@ function PriorityItemWithScore({
 function getGuideForSegment(segmentName: string) {
   return {
     title: `🎯 Jak zjistit co ${segmentName || 'váš segment'} opravdu potřebují`,
-    description: "Klíčem k úspěchu je pochopit opravdové potřeby vašich zákazn��ků.",
+    description: "Klíčem k úspěchu je pochopit opravdové potřeby vašich zákazníků.",
     questions: {
       jobs: [
         "Kvůli čemu k vám tento segment přichází?",
@@ -948,7 +948,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     }
   }, [localSelectedSegment]);
   
-  // 🔄 Přepočítat % když se změní celkový po��et respondentů
+  // 🔄 Přepočítat % když se změní celkový počet respondentů
   useEffect(() => {
     if (totalRespondents > 0) {
       // Přepočítej Jobs
@@ -1092,7 +1092,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     };
   }, [jobs, pains, gains, totalRespondents, hasUserSorted, currentStep, isLoading]);
   
-  // 💾 Auto-save při zm��ně mapování
+  // 💾 Auto-save při změně mapování
   useEffect(() => {
     if (isLoading) return;
     
@@ -1150,7 +1150,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         // Více hodnot se stejnou barvou → zobraz dropdown pro výběr
         setLocalSelectedValue('');
       } else {
-        // 0 hodnot se stejnou barvou → možná chyba v datech, nech prázdn��
+        // 0 hodnot se stejnou barvou → možná chyba v datech, nech prázdné
         setLocalSelectedValue('');
       }
     }
@@ -1722,7 +1722,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     hasValidData
   } = fitScoreData;
   
-  // ���� DEBUG: Co je v destructured values?
+  // 🔍 DEBUG: Co je v destructured values?
 
 
   if (isLoading) {

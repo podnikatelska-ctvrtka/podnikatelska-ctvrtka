@@ -279,20 +279,19 @@ export function PrelaunchEmailCapture() {
               🔥 VÍTEJTE MEZI PRŮKOPNÍKY!
             </h2>
             <p className="text-lg text-gray-600 mb-6">
-              <strong className="text-red-600">Gratulujeme!</strong> Právě jste se stali oficiálním PRŮKOPNÍKEM české podnikatelské revoluce!<br/>
-              <strong className="text-orange-600">Teď získejte</strong> exkluzivní přístup:<br/>
-              • 🎁 <strong>3-denní mini kurz</strong> (2.999 Kč) - ZDARMA!<br/>
-              • 🚀 <strong>Info o spuštění hlavního kurzu</strong><br/>
-              • 🎯 <strong>Průkopnická cena</strong> - ušetříte 7.999 Kč (62%)<br/>
-              • 💎 <strong>Konzultace ZDARMA</strong> (prvních 50 kupujících • 1.500 Kč)
+              <strong className="text-red-600">Gratulujeme!</strong> Právě jste se stali oficiálním PRŮKOPNÍKEM!<br/><br/>
+              <strong className="text-orange-600">Poslali jsme vám:</strong><br/>
+              • 📧 <strong>Link na 3-denní mini kurz ZDARMA</strong><br/>
+              • 🎯 <strong>Info o spuštění Podnikatelské Čtvrtky</strong><br/>
+              • 💰 <strong>Průkopnická cena: 4.999,- Kč bez DPH (ušetříte 3.500,- Kč)</strong>
             </p>
 
             
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
                 <div className="flex items-center gap-2 text-blue-700 font-bold mb-2">
                   <Users className="w-5 h-5" />
-                  <span>🔥 PRŮKOPNÍK #{50 - availableSpots + 1}</span>
+                  <span>🔥 PRŮKOPNÍK</span>
                 </div>
                 <p className="text-sm text-blue-600 font-medium">Mezi prvními!</p>
               </div>
@@ -301,32 +300,53 @@ export function PrelaunchEmailCapture() {
                   <Gift className="w-5 h-5" />
                   <span>🎁 BONUS</span>
                 </div>
-                <p className="text-sm text-purple-600 font-medium">Mini kurz (2.999 Kč)</p>
+                <p className="text-sm text-purple-600 font-medium">Mini kurz ZDARMA</p>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
                 <div className="flex items-center gap-2 text-green-700 font-bold mb-2">
                   <CheckCircle className="w-5 h-5" />
                   <span>💰 UŠETŘÍTE</span>
                 </div>
-                <p className="text-sm text-green-600 font-medium">7.999 Kč (62%)</p>
+                <p className="text-sm text-green-600 font-medium">3.500,- Kč (-41%)</p>
               </div>
             </div>
             
+            <div className="mb-6">
+              <Button 
+                onClick={() => window.location.href = `/minikurz?email=${encodeURIComponent(email)}`}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
+              >
+                🚀 ZAČÍT MINI KURZ HNED
+              </Button>
+              <p className="text-sm text-gray-500 mt-2 text-center">
+                (Nebo klikněte na link v emailu)
+              </p>
+            </div>
+            
             {/* Informace o dalších krocích */}
-            <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-xl">
+            <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
               <h3 className="text-xl font-bold text-blue-900 mb-3">📧 Co dál?</h3>
-              <ul className="text-left space-y-2 text-blue-700">
-                <li className="flex items-start gap-2">
+              <ul className="text-left space-y-3 text-blue-700">
+                <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span><strong>Zkontrolujte email</strong> (i spam složku!)</span>
+                  <div>
+                    <strong className="block">Zkontrolujte email</strong>
+                    <span className="text-sm text-blue-600">Přijde do 5 minut (i spam složku!)</span>
+                  </div>
                 </li>
-                <li className="flex items-start gap-2">
+                <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span><strong>První email</strong> přijde do pár minut</span>
+                  <div>
+                    <strong className="block">Začněte mini kurz HNED</strong>
+                    <span className="text-sm text-blue-600">3 dny • Zpětná vazba + konkurence + komunikace</span>
+                  </div>
                 </li>
-                <li className="flex items-start gap-2">
+                <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span><strong>Mini kurz</strong> začíná hned po otevření!</span>
+                  <div>
+                    <strong className="block">Po 3 dnech: Launch Podnikatelské Čtvrtky</strong>
+                    <span className="text-sm text-blue-600">Průkopnická cena 4.999,- Kč bez DPH (ušetříte 3.500,- Kč)</span>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -399,13 +419,13 @@ export function PrelaunchEmailCapture() {
             
             <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">STAŇTE SE PRŮKOPNÍKEM!</span><br/>
-              <span className="text-white text-2xl md:text-4xl">První kurz s garancí výsledku</span>
+              <span className="text-white text-2xl md:text-4xl">První kurz s Podnikatelskou čtvrtkou</span>
             </h2>
             
             <div className="max-w-3xl mx-auto mb-8">
               <p className="text-lg md:text-xl text-white/90 leading-relaxed">
-                Rezervujte si místo mezi <strong className="text-blue-300">prvními 50 lidmi</strong><br/>
-                a získejte <strong className="text-white">exkluzivní bonusy ZDARMA</strong>
+                Získejte <strong className="text-blue-300">Podnikatelskou Čtvrtku</strong> za průkopnickou cenu<br/>
+                <strong className="text-white">Začněte 3-denním mini kurzem ZDARMA</strong>
               </p>
             </div>
           </motion.div>
@@ -427,24 +447,30 @@ export function PrelaunchEmailCapture() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 bg-gradient-to-r from-blue-500/15 to-indigo-500/15 px-3 py-3 rounded-lg border border-blue-400/30 backdrop-blur-sm transition-all hover:shadow-lg hover:scale-[1.02]">
                       <CheckCircle className="w-5 h-5 text-blue-300 flex-shrink-0" />
-                      <span className="text-white font-medium">Konečně vědět JAK</span>
+                      <div>
+                        <span className="text-white font-medium block">Podnikatelská Čtvrtka</span>
+                        <span className="text-blue-300 text-sm">Celý byznys na 1 listu papíru (9 prvků)</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-3 bg-gradient-to-r from-blue-500/15 to-indigo-500/15 px-3 py-3 rounded-lg border border-blue-400/30 backdrop-blur-sm transition-all hover:shadow-lg hover:scale-[1.02]">
                       <CheckCircle className="w-5 h-5 text-blue-300 flex-shrink-0" />
-                      <span className="text-white font-medium">Konečně kontrola nad byznysem</span>
+                      <div>
+                        <span className="text-white font-medium block">FIT validátor</span>
+                        <span className="text-blue-300 text-sm">Najdi FIT mezi produktem a zákazníkem</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 px-3 py-3 rounded-lg border border-purple-400/40 backdrop-blur-sm transition-all hover:shadow-lg hover:scale-[1.02]">
-                      <Gift className="w-5 h-5 text-purple-300 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-purple-300 flex-shrink-0" />
                       <div>
-                        <span className="text-white font-medium block">Mini kurz HNED po registraci</span>
-                        <span className="text-purple-300 text-sm font-medium">2.999 Kč ZDARMA • Pro všechny!</span>
+                        <span className="text-white font-medium block">Úspěšné modely z praxe</span>
+                        <span className="text-purple-300 text-sm">Kurz plníme konkrétními příklady (stále přidáváme)</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-3 py-3 rounded-lg border border-green-400/40 backdrop-blur-sm transition-all hover:shadow-lg hover:scale-[1.02]">
-                      <CheckCircle className="w-5 h-5 text-green-300 flex-shrink-0" />
+                      <Gift className="w-5 h-5 text-green-300 flex-shrink-0" />
                       <div>
-                        <span className="text-white font-medium block">Konzultace po koupi kurzu</span>
-                        <span className="text-green-300 text-sm font-medium">1.500 Kč ZDARMA • Prvních 50 kupujících</span>
+                        <span className="text-white font-medium block">BONUS: Mini kurz ZDARMA</span>
+                        <span className="text-green-300 text-sm font-medium">Začněte hned 3-denním kurzem (hodnota 2.999,- Kč)</span>
                       </div>
                     </div>
                   </div>
@@ -461,10 +487,10 @@ export function PrelaunchEmailCapture() {
                   <div className="text-center mb-4">
                     <h3 className="text-xl font-bold text-white mb-2">🔥 OMEZENÁ KAPACITA</h3>
                     <div className="text-white/90 text-base font-medium mb-3">
-                      Konzultace ZDARMA jen pro prvních 50 kupujících
+                      Průkopnická cena jen pro první registrace
                     </div>
                     <div className="text-green-300 text-sm">
-                      Místa se plní rychle - nezmeškejte bonusy
+                      Rezervujte si místo mezi průkopníky!
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -474,11 +500,11 @@ export function PrelaunchEmailCapture() {
                     </div>
                     <div className="flex items-center gap-3 text-white/80 text-sm">
                       <Users className="w-4 h-4 text-blue-300" />
-                      <span>Průkopnická cena (62% sleva)</span>
+                      <span>Průkopnická cena (ušetříte 3.500,- Kč)</span>
                     </div>
                     <div className="flex items-center gap-3 text-white/80 text-sm">
                       <CheckCircle className="w-4 h-4 text-green-300" />
-                      <span>Konzultace pro prvních 50 kupujících</span>
+                      <span>Kompletní strategie na 1 listu</span>
                     </div>
                   </div>
                 </motion.div>
@@ -501,53 +527,50 @@ export function PrelaunchEmailCapture() {
                     
                     {/* Cenový design */}
                     <div className="text-center">
-                      {/* Hlavní cena - responzivní */}
+                      {/* Hlavní cena */}
                       <div className="text-4xl md:text-5xl font-bold text-white bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-2 drop-shadow-lg">
                         4.999,- Kč
                       </div>
-                      <div className="text-white/60 text-sm mb-4">(bez DPH)</div>
+                      <div className="text-white/60 text-sm mb-2">(normálně 8.499,- Kč)</div>
+                      <div className="text-white/50 text-xs mb-4">bez DPH</div>
                       
-                      {/* Celková hodnota breakdown */}
+                      {/* Co obsahuje */}
                       <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-4 max-w-xs mx-auto">
-                        <div className="text-white/80 text-xs font-semibold mb-2">🎁 BALÍČEK OBSAHUJE:</div>
+                        <div className="text-white/80 text-xs font-semibold mb-2">🎯 PODNIKATELSKÁ ČTVRTKA:</div>
                         <div className="space-y-1.5 text-left text-xs text-white/70">
                           <div className="flex justify-between">
-                            <span>• Kurz Podnikatelská Čtvrtka</span>
-                            <span className="text-white/90">8.499 Kč</span>
+                            <span>• 3 moduly (16 lekcí)</span>
                           </div>
                           <div className="flex justify-between">
-                            <span>• 3-denní mini kurz</span>
-                            <span className="text-white/90">2.999 Kč</span>
+                            <span>• Strategie na 1 listu</span>
                           </div>
-                          <div className="flex justify-between text-green-300 font-medium">
-                            <span>• 30min konzultace (50×)</span>
-                            <span>1.500 Kč</span>
+                          <div className="flex justify-between">
+                            <span>• FIT validátor</span>
                           </div>
-                          <div className="border-t border-white/30 mt-2 pt-2 flex justify-between font-bold text-white text-sm">
-                            <span>CELKOVÁ HODNOTA:</span>
-                            <span>12.998 Kč</span>
+                          <div className="flex justify-between">
+                            <span>• Úspěšné modely (příklady)</span>
+                          </div>
+                          <div className="border-t border-white/30 mt-2 pt-2 flex justify-between text-green-300 font-medium">
+                            <span>🎁 BONUS: Mini kurz</span>
+                            <span>ZDARMA</span>
                           </div>
                         </div>
                       </div>
                       
-                      {/* Sleva info - zvýrazněná */}
+                      {/* Sleva info */}
                       <div className="inline-flex flex-col items-center gap-1 bg-gradient-to-r from-green-500/25 to-emerald-500/25 px-5 py-3 rounded-xl border-2 border-green-400/50 transition-all hover:shadow-xl hover:scale-105">
-                        <div className="text-green-300 font-bold text-lg">💰 CELKOVÁ ÚSPORA 7.999 Kč</div>
-                        <div className="text-green-200 text-sm">(mini kurz + sleva + konzultace*)</div>
-                        <div className="text-green-300/80 text-xs mt-1">*prvních 50 kupujících</div>
+                        <div className="text-green-300 font-bold text-lg">💰 UŠETŘÍTE 3.500,- Kč</div>
+                        <div className="text-green-200 text-sm">Průkopnická cena -41%</div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="text-center border-t border-white/20 pt-4">
-                    <div className="text-purple-300 font-medium text-sm mb-2">PO REGISTRACI ZÍSKÁTE:</div>
+                    <div className="text-purple-300 font-medium text-sm mb-2">🎁 PO REGISTRACI ZÍSKÁTE:</div>
                     <div className="text-white/90 text-sm space-y-1">
-                      <div>✅ Mini kurz ZDARMA HNED (2.999 Kč)</div>
-                      <div>�� Průkopnická cena kurzu (4.999 Kč)</div>
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-white/10">
-                      <div className="text-green-300 font-medium text-sm mb-1">🔥 BONUS PO KOUPI KURZU:</div>
-                      <div className="text-green-200 text-xs">Prvních 50 kupujících dostane konzultaci (1.500 Kč)</div>
+                      <div>✅ 3-denní mini kurz HNED (2.999,- Kč)</div>
+                      <div>🎯 Info o spuštění Čtvrtky</div>
+                      <div>💡 Průkopnická cena (4.999,- Kč bez DPH)</div>
                     </div>
                   </div>
                 </div>

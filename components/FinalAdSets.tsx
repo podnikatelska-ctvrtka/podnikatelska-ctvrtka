@@ -1,5 +1,6 @@
-// 🎯 3 FINÁLNÍ AD SETY PRO FB KAMPAŇ
-// Různé přístupy → FB rozhodne který funguje nejlép
+// 🎯 FINÁLNÍ AD SETY PRO FB KAMPAŇ
+// Používáme: Ad Set #1 (Problem), #2 (Diferenciace), #4 (Curiosity)
+// NEPOUŽÍVÁME: Ad Set #3 (fake testimonials)
 
 // 📊 AD SET 1: PROBLEM-FOCUSED (emocionální pain point)
 export function AdSet1Problem() {
@@ -338,6 +339,226 @@ export function FinalAdSetsShowcase() {
             <p>✅ Stáhni PNG → upload do FB Ads Manager!</p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// 🆕 AD SET 2 (NOVÝ): DIFERENCIACE "Není to PDF - dostaneš KONKRÉTNÍ plán"
+export function AdSet2Differentiation() {
+  return (
+    <div className="w-[1080px] h-[1080px] bg-gradient-to-br from-white via-blue-50 to-indigo-100 relative overflow-hidden flex items-center justify-center p-12">
+      {/* Decorative blobs */}
+      <div className="absolute top-20 right-20 w-80 h-80 bg-blue-200/40 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-20 w-96 h-96 bg-indigo-200/40 rounded-full blur-3xl" />
+      
+      {/* Main content */}
+      <div className="relative z-10 text-center max-w-5xl">
+        {/* Big headline */}
+        <div className="mb-10">
+          <div className="text-gray-900 text-5xl font-black mb-4 leading-tight">
+            NENÍ TO PDF KURZ.
+          </div>
+          <div className="text-blue-600 text-6xl font-black leading-tight">
+            DOSTANEŠ KONKRÉTNÍ AKČNÍ PLÁN.
+          </div>
+        </div>
+        
+        {/* Split comparison */}
+        <div className="grid grid-cols-2 gap-6 mb-10">
+          {/* Left - Others */}
+          <div className="bg-gray-50 border-2 border-gray-300 rounded-2xl p-6">
+            <div className="text-6xl mb-4">📄</div>
+            <div className="text-gray-900 text-2xl font-bold mb-4">VĚTŠINA KURZŮ:</div>
+            <div className="space-y-2 text-left">
+              <div className="flex items-start gap-2 text-gray-700 text-lg">
+                <span className="text-red-500 text-xl">❌</span>
+                <span className="font-semibold">PDF na 200 stran</span>
+              </div>
+              <div className="flex items-start gap-2 text-gray-700 text-lg">
+                <span className="text-red-500 text-xl">❌</span>
+                <span className="font-semibold">Teoretické kecy</span>
+              </div>
+              <div className="flex items-start gap-2 text-gray-700 text-lg">
+                <span className="text-red-500 text-xl">❌</span>
+                <span className="font-semibold">85% nedokončí</span>
+              </div>
+              <div className="flex items-start gap-2 text-gray-700 text-lg">
+                <span className="text-red-500 text-xl">❌</span>
+                <span className="font-semibold">Obecné rady</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right - Us */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-400 rounded-2xl p-6">
+            <div className="text-6xl mb-4">🎯</div>
+            <div className="text-blue-900 text-2xl font-bold mb-4">PODNIKATELSKÁ ČTVRTKA:</div>
+            <div className="space-y-2 text-left">
+              <div className="flex items-start gap-2 text-blue-900 text-lg">
+                <span className="text-green-500 text-xl">✅</span>
+                <span className="font-semibold">Interaktivní kurz</span>
+              </div>
+              <div className="flex items-start gap-2 text-blue-900 text-lg">
+                <span className="text-green-500 text-xl">✅</span>
+                <span className="font-semibold">Konkrétní kroky (ne teorie!)</span>
+              </div>
+              <div className="flex items-start gap-2 text-blue-900 text-lg">
+                <span className="text-green-500 text-xl">✅</span>
+                <span className="font-semibold">87% dokončí</span>
+              </div>
+              <div className="flex items-start gap-2 text-blue-900 text-lg">
+                <span className="text-green-500 text-xl">✅</span>
+                <span className="font-semibold">Akční plán na míru</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Features - CO DOSTANEŠ */}
+        <div className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 rounded-2xl p-6 mb-8">
+          <div className="grid grid-cols-2 gap-4 text-left">
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">🎯</div>
+              <div>
+                <div className="text-gray-900 text-lg font-bold">Business Model Canvas</div>
+                <div className="text-gray-600 text-base">Celý tvůj byznys na 1 stránce</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">💡</div>
+              <div>
+                <div className="text-gray-900 text-lg font-bold">Value Proposition</div>
+                <div className="text-gray-600 text-base">Zjistíš NA KOHO cílit a CO jim nabídnout</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">🎨</div>
+              <div>
+                <div className="text-gray-900 text-lg font-bold">4 vzorové modely</div>
+                <div className="text-gray-600 text-base">Uč se od úspěšných (restaurace, e-shop...)</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">📋</div>
+              <div>
+                <div className="text-gray-900 text-lg font-bold">Akční plán</div>
+                <div className="text-gray-600 text-base">Konkrétní kroky co dělat TEĎ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* CTA */}
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-6 rounded-2xl text-3xl font-black shadow-2xl hover:scale-105 transition-transform mb-4">
+          CHCI KONKRÉTNÍ PLÁN! →
+        </button>
+        
+        {/* Subtext */}
+        <p className="text-gray-600 text-base font-semibold">
+          Dokončíte za víkend • Budete vědět CO a KOMU prodávat • Záruka 14 dní
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// 🏆 AD SET 4: CURIOSITY "Proč se některým daří?" (NO AI MENTION!)
+export function AdSet4Curiosity() {
+  return (
+    <div className="w-[1080px] h-[1080px] bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 relative overflow-hidden flex items-center justify-center p-12">
+      {/* Glow effects */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/30 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-400/30 rounded-full blur-3xl" />
+      
+      {/* Main content */}
+      <div className="relative z-10 text-center max-w-5xl">
+        {/* Big question */}
+        <div className="mb-12">
+          <div className="text-white text-6xl font-black mb-6 leading-tight">
+            PROČ SE NĚKTERÝM
+          </div>
+          <div className="text-yellow-300 text-7xl font-black leading-tight">
+            PODNIKATELŮM DAŘÍ?
+          </div>
+        </div>
+        
+        {/* Split comparison */}
+        <div className="grid grid-cols-2 gap-6 mb-10">
+          {/* Left - Struggling */}
+          <div className="bg-white/10 backdrop-blur-sm border-2 border-red-300/50 rounded-2xl p-6">
+            <div className="text-red-300 text-3xl font-black mb-4">NĚKTEŘÍ:</div>
+            <div className="space-y-3 text-left">
+              <div className="flex items-start gap-2 text-white text-lg">
+                <span className="text-red-300 text-xl">❌</span>
+                <span className="font-semibold">Chaos v hlavě</span>
+              </div>
+              <div className="flex items-start gap-2 text-white text-lg">
+                <span className="text-red-300 text-xl">❌</span>
+                <span className="font-semibold">Hádají co funguje</span>
+              </div>
+              <div className="flex items-start gap-2 text-white text-lg">
+                <span className="text-red-300 text-xl">❌</span>
+                <span className="font-semibold">Nestabilní tržby</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right - Successful */}
+          <div className="bg-white/10 backdrop-blur-sm border-2 border-green-300/50 rounded-2xl p-6">
+            <div className="text-green-300 text-3xl font-black mb-4">JINÍ:</div>
+            <div className="space-y-3 text-left">
+              <div className="flex items-start gap-2 text-white text-lg">
+                <span className="text-green-300 text-xl">✅</span>
+                <span className="font-semibold">Jasný plán</span>
+              </div>
+              <div className="flex items-start gap-2 text-white text-lg">
+                <span className="text-green-300 text-xl">✅</span>
+                <span className="font-semibold">Vědí CO a KOMU</span>
+              </div>
+              <div className="flex items-start gap-2 text-white text-lg">
+                <span className="text-green-300 text-xl">✅</span>
+                <span className="font-semibold">Stabilní růst</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* The answer */}
+        <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-2xl p-8 mb-10">
+          <div className="text-yellow-300 text-5xl font-black mb-6">
+            PROČ?
+          </div>
+          <div className="text-white text-2xl font-bold mb-6 leading-relaxed">
+            Protože úspěšní mají jasný BUSINESS MODEL.<br/>
+            Ne v hlavě. Ne na 50 stránkách.<br/>
+            <span className="text-green-300">Na JEDNÉ stránce.</span>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-center gap-3 text-white text-xl font-semibold">
+              <span className="text-2xl">🎯</span>
+              <span>Víš přesně NA KOHO cílit</span>
+            </div>
+            <div className="flex items-center justify-center gap-3 text-white text-xl font-semibold">
+              <span className="text-2xl">💡</span>
+              <span>Víš CO jim nabídnout (Value Proposition)</span>
+            </div>
+            <div className="flex items-center justify-center gap-3 text-white text-xl font-semibold">
+              <span className="text-2xl">📋</span>
+              <span>Máš konkrétní kroky co dělat TEĎ</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* CTA */}
+        <button className="bg-green-500 hover:bg-green-600 text-white px-16 py-7 rounded-2xl text-4xl font-black shadow-2xl hover:scale-105 transition-transform mb-4">
+          CHCI VĚDĚT PROČ! →
+        </button>
+        
+        {/* Subtext */}
+        <p className="text-white/90 text-lg font-semibold">
+          Business Model Canvas + Value Proposition Canvas • Dokončíte za víkend
+        </p>
       </div>
     </div>
   );

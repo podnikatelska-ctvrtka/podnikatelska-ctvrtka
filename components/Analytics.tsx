@@ -20,7 +20,7 @@ export function Analytics() {
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', '${GA_TRACKING_ID}', {
-          page_title: 'Podnikatelská čtvrtka - Landing Page',
+          page_title: 'Podnikatelská Čtvrtka - Landing Page',
           page_location: window.location.href,
           custom_map: {
             'custom_parameter_1': 'business_canvas_landing'
@@ -80,7 +80,7 @@ export function Analytics() {
     // Track initial page view only if analytics are loaded
     if (GA_TRACKING_ID !== 'GA_TRACKING_ID_HERE' || FB_PIXEL_ID !== 'YOUR_FACEBOOK_PIXEL_ID_HERE') {
       trackEvent('PageView', {
-        page_title: 'Podnikatelská čtvrtka - Landing Page',
+        page_title: 'Podnikatelská Čtvrtka - Landing Page',
         page_url: window.location.href
       });
     }
@@ -133,7 +133,7 @@ export const trackOrderAttempt = (price: number) => {
       content_type: 'product',
       items: [{
         item_id: 'podnikatelska_ctvrtka_kurz',
-        item_name: 'Podnikatelská čtvrtka - Online kurz',
+        item_name: 'Podnikatelská Čtvrtka - Online kurz',
         category: 'business_course',
         quantity: 1,
         price: price

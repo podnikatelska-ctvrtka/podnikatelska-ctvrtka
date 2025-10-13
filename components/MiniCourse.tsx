@@ -1592,7 +1592,7 @@ export function MiniCourse() {
                   <div className="bg-white/50 border border-green-200 rounded-lg p-4">
                     <p className="text-sm font-semibold text-green-800 mb-2">📅 Co vás čeká dál:</p>
                     <p className="text-sm text-gray-700">
-                      <strong>Podnikatelská čtvrtka</strong> - kompletní kurz na vytvoření prodejní stránky která skutečně prodává - se blíží k launchi. 
+                      <strong>Podnikatelská Čtvrtka</strong> - kompletní kurz na vytvoření prodejní stránky která skutečně prodává - se blíží k launchi. 
                       Brzy vám přijde email s podrobnostmi.
                     </p>
                   </div>

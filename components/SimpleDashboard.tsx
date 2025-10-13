@@ -214,7 +214,7 @@ export function SimpleDashboard({
             📊 Dashboard
           </h1>
           <p className="text-lg text-gray-700">
-            Váš pokrok v kurzu Podnikatelská čtvrtka
+            Váš pokrok v kurzu Podnikatelská Čtvrtka
           </p>
         </motion.div>
 

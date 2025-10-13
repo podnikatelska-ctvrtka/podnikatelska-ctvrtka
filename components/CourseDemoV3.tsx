@@ -345,7 +345,7 @@ const MODULE_1 = {
       tips: [
         "🌐 Základní činnosti = globální (vaření, opravy, stříhání)",
         "🎨 Specifické pro segment = barva segmentu (🔵 IG marketing)",
-        "��� Ptejte se: Co dělám DENNĚ? To je klíčová aktivita!"
+        "💡 Ptejte se: Co dělám DENNĚ? To je klíčová aktivita!"
       ]
     },
     {

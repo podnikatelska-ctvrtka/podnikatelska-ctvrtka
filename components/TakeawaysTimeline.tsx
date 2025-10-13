@@ -46,8 +46,8 @@ export function TakeawaysTimeline() {
       icon: Eye,
       number: "3",
       title: "Minimální investice, maximální efekt",
-      subtitle: "3.500 Kč → 35+ pravidelných zákazníků",
-      description: "Freelance zóna: rychlejší WiFi za 2.800 Kč + prodlužovačky + plakátky (700 Kč). Celkem 3.500 Kč investice. Výsledek: 35+ pravidelných freelancerů, kteří utrácejí 3-4× víc než běžný zákazník.",
+      subtitle: "3.500,- Kč → 35+ pravidelných zákazníků",
+      description: "Freelance zóna: rychlejší WiFi za 2.800,- Kč + prodlužovačky + plakátky (700,- Kč). Celkem 3.500,- Kč investice. Výsledek: 35+ pravidelných freelancerů, kteří utrácejí 3-4× víc než běžný zákazník.",
       examples: [
         { emoji: "💰", text: "Co s minimální investicí?" },
         { emoji: "🎯", text: "Zaměř se na jednu skupinu zákazníků" },

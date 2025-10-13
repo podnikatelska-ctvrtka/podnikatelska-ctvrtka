@@ -131,15 +131,16 @@ export function EarlyAccessSale() {
           >
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 max-w-md mx-auto">
               <div className="text-center mb-4">
-                <div className="text-gray-400 line-through text-xl">8.499 Kč</div>
-                <div className="text-4xl font-black text-yellow-400 mb-2">4.999 Kč</div>
+                <div className="text-gray-400 line-through text-xl">8.499,- Kč</div>
+                <div className="text-4xl font-black text-yellow-400 mb-2">4.999,- Kč</div>
+                <div className="text-yellow-400 text-xs mb-2">bez DPH</div>
                 <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
-                  SLEVA 3.500 Kč
+                  SLEVA 3.500,- Kč
                 </div>
               </div>
               
               <div className="text-center text-gray-300 text-sm">
-                + BONUS konzultace v hodnotě 2.500 Kč
+                + BONUS konzultace v hodnotě 2.500,- Kč
               </div>
             </div>
           </motion.div>
@@ -221,7 +222,7 @@ export function EarlyAccessSale() {
                 ) : (
                   <div className="flex items-center gap-2">
                     <ArrowRight className="w-5 h-5" />
-                    KOUPIT EARLY ACCESS za 4.999 Kč
+                    KOUPIT EARLY ACCESS za 4.999,- Kč
                     <ArrowRight className="w-5 h-5" />
                   </div>
                 )}

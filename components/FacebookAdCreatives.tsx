@@ -93,7 +93,7 @@ export function AdCreative2() {
             </div>
             <div>
               <p className="font-bold text-xl text-gray-800">Mini kurz ZDARMA</p>
-              <p className="text-purple-600 font-semibold text-base">Hodnota 2.999 Kč</p>
+              <p className="text-purple-600 font-semibold text-base">Hodnota 2.999,- Kč</p>
             </div>
           </div>
           
@@ -125,7 +125,8 @@ export function AdCreative2() {
         {/* Cena */}
         <div className="text-center mb-6 bg-gradient-to-r from-green-500 to-emerald-500 p-4 rounded-xl">
           <p className="text-white text-xl font-bold mb-1">ZAPLATÍTE JEN</p>
-          <p className="text-white text-5xl font-black">4.999 Kč</p>
+          <p className="text-white text-5xl font-black">4.999,- Kč</p>
+          <p className="text-white/80 text-sm mt-1">bez DPH</p>
         </div>
         
         {/* CTA */}

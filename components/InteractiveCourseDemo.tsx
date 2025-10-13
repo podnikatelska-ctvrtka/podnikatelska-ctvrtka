@@ -64,7 +64,7 @@ export function InteractiveCourseDemo() {
               </Button>
               <div className="flex items-center gap-2">
                 <BookOpen className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-bold text-gray-900">Podnikatelská čtvrtka - Interaktivní kurz</h1>
+                <h1 className="text-xl font-bold text-gray-900">Podnikatelská Čtvrtka - Interaktivní kurz</h1>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">

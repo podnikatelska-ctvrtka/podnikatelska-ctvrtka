@@ -53,17 +53,18 @@ export function CompactCaseStudySection() {
           </div>
           
           <h2 className="text-3xl md:text-4xl mb-4 text-gray-900 font-black leading-tight">
-            Jak <span className="text-blue-600 font-black">čtvrtka změnila</span>
+            Jak <span className="text-blue-600 font-black">Čtvrtka změnila</span>
             <br />My Coffee Praha
           </h2>
           
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Příběh Marie, která pomocí <strong>90minutové strategie</strong> zvýšila tržby o <strong>46%</strong> bez navýšení nákladů na marketing.
           </p>
-          <div className="flex items-center justify-center space-x-4 md:space-x-8 mt-8 text-sm md:text-base flex-wrap gap-y-3">
+          {/* Desktop - horizontal */}
+          <div className="hidden md:flex items-center justify-center space-x-4 md:space-x-8 mt-8 text-sm md:text-base flex-wrap gap-y-3">
             <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg shadow-sm">
               <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <span className="font-bold text-blue-800">Investice jen 3.500 Kč</span>
+              <span className="font-bold text-blue-800">Investice jen 3.500,- Kč</span>
             </div>
             <div className="flex items-center space-x-2 bg-orange-50 px-4 py-2 rounded-lg shadow-sm">
               <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0" />
@@ -72,6 +73,22 @@ export function CompactCaseStudySection() {
             <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-lg shadow-sm">
               <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
               <span className="font-bold text-green-800">Praktické okamžité kroky</span>
+            </div>
+          </div>
+
+          {/* Mobile - vertical stack */}
+          <div className="flex md:hidden flex-col space-y-2 mt-6 max-w-sm mx-auto">
+            <div className="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg shadow-sm">
+              <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <span className="text-sm font-semibold text-blue-800">3.500,- Kč investice</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-orange-50 px-3 py-2 rounded-lg shadow-sm">
+              <CheckCircle className="w-4 h-4 text-orange-600 flex-shrink-0" />
+              <span className="text-sm font-semibold text-orange-800">Hotovo za 6 týdnů</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-lg shadow-sm">
+              <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+              <span className="text-sm font-semibold text-green-800">Praktické kroky ihned</span>
             </div>
           </div>
         </motion.div>
@@ -259,11 +276,11 @@ export function CompactCaseStudySection() {
               }}
               className="inline-flex items-center justify-center px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold text-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group cursor-pointer"
             >
-              Chci svou Čtvrtku za předprodejní cenu
+              Chci svou Čtvrtku za průkopnickou cenu
               <ArrowDown className="ml-3 w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" />
             </button>
             <p className="text-gray-600 text-sm">
-              Zapsat se do předprodeje • Získej kurz jakmile bude hotový
+              Mini kurz ZDARMA • Průkopnická cena kurzu (4.999,- Kč)
             </p>
           </div>
         </motion.div>

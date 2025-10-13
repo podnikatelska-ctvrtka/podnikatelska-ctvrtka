@@ -45,7 +45,7 @@ export function MobileSidebarContent({
         <div className="flex items-center gap-3 text-white mb-3">
           <BookOpen className="w-6 h-6" />
           <div className="flex-1">
-            <h2 className="font-bold">Podnikatelská čtvrtka</h2>
+            <h2 className="font-bold">Podnikatelská Čtvrtka</h2>
             <p className="text-xs text-blue-100">Navigace kurzu</p>
           </div>
         </div>

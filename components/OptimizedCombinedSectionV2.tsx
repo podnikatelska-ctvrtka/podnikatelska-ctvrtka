@@ -96,7 +96,7 @@ export function OptimizedCombinedSectionV2() {
             Konkrétní odpovědi na vaše otázky
           </div>
           <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6">
-            Podnikatelská <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">čtvrtka</span>
+            Podnikatelská <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Čtvrtka</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             9 políček, která vyřeší nedostatek zákazníků, špatné zacílení a nízké zisky

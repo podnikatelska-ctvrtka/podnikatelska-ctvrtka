@@ -251,7 +251,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 rounded-xl">
-        <h3 className="text-xl font-bold mb-2">💰 Finan��ní Analýza</h3>
+        <h3 className="text-xl font-bold mb-2">💰 Finanční Analýza</h3>
         <p className="text-green-100 text-sm mb-2">
           Máte <strong>{totalRevenue.toLocaleString('cs-CZ')} Kč</strong> příjmů a <strong>{totalCosts.toLocaleString('cs-CZ')} Kč</strong> nákladů měsíčně
         </p>
@@ -521,7 +521,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                     <span className="text-lg font-bold text-gray-900">
                       {currentCustomers > 0 
                         ? Math.round(totalRevenue / currentCustomers).toLocaleString('cs-CZ') 
-                        : '���'} Kč
+                        : '0'} Kč
                     </span>
                     <p className="text-xs text-gray-500 mt-1">
                       {totalRevenue.toLocaleString('cs-CZ')} Kč ÷ {currentCustomers || '?'}
@@ -562,7 +562,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                           <strong>🎉 Gratulujeme!</strong> Jste nad bodem zvratu o <strong>{Math.abs(customerGap)} zákazníků</strong>!
                         </p>
                         <p className="text-green-700 text-xs leading-tight">
-                          Každ�� další zákazník = +{Math.round(calculatedAvgRevenue).toLocaleString('cs-CZ')} Kč přímo do zisku.
+                          Každý další zákazník = +{Math.round(calculatedAvgRevenue).toLocaleString('cs-CZ')} Kč přímo do zisku.
                         </p>
                       </div>
                     )}

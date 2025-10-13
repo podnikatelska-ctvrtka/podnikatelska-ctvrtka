@@ -32,8 +32,8 @@ export function CountdownBanner() {
           </h2>
           
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Kurz Podnikatelská čtvrtka nyní získáte za speciální cenu včetně 
-            <strong className="text-yellow-400"> bonus konzultace zdarma</strong>
+            Kurz Podnikatelská Čtvrtka nyní získáte za speciální cenu včetně 
+            <strong className="text-yellow-400"> 3-denního mini kurzu ZDARMA</strong>
           </p>
         </div>
 
@@ -44,11 +44,12 @@ export function CountdownBanner() {
               <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-4 mb-4">
                 <div className="text-blue-600 text-sm mb-1">Vaše investice:</div>
                 <div className="flex items-center justify-center gap-3 mb-2">
-                  <div className="text-gray-400 text-lg line-through">8.499 Kč</div>
-                  <div className="text-3xl text-blue-600">4.999 Kč</div>
+                  <div className="text-gray-400 text-lg line-through">8.499,- Kč</div>
+                  <div className="text-3xl text-blue-600">4.999,- Kč</div>
                 </div>
+                <div className="text-blue-600 text-xs mb-1">bez DPH</div>
                 <div className="bg-blue-600 text-white px-3 py-1 rounded-lg inline-block text-sm">
-                  Ušetříte 3.500 Kč
+                  Ušetříte 3.500,- Kč
                 </div>
               </div>
               
@@ -62,7 +63,7 @@ export function CountdownBanner() {
                   onClick={() => window.open('#', '_blank')} // TODO: Nahradit skutečným odkazem
                 >
                   <Calendar className="w-5 h-5 mr-2" />
-                  KOUPIT ZA 4.999 Kč
+                  KOUPIT ZA 4.999,- Kč
                 </EnhancedCTA>
               </TouchFeedback>
             </div>
@@ -82,7 +83,7 @@ export function CountdownBanner() {
                   Celková hodnota: 11.000 Kč
                 </div>
                 <div className="text-green-600 text-sm">
-                  Kurz (<span className="line-through text-gray-500">8.499 Kč</span>) + BONUS konzultace (2.500 Kč)
+                  Kurz (<span className="line-through text-gray-500">8.499,- Kč</span>) + BONUS konzultace (2.500,- Kč)
                 </div>
               </div>
             </div>
@@ -91,7 +92,7 @@ export function CountdownBanner() {
             <div className="mb-6">
               <h4 className="text-center mb-4 flex items-center justify-center gap-2">
                 <Star className="w-5 h-5 text-blue-600" />
-                Co za 4.999 Kč získáte:
+                Co za 4.999,- Kč získáte:
               </h4>
               
               <div className="grid sm:grid-cols-2 gap-3 text-sm">
@@ -113,7 +114,7 @@ export function CountdownBanner() {
                 </div>
                 <div className="flex items-center gap-2 sm:col-span-2">
                   <Star className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  <span className="text-blue-800">BONUS: 60min konzultace (2.500 Kč)</span>
+                  <span className="text-blue-800">BONUS: 60min konzultace (2.500,- Kč)</span>
                 </div>
               </div>
             </div>
@@ -123,11 +124,12 @@ export function CountdownBanner() {
               <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-6">
                 <div className="text-blue-600 text-sm mb-2">Vaše investice:</div>
                 <div className="flex items-center justify-center gap-4 mb-3">
-                  <div className="text-gray-400 text-xl line-through">8.499 Kč</div>
-                  <div className="text-4xl text-blue-600">4.999 Kč</div>
+                  <div className="text-gray-400 text-xl line-through">8.499,- Kč</div>
+                  <div className="text-4xl text-blue-600">4.999,- Kč</div>
                 </div>
+                <div className="text-blue-600 text-xs mb-2">bez DPH</div>
                 <div className="bg-blue-600 text-white px-4 py-2 rounded-lg inline-block">
-                  Ušetříte 3.500 Kč
+                  Ušetříte 3.500,- Kč
                 </div>
               </div>
             </div>
@@ -144,7 +146,7 @@ export function CountdownBanner() {
                   onClick={() => window.open('#', '_blank')} // TODO: Nahradit skutečným odkazem
                 >
                   <Calendar className="w-5 h-5 mr-2" />
-                  KOUPIT <span className="line-through text-blue-200 text-sm">8.499</span> ZA 4.999 Kč
+                  KOUPIT <span className="line-through text-blue-200 text-sm">8.499,-</span> ZA 4.999,- Kč
                 </EnhancedCTA>
               </TouchFeedback>
               

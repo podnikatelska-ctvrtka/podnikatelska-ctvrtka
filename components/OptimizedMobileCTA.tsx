@@ -16,8 +16,8 @@ export function OptimizedMobileCTA() {
     },
     { 
       icon: <Users className="w-4 h-4" />, 
-      text: "Bonus: Konzultace zdarma",
-      urgency: "Jen prvních 50 míst"
+      text: "3-denní mini kurz ZDARMA",
+      urgency: "Okamžitě po registraci"
     },
     { 
       icon: <Clock className="w-4 h-4" />, 

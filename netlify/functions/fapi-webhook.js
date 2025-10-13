@@ -156,7 +156,7 @@ export async function handler(event, context) {
     // ──────────────────────────────────────────
     // 📧 SEND EMAIL
     // ──────────────────────────────────────────
-    const accessUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${accessToken}`;
+    const accessUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${encodeURIComponent(accessToken)}`;
     
     const emailHtml = `
       <!DOCTYPE html>
@@ -202,7 +202,7 @@ export async function handler(event, context) {
     console.log('📧 Sending email...');
     await sendEmail(
       email,
-      '🎉 Přístup do kurzu Podnikatelsk�� Čtvrtka',
+      '🎉 Přístup do kurzu Podnikatelská Čtvrtka',
       emailHtml
     );
     

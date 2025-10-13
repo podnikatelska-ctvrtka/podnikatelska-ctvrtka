@@ -39,8 +39,8 @@ export function CookieConsent() {
                     Používáme cookies
                   </h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Používáme pouze nezbytné cookies pro základní funkčnost webu (např. uložení vašeho pokroku v kurzu). 
-                    Nesledujeme vás a neprodáváme vaše data třetím stranám.
+                    Používáme pouze technické cookies pro základní funkčnost webu (např. uložení vašeho pokroku v kurzu). 
+                    Žádné sledování, žádná reklama. Vaše data zůstávají u vás.
                   </p>
                 </div>
               </div>

@@ -121,7 +121,7 @@ export function CourseDemoV2() {
           try {
             const user = await verifyToken(savedToken);
             if (user) {
-              console.log("�� Saved token verified");
+              console.log("✅ Saved token verified");
               setIsAuthenticated(true);
               setUserData(user);
               setAuthToken(savedToken);

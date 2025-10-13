@@ -287,21 +287,21 @@ export function TimelineTabs() {
                   <span className="text-green-600 text-xl md:text-2xl">📡</span>
                   <div className="flex-1">
                     <p className="text-gray-900 font-bold text-base md:text-lg mb-1">Rychlejší WiFi + prodlužovačky</p>
-                    <p className="text-gray-700 text-sm md:text-base">2.800 Kč jednorázově</p>
+                    <p className="text-gray-700 text-sm md:text-base">2.800,- Kč jednorázově</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 md:gap-4">
                   <span className="text-green-600 text-xl md:text-2xl">🎫</span>
                   <div className="flex-1">
                     <p className="text-gray-900 font-bold text-base md:text-lg mb-1">Work Pass systém</p>
-                    <p className="text-gray-700 text-sm md:text-base">Stabilní poplatek 180 Kč za den práce</p>
+                    <p className="text-gray-700 text-sm md:text-base">Stabilní poplatek 180,- Kč za den práce</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 md:gap-4">
                   <span className="text-green-600 text-xl md:text-2xl">📢</span>
                   <div className="flex-1">
                     <p className="text-gray-900 font-bold text-base md:text-lg mb-1">Marketing</p>
-                    <p className="text-gray-700 text-sm md:text-base">700 Kč - plakátky + Instagram na freelance komunity</p>
+                    <p className="text-gray-700 text-sm md:text-base">700,- Kč - plakátky + Instagram na freelance komunity</p>
                   </div>
                 </div>
               </div>

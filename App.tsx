@@ -63,7 +63,7 @@ export default function App() {
       const hash = window.location.hash;
       const path = window.location.pathname;
       
-      if (hash.startsWith('#priprava') || path === '/priprava') {
+      if (hash.startsWith('#priprava') || path === '/priprava' || path === '/minikurz') {
         setShowChecklist(true);
         setShowCourseDemo(false);
         setShowCourseV2(false);
