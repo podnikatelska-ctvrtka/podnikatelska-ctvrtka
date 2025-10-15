@@ -64,19 +64,17 @@ export function MobileSidebarContent({
 
       {/* Dashboard Button */}
       <div className="p-3 border-b border-gray-200">
-        <Button
+        <button
           onClick={onShowDashboard}
-          variant={showingDashboard ? "default" : "outline"}
-          className={`w-full justify-start gap-2 ${
+          className={`w-full flex items-center gap-2 p-3 rounded-lg transition-all duration-200 ${
             showingDashboard 
-              ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-              : 'hover:bg-blue-50 hover:border-blue-300'
+              ? 'bg-blue-50 border-2 border-blue-300 text-blue-700' 
+              : 'hover:bg-blue-50 hover:border-blue-200 border-2 border-transparent'
           }`}
-          size="sm"
         >
           <LayoutDashboard className="w-4 h-4" />
-          📊 Dashboard
-        </Button>
+          <span className="font-medium">📊 Dashboard</span>
+        </button>
       </div>
 
       {/* Modules & Lessons - Scrollable */}

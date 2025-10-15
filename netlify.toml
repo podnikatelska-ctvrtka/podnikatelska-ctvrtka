@@ -31,3 +31,11 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# Lokální development ENV (pro netlify dev)
+# ⚠️ NEPUSHUJ PRODUKČNÍ CREDENTIALS DO GITU!
+# Pro produkci používej: Netlify Dashboard → Environment Variables
+[context.dev.environment]
+  SMARTEMAILING_USERNAME = "cipera@byznysuj.cz"
+  SMARTEMAILING_API_KEY = "4gi28ahu9tmv2lop1y8dy36pmec4og2c8gwsjgxm"
+  SMARTEMAILING_LIST_ID = "2"

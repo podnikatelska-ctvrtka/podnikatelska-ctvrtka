@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Dvůr Králové nad Labem",
+			"country": {
+				"code": "CZ",
+				"name": "Czechia"
+			},
+			"subdivision": {
+				"code": "52",
+				"name": "Královéhradecký kraj"
+			},
+			"timezone": "Europe/Prague",
+			"latitude": 50.4302,
+			"longitude": 15.8091,
+			"postalCode": "544 01"
+		},
+		"timestamp": 1760344334052
+	}
+}

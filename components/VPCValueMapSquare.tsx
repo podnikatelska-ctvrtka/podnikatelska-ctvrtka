@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { X, Save, Gift, Plus, ArrowRight, ArrowLeft, CheckCircle2, Sparkles } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
@@ -16,7 +15,7 @@ interface Tag {
 }
 
 interface Props {
-  userId: number;
+  userId: string;
   selectedSegment: string;
   selectedValue: string | null;
   onSelectValue: (value: string) => void;
@@ -95,6 +94,11 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
   const [availableValues, setAvailableValues] = useState<ValueOption[]>([]);
   const [availableSegments, setAvailableSegments] = useState<SegmentOption[]>([]);
   
+  // ✅ Jobs/Pains/Gains pro načítání z databáze
+  const [jobs, setJobs] = useState<Tag[]>([]);
+  const [pains, setPains] = useState<Tag[]>([]);
+  const [gains, setGains] = useState<Tag[]>([]);
+  
   // ✅ Customer Profile data pro context hints
   const [customerProfileData, setCustomerProfileData] = useState<{
     jobs: Array<{ text: string }>;
@@ -142,7 +146,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
     try {
       // Load segments
       const { data: segData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'segments')
@@ -157,7 +161,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
       
       // Load values
       const { data, error } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'value')
@@ -524,17 +528,15 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
         <div className="flex items-center justify-between relative">
           {/* Progress Line */}
           <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10">
-            <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-              initial={{ width: '0%' }}
-              animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
-              transition={{ duration: 0.5 }}
+            <div
+              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+              style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
             />
           </div>
           
           {steps.map((step, idx) => (
             <div key={idx} className="flex flex-col items-center relative">
-              <motion.div
+              <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all ${
                   idx === currentStep
                     ? 'bg-gradient-to-br from-blue-500 to-purple-500 text-white shadow-lg scale-110'
@@ -544,7 +546,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 }`}
               >
                 {step.completed && idx < currentStep ? <CheckCircle2 className="w-5 h-5" /> : step.icon}
-              </motion.div>
+              </div>
               <span className={`text-xs mt-2 font-medium ${idx === currentStep ? 'text-blue-600' : 'text-gray-500'}`}>
                 {step.label}
               </span>
@@ -554,15 +556,12 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
       </div>
       
       {/* Content Area */}
-      <AnimatePresence mode="wait">
+      <div>
         {/* STEP 0: Výběr hodnoty */}
         {currentStep === 0 && (
-          <motion.div
+          <div
             key="step0"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-4 border-blue-200 p-8"
+            className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-4 border-blue-200 p-8 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-blue-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl shadow-lg">
@@ -602,18 +601,16 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {filteredValues.map((value, idx) => (
-                    <motion.button
+                    <button
                       key={idx}
                       onClick={() => {
                         onSelectValue(value.text);
                       }}
-                      className={`p-6 rounded-xl border-3 text-left transition-all ${
+                      className={`p-6 rounded-xl border-3 text-left transition-all hover:scale-102 active:scale-98 ${
                         selectedValue === value.text
                           ? 'bg-blue-100 border-blue-500 shadow-lg scale-105'
                           : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
                       }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">
                         <div
@@ -628,7 +625,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                           <span>Vybráno</span>
                         </div>
                       )}
-                    </motion.button>
+                    </button>
                   ))}
                 </div>
                 
@@ -650,17 +647,14 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 </div>
               </>
             )}
-          </motion.div>
+          </div>
         )}
         
         {/* STEP 1: Produkty */}
         {currentStep === 1 && (
-          <motion.div
+          <div
             key="step1"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl border-4 border-orange-200 p-8"
+            className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl border-4 border-orange-200 p-8 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-orange-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl shadow-lg">
@@ -726,11 +720,10 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   console.log('🔍 RENDERING PRODUCT:', { product, productText, productColor, type: typeof product });
                   
                   return (
-                  <motion.div
+                  <div
                     key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="group relative"
+                    className="group relative animate-in fade-in zoom-in-95 duration-200"
+                    style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div
                       className="w-full h-28 rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-3"
@@ -746,7 +739,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                         <X className="w-4 h-4 text-white" />
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                   );
                 })
               )}
@@ -776,17 +769,14 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
         
         {/* STEP 2: Přínosy */}
         {currentStep === 2 && (
-          <motion.div
+          <div
             key="step2"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-4 border-green-200 p-8"
+            className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-4 border-green-200 p-8 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-green-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl shadow-lg">
@@ -854,11 +844,10 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   console.log('🔍 RENDERING GAIN CREATOR:', { creator, creatorText, creatorColor, type: typeof creator });
                   
                   return (
-                  <motion.div
+                  <div
                     key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="group relative"
+                    className="group relative animate-in fade-in zoom-in-95 duration-200"
+                    style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div
                       className="w-32 h-24 rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-3"
@@ -874,7 +863,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                         <X className="w-4 h-4 text-white" />
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                   );
                 })
               )}
@@ -904,17 +893,14 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
         
         {/* STEP 3: Řešení */}
         {currentStep === 3 && (
-          <motion.div
+          <div
             key="step3"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border-4 border-purple-200 p-8"
+            className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border-4 border-purple-200 p-8 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-purple-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl shadow-lg">
@@ -982,11 +968,10 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   console.log('🔍 RENDERING PAIN RELIEVER:', { reliever, relieverText, relieverColor, type: typeof reliever });
                   
                   return (
-                  <motion.div
+                  <div
                     key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="group relative"
+                    className="group relative animate-in fade-in zoom-in-95 duration-200"
+                    style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div
                       className="w-32 h-24 rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-3"
@@ -1002,7 +987,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                         <X className="w-4 h-4 text-white" />
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                   );
                 })
               )}
@@ -1033,23 +1018,20 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 <CheckCircle2 className="w-5 h-5" />
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
         
         {/* STEP 4: Shrnutí */}
         {currentStep === 4 && (
-          <motion.div
+          <div
             key="step4"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="space-y-6"
+            className="space-y-6 animate-in fade-in zoom-in-95 duration-500"
           >
             {/* Gratulace */}
             <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl p-8 text-center shadow-2xl">
               <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-3xl font-bold mb-2">Skvělá práce!</h2>
-              <p className="text-lg opacity-90">Value Proposition Canvas je kompletní</p>
+              <h2 className="mb-2 text-white">Skvělá práce!</h2>
+              <p className="text-white text-lg opacity-90">Value Proposition Canvas je kompletní</p>
             </div>
             
             {/* Shrnutí hodnoty */}
@@ -1097,7 +1079,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {gainCreators.map((g, idx) => (
-                    <div key={idx} className="bg-white rounded-lg p-3 shadow-sm text-sm">
+                    <div key={idx} className="bg-white rounded-lg p-3 shadow-sm">
                       {g.text}
                     </div>
                   ))}
@@ -1114,7 +1096,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {painRelievers.map((r, idx) => (
-                    <div key={idx} className="bg-white rounded-lg p-3 shadow-sm text-sm">
+                    <div key={idx} className="bg-white rounded-lg p-3 shadow-sm">
                       {r.text}
                     </div>
                   ))}
@@ -1153,9 +1135,9 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
               <Save className={`w-4 h-4 ${isSaving ? 'animate-pulse text-blue-500' : 'text-green-500'}`} />
               <span className="font-medium">{isSaving ? 'Ukládám...' : 'Automaticky uloženo'}</span>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }

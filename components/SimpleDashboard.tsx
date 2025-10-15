@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { Trophy, BookOpen, ArrowRight, CheckCircle, Menu, X, Lock, Award, Star, Target } from "lucide-react";
 import { Button } from "./ui/button";
 import { BusinessModelCanvasSimple } from "./BusinessModelCanvasSimple";
@@ -18,7 +17,7 @@ interface Module {
 }
 
 interface SimpleDashboardProps {
-  userId: number;
+  userId: string;
   modules: Module[];
   completedLessons: Set<number>;
   currentModuleId: number;
@@ -49,15 +48,39 @@ export function SimpleDashboard({
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [canvasSections, setCanvasSections] = useState<any[]>([]);
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(unlockedAchievementsProp || new Set());
+  const [hasError, setHasError] = useState(false);
   
-  // Calculate progress
-  const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
-  const completedCount = completedLessons.size;
-  const progressPercent = Math.round((completedCount / totalLessons) * 100);
+  // ✅ Error boundary
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="text-6xl mb-4">😕</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Něco se pokazilo
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Omlouváme se, dashboard se nepodařilo načíst. Zkuste obnovit stránku.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Obnovit stránku
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Calculate progress - ✅ SAFE: Check if modules array is valid
+  const totalLessons = modules && modules.length > 0 ? modules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0) : 0;
+  const completedCount = completedLessons?.size || 0;
+  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
   
   // 🏆 Achievement stats
   const totalPoints = calculateTotalPoints(unlockedAchievements);
-  const achievementProgress = Math.round((unlockedAchievements.size / ACHIEVEMENTS.length) * 100);
+  const achievementProgress = ACHIEVEMENTS.length > 0 ? Math.round((unlockedAchievements.size / ACHIEVEMENTS.length) * 100) : 0;
   
   // Load Canvas data for mobile preview
   useEffect(() => {
@@ -65,10 +88,15 @@ export function SimpleDashboard({
       if (!userId) return;
       
       try {
-        const { data } = await supabase
-          .from('business_canvas_sections')
+        const { data, error } = await supabase
+          .from('user_canvas_data')
           .select('*')
           .eq('user_id', userId);
+        
+        if (error) {
+          console.warn('Supabase error loading canvas:', error);
+          return;
+        }
         
         if (data) {
           const formatted = [
@@ -93,7 +121,8 @@ export function SimpleDashboard({
           setCanvasSections(formatted);
         }
       } catch (err) {
-        console.warn('Failed to load canvas data:', err);
+        console.error('❌ Failed to load canvas data:', err);
+        setHasError(true);
       }
     };
     
@@ -119,7 +148,7 @@ export function SimpleDashboard({
       
       console.log('🔄 SimpleDashboard: Reloading fresh progress from Supabase...');
       const { data, error } = await supabase
-        .from('course_progress')
+        .from('user_progress')
         .select('lesson_id')
         .eq('user_id', userId);
       
@@ -183,6 +212,7 @@ export function SimpleDashboard({
                 onShowDashboard();
                 setShowMobileSidebar(false);
               }}
+              showingDashboard={true}
             />
           </div>
         </div>
@@ -196,40 +226,32 @@ export function SimpleDashboard({
         completedLessons={completedLessons}
         onSelectLesson={onSelectLesson}
         onShowDashboard={onShowDashboard}
+        showingDashboard={true}
       />
 
       {/* Main Dashboard Content */}
       <div className="flex-1 md:ml-80 bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-[1400px] mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
+        <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4">
             <Trophy className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl mb-2 text-gray-900">
             📊 Dashboard
           </h1>
           <p className="text-lg text-gray-700">
             Váš pokrok v kurzu Podnikatelská Čtvrtka
           </p>
-        </motion.div>
+        </div>
 
         {/* 2-COLUMN GRID: Progress + Achievements */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid lg:grid-cols-2 gap-6 mb-8">
           {/* Progress Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-xl p-6"
-          >
+          <div className="bg-white rounded-2xl shadow-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Celkový pokrok</h2>
+              <h2 className="text-2xl text-gray-900">Celkový pokrok</h2>
               <p className="text-gray-600">
                 Dokončeno {completedCount} z {totalLessons} lekcí
               </p>
@@ -241,19 +263,18 @@ export function SimpleDashboard({
           </div>
           
           <div className="h-6 bg-gray-200 rounded-full overflow-hidden mb-6">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercent}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="h-full bg-gradient-to-r from-blue-500 to-green-500"
+            <div
+              style={{ width: `${progressPercent || 0}%` }}
+              className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-1000 ease-out"
             />
           </div>
 
           {/* Modules Overview */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {modules.map((module) => {
+            {modules && modules.length > 0 && modules.map((module) => {
+              if (!module || !module.lessons) return null;
               const moduleCompleted = module.lessons.filter(l => completedLessons.has(l.id)).length;
-              const moduleProgress = Math.round((moduleCompleted / module.lessons.length) * 100);
+              const moduleProgress = module.lessons.length > 0 ? Math.round((moduleCompleted / module.lessons.length) * 100) : 0;
               
               return (
                 <div
@@ -272,7 +293,7 @@ export function SimpleDashboard({
                     ) : (
                       <BookOpen className="w-5 h-5 text-blue-600" />
                     )}
-                    <h3 className="font-bold text-gray-900">Modul {module.id}</h3>
+                    <h3 className="text-gray-900">Modul {module.id}</h3>
                   </div>
                   <p className="text-sm text-gray-700 mb-2">{module.title}</p>
                   <div className="flex items-center justify-between text-sm">
@@ -288,14 +309,23 @@ export function SimpleDashboard({
 
           {/* Action Plan Button - zobrazit když mají dokončený FIT Validator */}
           {completedLessons.has(16) && onShowActionPlan && (
-            <Button
-              onClick={onShowActionPlan}
-              size="lg"
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 gap-2 mb-3"
-            >
-              <Target className="w-5 h-5" />
-              Zobrazit Akční plán
-            </Button>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-4 mb-4">
+              <p className="text-green-900 font-bold mb-2 flex items-center gap-2">
+                <Target className="w-5 h-5" />
+                🎯 Připraveno pro vás!
+              </p>
+              <p className="text-green-700 mb-3">
+                Váš personalizovaný akční plán je připraven. Podívejte se co dělat dál pro růst vašeho byznysu.
+              </p>
+              <Button
+                onClick={onShowActionPlan}
+                size="lg"
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-bold text-lg py-6 shadow-lg hover:shadow-xl transition-all"
+              >
+                <Target className="w-6 h-6 mr-2" />
+                Zobrazit Akční plán
+              </Button>
+            </div>
           )}
 
           {/* Continue Button - SKRYJ pokud je kurz dokončený (100%) */}
@@ -318,15 +348,10 @@ export function SimpleDashboard({
               <p className="text-green-100">Dokončil jsi celý kurz! 🎉</p>
             </div>
           )}
-          </motion.div>
+          </div>
 
           {/* 🏆 ACHIEVEMENTS SECTION */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl shadow-xl p-6 border-2 border-yellow-200"
-          >
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl shadow-xl p-6 border-2 border-yellow-200">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full p-3">
@@ -347,67 +372,64 @@ export function SimpleDashboard({
 
           {/* Achievement Progress Bar */}
           <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-6">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${achievementProgress}%` }}
-              transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-              className="h-full bg-gradient-to-r from-yellow-400 to-orange-500"
+            <div
+              style={{ width: `${achievementProgress || 0}%` }}
+              className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-1000 ease-out"
             />
           </div>
 
           {/* Achievement Grid - REDESIGNED */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {ACHIEVEMENTS.map((achievement) => {
               const isUnlocked = unlockedAchievements.has(achievement.id);
               
               return (
-                <motion.div
+                <div
                   key={achievement.id}
-                  whileHover={isUnlocked ? { scale: 1.05 } : {}}
-                  className={`relative group rounded-lg p-2 transition-all ${
+                  className={`relative group rounded-lg p-3 transition-all aspect-square flex flex-col items-center justify-center ${
                     isUnlocked 
-                      ? 'bg-gradient-to-br from-white to-yellow-50 border-2 border-yellow-300 shadow-md hover:shadow-lg cursor-pointer' 
+                      ? 'bg-gradient-to-br from-white to-yellow-50 border-2 border-yellow-300 shadow-md hover:shadow-lg cursor-pointer hover:scale-105' 
                       : 'bg-gray-100 border-2 border-dashed border-gray-300 opacity-50'
                   }`}
                   title={achievement.description}
                 >
                   {/* Lock icon for locked */}
                   {!isUnlocked && (
-                    <div className="absolute top-1 right-1">
-                      <Lock className="w-3 h-3 text-gray-400" />
+                    <div className="absolute top-1.5 right-1.5">
+                      <Lock className="w-3.5 h-3.5 text-gray-400" />
                     </div>
                   )}
 
-                  {/* Emoji - menší */}
-                  <div className={`text-2xl mb-1 text-center ${!isUnlocked && 'grayscale opacity-40'}`}>
+                  {/* Emoji */}
+                  <div className={`mb-1.5 text-center ${!isUnlocked && 'grayscale opacity-40'}`} style={{ fontSize: '30px' }}>
                     {achievement.emoji}
                   </div>
 
-                  {/* Title - menší */}
-                  <h4 className={`text-[10px] font-bold mb-1 line-clamp-2 text-center leading-tight ${
+                  {/* Title */}
+                  <div className={`mb-1.5 line-clamp-2 text-center leading-tight font-bold antialiased ${
                     isUnlocked ? 'text-gray-900' : 'text-gray-500'
-                  }`}>
+                  }`} style={{ fontSize: '11px' }}>
                     {achievement.title}
-                  </h4>
+                  </div>
 
-                  {/* Points badge - menší */}
+                  {/* Points badge */}
                   {achievement.points && (
                     <div className={`flex items-center justify-center gap-0.5 ${
                       isUnlocked 
                         ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
                         : 'bg-gray-200 text-gray-400'
-                    } rounded-full px-1.5 py-0.5 text-[10px] font-bold`}>
+                    } rounded-full px-1.5 py-0.5 font-bold`} style={{ fontSize: '9px' }}>
                       <Star className="w-2.5 h-2.5" fill="currentColor" />
                       <span>{achievement.points}</span>
                     </div>
                   )}
 
                   {/* Tooltip on hover */}
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-xl">
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-xl" style={{ fontSize: '11px' }}>
                     {achievement.description}
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -428,18 +450,14 @@ export function SimpleDashboard({
               </div>
             </div>
           )}
-          </motion.div>
+          </div>
         </div>
 
         {/* Canvas Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl shadow-xl"
+        <div className="bg-white rounded-2xl shadow-xl"
         >
           <div className="p-8 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl text-gray-900 mb-2">
               🎨 Můj Business Model Canvas
             </h2>
             <p className="text-gray-600 mb-3">
@@ -467,7 +485,7 @@ export function SimpleDashboard({
           <div className="md:hidden">
             <MobileCanvasPreview sections={canvasSections} defaultOpen={false} />
           </div>
-        </motion.div>
+        </div>
       </div>
       </div>
     </div>

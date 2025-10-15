@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "motion/react";
 import { X, ArrowRight, CheckCircle, Lightbulb } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -32,22 +31,16 @@ export function GuidedTour({
   const isLastStep = step === totalSteps;
 
   return (
-    <AnimatePresence>
+    <>
       {/* Overlay s tmavším pozadím - LEPŠÍ VIDITELNOST */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] print:hidden"
+      <div
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] print:hidden transition-opacity"
         onClick={onSkip}
       />
 
       {/* Tour guide popup - SCROLLOVATELNÝ + VÝŠE */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="fixed top-[5vh] left-1/2 -translate-x-1/2 z-[70] w-full max-w-lg mx-4 max-h-[85vh] flex flex-col"
+      <div
+        className="fixed top-[5vh] left-1/2 -translate-x-1/2 z-[70] w-full max-w-lg mx-4 max-h-[85vh] flex flex-col transition-all"
       >
         <div className="bg-white rounded-2xl shadow-2xl border-4 border-blue-500 overflow-hidden flex flex-col max-h-[90vh]">
           {/* Header - FIXED */}
@@ -76,9 +69,9 @@ export function GuidedTour({
 
             {/* Tips */}
             {tips.length > 0 && (
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                <p className="font-semibold text-blue-900 mb-3 text-base">💡 Tipy:</p>
-                <ul className="space-y-2 text-sm text-blue-800">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-5">
+                <p className="font-bold text-blue-900 mb-3">💡 Tipy:</p>
+                <ul className="space-y-3 text-blue-800">
                   {tips.map((tip, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <span className="text-blue-600 font-bold flex-shrink-0">•</span>
@@ -93,10 +86,9 @@ export function GuidedTour({
             {totalSteps > 1 && (
               <div className="space-y-2">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(step / totalSteps) * 100}%` }}
-                    className="h-full bg-gradient-to-r from-blue-500 to-green-500"
+                  <div
+                    style={{ width: `${(step / totalSteps) * 100}%` }}
+                    className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300"
                   />
                 </div>
                 <p className="text-xs text-gray-500 text-center">
@@ -114,10 +106,8 @@ export function GuidedTour({
             </p>
           </div>
         </div>
-      </motion.div>
-
-
-    </AnimatePresence>
+      </div>
+    </>
   );
 }
 

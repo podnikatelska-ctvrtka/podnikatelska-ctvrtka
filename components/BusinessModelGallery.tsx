@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, ChevronRight, Info, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ReadOnlyBusinessModelCanvas } from "./ReadOnlyBusinessModelCanvas";
@@ -440,15 +439,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
       </div>
 
       {/* Main Canvas Display */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentModel.id}
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden"
-        >
+      <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
           {/* Model Header */}
           <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-b-2 border-gray-200">
             <div className="flex items-center justify-between">
@@ -473,6 +464,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
           {/* Canvas - POUŽITÍ EXISTUJÍCÍHO KOMPONENTY */}
           <div className="px-4 py-6">
             <ReadOnlyBusinessModelCanvas
+              key={`${currentModel.name}-${currentModel.version}`}
               sections={[
                 { id: 'partners', title: '🤝 Klíčová partnerství', items: currentModel.partnerships.map(p => ({ text: p.text, color: p.color })), gridArea: 'partners' },
                 { id: 'activities', title: '🎯 Klíčové aktivity', items: currentModel.activities.map(a => ({ text: a.text, color: a.color })), gridArea: 'activities' },
@@ -490,10 +482,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
 
           {/* Insights Panel */}
           {showInsights && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+            <div
               className="bg-gradient-to-r from-amber-50 to-yellow-50 border-t-2 border-amber-200 p-6"
             >
               <h5 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -518,10 +507,9 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
                   <p className="text-sm text-amber-800">{currentModel.insights.revenueBreakdown}</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </motion.div>
-      </AnimatePresence>
+        </div>
 
       {/* Navigation */}
       <div className="flex items-center justify-between">
@@ -554,8 +542,8 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
       </div>
 
       {/* Vysvětlení zvýraznění */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-        <p className="text-sm text-blue-900">
+      <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 text-center">
+        <p className="text-blue-900">
           💡 <strong>Proč jsou zvýrazněné Segmenty a Hodnota?</strong><br />
           Protože to jsou HLAVNÍ stavební bloky každého Business Modelu! Vše ostatní se odvíjí od toho KDO jsou vaši zákazníci (Segmenty) a CO jim nabízíte (Hodnota).
         </p>
@@ -563,12 +551,8 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
 
       {/* CTA - Dokončit Modul 2 */}
       {!isCompleted ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-center shadow-2xl mt-6"
-        >
-          <h3 className="text-2xl font-bold text-white mb-3">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-center shadow-2xl mt-6 animate-in fade-in duration-500">
+          <h3 className="mb-3 text-white">
             🎉 Gratuluji! Viděli jste úspěšné modely
           </h3>
           <p className="text-green-100 mb-6">
@@ -584,13 +568,9 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
           >
             Dokončit Modul 2 🎉
           </Button>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-6"
-        >
+        <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-6 animate-in fade-in zoom-in-95 duration-300">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-green-500 rounded-full p-3">
               <CheckCircle2 className="w-8 h-8 text-white" />
@@ -623,7 +603,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
               🔄 Prohlédnout znovu
             </Button>
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );

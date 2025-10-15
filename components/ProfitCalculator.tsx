@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "motion/react";
 import { TrendingUp, TrendingDown, Users, Target, ArrowRight, ChevronDown, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import { supabase } from "../lib/supabase";
 
 interface Props {
-  userId: number;
+  userId: string;
   onComplete: () => void;
   onNavigateNext?: () => void;
   onAchievementUnlocked?: (achievementId: string) => void;
@@ -19,10 +18,10 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
   const [avgRevenuePerCustomer, setAvgRevenuePerCustomer] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [segments, setSegments] = useState<Array<{name: string, customers: number, avgRevenue: number}>>([
+  const [segments, setSegments] = useState<Array<{name: string, customers: number, avgRevenue: number, color?: string}>>([
     { name: 'Segment 1', customers: 0, avgRevenue: 0 }
   ]);
-  const [revenueStreams, setRevenueStreams] = useState<Array<{name: string, value: number}>>([]);
+  const [revenueStreams, setRevenueStreams] = useState<Array<{name: string, value: number, color?: string}>>([]);
   const [valuePropositions, setValuePropositions] = useState<Array<{name: string, color?: string}>>([]);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -33,7 +32,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
     const loadFinancialData = async () => {
       try {
         const { data } = await supabase
-          .from('business_canvas_sections')
+          .from('user_canvas_data')
           .select('*')
           .eq('user_id', userId)
           .in('section_key', ['revenue', 'costs', 'segments', 'value']);
@@ -41,8 +40,8 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
         if (data) {
           let revenue = 0;
           let costs = 0;
-          const userSegments: Array<{name: string, customers: number, avgRevenue: number}> = [];
-          const userRevenueStreams: Array<{name: string, value: number}> = [];
+          const userSegments: Array<{name: string, customers: number, avgRevenue: number, color?: string}> = [];
+          const userRevenueStreams: Array<{name: string, value: number, color?: string}> = [];
           const userValueProps: Array<{name: string, color?: string}> = [];
           
           data.forEach(section => {
@@ -51,12 +50,13 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
             
             if (section.section_key === 'revenue') {
               revenue = total;
-              // Extract individual revenue streams
+              // Extract individual revenue streams WITH COLORS
               items.forEach((item: any) => {
                 if (item.text && item.value && item.value > 0) {
                   userRevenueStreams.push({
                     name: item.text,
-                    value: item.value
+                    value: item.value,
+                    color: item.color || 'global' // Default to global if no color
                   });
                 }
               });
@@ -64,14 +64,15 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
             
             if (section.section_key === 'costs') costs = total;
             
-            // Load segments (excluding white)
+            // Load segments WITH COLORS (excluding white)
             if (section.section_key === 'segments') {
               items.forEach((item: any) => {
                 if (item.color && item.color !== 'white') {
                   userSegments.push({
                     name: item.text || `Segment ${item.color}`,
                     customers: 0,
-                    avgRevenue: 0
+                    avgRevenue: 0,
+                    color: item.color
                   });
                 }
               });
@@ -118,7 +119,8 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                   return {
                     name: us.name,
                     customers: dbSegment.currentValue || 0,
-                    avgRevenue: dbSegment.value || 0
+                    avgRevenue: dbSegment.value || 0,
+                    color: us.color // ✅ Přidej barvu!
                   };
                 }
                 
@@ -157,7 +159,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
   }, [userId, onAchievementUnlocked]);
 
   // 💾 DEBOUNCED SAVE - ukládá až po 500ms nečinnosti
-  const debouncedSave = (newSegments: Array<{name: string, customers: number, avgRevenue: number}>) => {
+  const debouncedSave = (newSegments: Array<{name: string, customers: number, avgRevenue: number, color?: string}>) => {
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
     }
@@ -168,13 +170,13 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
   };
 
   // 💾 SAVE segments to database
-  const saveSegmentsToDatabase = async (newSegments: Array<{name: string, customers: number, avgRevenue: number}>) => {
+  const saveSegmentsToDatabase = async (newSegments: Array<{name: string, customers: number, avgRevenue: number, color?: string}>) => {
     try {
       console.log('💾 [DEBOUNCED] Saving segments to DB:', newSegments);
       
       // Načti aktuální segments z DB
       const { data: currentSegmentsData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'segments')
@@ -195,9 +197,22 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
         const match = newSegments.find(ns => ns.name === seg.text);
         
         if (match) {
-          // Spočítej průměrnou útrátu pro tento segment
+          // 🎯 NOVÝ VÝPOČET: Spoj příjmy podle barev!
+          // 1. Najdi příjmy přímo pro tento segment (matching color)
+          const directRevenue = revenueStreams
+            .filter(stream => stream.color === seg.color)
+            .reduce((sum, stream) => sum + stream.value, 0);
+          
+          // 2. Najdi globální příjmy a rozdel proporcionálně
+          const globalRevenue = revenueStreams
+            .filter(stream => stream.color === 'global' || stream.color === 'gray')
+            .reduce((sum, stream) => sum + stream.value, 0);
+          
           const segmentShare = totalCustomersInSegments > 0 ? match.customers / totalCustomersInSegments : 0;
-          const segmentRevenue = totalRevenue * segmentShare;
+          const globalShare = globalRevenue * segmentShare;
+          
+          // 3. CELKEM pro tento segment
+          const segmentRevenue = directRevenue + globalShare;
           const avgRevenueForSegment = match.customers > 0 ? Math.round(segmentRevenue / match.customers) : 0;
           
           console.log(`  ✅ Updating ${seg.text}: customers=${match.customers}, avgRevenue=${avgRevenueForSegment}`);
@@ -216,7 +231,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
       
       // Ulož zpět do DB
       const { error } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .update({ content: updatedSegments })
         .eq('user_id', userId)
         .eq('section_key', 'segments');
@@ -251,12 +266,12 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 rounded-xl">
-        <h3 className="text-xl font-bold mb-2">💰 Finanční Analýza</h3>
-        <p className="text-green-100 text-sm mb-2">
+        <h2 className="mb-2">💰 Finanční Analýza</h2>
+        <p className="text-green-100 mb-2">
           Máte <strong>{totalRevenue.toLocaleString('cs-CZ')} Kč</strong> příjmů a <strong>{totalCosts.toLocaleString('cs-CZ')} Kč</strong> nákladů měsíčně
         </p>
         {segments.length >= 1 && (
-          <div className="bg-white/20 rounded-lg p-3 text-xs mt-3">
+          <div className="bg-white/20 rounded-lg p-3 mt-3">
             <p className="text-white">
               📊 Máte <strong>{segments.length === 1 ? '1 segment' : `${segments.length} segmenty`}</strong>: <strong>{segments.map(s => s.name).join(', ')}</strong>
             </p>
@@ -271,11 +286,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
         <>
           {/* Warning if empty Canvas */}
           {totalRevenue === 0 && totalCosts === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-yellow-50 border-2 border-yellow-400 p-6 rounded-xl mb-6"
-            >
+            <div className="bg-yellow-50 border-2 border-yellow-400 p-6 rounded-xl mb-6 animate-in fade-in zoom-in-95 duration-200">
               <h4 className="font-bold text-yellow-900 mb-2 flex items-center gap-2">
                 ⚠️ Chybí data z vašeho Canvas!
               </h4>
@@ -291,14 +302,11 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                   <li>Vraťte se sem zpět</li>
                 </ol>
               </div>
-            </motion.div>
+            </div>
           )}
         
           {/* FINANČNÍ ANALÝZA - Kompaktní inline */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`${
+          <div className={`${
               isProfitable 
                 ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-300' 
                 : 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-400'
@@ -307,18 +315,18 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4 md:gap-6">
                 <div>
-                  <div className="text-xs text-gray-600">💵 Příjmy</div>
-                  <div className="font-bold text-gray-900">{totalRevenue.toLocaleString('cs-CZ')} Kč</div>
+                  <div className="text-gray-600">💵 Příjmy</div>
+                  <div className="text-xl font-bold text-gray-900">{totalRevenue.toLocaleString('cs-CZ')} Kč</div>
                 </div>
-                <div className="text-gray-400 font-bold">−</div>
+                <div className="text-gray-400 font-bold text-2xl">−</div>
                 <div>
-                  <div className="text-xs text-gray-600">💸 Náklady</div>
-                  <div className="font-bold text-gray-900">{totalCosts.toLocaleString('cs-CZ')} Kč</div>
+                  <div className="text-gray-600">💸 Náklady</div>
+                  <div className="text-xl font-bold text-gray-900">{totalCosts.toLocaleString('cs-CZ')} Kč</div>
                 </div>
-                <div className="text-gray-400 font-bold">=</div>
+                <div className="text-gray-400 font-bold text-2xl">=</div>
                 <div>
-                  <div className="text-xs text-gray-600">{isProfitable ? '💰 Zisk' : '⚠️ Ztráta'}</div>
-                  <div className={`text-xl font-bold ${isProfitable ? 'text-green-700' : 'text-orange-700'}`}>
+                  <div className="text-gray-600">{isProfitable ? '💰 Zisk' : '⚠️ Ztráta'}</div>
+                  <div className={`text-2xl font-bold ${isProfitable ? 'text-green-700' : 'text-orange-700'}`}>
                     {Math.abs(profit).toLocaleString('cs-CZ')} Kč
                   </div>
                 </div>
@@ -330,48 +338,43 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                 {isProfitable ? (
                   <>
                     <TrendingUp className="w-5 h-5 text-green-600" />
-                    <span className="font-bold text-green-900 text-sm">Model je ziskový</span>
+                    <span className="font-bold text-lg text-green-900">Model je ziskový</span>
                   </>
                 ) : (
                   <>
                     <TrendingDown className="w-5 h-5 text-yellow-600" />
-                    <span className="font-bold text-yellow-900 text-sm">Potřeba dosáhnout bodu zvratu</span>
+                    <span className="font-bold text-lg text-yellow-900">Potřeba dosáhnout bodu zvratu</span>
                   </>
                 )}
               </div>
             </div>
             
-            <div className="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-200">
+            <div className="text-sm text-gray-700 mt-3 pt-3 border-t border-gray-200">
               {isProfitable ? (
                 <>💡 Marže: <strong>{profitMargin.toFixed(1)}%</strong> • Roční projekce: <strong>{(profit * 12).toLocaleString('cs-CZ')} Kč</strong></>
               ) : (
                 <>⚡ Potřebujete získat <strong>{breakEvenCustomers - currentCustomers > 0 ? (breakEvenCustomers - currentCustomers) : 0} zákazníků</strong> nebo zvýšit příjmy o <strong>{Math.abs(profit).toLocaleString('cs-CZ')} Kč</strong></>
               )}
             </div>
-          </motion.div>
+          </div>
 
           {/* 2 COLUMN GRID: Products/Value + Segments Analysis */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* LEFT: Products & Value Props (compact) */}
             {(revenueStreams.length > 0 || valuePropositions.length > 0) && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 p-5 rounded-xl"
-              >
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 p-5 rounded-xl">
                 <h4 className="font-bold text-indigo-900 mb-2 text-lg">
                   💰 Které zdroje příjmů jsou nejúspěšnější?
                 </h4>
-                <p className="text-xs text-indigo-700 mb-4">
+                <p className="text-sm text-indigo-700 mb-4">
                   Seřazené podle příjmů - zaměřte se na TOP zdroje!
                 </p>
                 
                 {/* Revenue Streams - Compact */}
                 {revenueStreams.length > 0 && (
                   <div className="space-y-2 mb-4">
-                    <h5 className="text-sm font-bold text-indigo-900">💵 Vaše zdroje příjmů:</h5>
+                    <h5 className="font-bold text-indigo-900">💵 Vaše zdroje příjmů:</h5>
                     {revenueStreams.map((stream, idx) => {
                       const percentage = totalRevenue > 0 ? (stream.value / totalRevenue) * 100 : 0;
                       const isTop = idx === 0;
@@ -385,17 +388,17 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                         >
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2">
-                              <span className={`text-sm font-bold ${isTop ? 'text-green-600' : 'text-gray-600'}`}>
+                              <span className={`font-bold ${isTop ? 'text-green-600' : 'text-gray-600'}`}>
                                 #{idx + 1}
                               </span>
-                              <span className="font-bold text-gray-900 text-sm">{stream.name}</span>
+                              <span className="font-bold text-gray-900">{stream.name}</span>
                               {isTop && <span className="text-xs bg-green-500 text-white px-1.5 py-0.5 rounded">TOP</span>}
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <div className={`font-bold text-sm ${isTop ? 'text-green-700' : 'text-gray-900'}`}>
+                              <div className={`font-bold ${isTop ? 'text-green-700' : 'text-gray-900'}`}>
                                 {stream.value.toLocaleString('cs-CZ')} Kč
                               </div>
-                              <div className="text-xs font-bold text-gray-600">
+                              <div className="text-sm font-bold text-gray-600">
                                 {percentage.toFixed(1)}%
                               </div>
                             </div>
@@ -451,36 +454,51 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                         );
                       })}
                     </div>
-                    <div className="text-xs text-indigo-700 bg-indigo-100 p-2 rounded leading-tight">
-                      <p className="font-bold mb-1">💡 Jak z toho udělat víc peněz?</p>
-                      <p className="text-indigo-600">
+                    <div className="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-lg">
+                      <p className="text-sm font-bold mb-2 text-indigo-900">💡 Jak z toho udělat víc peněz?</p>
+                      <p className="text-sm text-indigo-800">
                         Každý benefit můžete zabalit do premium varianty nebo samostatné služby!
                       </p>
-                      <p className="text-indigo-600 text-xs mt-1 italic">
-                        Např: "Rychlá káva" → Express menu, "Klidné místo" → Coworking pass
+                      <p className="text-sm text-indigo-700 mt-2">
+                        <strong>Např:</strong> "Rychlá káva" → Express menu, "Klidné místo" → Coworking pass
                       </p>
                     </div>
                   </div>
                 )}
-              </motion.div>
+              </div>
             )}
             
             {/* RIGHT: Segments Analysis (compact) */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.45 }}
-              className="bg-white border-2 border-gray-200 p-5 rounded-xl"
-            >
+            <div className="bg-white border-2 border-gray-200 p-5 rounded-xl">
               <h4 className="font-bold text-gray-900 mb-2 text-lg flex items-center gap-2">
                 <Target className="w-5 h-5 text-blue-600" />
                 {segments.length === 1 ? 'Kolik potřebujete zákazníků?' : 'Rozdělte zákazníky po segmentech'}
               </h4>
-              <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg mb-4">
-                <p className="text-xs text-blue-900 mb-2">
-                  <strong>💡 Co je bod zvratu (break-even)?</strong>
+              {/* LEGEND - pouze pokud 2+ segmenty */}
+              {segments.length > 1 && revenueStreams.length > 0 && (
+                <div className="bg-purple-50 border-2 border-purple-300 p-4 rounded-lg mb-4">
+                  <p className="text-sm font-bold text-purple-900 mb-2">
+                    💡 Jak funguje propojení příjmů?
+                  </p>
+                  <p className="text-sm text-purple-800 leading-relaxed mb-2">
+                    Příjmy se přiřazují <strong>podle barev</strong>:
+                  </p>
+                  <div className="space-y-1 text-sm text-purple-700">
+                    {revenueStreams.some(r => r.color && r.color !== 'global' && r.color !== 'gray') && (
+                      <div>🎨 <strong>Barevný příjem</strong> → jen stejně barevný segment</div>
+                    )}
+                    {revenueStreams.some(r => !r.color || r.color === 'global' || r.color === 'gray') && (
+                      <div>🌐 <strong>Globální příjem</strong> (šedý) → rozdělí se mezi všechny</div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              <div className="bg-blue-50 border-2 border-blue-200 p-4 rounded-lg mb-4">
+                <p className="text-sm font-bold text-blue-900 mb-2">
+                  💡 Co je bod zvratu (break-even)?
                 </p>
-                <p className="text-xs text-blue-800 leading-relaxed">
+                <p className="text-sm text-blue-800 leading-relaxed">
                   Počet zákazníků kdy <strong>příjmy = náklady</strong> (0 Kč zisk). 
                   {segments.length > 1 && (
                     <span className="block mt-1">
@@ -506,7 +524,21 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                   <input
                     type="number"
                     value={currentCustomers || ''}
-                    onChange={(e) => setCurrentCustomers(parseInt(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const newCustomers = parseInt(e.target.value) || 0;
+                      setCurrentCustomers(newCustomers);
+                      
+                      // 🏆 Trigger achievement při prvním vyplnění
+                      if (newCustomers > 0 && onAchievementUnlocked) {
+                        onAchievementUnlocked('profit-calculated');
+                      }
+                      
+                      // ✅ UKLÁDEJ DO DB!
+                      const newSegments = [...segments];
+                      newSegments[0].customers = newCustomers;
+                      setSegments(newSegments);
+                      debouncedSave(newSegments);
+                    }}
                     placeholder="např. 100"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
                   />
@@ -531,50 +563,48 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
 
                 {/* Break-even result */}
                 {currentCustomers > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="bg-blue-50 border-2 border-blue-300 p-4 rounded-lg"
+                  <div
+                    className="bg-blue-50 border-2 border-blue-300 p-5 rounded-lg"
                   >
-                    <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
-                        <div className="text-xs text-blue-600 mb-1">Break-even</div>
-                        <div className="text-xl font-bold text-blue-900">{breakEvenCustomers}</div>
+                        <div className="text-blue-600 mb-1.5 font-medium">Break-even</div>
+                        <div className="text-2xl font-bold text-blue-900">{breakEvenCustomers}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-blue-600 mb-1">Aktuálně</div>
-                        <div className="text-xl font-bold text-blue-900">{currentCustomers}</div>
+                        <div className="text-blue-600 mb-1.5 font-medium">Aktuálně</div>
+                        <div className="text-2xl font-bold text-blue-900">{currentCustomers}</div>
                       </div>
                     </div>
                     
                     {customerGap > 0 ? (
-                      <div className="bg-yellow-100 border border-yellow-300 p-2 rounded text-xs">
-                        <p className="text-yellow-900 mb-1">
+                      <div className="bg-yellow-100 border border-yellow-300 p-3 rounded">
+                        <p className="text-yellow-900 mb-1.5 text-base">
                           <strong>📊 GAP:</strong> Potřebujete <strong>{customerGap} zákazníků</strong> do bodu zvratu.
                         </p>
-                        <p className="text-yellow-700 text-xs leading-tight">
+                        <p className="text-yellow-700 leading-tight">
                           To přinese {Math.round(customerGap * calculatedAvgRevenue).toLocaleString('cs-CZ')} Kč příjmů navíc = pokryjete náklady.
                         </p>
                       </div>
                     ) : (
-                      <div className="bg-green-100 border border-green-300 p-2 rounded text-xs">
-                        <p className="text-green-900 mb-1">
+                      <div className="bg-green-100 border border-green-300 p-3 rounded">
+                        <p className="text-green-900 mb-1.5 text-base">
                           <strong>🎉 Gratulujeme!</strong> Jste nad bodem zvratu o <strong>{Math.abs(customerGap)} zákazníků</strong>!
                         </p>
-                        <p className="text-green-700 text-xs leading-tight">
+                        <p className="text-green-700 leading-tight">
                           Každý další zákazník = +{Math.round(calculatedAvgRevenue).toLocaleString('cs-CZ')} Kč přímo do zisku.
                         </p>
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 )}
                 
                 {/* TIP: Přidat další segment pro detailní analýzu */}
-                <div className="bg-purple-50 border border-purple-200 p-3 rounded-lg text-xs">
-                  <p className="text-purple-900 mb-1">
+                <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                  <p className="text-purple-900 mb-2 text-base">
                     <strong>💡 Tip pro pokročilé:</strong>
                   </p>
-                  <p className="text-purple-700 leading-tight">
+                  <p className="text-purple-700 leading-normal">
                     Pro detailní analýzu přidejte další segment do Business Model Canvas (Modul 1, Lekce 4). 
                     Uvidíte pak ranking segmentů, projekce růstu a strategie pro každý segment zvlášť!
                   </p>
@@ -583,18 +613,18 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
               ) : (
                 /* ADVANCED MODE - 2+ segments */
                 <>
-                  <p className="text-xs text-blue-700 bg-blue-100 p-2 rounded mb-3">
+                  <p className="text-blue-700 bg-blue-100 p-3 rounded mb-4">
                     💡 Zadejte kolik máte zákazníků v <strong>každém segmentu zvlášť</strong> pro přesnou analýzu.
                   </p>
                   
                   {segments.map((segment, index) => (
-                    <div key={index} className="bg-gray-50 border border-gray-200 p-3 rounded-lg space-y-2">
-                      <div className="font-bold text-gray-900 text-sm">
+                    <div key={index} className="bg-gray-50 border border-gray-200 p-4 rounded-lg space-y-2.5">
+                      <div className="font-bold text-gray-900">
                         📦 {segment.name}
                       </div>
                       
                       <div>
-                        <label className="text-xs text-gray-600 block mb-1">
+                        <label className="text-sm text-gray-600 block mb-1">
                           Kolik máte zákazníků v tomto segmentu?
                         </label>
                         <input
@@ -608,6 +638,11 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                             const total = newSegments.reduce((sum, s) => sum + s.customers, 0);
                             setCurrentCustomers(total);
                             
+                            // 🏆 Trigger achievement při prvním vyplnění
+                            if (total > 0 && onAchievementUnlocked) {
+                              onAchievementUnlocked('profit-calculated');
+                            }
+                            
                             // 💾 DEBOUNCED SAVE
                             debouncedSave(newSegments);
                           }}
@@ -619,20 +654,53 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                       {/* Show calculated metrics for this segment */}
                       {segment.customers > 0 && (() => {
                         const totalCustomersInSegments = segments.reduce((sum, s) => sum + s.customers, 0);
+                        
+                        // 🎯 NOVÝ VÝPOČET: Spoj příjmy podle barev!
+                        // 1. Najdi příjmy přímo pro tento segment (matching color)
+                        const directRevenue = revenueStreams
+                          .filter(stream => stream.color === segment.color)
+                          .reduce((sum, stream) => sum + stream.value, 0);
+                        
+                        // 2. Najdi globální příjmy (🌐) a rozdel proporcionálně
+                        const globalRevenue = revenueStreams
+                          .filter(stream => stream.color === 'global' || stream.color === 'gray')
+                          .reduce((sum, stream) => sum + stream.value, 0);
+                        
                         const segmentShare = totalCustomersInSegments > 0 ? segment.customers / totalCustomersInSegments : 0;
-                        const segmentRevenue = totalRevenue * segmentShare;
+                        const globalShare = globalRevenue * segmentShare;
+                        
+                        // 3. CELKEM pro tento segment
+                        const segmentRevenue = directRevenue + globalShare;
                         const avgRevenueForSegment = segment.customers > 0 ? segmentRevenue / segment.customers : 0;
                         
                         return (
-                          <div className="bg-blue-50 border border-blue-200 p-2 rounded text-xs space-y-1">
-                            <div className="text-blue-700">
+                          <div className="bg-blue-50 border border-blue-200 p-2 rounded text-sm space-y-1">
+                            <div className="text-blue-700 text-xs">
                               📊 Podíl: <strong>{(segmentShare * 100).toFixed(1)}%</strong> ({segment.customers}/{totalCustomersInSegments})
                             </div>
-                            <div className="text-blue-900">
-                              💰 Příjem: <strong>{Math.round(segmentRevenue).toLocaleString('cs-CZ')} Kč</strong>
+                            
+                            <div className="text-blue-900 font-bold">
+                              💰 Příjem celkem: <strong>{Math.round(segmentRevenue).toLocaleString('cs-CZ')} Kč</strong>
                             </div>
-                            <div className="text-blue-800">
-                              📈 Průměr: <strong>{Math.round(avgRevenueForSegment).toLocaleString('cs-CZ')} Kč</strong>
+                            
+                            {/* Breakdown podle barev */}
+                            {(directRevenue > 0 || globalShare > 0) && (
+                              <div className="pl-3 space-y-0.5 text-xs border-l-2 border-blue-300">
+                                {directRevenue > 0 && (
+                                  <div className="text-blue-700">
+                                    ✓ Přímý příjem: {Math.round(directRevenue).toLocaleString('cs-CZ')} Kč
+                                  </div>
+                                )}
+                                {globalShare > 0 && (
+                                  <div className="text-gray-600">
+                                    ✓ Globální ({(segmentShare * 100).toFixed(0)}%): {Math.round(globalShare).toLocaleString('cs-CZ')} Kč
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            
+                            <div className="text-blue-800 text-xs pt-1 border-t border-blue-200">
+                              📈 Průměr/zákazník: <strong>{Math.round(avgRevenueForSegment).toLocaleString('cs-CZ')} Kč</strong>
                             </div>
                           </div>
                         );
@@ -648,11 +716,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                     const gap = breakEven - totalCustomersInSegments;
                     
                     return totalCustomersInSegments > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 p-4 rounded-lg"
-                      >
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 p-4 rounded-lg animate-in fade-in duration-200">
                         <h5 className="font-bold text-blue-900 mb-3 text-sm">📊 Celkové shrnutí:</h5>
                         
                         <div className="grid grid-cols-3 gap-2 mb-3 text-xs">
@@ -693,39 +757,30 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                             )}
                           </div>
                         )}
-                      </motion.div>
+                      </div>
                     );
                   })()}
                 </>
               )}
               </div>
-            </motion.div>
+            </div>
             
           </div>
 
           {/* STRATEGIC RECOMMENDATIONS - Full Width with Advanced Analysis */}
           {currentCustomers > 0 && calculatedAvgRevenue > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 rounded-xl overflow-hidden"
-            >
-              {/* Header */}
-              <div className="p-6 pb-4">
-                <h4 className="font-bold text-orange-900 mb-1 text-xl flex items-center gap-2">
-                  <Target className="w-6 h-6" />
-                  💡 Co to znamená pro váš byznys?
-                </h4>
-                <p className="text-xs text-orange-700">Konkrétní doporučení pro růst na základě vašeho modelu</p>
-              </div>
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 p-5 rounded-xl">
+              <h4 className="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-purple-600" />
+                💡 Co to znamená pro váš byznys?
+              </h4>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Left: Current State + Tips */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="bg-white/60 p-4 rounded-lg">
-                    <div className="font-bold text-gray-900 mb-3 text-sm">📊 Aktuální stav:</div>
-                    <div className="space-y-2 text-sm text-gray-800">
+                    <div className="font-bold text-gray-900 mb-3">📊 Aktuální stav:</div>
+                    <div className="space-y-2.5 text-gray-800">
                       <div className="flex justify-between">
                         <span>Zákazníků:</span>
                         <strong className="text-blue-700">{currentCustomers}</strong>
@@ -750,9 +805,9 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                   </div>
                   
                   {/* Quick Insights */}
-                  <div className="bg-indigo-50 border border-indigo-200 p-3 rounded-lg">
-                    <div className="font-bold text-indigo-900 mb-2 text-xs">💡 Rychlé výpočty:</div>
-                    <div className="space-y-1.5 text-xs text-indigo-800">
+                  <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+                    <div className="font-bold text-indigo-900 mb-3">💡 Rychlé výpočty:</div>
+                    <div className="space-y-2 text-indigo-800">
                       <div className="flex justify-between">
                         <span>Roční projekce:</span>
                         <strong>{(profit * 12).toLocaleString('cs-CZ')} Kč</strong>
@@ -782,36 +837,36 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                 </div>
                 
                 {/* Right: Actions */}
-                <div className="space-y-2">
-                  <div className="font-bold text-orange-900 text-sm mb-3">✅ 3 konkrétní kroky:</div>
+                <div className="space-y-3">
+                  <div className="font-bold text-orange-900 mb-3">✅ 3 konkrétní kroky:</div>
                   
                   {isProfitable ? (
                     <>
-                      <div className="flex gap-2 items-start bg-white/60 p-3 rounded text-sm">
-                        <span className="flex-shrink-0 w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-xs">1</span>
+                      <div className="flex gap-3 items-start bg-white/60 p-4 rounded">
+                        <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">1</span>
                         <div>
                           <strong className="text-gray-900">Škálujte získávání zákazníků</strong>
-                          <p className="text-gray-700 text-xs mt-0.5">
+                          <p className="text-gray-700 mt-1">
                             Každý = ~{Math.round(calculatedAvgRevenue).toLocaleString('cs-CZ')} Kč/měsíc. Zdvojnásobením zvýšíte zisk o {Math.round(profit).toLocaleString('cs-CZ')} Kč!
                           </p>
                         </div>
                       </div>
                       
-                      <div className="flex gap-2 items-start bg-white/60 p-3 rounded text-sm">
-                        <span className="flex-shrink-0 w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-xs">2</span>
+                      <div className="flex gap-3 items-start bg-white/60 p-4 rounded">
+                        <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</span>
                         <div>
                           <strong className="text-gray-900">Zvyšte průměrný příjem</strong>
-                          <p className="text-gray-700 text-xs mt-0.5">
+                          <p className="text-gray-700 mt-1">
                             Upsell nebo +20% ceny = +{Math.round(totalRevenue * 0.2).toLocaleString('cs-CZ')} Kč přímo do zisku!
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex gap-2 items-start bg-white/60 p-3 rounded text-sm">
-                        <span className="flex-shrink-0 w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-xs">3</span>
+                      <div className="flex gap-3 items-start bg-white/60 p-4 rounded">
+                        <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">3</span>
                         <div>
                           <strong className="text-gray-900">Přidejte premium produkt</strong>
-                          <p className="text-gray-700 text-xs mt-0.5">
+                          <p className="text-gray-700 mt-1">
                             {valuePropositions.length > 0 
                               ? `Máte ${valuePropositions.length} hodnotové nabídky - použijte je jako samostatné produkty!`
                               : 'Každá nová služba = dodatečný příjem bez hledání nových zákazníků'}
@@ -821,31 +876,31 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                     </>
                   ) : (
                     <>
-                      <div className="flex gap-2 items-start bg-white/60 p-3 rounded text-sm">
-                        <span className="flex-shrink-0 w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-xs">1</span>
+                      <div className="flex gap-3 items-start bg-white/60 p-4 rounded">
+                        <span className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">1</span>
                         <div>
                           <strong className="text-gray-900">Získejte {customerGap} zákazníků</strong>
-                          <p className="text-gray-700 text-xs mt-0.5">
+                          <p className="text-gray-700 mt-1">
                             To přinese {Math.round(customerGap * calculatedAvgRevenue).toLocaleString('cs-CZ')} Kč a pokryje náklady.
                           </p>
                         </div>
                       </div>
                       
-                      <div className="flex gap-2 items-start bg-white/60 p-3 rounded text-sm">
-                        <span className="flex-shrink-0 w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-xs">2</span>
+                      <div className="flex gap-3 items-start bg-white/60 p-4 rounded">
+                        <span className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">2</span>
                         <div>
                           <strong className="text-gray-900">NEBO snižte náklady</strong>
-                          <p className="text-gray-700 text-xs mt-0.5">
+                          <p className="text-gray-700 mt-1">
                             Potřebujete ušetřit {Math.abs(profit).toLocaleString('cs-CZ')} Kč měsíčně.
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex gap-2 items-start bg-white/60 p-3 rounded text-sm">
-                        <span className="flex-shrink-0 w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-xs">3</span>
+                      <div className="flex gap-3 items-start bg-white/60 p-4 rounded">
+                        <span className="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">3</span>
                         <div>
                           <strong className="text-gray-900">Zvyšte hodnotu</strong>
-                          <p className="text-gray-700 text-xs mt-0.5">
+                          <p className="text-gray-700 mt-1">
                             {revenueStreams.length > 0 && revenueStreams[0] 
                               ? `Zaměřte se na "${revenueStreams[0].name}" - váš hlavní zdroj.`
                               : 'Vylepšete nabídku nebo přidejte premium služby.'}
@@ -856,16 +911,13 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                   )}
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* ADVANCED ANALYSIS - Expandable (pouze pokud má 2+ vyplněné segmenty) */}
           {segments.filter(s => s.customers > 0).length >= 2 && (
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
+              <div
                 className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-300 rounded-xl overflow-hidden"
               >
                 <CollapsibleTrigger className="w-full p-5 flex items-center justify-between hover:bg-purple-100/50 transition-colors">
@@ -883,9 +935,9 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                 <CollapsibleContent>
                   <div className="px-6 pb-6 space-y-5">
                     {/* Segment Ranking */}
-                    <div className="bg-white/60 border border-purple-200 p-4 rounded-lg">
-                      <h5 className="font-bold text-purple-900 mb-3">🏆 Ranking segmentů podle celkové hodnoty:</h5>
-                      <p className="text-xs text-purple-700 mb-3">
+                    <div className="bg-white/60 border border-purple-200 p-5 rounded-lg">
+                      <h5 className="font-bold text-purple-900 mb-3 text-lg">🏆 Ranking segmentů podle celkové hodnoty:</h5>
+                      <p className="text-purple-700 mb-4">
                         Který segment vám generuje nejvíc peněz? (podle podílu zákazníků)
                       </p>
                       <div className="space-y-2">
@@ -916,28 +968,28 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                             return (
                               <div 
                                 key={idx} 
-                                className={`flex items-center justify-between p-3 rounded-lg ${
+                                className={`flex items-center justify-between p-4 rounded-lg ${
                                   isTop ? 'bg-green-100 border-2 border-green-400' : 
                                   isBottom ? 'bg-yellow-50 border border-yellow-300' : 
                                   'bg-gray-50 border border-gray-200'
                                 }`}
                               >
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-lg font-bold ${isTop ? 'text-green-600' : 'text-gray-600'}`}>
+                                <div className="flex items-center gap-3">
+                                  <span className={`text-xl font-bold ${isTop ? 'text-green-600' : 'text-gray-600'}`}>
                                     #{idx + 1}
                                   </span>
                                   <div>
-                                    <div className="font-bold text-gray-900">{seg.name}</div>
-                                    <div className="text-xs text-gray-600">
+                                    <div className="font-bold text-gray-900 text-base">{seg.name}</div>
+                                    <div className="text-gray-600">
                                       {seg.customers} zákazníků • {(seg.share * 100).toFixed(0)}% podíl
                                     </div>
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <div className={`font-bold ${isTop ? 'text-green-700' : 'text-gray-900'}`}>
+                                  <div className={`font-bold text-base ${isTop ? 'text-green-700' : 'text-gray-900'}`}>
                                     {Math.round(seg.revenue).toLocaleString('cs-CZ')} Kč
                                   </div>
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-gray-500">
                                     {Math.round(seg.avgRevenue).toLocaleString('cs-CZ')} Kč/zákazník
                                   </div>
                                 </div>
@@ -967,35 +1019,35 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                       const newProfit = profit + additionalRevenue;
                       
                       return (
-                        <div className="bg-blue-50 border-2 border-blue-300 p-4 rounded-lg">
-                          <h5 className="font-bold text-blue-900 mb-2">📈 Projekce růstu: Co kdybyste zdvojnásobili nejlepší segment?</h5>
-                          <div className="text-sm text-blue-800 space-y-2">
-                            <p>
+                        <div className="bg-blue-50 border-2 border-blue-300 p-5 rounded-lg">
+                          <h5 className="font-bold text-blue-900 mb-3 text-lg">📈 Projekce růstu: Co kdybyste zdvojnásobili nejlepší segment?</h5>
+                          <div className="text-blue-800 space-y-3">
+                            <p className="text-base">
                               Segment <strong>{topSegment.name}</strong> je váš hlavní zdroj příjmů.
                             </p>
-                            <div className="bg-white/60 p-3 rounded space-y-1.5">
-                              <div className="flex justify-between text-xs">
+                            <div className="bg-white/60 p-4 rounded space-y-2">
+                              <div className="flex justify-between">
                                 <span>Aktuální zákazníci:</span>
-                                <strong>{topSegment.customers}</strong>
+                                <strong className="text-base">{topSegment.customers}</strong>
                               </div>
-                              <div className="flex justify-between text-xs">
+                              <div className="flex justify-between">
                                 <span>Po zdvojnásobení:</span>
-                                <strong className="text-blue-700">{topSegment.customers * 2}</strong>
+                                <strong className="text-blue-700 text-base">{topSegment.customers * 2}</strong>
                               </div>
-                              <div className="flex justify-between text-xs text-gray-600">
+                              <div className="flex justify-between text-gray-700">
                                 <span>Průměr/zákazník:</span>
-                                <span>{Math.round(topSegment.avgRevenue).toLocaleString('cs-CZ')} Kč</span>
+                                <span className="text-base">{Math.round(topSegment.avgRevenue).toLocaleString('cs-CZ')} Kč</span>
                               </div>
-                              <div className="border-t border-blue-200 pt-1.5 mt-1.5 flex justify-between text-xs">
+                              <div className="border-t border-blue-200 pt-2 mt-2 flex justify-between">
                                 <span>Dodatečný příjem:</span>
-                                <strong className="text-green-700">+{Math.round(additionalRevenue).toLocaleString('cs-CZ')} Kč</strong>
+                                <strong className="text-green-700 text-base">+{Math.round(additionalRevenue).toLocaleString('cs-CZ')} Kč</strong>
                               </div>
-                              <div className="flex justify-between text-xs">
+                              <div className="flex justify-between">
                                 <span>Nový měsíční zisk:</span>
-                                <strong className="text-green-700">{Math.round(newProfit).toLocaleString('cs-CZ')} Kč</strong>
+                                <strong className="text-green-700 text-base">{Math.round(newProfit).toLocaleString('cs-CZ')} Kč</strong>
                               </div>
                             </div>
-                            <p className="text-xs text-blue-700 italic">
+                            <p className="text-blue-700 italic">
                               💡 Zaměřte marketing na nejziskovější segment a sledujte růst!
                             </p>
                           </div>
@@ -1019,22 +1071,22 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                       if (sortedSegments.length === 0) return null;
                       
                       return (
-                        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 p-4 rounded-lg">
-                          <h5 className="font-bold text-orange-900 mb-3">🎯 Strategie pro každý segment:</h5>
-                          <div className="space-y-2 text-sm">
+                        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 p-5 rounded-lg">
+                          <h5 className="font-bold text-orange-900 mb-4 text-lg">🎯 Strategie pro každý segment:</h5>
+                          <div className="space-y-3">
                             {/* TOP segment */}
-                            <div className="bg-white/60 p-3 rounded">
-                              <strong className="text-green-700">✅ TOP segment ({sortedSegments[0].name}):</strong>
-                              <p className="text-xs text-gray-700 mt-1">
+                            <div className="bg-white/60 p-4 rounded">
+                              <strong className="text-green-700 text-base">✅ TOP segment ({sortedSegments[0].name}):</strong>
+                              <p className="text-gray-700 mt-1.5">
                                 → Škálujte! Zdvojnásobte investice do marketingu, vytvořte referral program, nabídněte premium variantu.
                               </p>
                             </div>
                             
                             {/* Middle segments */}
                             {sortedSegments.slice(1, -1).map((seg, idx) => (
-                              <div key={idx} className="bg-white/60 p-3 rounded">
-                                <strong className="text-blue-700">💎 Středový segment ({seg.name}):</strong>
-                                <p className="text-xs text-gray-700 mt-1">
+                              <div key={idx} className="bg-white/60 p-4 rounded">
+                                <strong className="text-blue-700 text-base">💎 Středový segment ({seg.name}):</strong>
+                                <p className="text-gray-700 mt-1.5">
                                   → Optimalizujte! Testujte různé ceny, vylepšete nabídku, zvyšte retention.
                                 </p>
                               </div>
@@ -1050,29 +1102,29 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                               // Jen pokud je segment OPRAVDU slabý (< 30% TOP segmentu)
                               if (revenueRatio < 0.3) {
                                 return (
-                                  <div className="bg-white/60 p-3 rounded">
-                                    <strong className="text-yellow-700">⚠️ Slabý segment ({bottomSegment.name}):</strong>
-                                    <p className="text-xs text-gray-700 mt-1">
+                                  <div className="bg-white/60 p-4 rounded">
+                                    <strong className="text-yellow-700 text-base">⚠️ Slabý segment ({bottomSegment.name}):</strong>
+                                    <p className="text-gray-700 mt-1.5">
                                       Generuje jen {Math.round(revenueRatio * 100)}% TOP segmentu → Zvažte zvýšit ceny nebo marketing.
                                     </p>
                                   </div>
                                 );
                               } else if (bottomRevenue > 15000) {
-                                // Segment je OK (> 15K měsíčně = cca minimální mzda)
+                                // Segment je OK (> 15K měs��čně = cca minimální mzda)
                                 const contribution = (bottomRevenue / totalRevenue) * 100;
                                 return (
-                                  <div className="bg-white/60 p-3 rounded">
-                                    <strong className="text-green-700">✅ Solidní segment ({bottomSegment.name}):</strong>
-                                    <p className="text-xs text-gray-700 mt-1">
+                                  <div className="bg-white/60 p-4 rounded">
+                                    <strong className="text-green-700 text-base">✅ Solidní segment ({bottomSegment.name}):</strong>
+                                    <p className="text-gray-700 mt-1.5">
                                       {Math.round(bottomRevenue).toLocaleString('cs-CZ')} Kč/měs ({contribution.toFixed(0)}% příjmů) → Diverzifikace funguje!
                                     </p>
                                   </div>
                                 );
                               } else {
                                 return (
-                                  <div className="bg-white/60 p-3 rounded">
-                                    <strong className="text-yellow-700">⚠️ Malý segment ({bottomSegment.name}):</strong>
-                                    <p className="text-xs text-gray-700 mt-1">
+                                  <div className="bg-white/60 p-4 rounded">
+                                    <strong className="text-yellow-700 text-base">⚠️ Malý segment ({bottomSegment.name}):</strong>
+                                    <p className="text-gray-700 mt-1.5">
                                       {Math.round(bottomRevenue).toLocaleString('cs-CZ')} Kč/měs → Zvyšte ceny nebo počet zákazníků.
                                     </p>
                                   </div>
@@ -1085,42 +1137,64 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                     })()}
                   </div>
                 </CollapsibleContent>
-              </motion.div>
+              </div>
             </Collapsible>
           )}
 
           {/* CTA - Hotovo */}
           {!isCompleted ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-center shadow-2xl"
+            <div
+              className={`rounded-2xl p-8 text-center shadow-2xl ${
+                totalRevenue === 0 || totalCosts === 0
+                  ? 'bg-gradient-to-r from-yellow-500 to-orange-600'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-600'
+              }`}
             >
-              <h3 className="text-2xl font-bold text-white mb-3">
-                ✅ Hotovo! Máte přehled o financích
-              </h3>
-              <p className="text-green-100 mb-6">
-                Data jsou automaticky uložená. Kalkulačka zůstane viditelná i po dokončení lekce!
-              </p>
-              <Button
-                onClick={() => {
-                  setIsCompleted(true);
-                  onComplete();
-                }}
-                size="lg"
-                className="bg-white text-green-700 hover:bg-green-50 font-bold text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
-              >
-                Dokončit lekci a pokračovat →
-              </Button>
-              <p className="text-green-100 text-sm mt-4">
-                💡 Scroll nahoru pro úpravu dat - změny se ukládají automaticky
-              </p>
-            </motion.div>
+              {totalRevenue === 0 || totalCosts === 0 ? (
+                <>
+                  <h3 className="font-bold text-white mb-3">
+                    ⚠️ Chybí příjmy nebo náklady
+                  </h3>
+                  <p className="text-yellow-100 mb-6">
+                    Pro dokončení lekce potřebujete vyplnit <strong>Zdroje příjmů</strong> a <strong>Strukturu nákladů</strong> v Modulu 1.
+                  </p>
+                  <Button
+                    disabled
+                    size="lg"
+                    className="bg-white/50 text-gray-500 cursor-not-allowed font-bold px-12 py-6 opacity-60"
+                  >
+                    🔒 Dokončit lekci (vyžaduje data)
+                  </Button>
+                  <p className="text-yellow-100 mt-4">
+                    💡 Vraťte se do Modulu 1 → Lekce 5 (Příjmy) a Lekce 9 (Náklady)
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-bold text-white mb-3">
+                    ✅ Hotovo! Máte přehled o financích
+                  </h3>
+                  <p className="text-green-100 mb-6">
+                    Data jsou automaticky uložená. Kalkulačka zůstane viditelná i po dokončení lekce!
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setIsCompleted(true);
+                      onComplete();
+                    }}
+                    size="lg"
+                    className="bg-white text-green-700 hover:bg-green-50 font-bold px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+                  >
+                    Dokončit lekci a pokračovat →
+                  </Button>
+                  <p className="text-green-100 mt-4">
+                    💡 Scroll nahoru pro úpravu dat - změny se ukládají automaticky
+                  </p>
+                </>
+              )}
+            </div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+            <div
               className="bg-green-50 border-2 border-green-300 rounded-2xl p-6"
             >
               <div className="flex items-center gap-3 mb-4">
@@ -1140,7 +1214,10 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
               <div className="flex gap-3">
                 {onNavigateNext && (
                   <Button
-                    onClick={onNavigateNext}
+                    onClick={() => {
+                      onComplete(); // ✅ SAVE PROGRESS FIRST!
+                      onNavigateNext(); // Then navigate
+                    }}
                     size="lg"
                     className="flex-1 bg-green-600 hover:bg-green-700"
                   >
@@ -1155,7 +1232,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                   🔄 Zkusit znovu
                 </Button>
               </div>
-            </motion.div>
+            </div>
           )}
         </>
       )}

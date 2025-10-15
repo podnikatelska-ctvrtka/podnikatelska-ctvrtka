@@ -261,13 +261,13 @@ export function HeroSection() {
                     activeCanvasBlock === 'channels' ? 'from-sky-500 to-sky-600' :
                     activeCanvasBlock === 'costs' ? 'from-red-500 to-red-600' :
                     'from-emerald-500 to-emerald-600'
-                  } text-white p-6 rounded-2xl`}
+                  } text-white p-4 rounded-2xl`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 200, damping: 25 }}
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-3xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">
                       {tooltipData[activeCanvasBlock as keyof typeof tooltipData] ? 
                         Object.entries({
                           partners: "🤝", activities: "⚡", value: "💎", relationships: "🤝", 
@@ -275,11 +275,11 @@ export function HeroSection() {
                         }).find(([key]) => key === activeCanvasBlock)?.[1] : "🤝"
                       }
                     </span>
-                    <h4 className="font-bold text-lg">
+                    <h4 className="text-white text-sm">
                       {tooltipData[activeCanvasBlock as keyof typeof tooltipData]?.title || "Klíčoví partneři"}
                     </h4>
                   </div>
-                  <p className="text-sm leading-relaxed opacity-95">
+                  <p className="text-white opacity-95 text-sm leading-relaxed">
                     {tooltipData[activeCanvasBlock as keyof typeof tooltipData]?.content || "Vybudujte si síť spolehlivých partnerů, kteří vás posunou vpřed rychleji než konkurenci!"}
                   </p>
                 </motion.div>
@@ -482,11 +482,11 @@ function MobileTooltipModal({
             {/* Content */}
             <div className="flex items-center gap-3 mb-4 pr-8">
               <span className="text-4xl">{currentIcon}</span>
-              <h4 className="font-bold text-xl">
+              <h4 className="text-white">
                 {currentData.title}
               </h4>
             </div>
-            <p className="text-base leading-relaxed opacity-95 mb-4">
+            <p className="text-white leading-relaxed opacity-95 mb-4">
               {currentData.content}
             </p>
 

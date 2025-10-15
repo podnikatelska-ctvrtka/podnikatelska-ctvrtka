@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { Plus, X, Save } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
 
 interface Props {
-  userId: number;
+  userId: string;
   selectedSegment: string;
   selectedValue?: string;
 }
@@ -79,7 +78,7 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
       try {
         // 🎨 Načti barvu hodnoty
         const { data: valuesData } = await supabase
-          .from('business_canvas_sections')
+          .from('user_canvas_data')
           .select('content')
           .eq('user_id', userId)
           .eq('section_key', 'value')
@@ -93,7 +92,7 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
         } else {
           // Pokud není vybraná hodnota, použij barvu segmentu
           const { data: segmentData } = await supabase
-            .from('business_canvas_sections')
+            .from('user_canvas_data')
             .select('content')
             .eq('user_id', userId)
             .eq('section_key', 'segments')

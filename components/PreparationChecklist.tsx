@@ -454,8 +454,8 @@ export function PreparationChecklist() {
         {/* Footer */}
         <div className="text-center mt-12 mb-8 space-y-4">
           <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
-            <a href="mailto:info@podnikatelskatvrtka.cz" className="hover:text-blue-600 transition-colors">
-              📧 info@podnikatelskatvrtka.cz
+            <a href="mailto:kurz@podnikatelskactvrtka.cz" className="hover:text-blue-600 transition-colors">
+              📧 kurz@podnikatelskactvrtka.cz
             </a>
             <a href="/" className="hover:text-blue-600 transition-colors">
               🌐 Zpět na web

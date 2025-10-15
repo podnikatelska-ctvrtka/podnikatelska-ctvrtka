@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { Plus, X, Save } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
 
 interface Props {
-  userId: number;
+  userId: string;
   selectedSegment?: string;
 }
 

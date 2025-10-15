@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { BookOpen, ArrowLeft, Trophy, Lock, CheckCircle2, Play, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
@@ -31,7 +30,7 @@ import { VPCCustomerProfileStory } from "./VPCCustomerProfileStory";
 import { AutosaveIndicator } from "./AutosaveIndicator";
 import { AchievementNotification } from "./AchievementNotification";
 import { celebrateModuleComplete, celebrateLessonComplete } from "../lib/confetti";
-import { getAchievement, unlockAchievement, loadUnlockedAchievements } from "../lib/achievements";
+import { getAchievement, unlockAchievement, loadUnlockedAchievements, ACHIEVEMENTS } from "../lib/achievements";
 import type { Achievement } from "../lib/achievements";
 
 // Verify token
@@ -54,6 +53,7 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Kdo jsou vaši zákazníci? Naučte se je identifikovat.",
       content: `
+        <h3>👥 Co je to Zákaznický segment?</h3>
         <p><strong>Zákaznický segment</strong> je skupina lidí nebo firem, kteří mají společné potřeby, chování nebo charakteristiky.</p>
         
         <h4>Proč je to důležité?</h4>
@@ -79,7 +79,7 @@ const MODULE_1 = {
           "🍕 Pizzerie: Rodiny s dětmi 5-12 let (hledají rychlé rozvážky)",
           "🔧 Autoservis: Majitelé aut 5+ let starých (potřebují opravy)",
           "👗 E-shop: Ženy 25-40 let sledující módu (chtějí trendy oblečení)",
-          "💇 Kadeřnice: Profesionálky 30-50 let (šetří čas, chtějí kvalitu)"
+          "💇 Kadeřnice: Profesionálky 30-50 let (��et��í čas, chtějí kvalitu)"
         ],
         bad: [
           "Všichni co mají hlad",
@@ -240,6 +240,9 @@ const MODULE_1 = {
         <h4>🎨 PRAVIDLO: Barva = hodnota!</h4>
         <p>Pokud prodáváte <strong>🔵 modrou hodnotu</strong>, příjem z ní musí být také <strong>🔵 modrý</strong>!</p>
         
+        <h4>🌐 GLOBÁLNÍ příjmy:</h4>
+        <p>Některé příjmy mohou být <strong>🌐 globální</strong> (šedivá) - pokud jeden příjem dělá pro více hodnot. Např. "Membership" pokrývá jak 🔵 coworking tak 🟢 akce.</p>
+        
         <h4>Klíčové otázky:</h4>
         <ul>
           <li><strong>Kolik</strong> vám zákazník zaplatí za hodnotu?</li>
@@ -263,7 +266,7 @@ const MODULE_1 = {
       },
       tips: [
         "🎨 BARVA = hodnota! (🔵 pizza → 🔵 příjem z pizzy)",
-        "💰 ZADEJTE ČÍSLO! Počet zákazníků × cena",
+        "💰 ZADEJTE ��ÍSLO! Počet zákazníků × cena",
         "🌐 Globální = příjmy pro celý byznys (káva, nápoje...)"
       ]
     },
@@ -315,7 +318,7 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Co musíte dělat?",
       content: `
-        <h3>⚙️ Klíčové aktivity</h3>
+        <h3>⚙️ Kl��čové aktivity</h3>
         <p><strong>Aktivity</strong> jsou činnosti které MUSÍTE dělat, aby byznys fungoval.</p>
         
         <h4>🎨 BARVY: Většinou globální + někdy specifické!</h4>
@@ -333,7 +336,7 @@ const MODULE_1 = {
           "🍕 Pizzerie: 🌐 Příprava jídla, 🔵 Instagram marketing pro rodiny",
           "🔧 Autoservis: 🌐 Opravy a diagnostika, 🟢 Péče o náhradní vozy",
           "👗 E-shop: 🌐 Správa objednávek, 🟡 Vyhledávání nových trendů",
-          "💇 Kadeřnice: 🌐 Stříhání a barvení, 🟣 Večerní provoz 18-21h"
+          "💇 Kadeřnice: 🌐 Stříhání a barvení, 🟣 Ve��erní provoz 18-21h"
         ],
         bad: [
           "Řízení firmy",
@@ -395,7 +398,7 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Kolik vás to stojí?",
       content: `
-        <h3>💸 Struktura nákladů</h3>
+        <h3>�� Struktura nákladů</h3>
         <p><strong>Náklady</strong> jsou peníze které MUSÍTE platit, aby byznys fungoval.</p>
         
         <h4>🎨 BARVY: Většinou globální + občas specifické!</h4>
@@ -531,6 +534,7 @@ export function CourseDemoV3() {
   // 🎉 ACHIEVEMENTS & GAMIFICATION
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(new Set());
+  const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]); // Queue pro postupné zobrazování
   
   // 💾 AUTOSAVE INDICATOR
   const [isSaving, setIsSaving] = useState(false);
@@ -561,9 +565,15 @@ export function CourseDemoV3() {
   // All modules
   const allModules = [MODULE_1, MODULE_2, MODULE_3];
   
-  const currentModule = currentModuleNumber === 1 ? MODULE_1 : currentModuleNumber === 2 ? MODULE_2 : MODULE_3;
-  const currentLesson = currentModule.lessons[currentLessonIndex];
-  const isLastLesson = currentLessonIndex === currentModule.lessons.length - 1;
+  // ✅ SAFE: Ensure currentModuleNumber is valid
+  const safeModuleNumber = Math.min(Math.max(1, currentModuleNumber), 3);
+  const currentModule = safeModuleNumber === 1 ? MODULE_1 : safeModuleNumber === 2 ? MODULE_2 : MODULE_3;
+  
+  // ✅ SAFE: Ensure currentLessonIndex is within bounds
+  const safeLessonIndex = Math.min(Math.max(0, currentLessonIndex), currentModule.lessons.length - 1);
+  const currentLesson = currentModule.lessons[safeLessonIndex];
+  
+  const isLastLesson = safeLessonIndex === currentModule.lessons.length - 1;
   const moduleCompleted = completedLessons.size === currentModule.lessons.length;
   const totalLessons = allModules.reduce((sum, m) => sum + m.lessons.length, 0);
 
@@ -623,9 +633,11 @@ export function CourseDemoV3() {
           // Load progress for real user
           const progress = await loadCourseProgress(user.id);
           setCompletedLessons(progress);
-          // Load achievements
+          
+          // 🎯 Load achievements from localStorage (simple & works)
           const achievements = loadUnlockedAchievements(user.id);
           setUnlockedAchievements(achievements);
+          
           return;
         }
       }
@@ -641,16 +653,17 @@ export function CourseDemoV3() {
   // Load Canvas data for mobile - CURRENT SECTION
   useEffect(() => {
     const loadMobileCanvas = async () => {
-      if (!userData?.id || !currentLesson.canvasSection) return;
+      // ✅ SAFE: Check if currentLesson exists and has canvasSection
+      if (!userData?.id || !currentLesson || !currentLesson.canvasSection) return;
       
       setIsLoadingCanvas(true);
       try {
         const { data, error } = await supabase
-          .from('business_canvas_sections')
+          .from('user_canvas_data')
           .select('*')
           .eq('user_id', userData.id)
           .eq('section_key', currentLesson.canvasSection)
-          .single();
+          .maybeSingle(); // ✅ Use maybeSingle() instead of single() - doesn't error if no rows
         
         if (data && data.content) {
           setMobileCanvasData(data.content);
@@ -666,7 +679,7 @@ export function CourseDemoV3() {
     };
     
     loadMobileCanvas();
-  }, [userData, currentLesson.canvasSection]);
+  }, [userData, currentLesson?.canvasSection]);
   
   // Load ALL Canvas data for preview
   useEffect(() => {
@@ -675,7 +688,7 @@ export function CourseDemoV3() {
       
       try {
         const { data, error } = await supabase
-          .from('business_canvas_sections')
+          .from('user_canvas_data')
           .select('*')
           .eq('user_id', userData.id);
         
@@ -712,24 +725,108 @@ export function CourseDemoV3() {
   }, [userData, completedLessons]); // Reload when lesson completed
 
   // 🎉 Achievement helper
-  const triggerAchievement = useCallback((achievementId: string) => {
+  const triggerAchievement = useCallback(async (achievementId: string) => {
     if (!userData?.id) return;
     
     console.log('🎯 Triggering achievement:', achievementId);
+    
+    // ✅ FIRST: Check Supabase to avoid duplicates
+    try {
+      const { data: existing } = await supabase
+        .from('user_achievements')
+        .select('id')
+        .eq('user_id', userData.id)
+        .eq('achievement_type', achievementId)
+        .maybeSingle();
+      
+      if (existing) {
+        console.log('⏭️ Achievement already in Supabase:', achievementId);
+        // Unlock in localStorage (sync state) but DON'T show notification
+        unlockAchievement(userData.id, achievementId);
+        return; // ⚠️ EXIT - no notification!
+      }
+    } catch (err) {
+      console.error('❌ Error checking existing achievement:', err);
+    }
+    
+    // SECOND: Unlock in localStorage
     const wasUnlocked = unlockAchievement(userData.id, achievementId);
     if (wasUnlocked) {
       console.log('🎉 NEW ACHIEVEMENT UNLOCKED:', achievementId);
       const achievement = getAchievement(achievementId);
       if (achievement) {
-        setCurrentAchievement(achievement);
+        // ✅ ADD TO QUEUE (postupné zobrazování)
+        setAchievementQueue(prev => [...prev, achievement]);
         
         // Update local state
         setUnlockedAchievements(prev => new Set([...prev, achievementId]));
+        
+        // 💾 SAVE TO SUPABASE
+        try {
+          const { error } = await supabase
+            .from('user_achievements')
+            .insert({
+              user_id: userData.id,
+              achievement_type: achievementId,
+              title: achievement.title,
+              description: achievement.description,
+              icon: achievement.emoji,
+              metadata: { points: achievement.points, category: achievement.category }
+            });
+          
+          if (error) {
+            // ✅ Ignoruj duplicate key error (23505) - může nastat při race condition
+            if (error.code === '23505') {
+              console.log('⏭️ Achievement already exists in DB (race condition prevented)');
+            } else {
+              console.error('❌ Failed to save achievement to Supabase:', error);
+            }
+          } else {
+            console.log('✅ Achievement saved to Supabase!', achievementId);
+          }
+        } catch (err) {
+          console.error('❌ Exception saving achievement:', err);
+        }
+        
+        // 💫 CHECK FOR ULTIMATE MASTER: Po každém novém achievementu zkontroluj jestli má všechny
+        const currentUnlocked = loadUnlockedAchievements(userData.id);
+        const totalAchievements = ACHIEVEMENTS.length; // 20
+        const unlockedWithoutUltimate = Array.from(currentUnlocked).filter(id => id !== 'ultimate-master').length;
+        
+        console.log('💫 Ultimate Master check:', {
+          unlocked: unlockedWithoutUltimate,
+          needed: totalAchievements - 1,
+          hasUltimate: currentUnlocked.has('ultimate-master')
+        });
+        
+        // Pokud má všech 19 (kromě ultimate-master) A ještě nemá ultimate-master
+        if (unlockedWithoutUltimate >= totalAchievements - 1 && !currentUnlocked.has('ultimate-master')) {
+          console.log('💫 TRIGGERING ULTIMATE MASTER!');
+          // Zavolej znovu triggerAchievement (rekurzivně)
+          setTimeout(() => {
+            triggerAchievement('ultimate-master');
+          }, 100);
+        }
       }
     } else {
-      console.log('⏭️ Achievement already unlocked:', achievementId);
+      console.log('⏭️ Achievement already unlocked in localStorage:', achievementId);
     }
   }, [userData?.id]);
+
+  // 🎯 ACHIEVEMENT QUEUE PROCESSOR - zobrazuj achievementy postupně
+  useEffect(() => {
+    if (achievementQueue.length > 0 && !currentAchievement) {
+      // Zobraz první achievement z fronty
+      const nextAchievement = achievementQueue[0];
+      setCurrentAchievement(nextAchievement);
+      setAchievementQueue(prev => prev.slice(1)); // Odstraň z fronty
+      
+      // Auto-close po 5s
+      setTimeout(() => {
+        setCurrentAchievement(null);
+      }, 5000);
+    }
+  }, [achievementQueue, currentAchievement]);
 
   // 🔍 Check all achievements based on current data
   const checkAllAchievements = useCallback(async () => {
@@ -744,7 +841,7 @@ export function CourseDemoV3() {
     try {
       // Check BMC achievements
       const { data: canvasData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('*')
         .eq('user_id', userData.id);
 
@@ -785,11 +882,13 @@ export function CourseDemoV3() {
           triggerAchievement('profit-calculated');
         }
         
-        // 🏆 validator-used: If user has completed Canvas (all 9 sections), assume they used validator
-        if (filledSections.length >= 6) {
-          console.log('✅ Has 6+ filled sections - triggering validator-used');
-          triggerAchievement('validator-used');
-        }
+        // 🏆 validator-used: VYŘAZENO - Triggeruje se JEN když user skute��ně použije CanvasValidator!
+        // (Klikne na "Analyzovat canvas" v Lekci 6)
+        // Achievement se triggeruje v CanvasValidator.tsx řádek 344
+        // if (filledSections.length >= 6) {
+        //   console.log('✅ Has 6+ filled sections - triggering validator-used');
+        //   triggerAchievement('validator-used');
+        // }
         
         // 🏆 profitable-business: Check if revenue > costs
         const totalRevenue = revenue?.content?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0;
@@ -835,8 +934,10 @@ export function CourseDemoV3() {
             triggerAchievement('value-map-complete');
           }
 
-          // FIT score achievements
+          // FIT score achievements - ✅ POSTUPNĚ od nejnižšího k nejvyššímu!
           const fitScore = vpc.fit_validation_data?.fitScore || 0;
+          
+          // Triggeruj všechny achievements které uživatel splnil (od nejnižšího)
           if (fitScore >= 70) {
             triggerAchievement('fit-70-percent');
           }
@@ -849,14 +950,9 @@ export function CourseDemoV3() {
         });
       }
 
-      // 🏆 action-plan-unlocked: Check if action plan exists
+      // 🏆 Check completed actions achievements
       const savedActions = localStorage.getItem(`action_plan_completed_${userData.id}`);
-      const hasActionPlan = savedActions !== null;
-      
-      if (hasActionPlan) {
-        console.log('📋 Action plan exists - triggering action-plan-unlocked');
-        triggerAchievement('action-plan-unlocked');
-        
+      if (savedActions) {
         try {
           const completedActions = new Set(JSON.parse(savedActions));
           console.log('📋 Completed actions:', completedActions.size);
@@ -877,13 +973,18 @@ export function CourseDemoV3() {
       }
       
       // 🏆 master-of-tools: Check if user used all tools
-      // Tools: Validator (6+ sections), Calculator (financial data), VPC (has VPC data), Action Plan (has saved actions)
-      const hasValidator = canvasData && canvasData.filter((s: any) => s.content?.length > 0).length >= 6;
-      const hasCalculator = canvasData && canvasData.some((s: any) => 
-        (s.section_key === 'revenue' || s.section_key === 'costs') && 
-        s.content?.some((i: any) => i.value > 0)
-      );
+      // ✅ OPRAVENO: Kontrolujeme achievementy místo dat (persistentní!)
+      const hasValidator = unlockedAchievements.has('validator-used');
+      const hasCalculator = unlockedAchievements.has('profit-calculated');
       const hasVPC = vpcData && vpcData.length > 0;
+      const hasActionPlan = unlockedAchievements.has('action-plan-unlocked');
+      
+      console.log('🛠️ Tool usage check:', {
+        hasValidator,
+        hasCalculator,
+        hasVPC,
+        hasActionPlan
+      });
       
       if (hasValidator && hasCalculator && hasVPC && hasActionPlan) {
         console.log('🛠️ Used all tools - triggering master-of-tools');
@@ -911,18 +1012,86 @@ export function CourseDemoV3() {
     }
   }, [userData?.id, completedLessons, triggerAchievement]);
 
-  // 🔍 Auto-check achievements when data is loaded
+  // 🔍 Auto-check achievements when data is loaded + SYNC to Supabase
   useEffect(() => {
-    if (userData?.id) {
-      // Wait a bit for all data to settle
+    const syncAchievementsToSupabase = async () => {
+      if (!userData?.id) return;
+      
+      console.log('🔄 Syncing achievements from localStorage to Supabase...');
+      
+      // Load achievements from localStorage
+      const localAchievements = loadUnlockedAchievements(userData.id);
+      
+      if (localAchievements.size === 0) {
+        console.log('⏭️ No local achievements to sync');
+        return;
+      }
+      
+      try {
+        // Load existing achievements from Supabase
+        const { data: existingAchievements } = await supabase
+          .from('user_achievements')
+          .select('achievement_type')
+          .eq('user_id', userData.id);
+        
+        const existingIds = new Set(existingAchievements?.map((a: any) => a.achievement_type) || []);
+        
+        // Find achievements that are in localStorage but NOT in Supabase
+        const toSync = Array.from(localAchievements).filter(id => !existingIds.has(id));
+        
+        if (toSync.length === 0) {
+          console.log('✅ All achievements already in Supabase');
+        } else {
+          console.log(`📤 Syncing ${toSync.length} achievements to Supabase...`);
+          
+          // Insert missing achievements
+          for (const achievementId of toSync) {
+            const achievement = getAchievement(achievementId);
+            if (achievement) {
+              const { error } = await supabase
+                .from('user_achievements')
+                .insert({
+                  user_id: userData.id,
+                  achievement_type: achievementId,
+                  title: achievement.title,
+                  description: achievement.description,
+                  icon: achievement.emoji,
+                  metadata: { points: achievement.points, category: achievement.category }
+                });
+              
+              if (error) {
+                console.error(`❌ Failed to sync achievement ${achievementId}:`, error);
+              } else {
+                console.log(`✅ Synced achievement: ${achievementId}`);
+              }
+            }
+          }
+          
+          console.log('✅ Achievement sync complete!');
+        }
+      } catch (err) {
+        console.error('❌ Failed to sync achievements:', err);
+      }
+      
+      // After sync, check for NEW achievements
       const timer = setTimeout(() => {
         checkAllAchievements();
-      }, 2000);
+      }, 1000);
       return () => clearTimeout(timer);
+    };
+    
+    if (userData?.id) {
+      syncAchievementsToSupabase();
     }
   }, [userData?.id, checkAllAchievements]);
 
   const handleStartPractice = () => {
+    // ✅ SAFE: Check if currentLesson exists
+    if (!currentLesson) {
+      console.error('❌ Cannot start practice: currentLesson is undefined');
+      return;
+    }
+    
     // Check if mobile
     const isMobile = window.innerWidth < 768;
     
@@ -946,6 +1115,12 @@ export function CourseDemoV3() {
   };
 
   const handleItemAdded = async () => {
+    // ✅ SAFE: Check if currentLesson exists
+    if (!currentLesson) {
+      console.error('❌ Cannot add item: currentLesson is undefined');
+      return;
+    }
+    
     // Po přidání první položky → označ jako "může pokračovat"
     const newCompleted = new Set(completedLessons);
     newCompleted.add(currentLesson.id);
@@ -1012,6 +1187,9 @@ export function CourseDemoV3() {
   };
   
   const handleSelectLesson = (moduleId: number, lessonIndex: number) => {
+    console.log('🔍 handleSelectLesson CALLED:', { moduleId, lessonIndex });
+    console.log('🔍 showMainDashboard BEFORE:', showMainDashboard);
+    
     // Check if trying to access Module 2+ without completing Module 1
     if (moduleId > 1) {
       const module1 = allModules.find(m => m.id === 1);
@@ -1023,10 +1201,12 @@ export function CourseDemoV3() {
       }
     }
     
+    console.log('✅ Setting states...');
     setCurrentModuleNumber(moduleId);
     setCurrentLessonIndex(lessonIndex);
     setShowMainDashboard(false);
     setShowCanvas(false);
+    console.log('✅ States set! showMainDashboard should be FALSE now');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
@@ -1092,40 +1272,49 @@ export function CourseDemoV3() {
   // Show Action Plan
   if (showActionPlan) {
     return (
-      <BusinessActionPlan
-        userId={userData?.id || 1}
-        onNavigateToLesson={(lessonId) => {
-          // Find module and lesson index for this lesson ID
-          for (const module of allModules) {
-            const lessonIndex = module.lessons.findIndex(l => l.id === lessonId);
-            if (lessonIndex !== -1) {
-              setCurrentModuleNumber(module.id);
-              setCurrentLessonIndex(lessonIndex);
-              setShowActionPlan(false);
-              setShowMainDashboard(false);
-              break;
+      <>
+        <BusinessActionPlan
+          userId={userData?.id || "guest"}
+          onNavigateToLesson={(lessonId) => {
+            // Find module and lesson index for this lesson ID
+            for (const module of allModules) {
+              const lessonIndex = module.lessons.findIndex(l => l.id === lessonId);
+              if (lessonIndex !== -1) {
+                setCurrentModuleNumber(module.id);
+                setCurrentLessonIndex(lessonIndex);
+                setShowActionPlan(false);
+                setShowMainDashboard(false);
+                break;
+              }
             }
-          }
-        }}
-        onBack={() => {
-          setShowActionPlan(false);
-          setShowMainDashboard(true);
-        }}
-        onAchievementUnlocked={triggerAchievement}
-      />
+          }}
+          onBack={() => {
+            setShowActionPlan(false);
+            setShowMainDashboard(true);
+          }}
+          refreshTrigger={actionPlanRefreshTrigger}
+          onAchievementUnlocked={triggerAchievement}
+        />
+        
+        {/* 🎉 ACHIEVEMENT NOTIFICATION */}
+        <AchievementNotification 
+          achievement={currentAchievement}
+          onClose={() => setCurrentAchievement(null)}
+        />
+      </>
     );
   }
 
-  // Show Main Dashboard (with sidebar)
-  if (showMainDashboard) {
+  // Show Main Dashboard (with sidebar) - pouze když je user autentizovaný A modules jsou načtené
+  if (showMainDashboard && isAuthenticated && userData && allModules.length > 0) {
     return (
       <>
         <SimpleDashboard
-          userId={userData?.id || 1}
+          userId={userData.id}
           modules={allModules}
           completedLessons={completedLessons}
-          currentModuleId={currentModuleNumber}
-          currentLessonIndex={currentLessonIndex}
+          currentModuleId={safeModuleNumber}
+          currentLessonIndex={safeLessonIndex}
           onContinue={handleContinueFromMainDashboard}
           onSelectLesson={handleSelectLesson}
           onShowDashboard={handleShowDashboard}
@@ -1140,6 +1329,18 @@ export function CourseDemoV3() {
           unlockedAchievements={unlockedAchievements}
         />
       </>
+    );
+  }
+
+  // ✅ SAFETY CHECK: Don't render if currentLesson is invalid
+  if (!currentLesson || !currentModule) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Načítám kurz...</p>
+        </div>
+      </div>
     );
   }
 
@@ -1227,10 +1428,10 @@ export function CourseDemoV3() {
                 {/* Progress Info */}
                 <div className="text-right">
                   <div className="text-sm font-bold text-blue-600">
-                    {Math.round((completedLessons.size / allModules.reduce((sum, m) => sum + m.lessons.length, 0)) * 100)}%
+                    {Math.round((completedLessons.size / Math.max(1, totalLessons)) * 100)}%
                   </div>
                   <div className="text-xs text-gray-500">
-                    {completedLessons.size}/{allModules.reduce((sum, m) => sum + m.lessons.length, 0)}
+                    {completedLessons.size}/{totalLessons}
                   </div>
                 </div>
               </div>
@@ -1238,13 +1439,9 @@ export function CourseDemoV3() {
             
             {/* Progress Bar */}
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ 
-                  width: `${(completedLessons.size / allModules.reduce((sum, m) => sum + m.lessons.length, 0)) * 100}%` 
-                }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="h-full bg-gradient-to-r from-blue-500 to-green-500"
+              <div
+                style={{ width: `${Math.round((completedLessons.size / Math.max(1, totalLessons)) * 100)}%` }}
+                className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500 ease-out"
               />
             </div>
           </div>
@@ -1254,11 +1451,7 @@ export function CourseDemoV3() {
           <div className="flex flex-col gap-6">
             {/* Lesson Header - Modern design */}
             {currentLesson.id !== 16 && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white rounded-2xl p-8 shadow-lg relative overflow-hidden"
-              >
+              <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white rounded-2xl p-8 shadow-lg relative overflow-hidden transition-all">
                 {/* Decorative background pattern */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl transform translate-x-32 -translate-y-32" />
@@ -1274,27 +1467,19 @@ export function CourseDemoV3() {
                     <p className="text-blue-100 text-lg leading-relaxed">{currentLesson.description}</p>
                   </div>
                   {completedLessons.has(currentLesson.id) && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="bg-green-500 rounded-2xl p-4 shadow-lg flex-shrink-0"
-                    >
+                    <div className="bg-green-500 rounded-2xl p-4 shadow-lg flex-shrink-0">
                       <CheckCircle2 className="w-10 h-10 text-white" />
-                    </motion.div>
+                    </div>
                   )}
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Content Section */}
             <div className="space-y-6">
               {/* Video (pouze pokud existuje URL) */}
               {currentLesson.videoUrl && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-                >
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all">
                   <div className="flex items-start gap-4 mb-4">
                     <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-lg">
                       <Play className="w-6 h-6 text-white" />
@@ -1313,7 +1498,7 @@ export function CourseDemoV3() {
                       allowFullScreen
                     />
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {/* Text Content - Rich or Plain */}
@@ -1353,7 +1538,7 @@ export function CourseDemoV3() {
                 
                 {currentLesson.id === 14 ? (
                   <VPCCustomerProfileStory
-                      userId={userData?.id || 0}
+                      userId={userData?.id || "guest"}
                       selectedSegment={selectedVPCSegment}
                       onSelectSegment={(newSegment) => {
                         setSelectedVPCSegment(newSegment);
@@ -1376,7 +1561,7 @@ export function CourseDemoV3() {
                     />
                 ) : currentLesson.id === 15 ? (
                   <VPCValueMapSquare
-                      userId={userData?.id || 0}
+                      userId={userData?.id || "guest"}
                       selectedSegment={selectedVPCSegment || "Můj segment"}
                       selectedValue={selectedVPCValue}
                       onSelectValue={setSelectedVPCValue}
@@ -1410,7 +1595,8 @@ export function CourseDemoV3() {
                     />
                 ) : currentLesson.id === 16 ? (
                   <FitValidatorV2 
-                        userId={userData?.id || 0} 
+                        key={`fit-validator-${currentLessonIndex}-${selectedVPCSegment}`}
+                        userId={userData?.id || "guest"} 
                         selectedSegment={selectedVPCSegment || ""}
                         onSegmentChange={setSelectedVPCSegment}
                         onValueChange={setSelectedVPCValue}
@@ -1445,9 +1631,12 @@ export function CourseDemoV3() {
                           
                           // 🎉 Achievements a konfety JEN když se NOVĚ dokončuje!
                           if (!wasAlreadyCompleted) {
-                            // 🎉 Achievement podle FIT Score
+                            // 🎉 Achievement podle FIT Score - POSTUPNĚ!
                             if (fitScore >= 70) {
                               triggerAchievement('fit-70-percent');
+                            }
+                            if (fitScore >= 80) {
+                              triggerAchievement('product-fit-master');
                             }
                             if (fitScore >= 90) {
                               triggerAchievement('fit-90-percent');
@@ -1477,16 +1666,12 @@ export function CourseDemoV3() {
                         hideTips={currentModuleNumber === 1}
                       />
                     ) : currentLesson.content ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-                      >
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all">
                         <div
                           className="prose max-w-none"
                           dangerouslySetInnerHTML={{ __html: currentLesson.content }}
                         />
-                      </motion.div>
+                      </div>
                     ) : null
                   )
                 )}
@@ -1496,12 +1681,7 @@ export function CourseDemoV3() {
               {!showCanvas && currentModuleNumber === 1 && (
                 <>
                   {/* Desktop - Modern CTA */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="hidden md:block bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-8 text-center shadow-xl relative overflow-hidden"
-                  >
+                  <div className="hidden md:block bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-8 text-center shadow-xl relative overflow-hidden transition-all">
                     {/* Decorative elements */}
                     <div className="absolute inset-0 opacity-20">
                       <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full blur-2xl" />
@@ -1528,14 +1708,10 @@ export function CourseDemoV3() {
                         Začít cvičení →
                       </Button>
                     </div>
-                  </motion.div>
+                  </div>
 
                   {/* Mobile - Jednoduchá sekce (jen aktuální Canvas sekce) */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="md:hidden space-y-4"
-                  >
+                  <div className="md:hidden space-y-4 transition-all">
                     <div className="text-center bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 shadow-lg">
                       <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 inline-block mb-2 text-xs text-white font-bold">
                         📱 MOBIL
@@ -1566,7 +1742,7 @@ export function CourseDemoV3() {
                           
                           // Save to Supabase (UPSERT with conflict resolution!)
                           const { error } = await supabase
-                            .from('business_canvas_sections')
+                            .from('user_canvas_data')
                             .upsert({
                               user_id: userData.id,
                               section_key: currentLesson.canvasSection,
@@ -1594,7 +1770,7 @@ export function CourseDemoV3() {
                         
                         // Save to Supabase (UPSERT with conflict resolution!)
                         const { error } = await supabase
-                          .from('business_canvas_sections')
+                          .from('user_canvas_data')
                           .upsert({
                             user_id: userData.id,
                             section_key: currentLesson.canvasSection,
@@ -1627,16 +1803,13 @@ export function CourseDemoV3() {
                     <p className="text-xs text-gray-600 text-center">
                       💡 Tip: Na PC uvidíte celý Canvas najednou
                     </p>
-                  </motion.div>
+                  </div>
                 </>
               )}
               
               {/* CTA - Modul 2 (Interaktivní lekce) */}
               {!showCanvas && currentModuleNumber === 2 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
+                <div className="transition-all">
                   {/* Lekce 1: Canvas Validator - VŽDY VIDITELNÝ! */}
                   {currentLesson.id === 10 && userData?.id && (
                     <CanvasValidator
@@ -1658,6 +1831,7 @@ export function CourseDemoV3() {
                   {/* Lekce 2: Profit Calculator - VŽDY VIDITELNÁ! */}
                   {currentLesson.id === 11 && userData?.id && (
                     <ProfitCalculator
+                      key={`profit-calc-${currentLessonIndex}`}
                       userId={userData.id}
                       onAchievementUnlocked={triggerAchievement}
                       onComplete={async () => {
@@ -1689,7 +1863,7 @@ export function CourseDemoV3() {
                       }}
                     />
                   )}
-                </motion.div>
+                </div>
               )}
               
 
@@ -1697,11 +1871,9 @@ export function CourseDemoV3() {
 
             {/* Canvas Section - FULL SCREEN MODE! */}
             {showCanvas && (
-              <motion.div
+              <div
                 id="canvas-wrapper"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="fixed inset-0 z-50 bg-gray-100 overflow-y-auto"
+                className="fixed inset-0 z-50 bg-gray-100 overflow-y-auto transition-all"
               >
                 {/* Canvas Header - Floating */}
                 <div className="sticky top-0 z-10 bg-white border-b-2 border-gray-200 shadow-sm">
@@ -1728,8 +1900,9 @@ export function CourseDemoV3() {
                   <div className="bg-white border-4 border-blue-500 rounded-xl p-8 shadow-2xl"
               >
                 <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-5">
-                  <p className="text-blue-900 font-bold text-lg">
-                    👇 Vyplňte tuto sekci podle instrukcí z videa
+                  <p className="text-blue-900 font-bold text-lg flex items-center gap-2">
+                    <span className="text-2xl">👇</span>
+                    <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na položku pro úpravu textu</span>
                   </p>
                 </div>
 
@@ -1763,7 +1936,7 @@ export function CourseDemoV3() {
                 )}
 
                 <BusinessModelCanvasSimple
-                  userId={userData?.id || 1}
+                  userId={userData?.id || "guest"}
                   highlightSection={highlightedSectionId}
                   hideTips={true}
                   allowedSection={currentLesson.canvasSection}
@@ -1815,7 +1988,7 @@ export function CourseDemoV3() {
                           size="lg"
                           className="flex-1 bg-white text-purple-600 hover:bg-purple-50"
                         >
-                          Pokračovat na další lekci →
+                          Pokra��ovat na další lekci →
                         </Button>
                       )}
                       {isLastLesson && (
@@ -1832,7 +2005,7 @@ export function CourseDemoV3() {
                 )}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
           </div>
         </div>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "motion/react";
 import { AlertTriangle, Lightbulb, TrendingUp, Users, DollarSign, Zap, ArrowRight, CheckCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -173,7 +172,7 @@ const SOLUTION_MAPPING: Record<string, { section: string, lessonId: number }> = 
 };
 
 interface Props {
-  userId: number;
+  userId: string;
   onComplete: () => void;
   onNavigateNext?: () => void;
 }
@@ -228,10 +227,10 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white p-6 rounded-xl">
-        <h3 className="text-2xl font-bold mb-2">🚀 Řešení situací</h3>
-        <p className="text-purple-100">
+      {/* Header - ČISTŠÍ */}
+      <div className="text-center mb-8">
+        <h3 className="text-3xl font-bold text-gray-900 mb-3">🚀 Řešení typických situací</h3>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Vyberte váš největší problém a najděte konkrétní řešení
         </p>
       </div>
@@ -239,43 +238,44 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
       {!selectedScenario ? (
         /* Scenario Selection */
         <>
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-4">
-            <p className="text-sm text-blue-900">
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6">
+            <p className="text-blue-900">
               💡 <strong>Volitelné:</strong> Projděte si 4 typické problémy a jejich řešení. Můžete pokračovat i bez výběru.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {SCENARIOS.map((scenario, index) => {
               const Icon = scenario.icon;
-              const colorClasses = {
-                red: 'from-red-500 to-red-600 hover:from-red-600 hover:to-red-700',
-                yellow: 'from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700',
-                purple: 'from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700',
-                blue: 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+              // ✅ ČISTŠÍ - jen bílé karty s barevnou ikonou
+              const iconColors = {
+                red: 'text-red-600 bg-red-50',
+                yellow: 'text-yellow-600 bg-yellow-50',
+                purple: 'text-purple-600 bg-purple-50',
+                blue: 'text-blue-600 bg-blue-50'
               }[scenario.color];
 
               return (
-                <motion.button
+                <button
                   key={scenario.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
                   onClick={() => {
                     setSelectedScenario(scenario);
-                    setHasReadContent(true); // Označit že otevřel problém
+                    setHasReadContent(true);
                   }}
-                  className={`bg-gradient-to-r ${colorClasses} text-white p-6 rounded-xl text-left transition-all hover:scale-105 hover:shadow-xl`}
+                  className="bg-white border-2 border-gray-200 hover:border-blue-400 p-6 rounded-xl text-left transition-all hover:shadow-lg group"
                 >
-                  <Icon className="w-8 h-8 mb-3" />
-                  <h4 className="font-bold mb-2 text-lg">{scenario.problem}</h4>
-                  <p className="text-sm opacity-90 mb-2">
+                  <div className={`w-14 h-14 rounded-full ${iconColors} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <h4 className="mb-2">{scenario.problem}</h4>
+                  <p className="text-gray-600 mb-3">
                     {scenario.description}
                   </p>
-                  <p className="text-xs opacity-75">
-                    {scenario.solutions.length} možných řešení →
+                  <p className="text-sm text-blue-600 font-medium flex items-center gap-1">
+                    {scenario.solutions.length} možných řešení 
+                    <ArrowRight className="w-4 h-4" />
                   </p>
-                </motion.button>
+                </button>
               );
             })}
           </div>
@@ -295,14 +295,14 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
           </Button>
 
           <div className="bg-white border-2 border-gray-200 p-6 rounded-xl">
-            <h4 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+            <h4 className="mb-2 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 text-orange-600" />
               {selectedScenario.problem}
             </h4>
             <p className="text-gray-600 mb-6">
               {selectedScenario.description}
             </p>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-gray-600 mb-4">
               Vyberte řešení které nejlépe sedí na vaši situaci:
             </p>
 
@@ -311,24 +311,22 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
                 const isApplied = appliedSolutions.has(solution.id);
 
                 return (
-                  <motion.div
+                  <div
                     key={solution.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
                     className={`border-2 rounded-lg p-5 ${
                       isApplied 
                         ? 'bg-green-50 border-green-300' 
                         : 'bg-white border-gray-200 hover:border-blue-300'
                     } transition-all`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h5 className="font-bold text-gray-900 mb-1 flex items-center gap-2">
+                        <h5 className="mb-1 flex items-center gap-2">
                           {solution.title}
                           {isApplied && <CheckCircle className="w-5 h-5 text-green-600" />}
                         </h5>
-                        <p className="text-sm text-gray-600 mb-3">
+                        <p className="text-gray-600 mb-3">
                           {solution.description}
                         </p>
                       </div>
@@ -348,7 +346,7 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
                     </div>
 
                     <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded mb-3">
-                      <p className="text-sm text-blue-900">
+                      <p className="text-blue-900">
                         <strong>📝 Akce v Canvas:</strong><br />
                         {solution.canvasAction}
                       </p>
@@ -378,7 +376,7 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
                         </>
                       )}
                     </Button>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -388,15 +386,13 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
 
       {/* CTA - Dokončit lekci */}
       {!isCompleted ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-8 text-center shadow-2xl mt-6"
+        <div
+          className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-center shadow-2xl mt-6 transition-all duration-300 ease-out"
         >
-          <h3 className="text-2xl font-bold text-white mb-3">
+          <h3 className="mb-3 text-white">
             ✅ Hotovo! Znáte řešení typických problémů
           </h3>
-          <p className="text-purple-100 mb-6">
+          <p className="text-green-100 mb-6">
             {appliedSolutions.size > 0 
               ? `Skvělá práce! Prohlédli jste si ${appliedSolutions.size} ${appliedSolutions.size === 1 ? 'řešení' : 'řešení'}.`
               : 'Můžete se kdykoliv vrátit a prohlédnout si řešení.'
@@ -408,16 +404,14 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
               onComplete();
             }}
             size="lg"
-            className="bg-white text-purple-700 hover:bg-purple-50 font-bold text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+            className="bg-white text-green-700 hover:bg-green-50 font-bold text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
           >
             Dokončit lekci a pokračovat →
           </Button>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-8 text-white shadow-xl mt-6"
+        <div
+          className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-8 text-white shadow-xl mt-6 transition-all duration-300 ease-out"
         >
           <div className="flex items-start gap-4 mb-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
@@ -452,7 +446,7 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
               </Button>
             )}
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );

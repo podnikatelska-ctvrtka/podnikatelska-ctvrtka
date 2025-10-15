@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "motion/react";
 import { Trophy, X } from "lucide-react";
 import { Achievement } from "../lib/achievements";
 import { useState, useEffect } from "react";
@@ -35,14 +34,14 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
   }[achievement.category];
 
   return (
-    <AnimatePresence>
+    <>
       {isVisible && (
-        <motion.div
-          initial={{ x: 400, opacity: 0, scale: 0.8 }}
-          animate={{ x: 0, opacity: 1, scale: 1 }}
-          exit={{ x: 400, opacity: 0, scale: 0.8 }}
-          transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="fixed top-32 right-4 z-50 max-w-sm"
+        <div
+          style={{ 
+            transform: isVisible ? 'translateX(0) scale(1)' : 'translateX(400px) scale(0.8)',
+            opacity: isVisible ? 1 : 0
+          }}
+          className="fixed top-32 right-4 z-50 max-w-sm transition-all duration-500 ease-out"
         >
           <div className={`bg-gradient-to-r ${bgGradient} text-white rounded-xl shadow-2xl overflow-hidden`}>
             {/* Glow efekt */}
@@ -52,59 +51,34 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
             <div className="relative p-5">
               <div className="flex items-start gap-4">
                 {/* Icon */}
-                <motion.div
-                  initial={{ rotate: -180, scale: 0 }}
-                  animate={{ rotate: 0, scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring" }}
-                  className="flex-shrink-0"
-                >
+                <div className="flex-shrink-0 opacity-0 animate-[fadeIn_0.5s_0.2s_ease-out_forwards]">
                   <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-3xl backdrop-blur-sm">
                     {achievement.emoji}
                   </div>
-                </motion.div>
+                </div>
                 
                 {/* Text */}
                 <div className="flex-1 min-w-0">
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="flex items-center gap-2 mb-1"
-                  >
+                  <div className="flex items-center gap-2 mb-1 opacity-0 animate-[fadeIn_0.5s_0.3s_ease-out_forwards]">
                     <Trophy className="w-4 h-4" />
                     <span className="text-xs font-semibold uppercase tracking-wide opacity-90">
                       Odemčeno!
                     </span>
-                  </motion.div>
+                  </div>
                   
-                  <motion.h3
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="font-bold text-lg mb-1 leading-tight"
-                  >
+                  <h3 className="font-bold text-lg mb-1 leading-tight opacity-0 animate-[fadeIn_0.5s_0.4s_ease-out_forwards]">
                     {achievement.title}
-                  </motion.h3>
+                  </h3>
                   
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-sm opacity-90 leading-snug"
-                  >
+                  <p className="text-sm opacity-90 leading-snug opacity-0 animate-[fadeIn_0.5s_0.5s_ease-out_forwards]">
                     {achievement.description}
-                  </motion.p>
+                  </p>
                   
                   {achievement.points && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.6, type: "spring" }}
-                      className="mt-2 inline-flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-xs font-bold"
-                    >
+                    <div className="mt-2 inline-flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-xs font-bold opacity-0 animate-[fadeIn_0.5s_0.6s_ease-out_forwards]">
                       <span>+{achievement.points}</span>
                       <span className="opacity-75">bodů</span>
-                    </motion.div>
+                    </div>
                   )}
                 </div>
                 
@@ -122,16 +96,14 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
             </div>
             
             {/* Progress bar */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 5, ease: "linear" }}
-              className="h-1 bg-white/30 origin-left"
+            <div 
+              className="h-1 bg-white/30 origin-left transition-transform duration-[5000ms] ease-linear"
+              style={{ transform: 'scaleX(1)' }}
             />
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }
 

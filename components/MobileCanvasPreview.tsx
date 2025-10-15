@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { hexToColorName } from "../lib/colorUtils";
 
@@ -82,50 +81,40 @@ export function MobileCanvasPreview({ sections, defaultOpen = false }: Props) {
             </button>
 
             {/* Content */}
-            <AnimatePresence>
-              {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="border-t-2 border-gray-200"
-                >
-                  <div className="p-3">
-                    {hasItems ? (
-                      <div className="flex flex-wrap gap-2">
-                        {section.items.map((item, index) => {
-                          const colorName = hexToColorName(item.color as any);
-                          const colorClasses = STICKY_COLORS[colorName] || STICKY_COLORS.blue;
-                          const randomRotate = (index % 3 - 1) * 1.5; // Mírnější rotace
-                          
-                          return (
-                            <motion.div
-                              key={index}
-                              initial={{ scale: 0.9, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              className={`${colorClasses.bg} ${colorClasses.border} border-2 p-2 rounded shadow-sm text-xs min-w-[80px] max-w-[140px]`}
-                              style={{ transform: `rotate(${randomRotate}deg)` }}
-                            >
-                              <div className={colorClasses.text}>{item.text}</div>
-                              {item.value !== undefined && (
-                                <div className={`${colorClasses.text} font-bold mt-1 text-xs`}>
-                                  {item.value.toLocaleString('cs-CZ')} {section.valueLabel?.includes('Kč') ? 'Kč' : ''}
-                                </div>
-                              )}
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray-400 italic text-center py-2">
-                        Zatím žádné položky
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {isOpen && (
+              <div className="border-t-2 border-gray-200 transition-all duration-200">
+                <div className="p-3">
+                  {hasItems ? (
+                    <div className="flex flex-wrap gap-2">
+                      {section.items.map((item, index) => {
+                        const colorName = hexToColorName(item.color as any);
+                        const colorClasses = STICKY_COLORS[colorName] || STICKY_COLORS.blue;
+                        const randomRotate = (index % 3 - 1) * 1.5; // Mírnější rotace
+                        
+                        return (
+                          <div
+                            key={index}
+                            className={`${colorClasses.bg} ${colorClasses.border} border-2 p-2 rounded shadow-sm text-xs min-w-[80px] max-w-[140px]`}
+                            style={{ transform: `rotate(${randomRotate}deg)` }}
+                          >
+                            <div className={colorClasses.text}>{item.text}</div>
+                            {item.value !== undefined && (
+                              <div className={`${colorClasses.text} font-bold mt-1 text-xs`}>
+                                {item.value.toLocaleString('cs-CZ')} {section.valueLabel?.includes('Kč') ? 'Kč' : ''}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-400 italic text-center py-2">
+                      Zatím žádné položky
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         );
       })}

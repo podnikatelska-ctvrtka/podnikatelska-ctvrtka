@@ -49,7 +49,7 @@ const INITIAL_CANVAS: CanvasSection[] = [
 ];
 
 interface Props {
-  userId: number;
+  userId: string;
   highlightSection?: string; // Pro guided tour - highlight specific section
 }
 
@@ -74,7 +74,7 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
 
     try {
       const { data, error } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('*')
         .eq('user_id', userId);
 
@@ -104,7 +104,7 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
     setIsSaving(true);
     try {
       const { error } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .upsert({
           user_id: userId,
           section_key: sectionId,

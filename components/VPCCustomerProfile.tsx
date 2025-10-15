@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { Plus, X, Save } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
@@ -7,7 +6,7 @@ import { toast } from "sonner";
 import { CustomerProfileContextHints } from "./CustomerProfileContextHints";
 
 interface Props {
-  userId: number;
+  userId: string;
   selectedSegment: string;
 }
 
@@ -91,7 +90,7 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
       try {
         // 🎨 Načti barvu segmentu
         const { data: segmentData } = await supabase
-          .from('business_canvas_sections')
+          .from('user_canvas_data')
           .select('content')
           .eq('user_id', userId)
           .eq('section_key', 'segments')

@@ -15,18 +15,27 @@ import { AdminCourse } from "./components/AdminCourse";
 import { InteractiveCourseDemo } from "./components/InteractiveCourseDemo";
 import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
 import { FinalAdSetsShowcase } from "./components/FinalAdSets";
+import AdPreview from "./components/AdPreview";
+import AdCreatives from "./components/AdCreatives";
+import AdCreativesSimple from "./components/AdCreativesSimple";
+import AdVariants from "./components/AdVariants";
+import Final3AdSets from "./components/Final3AdSets";
+import MyCreativeAdSetsFixed from "./components/MyCreativeAdSetsFixed";
+import ThreeNewCreativeAds from "./components/ThreeNewCreativeAds";
+import AntiGuruDarkVersion from "./components/AntiGuruDarkVersion";
+import FinalAdPortfolio from "./components/FinalAdPortfolio";
+import All6AdSets from "./components/All6AdSets";
+import { AdComparison } from "./pages/AdComparison";
+import OrderPage from "./components/OrderPage";
+import OrderPageClean from "./components/OrderPageClean";
+import TermsPage from "./components/TermsPage";
+import GDPRPage from "./components/GDPRPage";
 
 import { Analytics } from "./components/Analytics";
 import { CriticalCSS } from "./components/CriticalCSS";
 import { MobileProgressBar } from "./components/MobileProgressBar";
 import { OptimizedMobileCTA } from "./components/OptimizedMobileCTA";
 import { CookieConsent } from "./components/CookieConsent";
-
-// New UX enhancements
-import { FadeInUp, ScaleIn, ProgressReveal, HoverScale } from "./components/ScrollAnimations";
-import { SectionTransition } from "./components/SectionTransition";
-import { HoverGlow, MagneticHover } from "./components/MicroInteractions";
-import { StaggerContainer } from "./components/EnhancedScrollEffects";
 
 import { Toaster } from "./components/ui/sonner";
 import { useEffect, useState } from "react";
@@ -36,7 +45,7 @@ export default function App() {
   // Toggle between modes: early-access / prelaunch / normal-sale  
   const saleMode = "prelaunch"; // "early-access" | "prelaunch" | "normal-sale"
   
-  // 🧪 DEMO MODE: Pro testování Step 2 v modalu (změň na true)
+  // �� DEMO MODE: Pro testování Step 2 v modalu (změň na true)
   const demoModalStep2 = false; // true = vidíš rovnou Step 2 success screen
   
   // 🎨 AD CREATIVES MODE: Pro zobrazení FB reklam (změň na true)
@@ -55,6 +64,21 @@ export default function App() {
   const [showAdmin, setShowAdmin] = useState(false);
   // 🎓 INTERACTIVE COURSE: Guided tour demo
   const [showInteractiveCourse, setShowInteractiveCourse] = useState(false);
+  // 🛒 ORDER PAGE: Sales page
+  const [showOrderPage, setShowOrderPage] = useState(false);
+  // 🛒 ORDER EXPIRED: Expired offer page
+  const [showOrderExpired, setShowOrderExpired] = useState(false);
+  // 📄 LEGAL PAGES
+  const [showTerms, setShowTerms] = useState(false);
+  const [showGDPR, setShowGDPR] = useState(false);
+  // 🎯 AD PREVIEW PAGE
+  const [showAdPreview, setShowAdPreview] = useState(false);
+  const [showCreativeAds, setShowCreativeAds] = useState(false);
+  const [showAdComparison, setShowAdComparison] = useState(false);
+  const [showNewCreativeAds, setShowNewCreativeAds] = useState(false);
+  const [showAntiGuruDark, setShowAntiGuruDark] = useState(false);
+  const [showFinalPortfolio, setShowFinalPortfolio] = useState(false);
+  const [showAll6AdSets, setShowAll6AdSets] = useState(false);
 
   
   useEffect(() => {
@@ -63,8 +87,174 @@ export default function App() {
       const hash = window.location.hash;
       const path = window.location.pathname;
       
-      if (hash.startsWith('#priprava') || path === '/priprava' || path === '/minikurz') {
+      if (hash.startsWith('#all-ads') || path === '/all-ads') {
+        setShowAll6AdSets(true);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#final-portfolio') || path === '/final-portfolio') {
+        setShowFinalPortfolio(true);
+        setShowAll6AdSets(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#anti-guru-dark') || path === '/anti-guru-dark') {
+        setShowAntiGuruDark(true);
+        setShowFinalPortfolio(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#nove-reklamy') || path === '/nove-reklamy') {
+        setShowNewCreativeAds(true);
+        setShowAntiGuruDark(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#ad-porovnani') || path === '/ad-porovnani') {
+        setShowAdComparison(true);
+        setShowNewCreativeAds(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#kreativni-reklamy') || path === '/kreativni-reklamy') {
+        setShowCreativeAds(true);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#reklamy') || path === '/reklamy') {
+        setShowAdPreview(true);
+        setShowCreativeAds(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#terms') || path === '/terms' || path === '/podminky' || path === '/obchodni-podminky') {
+        setShowTerms(true);
+        setShowGDPR(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#gdpr') || path === '/gdpr' || path === '/ochrana-udaju' || path === '/ochrana-osobnich-udaju') {
+        setShowGDPR(true);
+        setShowTerms(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#objednavka-vyprsela') || path === '/objednavka-vyprsela') {
+        setShowOrderExpired(true);
+        setShowOrderPage(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#objednavka') || path === '/objednavka') {
+        setShowOrderPage(true);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+        setShowAdmin(false);
+        setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#priprava') || path === '/priprava' || path === '/minikurz') {
         setShowChecklist(true);
+        setShowOrderPage(false);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
@@ -73,6 +263,10 @@ export default function App() {
       } else if (hash.startsWith('#course') && !hash.startsWith('#course-v') || path === '/course') {
         setShowCourseDemo(true);
         setShowChecklist(false);
+        setShowOrderPage(false);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
         setShowAdmin(false);
@@ -80,6 +274,10 @@ export default function App() {
       } else if (hash.startsWith('#course-v2') || path === '/course-v2') {
         setShowCourseV2(true);
         setShowChecklist(false);
+        setShowOrderPage(false);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
         setShowCourseDemo(false);
         setShowCourseV3(false);
         setShowAdmin(false);
@@ -88,12 +286,20 @@ export default function App() {
         setShowCourseV3(true);
         setShowCourseV2(false);
         setShowChecklist(false);
+        setShowOrderPage(false);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
         setShowCourseDemo(false);
         setShowAdmin(false);
         setShowInteractiveCourse(false);
       } else if (hash.startsWith('#admin-course') || path === '/admin-course') {
         setShowAdmin(true);
         setShowChecklist(false);
+        setShowOrderPage(false);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
@@ -102,11 +308,19 @@ export default function App() {
         setShowInteractiveCourse(true);
         setShowAdmin(false);
         setShowChecklist(false);
+        setShowOrderPage(false);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
       } else {
         setShowChecklist(false);
+        setShowOrderPage(false);
+        setShowOrderExpired(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
@@ -130,6 +344,127 @@ export default function App() {
       <>
         <CriticalCSS />
         {showFinalAdSets ? <FinalAdSetsShowcase /> : <AdCreativesShowcase />}
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show All 6 Ad Sets if URL has #all-ads
+  if (showAll6AdSets) {
+    return (
+      <>
+        <CriticalCSS />
+        <All6AdSets />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+
+  // Show Final Ad Portfolio if URL has #final-portfolio
+  if (showFinalPortfolio) {
+    return (
+      <>
+        <CriticalCSS />
+        <FinalAdPortfolio />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Anti-Guru Dark comparison if URL has #anti-guru-dark
+  if (showAntiGuruDark) {
+    return (
+      <>
+        <CriticalCSS />
+        <AntiGuruDarkVersion />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show new creative ads if URL has #nove-reklamy (3 NOVÉ!)
+  if (showNewCreativeAds) {
+    return (
+      <>
+        <CriticalCSS />
+        <ThreeNewCreativeAds />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+
+  // Show ad comparison if URL has #ad-porovnani (POROVNÁNÍ!)
+  if (showAdComparison) {
+    return (
+      <>
+        <CriticalCSS />
+        <AdComparison />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+
+  // Show creative ads if URL has #kreativni-reklamy (MÉ KREATIVNÍ!)
+  if (showCreativeAds) {
+    return (
+      <>
+        <CriticalCSS />
+        <MyCreativeAdSetsFixed />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+
+  // Show final 3 ad sets if URL has #reklamy (3 FINÁLNÍ!)
+  if (showAdPreview) {
+    return (
+      <>
+        <CriticalCSS />
+        <Final3AdSets />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show terms page if URL has #terms
+  if (showTerms) {
+    return (
+      <>
+        <CriticalCSS />
+        <TermsPage />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show GDPR page if URL has #gdpr
+  if (showGDPR) {
+    return (
+      <>
+        <CriticalCSS />
+        <GDPRPage />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show order page if URL has #objednavka
+  if (showOrderPage) {
+    return (
+      <>
+        <CriticalCSS />
+        <OrderPage expired={false} />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show expired order page if URL has #objednavka-vyprsela
+  if (showOrderExpired) {
+    return (
+      <>
+        <CriticalCSS />
+        <OrderPage expired={true} />
         <Toaster position="top-right" />
       </>
     );
@@ -218,38 +553,26 @@ export default function App() {
       <HeroSection />
       
       {/* 2. Problémy - budování pain pointů BEZ CTA */}
-      <ProgressReveal delay={0.1}>
-        <ProblemsSectionCompact />
-      </ProgressReveal>
+      <ProblemsSectionCompact />
       
       {/* 3. První naděje - teaser řešení */}
-      <FadeInUp delay={0.2}>
-        <SolutionIntroSection />
-      </FadeInUp>
+      <SolutionIntroSection />
       
       {/* 4. Social proof - budování důvěry */}
-      <StaggerContainer>
-        <SwipeableTestimonials />
-      </StaggerContainer>
+      <SwipeableTestimonials />
       
       {/* 5. Řešení a detailní benefity - soft pitch */}
-      <FadeInUp delay={0.1}>
-        <OptimizedCombinedSectionV2 />
-      </FadeInUp>
+      <OptimizedCombinedSectionV2 />
       
       {/* 6. Konkrétní case study - detailní příklad */}
-      <ProgressReveal delay={0.2}>
-        <CompactCaseStudySection />
-      </ProgressReveal>
+      <CompactCaseStudySection />
       
       {/* 7. Finální nabídka - podle režimu */}
-      <ScaleIn delay={0.1}>
-        <div id="order">
-          {saleMode === "early-access" && <EarlyAccessSale />}
-          {saleMode === "prelaunch" && <HoverGlow><PrelaunchEmailCapture /></HoverGlow>}
-          {saleMode === "normal-sale" && <CountdownBanner />}
-        </div>
-      </ScaleIn>
+      <div id="order">
+        {saleMode === "early-access" && <EarlyAccessSale />}
+        {saleMode === "prelaunch" && <PrelaunchEmailCapture />}
+        {saleMode === "normal-sale" && <CountdownBanner />}
+      </div>
       
       {/* Toast notifikace */}
       <Toaster position="top-right" />

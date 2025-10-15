@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { 
   CheckCircle, 
   AlertCircle, 
@@ -25,7 +24,7 @@ import { FitStepInstructions } from "./FitStepInstructions";
 import { toast } from "sonner";
 
 interface Props {
-  userId: number;
+  userId: string;
   selectedSegment?: string;
   onSegmentChange?: (segment: string) => void;
   onValueChange?: (value: string) => void;
@@ -40,6 +39,11 @@ interface VPCItem {
   priority?: number; // 0 = highest, higher numbers = lower priority
   count?: number; // Kolik lidí toto zmiňovalo
   percentage?: number; // Automaticky vypočítané %
+}
+
+interface ValueMapItem {
+  text: string;
+  color: string;
 }
 
 // ➕ Add Item Input Component
@@ -220,11 +224,8 @@ function PriorityItemWithScore({
   const stars = Math.round((percentage / 100) * 5);
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`flex flex-col gap-3 p-4 rounded-lg border-2 ${bgColor} ${borderColor} transition-all`}
+    <div
+      className={`flex flex-col gap-3 p-4 rounded-lg border-2 ${bgColor} ${borderColor} transition-all animate-in fade-in slide-in-from-bottom-4 duration-300`}
     >
       {/* Text */}
       <div className="flex items-start justify-between gap-3">
@@ -286,7 +287,7 @@ function PriorityItemWithScore({
           Top 3 priorita
         </p>
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -334,9 +335,9 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   const [jobs, setJobs] = useState<VPCItem[]>([]);
   const [pains, setPains] = useState<VPCItem[]>([]);
   const [gains, setGains] = useState<VPCItem[]>([]);
-  const [products, setProducts] = useState<string[]>([]);
-  const [painRelievers, setPainRelievers] = useState<string[]>([]);
-  const [gainCreators, setGainCreators] = useState<string[]>([]);
+  const [products, setProducts] = useState<ValueMapItem[]>([]);
+  const [painRelievers, setPainRelievers] = useState<ValueMapItem[]>([]);
+  const [gainCreators, setGainCreators] = useState<ValueMapItem[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
   
@@ -840,36 +841,48 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           jobsData = (customerProfile?.jobs || []).map((item: any, index: number) => {
             const text = typeof item === 'string' ? item : item.text;
             const textSlug = text.substring(0, 30).replace(/\s+/g, '-').toLowerCase();
+            
+            // ✅ NAČTI count/percentage z fitProgress POKUD EXISTUJÍ!
+            const savedJob = fitProgress?.jobs?.find((j: any) => j.text === text);
+            
             return {
               id: item.id || `job-${textSlug}-${index}`, // Index zajistí unikátnost i pro stejný text
               text,
-              count: 0,
-              percentage: 0,
-              priority: index
+              count: savedJob?.count || 0,
+              percentage: savedJob?.percentage || 0,
+              priority: savedJob?.priority !== undefined ? savedJob.priority : index
             };
           });
           
           painsData = (customerProfile?.pains || []).map((item: any, index: number) => {
             const text = typeof item === 'string' ? item : item.text;
             const textSlug = text.substring(0, 30).replace(/\s+/g, '-').toLowerCase();
+            
+            // ✅ NAČTI count/percentage z fitProgress POKUD EXISTUJÍ!
+            const savedPain = fitProgress?.pains?.find((p: any) => p.text === text);
+            
             return {
               id: item.id || `pain-${textSlug}-${index}`,
               text,
-              count: 0,
-              percentage: 0,
-              priority: index
+              count: savedPain?.count || 0,
+              percentage: savedPain?.percentage || 0,
+              priority: savedPain?.priority !== undefined ? savedPain.priority : index
             };
           });
           
           gainsData = (customerProfile?.gains || []).map((item: any, index: number) => {
             const text = typeof item === 'string' ? item : item.text;
             const textSlug = text.substring(0, 30).replace(/\s+/g, '-').toLowerCase();
+            
+            // ✅ NAČTI count/percentage z fitProgress POKUD EXISTUJÍ!
+            const savedGain = fitProgress?.gains?.find((g: any) => g.text === text);
+            
             return {
               id: item.id || `gain-${textSlug}-${index}`,
               text,
-              count: 0,
-              percentage: 0,
-              priority: index
+              count: savedGain?.count || 0,
+              percentage: savedGain?.percentage || 0,
+              priority: savedGain?.priority !== undefined ? savedGain.priority : index
             };
           });
         }
@@ -941,12 +954,12 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     loadAvailableOptions();
   }, [userId]);
   
-  // ✅ DŮLEŽITÉ: Reload VPC dat když se změní segment!
+  // ✅ DŮLEŽITÉ: Reload VPC dat když se změní segment NEBO při prvním mount!
   useEffect(() => {
-    if (!isLoading && localSelectedSegment) {
+    if (userId && localSelectedSegment) {
       loadVPC();
     }
-  }, [localSelectedSegment]);
+  }, [localSelectedSegment, userId]); // ✅ Přidán userId pro reload při prvním mount
   
   // 🔄 Přepočítat % když se změní celkový počet respondentů
   useEffect(() => {
@@ -995,7 +1008,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
       
       // Načti segmenty
       const { data: segmentsData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'segments')
@@ -1020,7 +1033,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
       
       // Načti hodnoty
       const { data: valuesData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'value')
@@ -1872,15 +1885,11 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
+      <div>
         {/* STEP 1: DISCOVERY */}
         {currentStep === 1 && (
-          <motion.div
-            key="discovery"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+          <div
+            className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             {/* Kompaktní header + collapsible help */}
             <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl p-6 flex items-center justify-between">
@@ -1910,14 +1919,14 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
 
             {/* Methodology */}
             <div className="bg-white rounded-xl border-2 border-gray-200 p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              <h3 className="mb-6 text-gray-900">
                 🔍 Jak zjistit co je pro {selectedSegment || 'váš segment'} kritické?
               </h3>
               
-              <div className="mb-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+              <div className="mb-6 bg-blue-50 border-2 border-blue-300 rounded-xl p-6">
                 <div className="flex gap-3">
                   <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-blue-900">
+                  <p className="text-blue-900">
                     <strong>Důležité:</strong> Nemůžete jen hádat co zákazník potřebuje. 
                     Musíte to ZJISTIT - ptát se, pozorovat, analyzovat!
                   </p>
@@ -1926,76 +1935,82 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
 
               <div className="grid md:grid-cols-3 gap-6">
                 {/* Jobs Discovery */}
-                <div className="bg-yellow-50 p-6 rounded-lg border-2 border-yellow-200">
-                  <h4 className="font-bold text-yellow-900 mb-3 flex items-center gap-2">
+                <div className="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-300">
+                  <h4 className="mb-3 text-yellow-900 flex items-center gap-2">
                     <Target className="w-5 h-5" />
                     Cíle/Důvody (Jobs)
                   </h4>
                   <div className="space-y-3 mb-4">
-                    <p className="text-sm font-bold text-yellow-800">Otázky k položení:</p>
+                    <p className="font-bold text-yellow-800">Otázky k položení:</p>
                     {guide.questions.jobs.map((q, i) => (
-                      <p key={i} className="text-sm text-yellow-900">• {q}</p>
+                      <p key={i} className="text-yellow-900">• {q}</p>
                     ))}
                   </div>
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-yellow-800">Příklady odpovědí:</p>
+                    <p className="font-bold text-yellow-800">Příklady odpovědí:</p>
                     {guide.examples.jobs.map((ex, i) => (
-                      <p key={i} className="text-xs text-yellow-700 bg-white p-2 rounded">
-                        "{ex}"
-                      </p>
+                      <div key={i} className="bg-white p-3 pl-4 rounded-lg border-l-4 border-yellow-400 shadow-sm">
+                        <p className="text-yellow-800 leading-relaxed">
+                          "{ex}"
+                        </p>
+                      </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Pains Discovery */}
-                <div className="bg-red-50 p-6 rounded-lg border-2 border-red-200">
-                  <h4 className="font-bold text-red-900 mb-3 flex items-center gap-2">
+                <div className="bg-red-50 p-6 rounded-xl border-2 border-red-300">
+                  <h4 className="mb-3 text-red-900 flex items-center gap-2">
                     <AlertCircle className="w-5 h-5" />
                     Obavy/Problémy (Pains)
                   </h4>
                   <div className="space-y-3 mb-4">
-                    <p className="text-sm font-bold text-red-800">Otázky k položení:</p>
+                    <p className="font-bold text-red-800">Otázky k položení:</p>
                     {guide.questions.pains.map((q, i) => (
-                      <p key={i} className="text-sm text-red-900">• {q}</p>
+                      <p key={i} className="text-red-900">• {q}</p>
                     ))}
                   </div>
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-red-800">Příklady odpovědí:</p>
+                    <p className="font-bold text-red-800">Příklady odpovědí:</p>
                     {guide.examples.pains.map((ex, i) => (
-                      <p key={i} className="text-xs text-red-700 bg-white p-2 rounded">
-                        "{ex}"
-                      </p>
+                      <div key={i} className="bg-white p-3 pl-4 rounded-lg border-l-4 border-red-400 shadow-sm">
+                        <p className="text-red-800 leading-relaxed">
+                          "{ex}"
+                        </p>
+                      </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Gains Discovery */}
-                <div className="bg-green-50 p-6 rounded-lg border-2 border-green-200">
-                  <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2">
+                <div className="bg-green-50 p-6 rounded-xl border-2 border-green-300">
+                  <h4 className="mb-3 text-green-900 flex items-center gap-2">
                     <Star className="w-5 h-5" />
                     Očekávání/Touhy (Gains)
                   </h4>
                   <div className="space-y-3 mb-4">
-                    <p className="text-sm font-bold text-green-800">Otázky k položení:</p>
+                    <p className="font-bold text-green-800">Otázky k položení:</p>
                     {guide.questions.gains.map((q, i) => (
-                      <p key={i} className="text-sm text-green-900">• {q}</p>
+                      <p key={i} className="text-green-900">• {q}</p>
                     ))}
                   </div>
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-green-800">Příklady odpovědí:</p>
+                    <p className="font-bold text-green-800">Příklady odpovědí:</p>
                     {guide.examples.gains.map((ex, i) => (
-                      <p key={i} className="text-xs text-green-700 bg-white p-2 rounded">
-                        "{ex}"
-                      </p>
+                      <div key={i} className="bg-white p-3 pl-4 rounded-lg border-l-4 border-green-400 shadow-sm">
+                        <p className="text-green-800 leading-relaxed">
+                          "{ex}"
+                        </p>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
 
               {/* Action Steps */}
-              <div className="mt-6 bg-purple-50 border-l-4 border-purple-500 p-6 rounded">
-                <h4 className="font-bold text-purple-900 mb-3">💪 Vaše akce PŘED pokračováním:</h4>
-                <ol className="space-y-2 text-sm text-purple-800">
+              <div className="mt-6 bg-purple-50 border-l-4 border-purple-500 p-6 rounded-xl">
+                <h4 className="mb-3 text-purple-900">💪 Vaše akce PŘED pokračováním:</h4>
+                <ol className="space-y-2 text-purple-800">
                   <li><strong>1.</strong> Projděte si výše uvedené otázky</li>
                   <li><strong>2.</strong> Zeptejte se alespoň 3-5 lidí z vašeho segmentu</li>
                   <li><strong>3.</strong> Analyzujte jejich odpovědi a najděte vzorce</li>
@@ -2004,8 +2019,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               </div>
 
               {/* Status vašich dat */}
-              <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
-                <h4 className="font-bold text-blue-900 mb-4">📊 Vaše současná data z Lekce 1:</h4>
+              <div className="mt-6 bg-blue-50 border-2 border-blue-300 rounded-xl p-6">
+                <h4 className="mb-4 text-blue-900">📊 Vaše současná data z Lekce 1:</h4>
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <div className="text-center">
                     <div className={`text-3xl font-bold mb-1 ${jobs.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
@@ -2029,10 +2044,10 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 
                 {(jobs.length > 0 || pains.length > 0 || gains.length > 0) && (
                   <div className="bg-white p-4 rounded-lg border border-blue-200">
-                    <p className="text-sm text-blue-900 font-bold mb-2">
+                    <p className="text-blue-900 font-bold mb-2">
                       ✅ Máte data k prioritizaci!
                     </p>
-                    <p className="text-xs text-blue-700">
+                    <p className="text-blue-700">
                       V další fázi je seřadíte podle důležitosti - které problémy/touhy segment řeší NEJČASTĚJI 
                       nebo považuje za NEJDŮLEŽITĚJŠÍ podle vašeho průzkumu z Kroku 1.
                     </p>
@@ -2048,12 +2063,12 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
 
             {/* Navigation */}
             <div className="flex flex-col items-end gap-3">
-              {(jobs.length === 0 && pains.length === 0 && gains.length === 0) && (
+              {(jobs.length === 0 || pains.length === 0 || gains.length === 0) && (
                 <Alert className="bg-amber-50 border-amber-200">
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>⚠️ Chybí data:</strong> Přejděte do Lekce 1 (Zákaznický profil) a vyplňte Jobs, Pains a Gains.
-                    Bez těchto dat nemůžete pokračovat k prioritizaci.
+                    <strong>⚠️ Chybí data:</strong> Musíte vyplnit <strong>VŠECHNY TŘI kategorie</strong>: Jobs, Pains a Gains v Lekci 1 (Zákaznický profil).
+                    Bez kompletních dat nemůžete pokračovat k prioritizaci.
                   </AlertDescription>
                 </Alert>
               )}
@@ -2064,23 +2079,19 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   saveFitProgress();
                 }}
                 className="gap-2"
-                disabled={jobs.length === 0 && pains.length === 0 && gains.length === 0}
+                disabled={jobs.length === 0 || pains.length === 0 || gains.length === 0}
               >
                 Pokračovat k prioritizaci
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* STEP 2: PRIORITIZATION */}
         {currentStep === 2 && (
-          <motion.div
-            key="prioritization"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+          <div
+            className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             {/* Kompaktní header s controls */}
             <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 space-y-4">
@@ -2088,8 +2099,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 <div className="flex items-center gap-3">
                   <Target className="w-6 h-6 text-orange-600" />
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">🎯 Prioritizace</h2>
-                    <p className="text-sm text-gray-600">
+                    <h2 className="text-gray-900">🎯 Prioritizace</h2>
+                    <p className="text-gray-600">
                       {step2View === 'customer' 
                         ? 'Označte kolik lidí každou položku zmiňovalo'
                         : 'Zkontrolujte co nabízíte'}
@@ -2213,8 +2224,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   
                   if (hasAnyPrioritized) {
                     return (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                        <p className="font-bold mb-1">💡 Jak upravovat/mazat položky:</p>
+                      <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 text-blue-800">
+                        <p className="mb-1">💡 Jak upravovat/mazat položky:</p>
                         <ul className="space-y-1 ml-4 list-disc">
                           <li>Snižte počet lidí na <strong>0</strong> → objeví se koš 🗑️</li>
                           <li>Klikněte na koš pro smazání</li>
@@ -2543,6 +2554,17 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               
               {/* ❌ ODSTRANĚNO - pasé protože můžou editovat na Kroku 2 přímo */}
               
+              {/* Varování pokud chybí Value Map data */}
+              {(products.length === 0 || painRelievers.length === 0 || gainCreators.length === 0) && (
+                <Alert className="bg-amber-50 border-amber-200">
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>⚠️ Chybí hodnotová mapa:</strong> Musíte vyplnit <strong>VŠECHNY TŘI kategorie</strong>: Produkty/Služby, Řešení obtíží a Tvorba přínosů v Lekci 2 (Hodnotová mapa).
+                    Bez kompletních dat nemůžete pokračovat k FIT validaci.
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <div className="flex justify-between">
                 <Button
                   size="lg"
@@ -2555,6 +2577,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </Button>
                 <Button
                   size="lg"
+                  disabled={products.length === 0 || painRelievers.length === 0 || gainCreators.length === 0}
                   onClick={async () => {
                     // 🔄 FORCE RELOAD všech dat z DB před přechodem na Krok 3!
                     console.log('🔄 RELOAD dat z DB před Krokem 3...');
@@ -2623,17 +2646,13 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* STEP 3: FIT VALIDATION */}
         {currentStep === 3 && (
-          <motion.div
-            key={`validation-${step3Timestamp}`}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+          <div
+            className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             {/* Kompaktní header s FIT Score */}
             <div className={`rounded-xl p-6 ${hasFit ? 'bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200' : 'bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200'}`}>
@@ -2650,15 +2669,13 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     </div>
                     <div className="flex-1 max-w-md">
                       <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                        <motion.div
+                        <div
                           key={`progress-${fitScore}`}
-                          initial={{ width: 0 }}
-                          animate={{ width: `${fitScore}%` }}
-                          transition={{ duration: 1, ease: "easeOut" }}
-                          className={`h-full ${hasFit ? 'bg-green-500' : 'bg-orange-500'}`}
+                          style={{ width: `${fitScore}%` }}
+                          className={`h-full transition-all duration-1000 ease-out ${hasFit ? 'bg-green-500' : 'bg-orange-500'}`}
                         />
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 mt-1">
                         {hasFit 
                           ? `✅ Pokrýváte ${topPains.length > 0 ? Math.round((coveredPainsCount / topPains.length) * 100) : 0}% top problémů`
                           : '⚠️ Propojte řešení s prioritami zákazníků'}
@@ -2734,10 +2751,10 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 <div className="flex gap-3">
                   <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm text-blue-900 font-bold mb-1">
+                    <p className="text-blue-900 font-bold mb-1">
                       💎 Diamantový model validace
                     </p>
-                    <p className="text-sm text-blue-800">
+                    <p className="text-blue-800">
                       Zaměřte se na <strong>TOP priority</strong> zákazníků. Pro každou zkontrolujte jestli máte řešení v Lekci 2 (Hodnotová mapa).
                     </p>
                   </div>
@@ -2794,15 +2811,15 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     });
                     
                     return (
-                      <div key={i} className="bg-yellow-50 rounded-lg border-2 border-yellow-300 p-3">
+                      <div key={i} className="bg-yellow-50 rounded-lg border-2 border-yellow-300 p-4">
                         {/* Priorita */}
                         <div className="mb-2">
                           <div className="flex items-start gap-2 mb-1">
                             <span className="font-bold text-yellow-700">#{i + 1}</span>
                             <div className="flex-1">
-                              <p className="text-sm text-gray-900 mb-0.5">{job.text}</p>
+                              <p className="text-gray-900 mb-0.5">{job.text}</p>
                               <div className="flex items-center gap-1">
-                                <span className="text-xs text-yellow-600 font-bold">{job.percentage}%</span>
+                                <span className="text-yellow-600 font-bold">{job.percentage}%</span>
                                 <div className="flex gap-0.5">
                                   {[...Array(5)].map((_, idx) => (
                                     <Star 
@@ -2818,7 +2835,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                         
                         {/* Checkboxy - INLINE! */}
                         <div className="ml-6 pl-3 border-l-2 border-yellow-300">
-                                <p className="text-xs text-yellow-800 font-medium mb-2">→ Vaše řešení:</p>
+                                <p className="text-yellow-800 font-medium mb-2">→ Vaše řešení:</p>
                                 <div className="space-y-1.5">
                                   {products.map((product, idx) => {
                                     const productText = typeof product === 'string' ? product : product.text;
@@ -2847,7 +2864,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                                           }}
                                           className="mt-0.5 w-3.5 h-3.5 text-green-600 rounded"
                                         />
-                                        <span className="text-xs text-gray-700 flex-1">{typeof product === 'string' ? product : product.text}</span>
+                                        <span className="text-gray-700 flex-1">{typeof product === 'string' ? product : product.text}</span>
                                       </label>
                                     );
                                   })}
@@ -2884,14 +2901,14 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     });
                     
                     return (
-                      <div key={i} className="bg-red-50 rounded-lg border-2 border-red-300 p-3">
+                      <div key={i} className="bg-red-50 rounded-lg border-2 border-red-300 p-4">
                         <div className="mb-2">
                           <div className="flex items-start gap-2 mb-1">
                             <span className="font-bold text-red-700">#{i + 1}</span>
                             <div className="flex-1">
-                              <p className="text-sm text-gray-900 mb-0.5">{pain.text}</p>
+                              <p className="text-gray-900 mb-0.5">{pain.text}</p>
                               <div className="flex items-center gap-1">
-                                <span className="text-xs text-red-600 font-bold">{pain.percentage}%</span>
+                                <span className="text-red-600 font-bold">{pain.percentage}%</span>
                                 <div className="flex gap-0.5">
                                   {[...Array(5)].map((_, idx) => (
                                     <Star 
@@ -2907,7 +2924,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                         
                         {/* Checkboxy - INLINE! */}
                         <div className="ml-6 pl-3 border-l-2 border-red-300">
-                                <p className="text-xs text-red-800 font-medium mb-2">→ Vaše řešení:</p>
+                                <p className="text-red-800 font-medium mb-2">→ Vaše řešení:</p>
                                 <div className="space-y-1.5">
                                   {painRelievers.map((reliever, idx) => {
                                     const relieverText = typeof reliever === 'string' ? reliever : reliever.text;
@@ -2936,7 +2953,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                                           }}
                                           className="mt-0.5 w-3.5 h-3.5 text-green-600 rounded"
                                         />
-                                        <span className="text-xs text-gray-700 flex-1">{typeof reliever === 'string' ? reliever : reliever.text}</span>
+                                        <span className="text-gray-700 flex-1">{typeof reliever === 'string' ? reliever : reliever.text}</span>
                                       </label>
                                     );
                                   })}
@@ -2973,14 +2990,14 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     });
                     
                     return (
-                      <div key={i} className="bg-green-50 rounded-lg border-2 border-green-300 p-3">
+                      <div key={i} className="bg-green-50 rounded-lg border-2 border-green-300 p-4">
                         <div className="mb-2">
                           <div className="flex items-start gap-2 mb-1">
                             <span className="font-bold text-green-700">#{i + 1}</span>
                             <div className="flex-1">
-                              <p className="text-sm text-gray-900 mb-0.5">{gain.text}</p>
+                              <p className="text-gray-900 mb-0.5">{gain.text}</p>
                               <div className="flex items-center gap-1">
-                                <span className="text-xs text-green-600 font-bold">{gain.percentage}%</span>
+                                <span className="text-green-600 font-bold">{gain.percentage}%</span>
                                 <div className="flex gap-0.5">
                                   {[...Array(5)].map((_, idx) => (
                                     <Star 
@@ -2996,17 +3013,17 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                         
                         {/* Checkboxy - INLINE! */}
                         <div className="ml-6 pl-3 border-l-2 border-green-300">
-                                <p className="text-xs text-green-800 font-medium mb-2">→ Vaše řešení:</p>
+                                <p className="text-green-800 font-medium mb-2">→ Vaše řešení:</p>
                                 
                                 {gainCreators.length === 0 ? (
                                   <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-center">
-                                    <p className="text-xs text-yellow-800 mb-2">⚠️ Nemáte žádnou tvorbu přínosů!</p>
+                                    <p className="text-yellow-800 mb-2">⚠️ Nemáte žádnou tvorbu přínosů!</p>
                                     <button
                                       onClick={() => {
                                         setCurrentStep(2);
                                         setStep2View('value');
                                       }}
-                                      className="text-xs text-blue-600 hover:text-blue-700 underline"
+                                      className="text-blue-600 hover:text-blue-700 underline"
                                     >
                                       Přidat v Kroku 2
                                     </button>
@@ -3041,7 +3058,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                                           }}
                                           className="mt-0.5 w-3.5 h-3.5 text-green-600 rounded"
                                         />
-                                        <span className="text-xs text-gray-700 flex-1">{typeof creator === 'string' ? creator : creator.text}</span>
+                                        <span className="text-gray-700 flex-1">{typeof creator === 'string' ? creator : creator.text}</span>
                                       </label>
                                     );
                                   })}
@@ -3304,9 +3321,9 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </p>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }

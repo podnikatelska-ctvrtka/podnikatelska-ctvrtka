@@ -313,7 +313,10 @@ export function PrelaunchEmailCapture() {
             
             <div className="mb-6">
               <Button 
-                onClick={() => window.location.href = `/minikurz?email=${encodeURIComponent(email)}`}
+                onClick={() => {
+                  // TODO: Nahradit správnou URL mini kurzu
+                  window.open(`https://podnikatelskactvrtka.cz/minikurz?email=${encodeURIComponent(email)}`, '_blank');
+                }}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
               >
                 🚀 ZAČÍT MINI KURZ HNED
@@ -629,6 +632,21 @@ export function PrelaunchEmailCapture() {
                     <span>🎯 Pouze email</span>
                     <span className="text-white/40 hidden sm:inline">•</span>
                     <span>🚀 Platba až při spuštění</span>
+                  </div>
+                  
+                  {/* Právní odkazy */}
+                  <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-white/50 text-xs mt-3 pt-3 border-t border-white/10">
+                    <a href="/obchodni-podminky" className="hover:text-white/80 transition-colors underline">
+                      Obchodní podmínky
+                    </a>
+                    <span className="text-white/30">•</span>
+                    <a href="/ochrana-osobnich-udaju" className="hover:text-white/80 transition-colors underline">
+                      Ochrana osobních údajů
+                    </a>
+                    <span className="text-white/30">•</span>
+                    <a href="mailto:kurz@podnikatelskactvrtka.cz" className="hover:text-white/80 transition-colors">
+                      kurz@podnikatelskactvrtka.cz
+                    </a>
                   </div>
                 </div>
               </motion.div>

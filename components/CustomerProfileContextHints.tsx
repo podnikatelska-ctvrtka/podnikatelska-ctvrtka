@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Info, Target, AlertCircle, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 
 interface CustomerProfileContextHintsProps {
   currentStep: number; // 1 = Jobs, 2 = Pains, 3 = Gains
@@ -47,12 +46,9 @@ export function CustomerProfileContextHints({ currentStep, selectedSegment }: Cu
   if (!currentHint) return null;
 
   return (
-    <AnimatePresence>
+    <>
       {isExpanded && (
-        <motion.div
-          initial={{ opacity: 0, y: -10, height: 0 }}
-          animate={{ opacity: 1, y: 0, height: "auto" }}
-          exit={{ opacity: 0, y: -10, height: 0 }}
+        <div
           className="mb-6"
         >
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
@@ -85,20 +81,18 @@ export function CustomerProfileContextHints({ currentStep, selectedSegment }: Cu
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
       
       {!isExpanded && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <button
           onClick={() => setIsExpanded(true)}
           className="mb-4 flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
           <Info className="w-4 h-4" />
           Zobrazit tipy
-        </motion.button>
+        </button>
       )}
-    </AnimatePresence>
+    </>
   );
 }

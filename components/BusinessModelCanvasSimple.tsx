@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { Plus, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
@@ -52,7 +51,7 @@ const INITIAL_CANVAS: CanvasSection[] = [
 ];
 
 interface Props {
-  userId: number;
+  userId: string;
   highlightSection?: string;
   hideTips?: boolean; // Schovat tipy během guided tour
   onItemAdded?: (sectionId: string) => void; // Callback když přidá položku
@@ -83,7 +82,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
 
     try {
       const { data, error } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('*')
         .eq('user_id', userId);
 
@@ -113,7 +112,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
     setIsSaving(true);
     try {
       const { error } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .upsert({
           user_id: userId,
           section_key: sectionId,
@@ -245,12 +244,10 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
           `
         }}>
           {canvas.map((section) => (
-            <motion.div
+            <div
               key={section.id}
               id={`canvas-section-${section.id}`}
               data-canvas-section={section.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
               className={`bg-white border-2 rounded-lg p-3 flex flex-col transition-all ${
                 highlightSection === section.id 
                   ? 'border-green-500 ring-2 ring-green-300' 
@@ -259,9 +256,9 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
               style={{ gridArea: section.gridArea }}
             >
               {/* Section Title */}
-              <h3 className="font-bold text-gray-900 mb-2 text-sm border-b border-gray-200 pb-1.5">
+              <h4 className="font-bold text-gray-900 mb-2 text-sm border-b border-gray-200 pb-1.5">
                 {section.title}
-              </h3>
+              </h4>
 
               {/* Sticky Notes - NOVÝ DESIGN: čtvercové, nakloněné */}
               <div className="flex-1 mb-2">
@@ -280,26 +277,20 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                   const rotationAngle = previewMode ? 1 : 2;
                   const randomRotate = index % 2 === 0 ? rotationAngle : -rotationAngle;
                   return (
-                    <motion.div
+                    <div
                       key={index}
-                      initial={{ scale: 0.8, opacity: 0, rotate: randomRotate - 3 }}
-                      animate={{ scale: 1, opacity: 1, rotate: randomRotate }}
-                      whileHover={
-                        !previewMode && (!allowedSection || allowedSection === section.id)
-                          ? { scale: 1.05, rotate: 0, zIndex: 20 }
-                          : { rotate: 0 }
-                      }
                       onDoubleClick={() => {
                         // ✅ Edit JEN pokud je sekce povolená (nebo není žádné omezení)
                         if (!previewMode && (!allowedSection || allowedSection === section.id)) {
                           startEditItem(section.id, index);
                         }
                       }}
-                      className={`${colorClasses.bg} ${colorClasses.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-1.5 rounded shadow-md hover:shadow-lg transition-all flex items-center justify-center group relative ${!previewMode && (!allowedSection || allowedSection === section.id) ? 'cursor-pointer' : 'cursor-default opacity-60'}`}
+                      className={`${colorClasses.bg} ${colorClasses.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-1.5 rounded shadow-md hover:shadow-lg transition-all flex items-center justify-center group relative ${!previewMode && (!allowedSection || allowedSection === section.id) ? 'cursor-pointer hover:scale-105' : 'cursor-default'}`}
                       title={isGlobalItem ? '🌐 Pro celý byznys model' : ''}
                       style={{
                         width: '80px',
                         minHeight: '80px',
+                        transform: `rotate(${randomRotate}deg)`,
                       }}
                     >
                       {isGlobalItem && (
@@ -323,7 +314,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                           <X className="w-3 h-3" />
                         </button>
                       )}
-                    </motion.div>
+                    </div>
                   );
                 })}
                 </div>
@@ -452,7 +443,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                   </Button>
                 )
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
@@ -467,8 +458,8 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
             <div>
               <strong>• Barvy = souvislost:</strong> Všechny modré položky spolu souvisí (produkt A)
             </div>
-            <div>
-              <strong>• Double klik = editace:</strong> Dvakrát klikněte na štítek pro editaci textu a barvy
+            <div className="bg-yellow-50 border border-yellow-300 rounded p-2">
+              <strong>✏️ Double-click = editace:</strong> Dvakrát klikněte na jakýkoli štítek pro úpravu textu, barvy a hodnoty
             </div>
             <div>
               <strong>• Zákaznické segmenty:</strong> Popište své zákazníky konkrétně
@@ -489,11 +480,9 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
       {/* ✅ EDIT MODAL */}
       {editingItem && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={cancelEditItem}>
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl"
+            className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200"
           >
             <h3 className="font-bold text-gray-900 mb-4">✏️ Upravit štítek</h3>
             
@@ -581,7 +570,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

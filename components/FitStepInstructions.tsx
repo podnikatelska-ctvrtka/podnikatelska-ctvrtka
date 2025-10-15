@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { Lightbulb, Users, TrendingUp, Target } from "lucide-react";
 
 interface FitStepInstructionsProps {
@@ -91,9 +90,7 @@ export function FitStepInstructions({ step }: FitStepInstructionsProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className={`bg-gradient-to-br ${bgColors[instruction.color]} border-2 rounded-xl p-6 mb-6 shadow-sm`}
     >
       <div className="flex items-start gap-4">
@@ -109,6 +106,6 @@ export function FitStepInstructions({ step }: FitStepInstructionsProps) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

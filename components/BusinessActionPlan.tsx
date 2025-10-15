@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { 
   TrendingUp, 
   Target, 
@@ -15,12 +14,12 @@ import {
   Trophy,
   Zap
 } from "lucide-react";
+import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
-import { unlockAchievement } from "../lib/achievements";
 
 interface BusinessActionPlanProps {
-  userId: number;
+  userId: string;
   onNavigateToLesson?: (lessonId: number) => void;
   onBack?: () => void;
   refreshTrigger?: number; // Pro manuální refresh z parenta
@@ -104,27 +103,18 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
       newCompleted.add(actionId);
       
       // 🏆 Achievement: První dokončená akce
-      if (newCompleted.size === 1) {
-        const unlocked = unlockAchievement(userId, 'first-action-completed');
-        if (unlocked && onAchievementUnlocked) {
-          onAchievementUnlocked('first-action-completed');
-        }
+      if (newCompleted.size === 1 && onAchievementUnlocked) {
+        onAchievementUnlocked('first-action-completed');
       }
       
       // 🏆 Achievement: 3 dokončené akce
-      if (newCompleted.size === 3) {
-        const unlocked = unlockAchievement(userId, 'action-streak-3');
-        if (unlocked && onAchievementUnlocked) {
-          onAchievementUnlocked('action-streak-3');
-        }
+      if (newCompleted.size === 3 && onAchievementUnlocked) {
+        onAchievementUnlocked('action-streak-3');
       }
       
       // 🏆 Achievement: Všechny akce dokončeny
-      if (newCompleted.size === actionItems.length && actionItems.length > 0) {
-        const unlocked = unlockAchievement(userId, 'all-actions-completed');
-        if (unlocked && onAchievementUnlocked) {
-          onAchievementUnlocked('all-actions-completed');
-        }
+      if (newCompleted.size === actionItems.length && actionItems.length > 0 && onAchievementUnlocked) {
+        onAchievementUnlocked('all-actions-completed');
       }
     }
     
@@ -177,7 +167,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
       
       // 1. Load segments with economics
       const { data: segmentsData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'segments')
@@ -187,7 +177,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
 
       // 2. Load revenue
       const { data: revenueData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'revenue')
@@ -198,7 +188,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
 
       // 3. Load costs
       const { data: costsData } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'costs')
@@ -409,7 +399,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
 
       // 🔍 DEBUG: Check prerequisites (MIMO if revenueData blok!)
       try {
-        console.log('🔍🔍🔍 STARTING PRODUCT ANALYSIS (OUTSIDE REVENUE BLOCK) 🔍🔍🔍');
+        console.log('🔍🔍🔍 STARTING PRODUCT ANALYSIS (OUTSIDE REVENUE BLOCK) 🔍🔍����');
         console.log('Rankings available:', rankings);
         console.log('Value Map Data available:', valueMapData);
         console.log('🔍 Product Analysis Prerequisites:', {
@@ -705,15 +695,13 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
         });
 
         setActionItems(actions);
-      }
-      
-      // 🏆 Achievement: Odemknutí Akčního plánu
-      // Poznámka: Tento achievement se triggeruje hlavně v checkAllAchievements
-      // Zde ho také triggerujeme pro okamžitou zpětnou vazbu když user otevře action plan
-      if (products.length > 0 || actionItems.length > 0) {
-        const unlocked = unlockAchievement(userId, 'action-plan-unlocked');
-        if (unlocked && onAchievementUnlocked) {
-          onAchievementUnlocked('action-plan-unlocked');
+        
+        // 🏆 Achievement: Odemknutí Akčního plánu - při PRVNÍM načtení
+        if (actions.length > 0) {
+          const unlocked = unlockAchievement(userId, 'action-plan-unlocked');
+          if (unlocked && onAchievementUnlocked) {
+            onAchievementUnlocked('action-plan-unlocked');
+          }
         }
       }
       
@@ -787,7 +775,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4">
             <Trophy className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-gray-900">
             🎯 Váš akční plán
           </h1>
           <p className="text-xl text-gray-600">
@@ -837,7 +825,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">💰 Které zdroje příjmů jsou nejúspěšnější?</h2>
+              <h2 className="text-gray-900">💰 Které zdroje příjmů jsou nejúspěšnější?</h2>
               <p className="text-gray-600">Detailní analýza každého zdroje příjmů</p>
             </div>
           </div>
@@ -931,7 +919,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 <Trophy className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">📊 Jaký segment je nejlepší?</h2>
+                <h2 className="text-gray-900">📊 Jaký segment je nejlepší?</h2>
                 <p className="text-gray-600">Podle Modulu 2 - Lekce 2: Prosperuje váš model?</p>
               </div>
             </div>
@@ -970,7 +958,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                       <div className="flex items-center gap-3">
                         <span className="text-3xl">{medal}</span>
                         <div>
-                          <h3 className="text-xl font-bold text-gray-900">
+                          <h3 className="text-gray-900">
                             #{rank} {segment.name}
                             {idx > 0 && segmentRankings[idx - 1].potentialRevenue === segment.potentialRevenue && (
                               <span className="text-sm text-gray-500 ml-2">(shodné)</span>
@@ -1169,7 +1157,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               <Package className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">📦 Produktová analýza</h2>
+              <h2 className="text-gray-900">📦 Produktová analýza</h2>
               <p className="text-gray-600">
                 {segmentRankings.length > 0 
                   ? `Produkty/hodnoty pro TOP segment: ${segmentRankings[0].name}`
@@ -1281,7 +1269,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           transition={{ delay: 0.5 }}
           className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-8 text-white"
         >
-          <h2 className="text-3xl font-bold mb-2">✅ CO DĚLAT TEĎ</h2>
+          <h2 className="mb-2 text-white">✅ CO DĚLAT TEĎ</h2>
           <p className="text-blue-100 mb-6">Váš plán na příštích 30 dní</p>
 
           {actionItems.length === 0 ? (
@@ -1316,7 +1304,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                     </div>
                     
                     <div className="flex-1">
-                      <p className={`font-medium ${isCompleted ? 'line-through opacity-75' : ''}`}>
+                      <p className={`font-medium text-white ${isCompleted ? 'line-through opacity-75' : ''}`}>
                         {action.text}
                       </p>
                       {action.lessonId && onNavigateToLesson && (

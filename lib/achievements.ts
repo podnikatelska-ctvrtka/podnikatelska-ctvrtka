@@ -98,6 +98,14 @@ export const ACHIEVEMENTS: Achievement[] = [
     points: 50
   },
   {
+    id: 'product-fit-master',
+    title: 'Mistr Product-Market Fit',
+    description: 'Dosáhl jsi FIT score nad 80%',
+    emoji: '🌟',
+    category: 'vpc',
+    points: 75
+  },
+  {
     id: 'fit-90-percent',
     title: 'Perfektní soulad',
     description: 'Dosáhl jsi FIT Score nad 90%',
@@ -159,14 +167,6 @@ export const ACHIEVEMENTS: Achievement[] = [
     points: 30
   },
   {
-    id: 'product-fit-master',
-    title: 'Mistr Product-Market Fit',
-    description: 'Dosáhl jsi FIT score nad 80%',
-    emoji: '🌟',
-    category: 'vpc',
-    points: 50
-  },
-  {
     id: 'all-actions-completed',
     title: 'Mistr exekuce',
     description: 'Dokončil jsi všechny akce z plánu',
@@ -206,7 +206,7 @@ export function getAchievement(id: string): Achievement | undefined {
 /**
  * Load unlocked achievements from localStorage
  */
-export function loadUnlockedAchievements(userId: number): Set<string> {
+export function loadUnlockedAchievements(userId: string): Set<string> {
   try {
     const stored = localStorage.getItem(`achievements_${userId}`);
     if (stored) {
@@ -235,7 +235,7 @@ export function loadUnlockedAchievements(userId: number): Set<string> {
 /**
  * Save unlocked achievement to localStorage
  */
-export function unlockAchievement(userId: number, achievementId: string): boolean {
+export function unlockAchievement(userId: string, achievementId: string): boolean {
   try {
     const unlocked = loadUnlockedAchievements(userId);
     

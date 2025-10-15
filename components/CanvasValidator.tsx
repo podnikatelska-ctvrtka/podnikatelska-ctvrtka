@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle, XCircle, AlertTriangle, Lightbulb, ArrowRight, Sparkles, Eye, EyeOff } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
@@ -35,7 +34,7 @@ const getColorName = (color: string): string => {
     green: '🟢 Zelená',
     yellow: '🟡 Žlutá',
     purple: '🟣 Fialová',
-    pink: '🩷 Růžová',
+    pink: '🔴 Růžová',
     global: '🌐 Globální',
     gray: '⚫ Šedá',
     red: '🔴 Červená',
@@ -219,84 +218,294 @@ const VALIDATION_RULES: ValidationRule[] = [
   {
     id: 'color-cross-validation',
     title: '🔗 Propojení barev napříč sekcemi',
-    description: 'Každý produkt (barva) musí mít segment → hodnotu → příjem',
+    description: 'Segment → Hodnota → Kanál → Příjem/Náklad (stejná barva nebo 🌐 global)',
     check: (data) => {
       const segments = data.segments || [];
       const values = data.value || [];
       const channels = data.channels || [];
       const revenue = data.revenue || [];
-      const activities = data.activities || [];
-      const partners = data.partners || [];
+      const costs = data.costs || [];
+      const relationships = data.relationships || [];
       
       if (segments.length === 0) {
         return { passed: true, message: '💡 Nejprve přidejte zákaznické segmenty' };
       }
       
-      // Get all product colors (excluding global)
+      // Get colors (excluding global)
       const segmentColors = new Set(segments.filter((s: any) => s.color !== 'global').map((s: any) => s.color));
       const valueColors = new Set(values.filter((v: any) => v.color !== 'global').map((v: any) => v.color));
       const channelColors = new Set(channels.filter((c: any) => c.color !== 'global').map((c: any) => c.color));
       const revenueColors = new Set(revenue.filter((r: any) => r.color !== 'global').map((r: any) => r.color));
-      const activityColors = new Set(activities.filter((a: any) => a.color !== 'global').map((a: any) => a.color));
-      const partnerColors = new Set(partners.filter((p: any) => p.color !== 'global').map((p: any) => p.color));
+      const costColors = new Set(costs.filter((c: any) => c.color !== 'global').map((c: any) => c.color));
+      const relationshipColors = new Set(relationships.filter((r: any) => r.color !== 'global').map((r: any) => r.color));
       
-      // Get ALL colors used anywhere (union of all sets)
-      const allColors = new Set([
-        ...segmentColors,
-        ...valueColors,
-        ...revenueColors,
-        ...activityColors,
-        ...partnerColors
-      ]);
+      // 🐛 DEBUG: Log barvy pro diagnostiku
+      console.log('🎨 Canvas Validator Debug:', {
+        segmentColors: Array.from(segmentColors),
+        valueColors: Array.from(valueColors),
+        channelColors: Array.from(channelColors),
+        revenueColors: Array.from(revenueColors),
+        costColors: Array.from(costColors)
+      });
+      
+      // 🐛 DEBUG: Log RAW data ze Supabase
+      console.log('🔍 RAW Segments:', segments.map((s: any) => ({ 
+        text: s.text, 
+        color: s.color,
+        converted: hexToColorName(s.color)
+      })));
+      
+      // Check if there are ANY global items (they're OK)
+      const hasGlobalRevenue = revenue.some((r: any) => r.color === 'global');
+      const hasGlobalCosts = costs.some((c: any) => c.color === 'global');
       
       const issues: string[] = [];
       const warnings: string[] = [];
       
-      // Check each segment color - must have value
+      // ✅ PRAVIDLO 1: Každý segment MUSÍ mít hodnotu (stejná barva)
       segmentColors.forEach(color => {
         if (!valueColors.has(color)) {
           issues.push(`${getColorName(color)}: Segment BEZ hodnoty!`);
         }
-        if (!channelColors.has(color)) {
-          issues.push(`${getColorName(color)}: Segment bez kanálu`);
-        }
       });
       
-      // NOVÁ LOGIKA: Hodnoty musí mít segment (global příjmy jsou OK)
+      // ✅ PRAVIDLO 2: Každá hodnota MUSÍ mít segment (stejná barva)
       valueColors.forEach(color => {
         if (!segmentColors.has(color)) {
           issues.push(`${getColorName(color)}: Hodnota BEZ segmentu! Komu to prodáváte?`);
         }
       });
       
+      // ✅ PRAVIDLO 3: Každá hodnota MUSÍ mít alespoň 1 kanál (stejná barva)
+      valueColors.forEach(color => {
+        if (!channelColors.has(color)) {
+          issues.push(`${getColorName(color)}: Hodnota BEZ kanálu! Jak oslovíte zákazníky?`);
+        }
+      });
+      
+      // ✅ PRAVIDLO 4: Každá hodnota MUSÍ mít příjem (stejná barva NEBO global)
+      valueColors.forEach(color => {
+        const hasColorRevenue = revenueColors.has(color);
+        if (!hasColorRevenue && !hasGlobalRevenue) {
+          issues.push(`${getColorName(color)}: Hodnota BEZ příjmu! Jak na tom vyděláváte?`);
+        }
+      });
+      
+      // ✅ PRAVIDLO 5: Každá hodnota MUSÍ mít náklad (stejná barva NEBO global)
+      valueColors.forEach(color => {
+        const hasColorCost = costColors.has(color);
+        if (!hasColorCost && !hasGlobalCosts) {
+          issues.push(`${getColorName(color)}: Hodnota BEZ nákladů! Kolik to stojí?`);
+        }
+      });
+      
+      // ⚠️ WARNING: Příjem/náklad má barvu, která NENÍ v hodnotách (a není global)
+      revenueColors.forEach(color => {
+        if (!valueColors.has(color)) {
+          warnings.push(`${getColorName(color)}: Příjem bez hodnoty → Doporučujeme začít od segmentů a hodnot`);
+        }
+      });
+      
+      costColors.forEach(color => {
+        if (!valueColors.has(color)) {
+          warnings.push(`${getColorName(color)}: Náklad bez hodnoty → Doporučujeme začít od segmentů a hodnot`);
+        }
+      });
+      
+      // ⚠️ WARNING: Vztah je doporučený (ne kritický)
+      valueColors.forEach(color => {
+        if (!relationshipColors.has(color)) {
+          warnings.push(`${getColorName(color)}: Hodnota bez vztahů - jak si zákazníky udržíte?`);
+        }
+      });
+      
       if (issues.length > 0) {
+        // Zobraz VŠECHNY chyby (ne jen 3)
+        const allIssues = issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n');
         return {
           passed: false,
-          message: `❌ ${issues.length} kritických chyb v propojení barev!`,
-          tip: issues.slice(0, 3).join(' • ') // Show max 3 issues
+          message: `❌ ${issues.length} ${issues.length === 1 ? 'kritická chyba' : issues.length <= 4 ? 'kritické chyby' : 'kritických chyb'} v propojení barev!`,
+          tip: allIssues
         };
       }
       
       if (warnings.length > 0) {
+        // Zobraz všechna varování (ne jen 2)
+        const allWarnings = warnings.map((w, i) => `${i + 1}. ${w}`).join('\n');
         return {
           passed: true,
-          message: `⚠️ ${warnings.length} varování (nekritické)`,
-          tip: warnings.slice(0, 2).join(' • ')
+          message: `⚠️ ${warnings.length} ${warnings.length === 1 ? 'doporučení' : 'doporučení'} pro vylepšení`,
+          tip: `${allWarnings}\n\n💡 Správné pořadí:\n1) Zákaznické segmenty →\n2) Hodnotová nabídka →\n3) Kanály →\n4) Příjmy a náklady`
         };
       }
       
       return {
         passed: true,
         message: `✅ Barvy perfektně propojené! (${segmentColors.size} produktů)`,
-        tip: `Každý produkt má segment → hodnotu → příjem`
+        tip: `Segment → Hodnota → Kanál → Příjem/Náklad ✓`
       };
     },
     severity: 'error'
+  },
+  {
+    id: 'revenue-cost-must-have-segment-value',
+    title: '💸 Příjmy/náklady musí mít základ',
+    description: 'Každý barevný příjem/náklad musí mít odpovídající segment + hodnotu',
+    check: (data) => {
+      const segments = data.segments || [];
+      const values = data.value || [];
+      const revenue = data.revenue || [];
+      const costs = data.costs || [];
+      
+      if (revenue.length === 0 && costs.length === 0) {
+        return { passed: true, message: '💡 Přidejte příjmy a náklady' };
+      }
+      
+      // Get colors (excluding global - global je OK, kontrolujeme jen barevné!)
+      const segmentColors = new Set(segments.filter((s: any) => s.color !== 'global').map((s: any) => s.color));
+      const valueColors = new Set(values.filter((v: any) => v.color !== 'global').map((v: any) => v.color));
+      
+      const issues: string[] = [];
+      
+      // ✅ PRAVIDLO 7A: Každý barevný příjem MUSÍ mít segment + hodnotu (stejná barva)
+      revenue.forEach((item: CanvasItem) => {
+        const color = item.color;
+        
+        // Global je OK (platí pro celý byznys)
+        if (color === 'global') return;
+        
+        // Barevný příjem → MUSÍ mít segment + hodnotu!
+        const hasSegment = segmentColors.has(color);
+        const hasValue = valueColors.has(color);
+        
+        if (!hasSegment && !hasValue) {
+          issues.push(`${getColorName(color)}: Příjem "${item.text}" nemá ani segment, ani hodnotu!`);
+        } else if (!hasSegment) {
+          issues.push(`${getColorName(color)}: Příjem "${item.text}" nemá segment! Pro koho je to?`);
+        } else if (!hasValue) {
+          issues.push(`${getColorName(color)}: Příjem "${item.text}" nemá hodnotu! Co přesně prodáváte?`);
+        }
+      });
+      
+      // ✅ PRAVIDLO 7B: Každý barevný náklad MUSÍ mít segment + hodnotu (stejná barva)
+      costs.forEach((item: CanvasItem) => {
+        const color = item.color;
+        
+        // Global je OK (platí pro celý byznys)
+        if (color === 'global') return;
+        
+        // Barevný náklad → MUSÍ mít segment + hodnotu!
+        const hasSegment = segmentColors.has(color);
+        const hasValue = valueColors.has(color);
+        
+        if (!hasSegment && !hasValue) {
+          issues.push(`${getColorName(color)}: Náklad "${item.text}" nemá ani segment, ani hodnotu!`);
+        } else if (!hasSegment) {
+          issues.push(`${getColorName(color)}: Náklad "${item.text}" nemá segment! Pro koho je to?`);
+        } else if (!hasValue) {
+          issues.push(`${getColorName(color)}: Náklad "${item.text}" nemá hodnotu! K čemu se to váže?`);
+        }
+      });
+      
+      if (issues.length > 0) {
+        const allIssues = issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n');
+        return {
+          passed: false,
+          message: `❌ ${issues.length} ${issues.length === 1 ? 'problém' : issues.length <= 4 ? 'problémy' : 'problémů'} s příjmy/náklady!`,
+          tip: `${allIssues}\n\n💡 Řešení:\n- Buď změňte barvu na 🌐 Globální (pokud platí pro celý byznys)\n- Nebo přidejte odpovídající segment + hodnotu se STEJNOU barvou`
+        };
+      }
+      
+      return {
+        passed: true,
+        message: '✅ Všechny příjmy/náklady mají základ!',
+        tip: 'Každý barevný příjem/náklad má odpovídající segment + hodnotu ✓'
+      };
+    },
+    severity: 'error'
+  },
+  {
+    id: 'orphaned-colors',
+    title: '🎨 Barvy bez základu',
+    description: 'Barvy v ostatních sekcích musí mít segment NEBO hodnotu',
+    check: (data) => {
+      const segments = data.segments || [];
+      const values = data.value || [];
+      const partners = data.partners || [];
+      const activities = data.activities || [];
+      const resources = data.resources || [];
+      const channels = data.channels || [];
+      const relationships = data.relationships || [];
+      const revenue = data.revenue || [];
+      const costs = data.costs || [];
+      
+      // Get foundation colors (segment OR value)
+      const segmentColors = new Set(segments.filter((s: any) => s.color !== 'global').map((s: any) => s.color));
+      const valueColors = new Set(values.filter((v: any) => v.color !== 'global').map((v: any) => v.color));
+      const foundationColors = new Set([...segmentColors, ...valueColors]);
+      
+      if (foundationColors.size === 0) {
+        return { passed: true, message: '💡 Začněte od segmentů a hodnot' };
+      }
+      
+      // Check all other sections for "orphaned" colors
+      const otherSections = [
+        { name: 'Partnerství', items: partners },
+        { name: 'Aktivity', items: activities },
+        { name: 'Zdroje', items: resources },
+        { name: 'Kanály', items: channels },
+        { name: 'Vztahy', items: relationships },
+        { name: 'Příjmy', items: revenue },
+        { name: 'Náklady', items: costs }
+      ];
+      
+      const orphanedColorWarnings: string[] = [];
+      const colorUsage: Map<string, string[]> = new Map();
+      
+      // Collect all color usage
+      otherSections.forEach(section => {
+        section.items.forEach((item: any) => {
+          const color = item.color;
+          if (color && color !== 'global') {
+            if (!colorUsage.has(color)) {
+              colorUsage.set(color, []);
+            }
+            colorUsage.get(color)!.push(section.name);
+          }
+        });
+      });
+      
+      // Check if colors have foundation
+      colorUsage.forEach((usedIn, color) => {
+        if (!foundationColors.has(color)) {
+          const uniqueSections = [...new Set(usedIn)];
+          orphanedColorWarnings.push(
+            `${getColorName(color)}: Používáte v ${uniqueSections.join(', ')}, ale CHYBÍ segment nebo hodnota!`
+          );
+        }
+      });
+      
+      if (orphanedColorWarnings.length > 0) {
+        const allWarnings = orphanedColorWarnings.map((w, i) => `${i + 1}. ${w}`).join('\n');
+        return {
+          passed: true, // WARNING, ne ERROR
+          message: `⚠️ ${orphanedColorWarnings.length} ${orphanedColorWarnings.length === 1 ? 'barva bez základu' : 'barvy bez základu'}`,
+          tip: `${allWarnings}\n\n💡 Řešení:\n- Každá barva MUSÍ začínat od SEGMENTU nebo HODNOTY\n- Barvy v ostatních sekcích bez základu jsou k ničemu!\n- Buď přidejte segment/hodnotu, nebo změňte na 🌐 Globální`
+        };
+      }
+      
+      return {
+        passed: true,
+        message: '✅ Všechny barvy mají základ!',
+        tip: 'Každá barva má segment nebo hodnotu ✓'
+      };
+    },
+    severity: 'warning'
   }
 ];
 
 interface Props {
-  userId: number;
+  userId: string;
   onComplete: () => void;
   onNavigateNext?: () => void;
   onAchievementUnlocked?: (achievementId: string) => void;
@@ -313,12 +522,27 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   const [showResults, setShowResults] = useState(false);
   const [showCanvasPreview, setShowCanvasPreview] = useState(true);
 
+  // 💾 Load previously validated state from localStorage
+  useEffect(() => {
+    const savedValidation = localStorage.getItem(`canvas_validator_${userId}`);
+    if (savedValidation) {
+      try {
+        const parsed = JSON.parse(savedValidation);
+        setResults(parsed.results || []);
+        setShowResults(true);
+        console.log('✅ Loaded previous validation from localStorage');
+      } catch (err) {
+        console.error('Failed to parse saved validation:', err);
+      }
+    }
+  }, [userId]);
+
   // Load Canvas data
   useEffect(() => {
     const loadData = async () => {
       try {
         const { data } = await supabase
-          .from('business_canvas_sections')
+          .from('user_canvas_data')
           .select('*')
           .eq('user_id', userId);
         
@@ -359,6 +583,13 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
       setShowResults(true);
       setIsValidating(false);
       
+      // 💾 Save validation results to localStorage
+      localStorage.setItem(`canvas_validator_${userId}`, JSON.stringify({
+        results: validationResults,
+        timestamp: new Date().toISOString()
+      }));
+      console.log('💾 Saved validation to localStorage');
+      
       const errorCount = validationResults.filter(r => !r.passed && r.severity === 'error').length;
       
       if (errorCount === 0) {
@@ -395,19 +626,19 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-xl">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
-            <h3 className="text-xl font-bold mb-2">🔍 Validace Canvas</h3>
-            <p className="text-blue-100 text-sm mb-3">
+            <h2 className="mb-2">🔍 Validace Canvas</h2>
+            <p className="text-blue-100 mb-3">
               Zkontrolujeme váš Canvas podle osvědčených pravidel
             </p>
-            <div className="bg-white/10 border border-white/20 rounded-lg p-3 text-xs">
+            <div className="bg-white/10 border border-white/20 rounded-lg p-3">
               <p className="text-blue-50 mb-2">
                 <strong>🎨 Logika barev:</strong>
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-blue-100">
                 <div>• Každá barva = jeden produkt/segment</div>
-                <div>• Stejná barva = patří k sobě</div>
-                <div>• 🌐 Globální = pro celý byznys (zdroje, náklady...)</div>
-                <div>• Barvy propojují sekce (segment→hodnota→příjem)</div>
+                <div>• Segment → Hodnota → Kanál (stejná barva)</div>
+                <div>• Hodnota → Příjem/Náklad (stejná barva nebo 🌐 global)</div>
+                <div>• 🌐 Globální = sdílené náklady/příjmy pro všechny</div>
               </div>
             </div>
           </div>
@@ -445,14 +676,9 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
           </div>
         </button>
         
-        <AnimatePresence>
           {showCanvasPreview && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="border-t-2 border-gray-200"
+            <div
+              className="border-t-2 border-gray-200 transition-all duration-300 ease-out"
             >
               {/* Desktop - Full Grid Canvas */}
               <div className="hidden md:block p-6 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -480,9 +706,8 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                   defaultOpen={false}
                 />
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
       </div>
 
       {/* Validation Button */}
@@ -510,44 +735,39 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
       )}
 
       {/* Results */}
-      <AnimatePresence>
         {showResults && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+          <div
+            className="space-y-4 transition-all duration-300 ease-out"
           >
             {/* Summary */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-green-50 border-2 border-green-300 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-green-700">{passedCount}</div>
-                <div className="text-xs text-green-600">Úspěšné</div>
+                <div className="text-3xl font-bold text-green-700">{passedCount}</div>
+                <div className="text-sm text-green-600">Úspěšné</div>
               </div>
               <div className="bg-yellow-50 border-2 border-yellow-300 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-yellow-700">{warningCount}</div>
-                <div className="text-xs text-yellow-600">Varování</div>
+                <div className="text-3xl font-bold text-yellow-700">{warningCount}</div>
+                <div className="text-sm text-yellow-600">Varování</div>
               </div>
               <div className="bg-red-50 border-2 border-red-300 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-red-700">{errorCount}</div>
-                <div className="text-xs text-red-600">Chyby</div>
+                <div className="text-3xl font-bold text-red-700">{errorCount}</div>
+                <div className="text-sm text-red-600">Chyby</div>
               </div>
             </div>
 
             {/* Results List */}
             <div className="space-y-3">
               {results.map((result, index) => (
-                <motion.div
+                <div
                   key={result.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`border-2 rounded-lg p-4 ${
+                  className={`border-2 rounded-lg p-4 transition-all duration-300 ease-out ${
                     result.passed
                       ? 'bg-green-50 border-green-300'
                       : result.severity === 'error'
                       ? 'bg-red-50 border-red-300'
                       : 'bg-yellow-50 border-yellow-300'
                   }`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-start gap-3">
                     {result.passed ? (
@@ -559,21 +779,21 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                     )}
                     
                     <div className="flex-1">
-                      <h4 className="font-bold text-sm mb-1">{result.title}</h4>
-                      <p className={`text-sm mb-2 ${
+                      <h4 className="font-bold mb-1">{result.title}</h4>
+                      <p className={`mb-2 ${
                         result.passed ? 'text-green-700' : result.severity === 'error' ? 'text-red-700' : 'text-yellow-700'
                       }`}>
                         {result.message}
                       </p>
                       {result.tip && (
-                        <div className="bg-white/50 rounded p-2 text-xs flex items-start gap-2">
+                        <div className="bg-white/50 rounded p-3 flex items-start gap-2">
                           <Lightbulb className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-700">{result.tip}</span>
+                          <div className="text-gray-700 whitespace-pre-line flex-1">{result.tip}</div>
                         </div>
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -581,11 +801,16 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
             {!isCompleted ? (
               <div className="flex gap-3 pt-4">
                 <Button
-                  onClick={() => setShowResults(false)}
+                  onClick={() => {
+                    setShowResults(false);
+                    setResults([]);
+                    // Smaž uložený stav - nechceme starou validaci
+                    localStorage.removeItem(`canvas_validator_${userId}`);
+                  }}
                   variant="outline"
                   className="flex-1"
                 >
-                  Zkontrolovat znovu
+                  🔄 Zkontrolovat znovu
                 </Button>
                 <Button
                   onClick={() => {
@@ -599,20 +824,18 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                 </Button>
               </div>
             ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-4"
+              <div
+                className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-4 transition-all duration-300 ease-out"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-green-500 rounded-full p-3">
                     <CheckCircle className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-green-900">
+                    <h3 className="font-bold text-green-900">
                       ✅ Lekce dokončena!
                     </h3>
-                    <p className="text-sm text-green-700">
+                    <p className="text-green-700">
                       Skvělá práce! Můžete pokračovat na další lekci.
                     </p>
                   </div>
@@ -625,7 +848,7 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                       size="lg"
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
-                      Pokračovat na další lekci →
+                      Pokračovat na další lekci ��
                     </Button>
                   )}
                   <Button
@@ -636,12 +859,12 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                     🔄 Zkusit znovu
                   </Button>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {errorCount > 0 && (
               <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded mt-4">
-                <p className="text-sm text-yellow-800">
+                <p className="text-yellow-800">
                   💡 <strong>Můžete pokračovat i s chybami!</strong> Doporučujeme ale model vylepšit před použitím.
                 </p>
               </div>
@@ -649,15 +872,14 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
 
             {errorCount === 0 && warningCount > 0 && (
               <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mt-4">
-                <p className="text-sm text-blue-800">
+                <p className="text-blue-800">
                   💡 <strong>Tip:</strong> Vraťte se do předchozích lekcí a doplňte chybějící položky.
                   Můžete použít navigaci v postranním menu.
                 </p>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </div>
   );
 }

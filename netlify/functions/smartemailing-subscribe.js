@@ -62,7 +62,7 @@ export async function handler(event, context) {
     // ──────────────────────────────────────────
     // 📧 ADD SUBSCRIBER TO SMARTEMAILING
     // ──────────────────────────────────────────
-    console.log('📤 Adding subscriber to Smartemailing...');
+    console.log('📤 Adding subscriber to Smartemailing:', email);
     
     const smartemailingResponse = await fetch(`https://app.smartemailing.cz/api/v3/import`, {
       method: 'POST',
@@ -73,13 +73,18 @@ export async function handler(event, context) {
       body: JSON.stringify({
         settings: {
           update: true, // Update existing contacts
-          add_to_lists: [parseInt(SMARTEMAILING_LIST_ID)],
           field_policy: 'FILL_IN_EMPTY'
         },
         data: [{
           emailaddress: email,
           name: name || '',
           surname: '',
+          contactlists: [
+            {
+              id: parseInt(SMARTEMAILING_LIST_ID),
+              status: 'confirmed' // Důležité: status kontaktu v listu
+            }
+          ],
           // Custom fields podle potřeby
           customfields: {
             // source: 'landing_page_prelaunch'
@@ -90,33 +95,32 @@ export async function handler(event, context) {
     
     const smartemailingData = await smartemailingResponse.json();
     
-    if (!smartemailingResponse.ok) {
+    // ⚠️ DŮLEŽITÉ: Smartemailing vrací různé statusy při úspěchu!
+    // "ok" = update existujícího kontaktu
+    // "created" = nový kontakt vytvořen
+    // "error" = chyba
+    const successStatuses = ['ok', 'created'];
+    
+    if (!smartemailingResponse.ok || !successStatuses.includes(smartemailingData.status)) {
       console.error('❌ Smartemailing API error:', smartemailingData);
-      
-      // Check for duplicate (already exists = success)
-      if (smartemailingData.status === 'ok' || smartemailingData.message?.includes('already exists')) {
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            success: true,
-            message: 'Email already subscribed',
-            duplicate: true
-          })
-        };
-      }
-      
       throw new Error(`Smartemailing API failed: ${JSON.stringify(smartemailingData)}`);
     }
     
     console.log('✅ Subscriber added to Smartemailing:', smartemailingData);
+    
+    // Extract contact info from response
+    const contactInfo = smartemailingData.data?.[0] || smartemailingData;
     
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'Successfully subscribed to Smartemailing',
+        message: smartemailingData.status === 'created' 
+          ? 'Email successfully added to Smartemailing list!'
+          : 'Email updated in Smartemailing list!',
+        status: smartemailingData.status,
+        contactId: contactInfo.contact_id,
         data: smartemailingData
       })
     };

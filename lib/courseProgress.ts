@@ -32,14 +32,28 @@ export async function loadCourseProgress(userId: string): Promise<Set<number>> {
  */
 export async function saveLessonProgress(userId: string, lessonId: number): Promise<boolean> {
   try {
+    // First check if already exists
+    const { data: existing } = await supabase
+      .from('user_progress')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('lesson_id', lessonId)
+      .maybeSingle();
+    
+    if (existing) {
+      // Already completed, skip
+      console.log(`Lesson ${lessonId} already completed for user ${userId}`);
+      return true;
+    }
+    
+    // Insert new completion
     const { error } = await supabase
       .from('user_progress')
-      .upsert({
+      .insert({
         user_id: userId,
         lesson_id: lessonId,
+        completed: true,
         completed_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,lesson_id'
       });
     
     if (error) {

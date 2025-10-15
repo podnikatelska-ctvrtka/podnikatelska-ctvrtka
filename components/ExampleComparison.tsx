@@ -1,5 +1,4 @@
 import { CheckCircle, XCircle } from "lucide-react";
-import { motion } from "motion/react";
 
 interface ExampleComparisonProps {
   good: string[];
@@ -15,11 +14,7 @@ export function ExampleComparison({ good, bad }: ExampleComparisonProps) {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Good examples */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="space-y-4"
-        >
+        <div className="space-y-4">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-white" />
@@ -30,25 +25,18 @@ export function ExampleComparison({ good, bad }: ExampleComparisonProps) {
           </div>
           <div className="space-y-3">
             {good.map((example, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
                 className="bg-green-50 border border-green-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <p className="text-sm text-green-900 leading-relaxed">{example}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Bad examples */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="space-y-4"
-        >
+        <div className="space-y-4">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-lg bg-red-500 flex items-center justify-center">
               <XCircle className="w-5 h-5 text-white" />
@@ -59,18 +47,15 @@ export function ExampleComparison({ good, bad }: ExampleComparisonProps) {
           </div>
           <div className="space-y-3">
             {bad.map((example, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
                 className="bg-red-50 border border-red-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <p className="text-sm text-red-900 leading-relaxed">{example}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

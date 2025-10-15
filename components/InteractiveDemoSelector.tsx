@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "motion/react";
 import { Coffee, ShoppingBag, Laptop, Store } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -126,11 +125,8 @@ export function InteractiveDemoSelector({ onSelect, compact = false }: Props) {
           const isSelected = selected === demo.id;
 
           return (
-            <motion.button
+            <button
               key={demo.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
               onClick={() => handleSelect(demo)}
               className={`p-4 rounded-xl text-center transition-all bg-gradient-to-br ${demo.gradient} ${
                 isSelected
@@ -142,16 +138,14 @@ export function InteractiveDemoSelector({ onSelect, compact = false }: Props) {
               <p className="text-sm font-bold text-white">
                 {demo.name}
               </p>
-            </motion.button>
+            </button>
           );
         })}
       </div>
 
       {/* Selected demo details */}
       {selectedDemo && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
+        <div
           className="bg-white border-2 border-gray-200 rounded-xl p-4 space-y-3"
         >
           <h5 className="font-bold text-gray-900 flex items-center gap-2">
@@ -220,7 +214,7 @@ export function InteractiveDemoSelector({ onSelect, compact = false }: Props) {
           <TipBox variant="success">
             ✅ Vidíš jak barvy propojují segmenty → hodnoty → kanály?
           </TipBox>
-        </motion.div>
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { X, Save, Users, ChevronDown } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
@@ -19,7 +18,7 @@ interface Tag {
 }
 
 interface Props {
-  userId: number;
+  userId: string;
   selectedSegment: string | null;
   onSelectSegment: (segment: string) => void;
 }
@@ -54,7 +53,7 @@ export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegm
     try {
       // ✅ OPRAVA: section_key + content (NE section_id + items!)
       const { data, error } = await supabase
-        .from('business_canvas_sections')
+        .from('user_canvas_data')
         .select('content')
         .eq('user_id', userId)
         .eq('section_key', 'segments')

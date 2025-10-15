@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { Users, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
@@ -10,7 +9,7 @@ interface Segment {
 }
 
 interface Props {
-  userId: number;
+  userId: string;
   selectedSegment: string | null;
   onSelectSegment: (segment: string) => void;
 }
@@ -30,10 +29,10 @@ export function SegmentSelector({ userId, selectedSegment, onSelectSegment }: Pr
     
     try {
       const { data, error } = await supabase
-        .from('business_canvas_sections')
-        .select('items')
+        .from('user_canvas_data')
+        .select('content')
         .eq('user_id', userId)
-        .eq('section_id', 'segments')
+        .eq('section_key', 'segments')
         .single();
       
       if (error) {
@@ -41,12 +40,12 @@ export function SegmentSelector({ userId, selectedSegment, onSelectSegment }: Pr
         return;
       }
       
-      if (data && data.items) {
-        setSegments(data.items);
+      if (data && data.content) {
+        setSegments(data.content);
         
         // Auto-select first segment if none selected
-        if (!selectedSegment && data.items.length > 0) {
-          onSelectSegment(data.items[0].text);
+        if (!selectedSegment && data.content.length > 0) {
+          onSelectSegment(data.content[0].text);
         }
       }
     } catch (err) {
@@ -100,12 +99,10 @@ export function SegmentSelector({ userId, selectedSegment, onSelectSegment }: Pr
           const isSelected = selectedSegment === segment.text;
           
           return (
-            <motion.button
+            <button
               key={idx}
               onClick={() => onSelectSegment(segment.text)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`p-4 rounded-lg border-2 text-left transition-all flex items-center justify-between ${
+              className={`p-4 rounded-lg border-2 text-left transition-all flex items-center justify-between hover:scale-[1.02] active:scale-[0.98] ${
                 isSelected
                   ? 'bg-blue-100 border-blue-400 shadow-lg'
                   : 'bg-white border-gray-200 hover:border-blue-300'
@@ -126,7 +123,7 @@ export function SegmentSelector({ userId, selectedSegment, onSelectSegment }: Pr
                   <ChevronRight className="w-5 h-5" />
                 </div>
               )}
-            </motion.button>
+            </button>
           );
         })}
       </div>

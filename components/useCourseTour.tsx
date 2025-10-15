@@ -90,7 +90,7 @@ export const TOUR_MODULES = {
   }
 };
 
-export function useCourseTour(userId: number, moduleId: keyof typeof TOUR_MODULES) {
+export function useCourseTour(userId: string, moduleId: keyof typeof TOUR_MODULES) {
   const [tourActive, setTourActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [moduleCompleted, setModuleCompleted] = useState(false);
@@ -107,7 +107,7 @@ export function useCourseTour(userId: number, moduleId: keyof typeof TOUR_MODULE
 
     try {
       const { data, error } = await supabase
-        .from('course_progress')
+        .from('user_progress')
         .select('*')
         .eq('user_id', userId)
         .eq('module_id', moduleId)
@@ -128,7 +128,7 @@ export function useCourseTour(userId: number, moduleId: keyof typeof TOUR_MODULE
 
     try {
       await supabase
-        .from('course_progress')
+        .from('user_progress')
         .upsert({
           user_id: userId,
           module_id: moduleId,

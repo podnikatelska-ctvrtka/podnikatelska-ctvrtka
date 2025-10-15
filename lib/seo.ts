@@ -9,7 +9,7 @@ export const siteConfig = {
   url: "https://podnikatelskactvrtka.cz",
   ogImage: "/og-image.png",
   links: {
-    email: "info@podnikatelskactvrtka.cz"
+    email: "kurz@podnikatelskactvrtka.cz"
   }
 };
 

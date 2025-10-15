@@ -7,7 +7,7 @@ import { GuidedTour, scrollToSection } from "./GuidedTour";
 import { useCourseTour, TOUR_MODULES } from "./useCourseTour";
 
 interface CourseModuleProps {
-  userId: number;
+  userId: string;
   moduleId: keyof typeof TOUR_MODULES;
   videoUrl?: string;
   videoTitle: string;
@@ -190,8 +190,9 @@ export function CourseModuleWithTour({
               data-canvas-section={module.id}
             >
           <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-5">
-            <p className="text-blue-900 font-bold text-lg">
-              👇 Vyplňte tuto sekci podle instrukcí z videa
+            <p className="text-blue-900 font-bold text-lg flex items-center gap-2">
+              <span className="text-2xl">👇</span>
+              <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na položku pro úpravu textu</span>
             </p>
           </div>
           

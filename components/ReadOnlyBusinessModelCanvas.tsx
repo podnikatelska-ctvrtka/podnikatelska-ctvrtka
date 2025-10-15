@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { hexToColorName } from "../lib/colorUtils";
 
 interface CanvasItem {
@@ -62,27 +61,24 @@ export function ReadOnlyBusinessModelCanvas({ sections, highlightSections = ['se
             const isGlobalItem = isGlobalColor && isBusinessSection;
             
             return (
-              <motion.div
+              <div
                 key={idx}
-                initial={{ opacity: 0, scale: 0.8, rotate: (idx % 2 === 0 ? 1 : -1) - 2 }}
-                animate={{ opacity: 1, scale: 1, rotate: idx % 2 === 0 ? 1 : -1 }}
-                whileHover={{ scale: 1.05, rotate: 0, zIndex: 20 }}
-                transition={{ delay: idx * 0.05 }}
-                className={`${colorStyle.bg} ${colorStyle.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-1.5 rounded shadow-md hover:shadow-lg transition-all flex items-center justify-center relative`}
+                className={`${colorStyle.bg} ${colorStyle.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-2 rounded shadow-md hover:shadow-lg hover:scale-105 transition-all flex items-center justify-center relative`}
                 style={{
-                  width: '80px',
-                  minHeight: '80px',
+                  width: '85px',
+                  minHeight: '85px',
+                  transform: `rotate(${idx % 2 === 0 ? 1 : -1}deg)`,
                 }}
                 title={isGlobalItem ? '🌐 Pro celý byznys model' : ''}
               >
                 {isGlobalItem && (
                   <span className="absolute top-0.5 right-0.5 text-[9px] opacity-60">🌐</span>
                 )}
-                <p className={`text-[10px] ${colorStyle.text} leading-tight font-medium text-center break-words`}>
+                <p className={`text-[12px] ${colorStyle.text} leading-tight font-medium text-center break-words`}>
                   {item.text}
                   {/* ❌ SKRYTO: Cena a % - galerie je jen pro inspiraci, ne konkrétní čísla */}
                 </p>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -91,7 +87,7 @@ export function ReadOnlyBusinessModelCanvas({ sections, highlightSections = ['se
   };
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 p-4">
+    <div className="bg-white rounded-xl border-2 border-gray-200 p-4 animate-in fade-in duration-500">
       <div
         className="grid gap-3"
         style={{

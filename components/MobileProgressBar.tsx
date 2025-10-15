@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
 
 export function MobileProgressBar() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -75,10 +74,9 @@ export function MobileProgressBar() {
         
         {/* Progress line */}
         <div className="h-1 bg-gray-200">
-          <motion.div
-            className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600"
+          <div
+            className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 transition-all duration-100 ease-out"
             style={{ width: `${scrollProgress}%` }}
-            transition={{ ease: "easeOut", duration: 0.1 }}
           />
         </div>
       </div>

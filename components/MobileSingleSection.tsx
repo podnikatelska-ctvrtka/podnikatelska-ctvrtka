@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "motion/react";
 import { Plus, X, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { hexToColorName } from "../lib/colorUtils";
@@ -78,11 +77,10 @@ export function MobileSingleSection({
             const randomRotate = (index % 3 - 1) * 2;
             
             return (
-              <motion.div
+              <div
                 key={index}
-                initial={{ scale: 0.8, opacity: 0, rotate: randomRotate - 3 }}
-                animate={{ scale: 1, opacity: 1, rotate: randomRotate }}
-                className={`${colorClasses.bg} ${colorClasses.border} border-2 p-3 rounded shadow-md text-sm group relative`}
+                style={{ transform: `rotate(${randomRotate}deg)` }}
+                className={`${colorClasses.bg} ${colorClasses.border} border-2 p-3 rounded shadow-md text-sm group relative transition-all duration-300 ease-out`}
               >
                 <button
                   onClick={() => onRemoveItem(index)}
@@ -99,7 +97,7 @@ export function MobileSingleSection({
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -107,10 +105,8 @@ export function MobileSingleSection({
 
       {/* Add Form */}
       {isAdding ? (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="space-y-3 bg-blue-50 p-4 rounded-lg border-2 border-blue-300"
+        <div
+          className="space-y-3 bg-blue-50 p-4 rounded-lg border-2 border-blue-300 transition-all duration-300 ease-out"
         >
           <input
             type="text"
@@ -172,7 +168,7 @@ export function MobileSingleSection({
               Zrušit
             </Button>
           </div>
-        </motion.div>
+        </div>
       ) : (
         <Button
           onClick={() => setIsAdding(true)}
@@ -187,10 +183,8 @@ export function MobileSingleSection({
 
       {/* Complete Button */}
       {items.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 pt-4 border-t-2 border-gray-200"
+        <div
+          className="mt-4 pt-4 border-t-2 border-gray-200 transition-all duration-300 ease-out"
         >
           <Button
             onClick={onComplete}
@@ -199,7 +193,7 @@ export function MobileSingleSection({
           >
             ✅ Hotovo - pokračovat dál
           </Button>
-        </motion.div>
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "motion/react";
 import { Info, ArrowRight, Users, Target, AlertCircle, Sparkles } from "lucide-react";
 import { useState } from "react";
 
@@ -67,12 +66,9 @@ export function ValueMapContextHints({ currentStep, segment, value, customerData
   if (!currentHint) return null;
 
   return (
-    <AnimatePresence>
+    <>
       {isExpanded && (
-        <motion.div
-          initial={{ opacity: 0, y: -10, height: 0 }}
-          animate={{ opacity: 1, y: 0, height: "auto" }}
-          exit={{ opacity: 0, y: -10, height: 0 }}
+        <div
           className="mb-6"
         >
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
@@ -128,21 +124,19 @@ export function ValueMapContextHints({ currentStep, segment, value, customerData
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       )}
       
       {!isExpanded && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <button
           onClick={() => setIsExpanded(true)}
           className="mb-4 flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
           <Info className="w-4 h-4" />
           Zobrazit tipy
-        </motion.button>
+        </button>
       )}
-    </AnimatePresence>
+    </>
   );
 }
 
@@ -179,9 +173,7 @@ export function CustomerConnectionPreview({
   const textColor = color === "green" ? "text-green-800" : "text-purple-800";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className={`${bgColor} border ${borderColor} rounded-lg p-4 mb-4`}
     >
       <h4 className={`text-sm font-bold ${textColor} mb-3 flex items-center gap-2`}>
@@ -222,6 +214,6 @@ export function CustomerConnectionPreview({
       <p className={`text-xs ${textColor} mt-2 font-medium italic`}>
         💡 V další lekci propojíte tyto položky v FIT validátoru!
       </p>
-    </motion.div>
+    </div>
   );
 }

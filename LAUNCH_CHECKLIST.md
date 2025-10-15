@@ -130,7 +130,7 @@
 
 ## 📞 KONTAKT & PODPORA
 
-**Email:** info@podnikatelska-ctvrtka.cz  
+**Email:** kurz@podnikatelskactvrtka.cz  
 **Reply-to:** Nastavit v Smartemailing pro všechny emaily
 
 ---

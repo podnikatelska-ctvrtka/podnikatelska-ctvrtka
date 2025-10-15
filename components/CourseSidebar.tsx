@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle, Lock, ChevronRight, ChevronLeft, BookOpen, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
@@ -45,50 +44,45 @@ export function CourseSidebar({
   return (
     <>
       {/* Sidebar */}
-      <motion.div
-        initial={{ x: 0 }}
-        animate={{ x: isCollapsed ? -280 : 0 }}
-        transition={{ type: "spring", damping: 20 }}
-        className="hidden md:flex fixed left-0 top-0 h-screen w-80 bg-white border-r border-gray-200 shadow-lg z-40 flex-col"
+      <div
+        style={{ transform: isCollapsed ? 'translateX(-280px)' : 'translateX(0)' }}
+        className="hidden md:flex fixed left-0 top-0 h-screen w-80 bg-white border-r border-gray-200 shadow-lg z-40 flex-col transition-transform duration-300 ease-out"
       >
         {/* Header */}
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-blue-600">
           <div className="flex items-center gap-3 text-white mb-3">
-            <BookOpen className="w-6 h-6" />
+            <BookOpen className="w-7 h-7" />
             <div className="flex-1">
-              <h2 className="font-bold">Podnikatelská Čtvrtka</h2>
-              <p className="text-xs text-blue-100">Navigace kurzu</p>
+              <h2 className="text-xl font-bold">Podnikatelská Čtvrtka</h2>
+              <p className="text-blue-100">Navigace kurzu</p>
             </div>
           </div>
           
           {/* Progress */}
           <div className="bg-white/20 rounded-full h-2 overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercent}%` }}
-              className="h-full bg-white"
+            <div
+              style={{ width: `${progressPercent}%` }}
+              className="h-full bg-white transition-all duration-500 ease-out"
             />
           </div>
-          <p className="text-xs text-blue-100 mt-1">
+          <p className="text-blue-100 mt-1" style={{ fontSize: '0.875rem' }}>
             {completedCount}/{totalLessons} lekcí ({progressPercent}%)
           </p>
         </div>
 
         {/* Dashboard Button */}
         <div className="p-3 border-b border-gray-200">
-          <Button
+          <button
             onClick={onShowDashboard}
-            variant={showingDashboard ? "default" : "outline"}
-            className={`w-full justify-start gap-2 ${
+            className={`w-full flex items-center gap-2 p-3 rounded-lg transition-all duration-200 ${
               showingDashboard 
-                ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-                : 'hover:bg-blue-50 hover:border-blue-300'
+                ? 'bg-blue-50 border-2 border-blue-300 text-blue-700' 
+                : 'hover:bg-blue-50 hover:border-blue-200 border-2 border-transparent'
             }`}
-            size="sm"
           >
             <LayoutDashboard className="w-4 h-4" />
-            📊 Dashboard
-          </Button>
+            <span className="font-medium">📊 Dashboard</span>
+          </button>
         </div>
 
         {/* Modules & Lessons - Scrollable */}
@@ -148,8 +142,8 @@ export function CourseSidebar({
                         isLocked = true;
                       }
                       // V rámci modulu: lekce N je zamčená pokud N-1 není dokončená
-                      // ✅ VÝJIMKA: Lekce 16 (FIT Validator) je vždy odemčená pro přepínání segmentů!
-                      else if (lessonIndex > 0 && lesson.id !== 16) {
+                      // ✅ OPRAVENO: Lekce 16 už NENÍ výjimka - musí mít dokončené 14 + 15!
+                      else if (lessonIndex > 0) {
                         const previousLesson = module.lessons[lessonIndex - 1];
                         if (!completedLessons.has(previousLesson.id)) {
                           isLocked = true;
@@ -171,7 +165,7 @@ export function CourseSidebar({
                               : 'hover:bg-gray-100'
                           }`}
                         >
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-xs ${
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
                             isLocked
                               ? 'bg-gray-300 text-gray-500'
                               : isCompleted 
@@ -179,7 +173,7 @@ export function CourseSidebar({
                               : isCurrent
                               ? 'bg-blue-500 text-white font-bold'
                               : 'bg-gray-200 text-gray-600'
-                          }`}>
+                          }`} style={{ fontSize: '0.75rem' }}>
                             {isLocked ? (
                               <Lock className="w-3 h-3" />
                             ) : isCompleted ? (
@@ -189,7 +183,7 @@ export function CourseSidebar({
                             )}
                           </div>
                           
-                          <span className={`text-xs flex-1 min-w-0 truncate ${
+                          <span className={`flex-1 min-w-0 truncate text-sm ${
                             isLocked ? 'text-gray-400' : isCurrent ? 'font-bold text-blue-900' : 'text-gray-700'
                           }`}>
                             {lesson.title}
@@ -210,7 +204,7 @@ export function CourseSidebar({
             })}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Collapse Toggle Button */}
       <button

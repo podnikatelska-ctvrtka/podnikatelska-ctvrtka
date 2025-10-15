@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, Plus, X, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { hexToColorName } from "../lib/colorUtils";
@@ -91,14 +90,9 @@ export function MobileCanvasAccordion({
             </button>
 
             {/* Content */}
-            <AnimatePresence>
               {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="border-t-2 border-gray-200"
+                <div
+                  className="border-t-2 border-gray-200 transition-all duration-200 ease-out"
                 >
                   <div className="p-4 space-y-3">
                     {/* Sticky Notes */}
@@ -109,11 +103,10 @@ export function MobileCanvasAccordion({
                         const randomRotate = (index % 3 - 1) * 2;
                         
                         return (
-                          <motion.div
+                          <div
                             key={index}
-                            initial={{ scale: 0.8, opacity: 0, rotate: randomRotate - 3 }}
-                            animate={{ scale: 1, opacity: 1, rotate: randomRotate }}
-                            className={`${colorClasses.bg} ${colorClasses.border} border-2 p-2 rounded shadow-sm text-xs group min-w-[80px] max-w-[140px]`}
+                            style={{ transform: `rotate(${randomRotate}deg)` }}
+                            className={`${colorClasses.bg} ${colorClasses.border} border-2 p-2 rounded shadow-sm text-xs group min-w-[80px] max-w-[140px] transition-all duration-300 ease-out`}
                           >
                             <div className="flex items-start gap-1">
                               <div className="flex-1">
@@ -131,7 +124,7 @@ export function MobileCanvasAccordion({
                                 <X className="w-3 h-3" />
                               </button>
                             </div>
-                          </motion.div>
+                          </div>
                         );
                       })}
                     </div>
@@ -259,9 +252,8 @@ export function MobileCanvasAccordion({
                       </>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
           </div>
         );
       })}
