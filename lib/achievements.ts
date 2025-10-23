@@ -204,6 +204,9 @@ export async function scanAndUnlockMissedAchievements(
   userId: string,
   unlockedAchievements: Set<string>
 ): Promise<{ newlyUnlocked: string[], totalChecked: number }> {
+  console.log('🔍 [SCAN] Starting achievement scan for user:', userId);
+  console.log('🔍 [SCAN] Currently unlocked achievements:', [...unlockedAchievements]);
+  
   const newlyUnlocked: string[] = [];
   let totalChecked = 0;
 
@@ -217,6 +220,8 @@ export async function scanAndUnlockMissedAchievements(
       .select('*')
       .eq('user_id', userId);
     
+    console.log('🔍 [SCAN] Canvas data loaded:', canvasData?.length || 0, 'sections');
+    
     // Get user's completed lessons
     const { data: progressData } = await supabase
       .from('user_progress')
@@ -224,6 +229,7 @@ export async function scanAndUnlockMissedAchievements(
       .eq('user_id', userId);
     
     const completedLessons = new Set(progressData?.map(p => p.lesson_id) || []);
+    console.log('🔍 [SCAN] Completed lessons:', [...completedLessons]);
     
     // Check each achievement
     for (const achievement of ACHIEVEMENTS) {
@@ -386,9 +392,14 @@ export async function scanAndUnlockMissedAchievements(
       }
     }
     
+    console.log('🔍 [SCAN] FINISHED - Total checked:', totalChecked, '| Newly unlocked:', newlyUnlocked.length);
+    if (newlyUnlocked.length > 0) {
+      console.log('🎉 [SCAN] New achievements:', newlyUnlocked);
+    }
+    
     return { newlyUnlocked, totalChecked };
   } catch (error) {
-    console.error('❌ Error scanning achievements:', error);
+    console.error('❌ [SCAN] Error scanning achievements:', error);
     return { newlyUnlocked: [], totalChecked: 0 };
   }
 }

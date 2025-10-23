@@ -27,8 +27,6 @@ import Final6Angles from "./components/Final6Angles";
 import Ultimate13Ads from "./components/Ultimate10Ads";
 import { AdComparison } from "./pages/AdComparison";
 import OrderPage from "./components/OrderPage";
-import OrderPageClean from "./components/OrderPageClean";
-import OrderPageFapiEmbed from "./components/OrderPageFapiEmbed";
 import OrderPageFinal from "./components/OrderPageFinal";
 import TermsPage from "./components/TermsPage";
 import GDPRPage from "./components/GDPRPage";

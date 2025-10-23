@@ -163,23 +163,31 @@ export function SimpleDashboard({
       return;
     }
     
-    // Auto-scan in background - SILENT (no toast)
+    // Auto-scan in background - with DEBUG LOGGING
     (async () => {
+      console.log('🔍 AUTO-SCAN STARTED for userId:', userId);
+      console.log('📊 Currently unlocked achievements:', unlockedAchievements.size);
+      
       try {
-        const { newlyUnlocked } = await scanAndUnlockMissedAchievements(userId, unlockedAchievements);
+        const { newlyUnlocked, totalChecked } = await scanAndUnlockMissedAchievements(userId, unlockedAchievements);
+        
+        console.log(`📋 AUTO-SCAN COMPLETE: Checked ${totalChecked} achievements, found ${newlyUnlocked.length} new`);
         
         if (newlyUnlocked.length > 0) {
+          console.log('🎉 Newly unlocked achievements:', newlyUnlocked);
+          
           // ✅ Reload achievements FROM SUPABASE (not just localStorage)
           const updated = await loadUnlockedAchievementsFromDB(userId);
           setUnlockedAchievements(updated);
           
-          // ✅ SILENT - no toast, only console log
-          console.log(`✅ Auto-scan: Odemkl jsem ${newlyUnlocked.length} missovaných achievementů silently.`);
+          console.log(`✅ Reloaded from Supabase: ${updated.size} total achievements`);
           
           // Trigger achievement check callback
           if (onCheckAchievements) {
             onCheckAchievements();
           }
+        } else {
+          console.log('ℹ️ No new achievements to unlock (všechny už máš odemčené)');
         }
         
         // Mark as scanned
