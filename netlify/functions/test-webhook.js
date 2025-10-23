@@ -7,8 +7,6 @@
  * - POST /test-webhook?amount=8499  → Pošle NORMÁLNÍ email
  */
 
-import fetch from 'node-fetch';
-
 // RESEND API
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = 'Podnikatelská Čtvrtka <noreply@podnikatelskactvrtka.cz>';
