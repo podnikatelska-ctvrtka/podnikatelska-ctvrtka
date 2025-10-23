@@ -46,7 +46,7 @@ const INITIAL_CANVAS: CanvasSection[] = [
   { id: "relationships", title: "Vztahy se zákazníky", items: [], gridArea: "relationships" },
   { id: "channels", title: "Kanály", items: [], gridArea: "channels" },
   { id: "segments", title: "Zákaznické segmenty", items: [], gridArea: "segments" },
-  { id: "costs", title: "Struktura nákladů", items: [], gridArea: "costs", valueLabel: "Náklady (Kč/m��síc)" },
+  { id: "costs", title: "Struktura nákladů", items: [], gridArea: "costs", valueLabel: "Náklady (Kč/měsíc)" },
   { id: "revenue", title: "Zdroje příjmů", items: [], gridArea: "revenue", valueLabel: "Příjmy (Kč/měsíc)" },
 ];
 
@@ -55,11 +55,12 @@ interface Props {
   highlightSection?: string;
   hideTips?: boolean; // Schovat tipy během guided tour
   onItemAdded?: (sectionId: string) => void; // Callback když přidá položku
+  onAchievementUnlocked?: (achievementId: string) => void; // 🎉 Achievement callback
   allowedSection?: string; // Jen tato sekce může přidávat položky (pro lekce)
   previewMode?: boolean; // Pro dashboard preview - menší štítky
 }
 
-export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips = false, onItemAdded, allowedSection, previewMode = false }: Props) {
+export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips = false, onItemAdded, onAchievementUnlocked, allowedSection, previewMode = false }: Props) {
   const [canvas, setCanvas] = useState<CanvasSection[]>(INITIAL_CANVAS);
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [newItem, setNewItem] = useState("");
@@ -102,31 +103,66 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
         setCanvas(updatedCanvas);
       }
     } catch (err) {
-      console.warn('Failed to load canvas:', err);
+      console.warn('Error loading canvas:', err);
     }
   };
 
   const saveCanvasData = async (sectionId: string, items: CanvasItem[]) => {
     if (!userId) return;
 
-    setIsSaving(true);
     try {
+      setIsSaving(true);
       const { error } = await supabase
         .from('user_canvas_data')
         .upsert({
           user_id: userId,
           section_key: sectionId,
-          content: items,
-          updated_at: new Date().toISOString(),
+          content: items
         }, {
           onConflict: 'user_id,section_key'
         });
 
       if (error) throw error;
-      // ✅ TOAST ODSTRANĚN - AutosaveIndicator to už ukazuje!
+      
+      // 🎉 ACHIEVEMENT TRIGGERING (real-time, desktop version)
+      if (onAchievementUnlocked) {
+        const itemCount = items.length;
+        
+        // First segment/value
+        if (sectionId === 'segments' && itemCount === 1) {
+          onAchievementUnlocked('first-segment');
+        } else if (sectionId === 'value' && itemCount === 1) {
+          onAchievementUnlocked('first-value');
+        }
+        
+        // Profit calculated (revenue/costs with value > 0)
+        if ((sectionId === 'revenue' || sectionId === 'costs') && items.some(i => i.value && i.value > 0)) {
+          onAchievementUnlocked('profit-calculated');
+        }
+        
+        // Check if all 9 sections filled & profitable business
+        const { data: allSections } = await supabase
+          .from('user_canvas_data')
+          .select('section_key, content')
+          .eq('user_id', userId);
+        
+        if (allSections) {
+          const requiredSections = ['segments', 'value', 'channels', 'relationships', 'revenue', 'resources', 'activities', 'partners', 'costs'];
+          const filledSections = allSections.filter(s => 
+            requiredSections.includes(s.section_key) && s.content?.length > 0
+          );
+          
+          if (filledSections.length === 9) {
+            onAchievementUnlocked('all-sections-filled');
+          }
+          
+          // ❌ "profitable-business" achievement SE NETRIGGERUJE ZDE!
+          // Triggeruje se v ProfitCalculator (Modul 2, Lekce 2) když user VIDÍ finanční analýzu
+        }
+      }
     } catch (err) {
-      console.error('Save failed:', err);
-      toast.error("Chyba při ukládání");
+      console.error('Error saving canvas:', err);
+      toast.error('Chyba při ukládání');
     } finally {
       setIsSaving(false);
     }
@@ -137,17 +173,10 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
 
     const updated = canvas.map(section => {
       if (section.id === sectionId) {
-        // ✅ ZPĚT NA selectedColor - uživatel vybírá barvu manuálně!
-        const newItemData = { 
-          text: newItem.trim(), 
-          color: selectedColor, // ← MANUÁLNÍ VÝBĚR BARVY!
-          value: newValue 
-        };
-        
-        const newItems = [...section.items, newItemData];
+        const newItems = [...section.items, { text: newItem, color: selectedColor, value: newValue }];
         saveCanvasData(sectionId, newItems);
         
-        // Notify parent že přidal položku
+        // ✅ Callback pro guided tour
         if (onItemAdded) {
           onItemAdded(sectionId);
         }
@@ -181,8 +210,11 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
     if (!section) return;
     
     const item = section.items[itemIndex];
+    // 🔧 FIX: Vyčisti text od čísel (starší data měla číslo přímo v textu)
+    const cleanText = item.text.replace(/\s+\d+(\s*Kč)?$/g, '').trim();
+    
     setEditingItem({ sectionId, itemIndex });
-    setEditItemText(item.text);
+    setEditItemText(cleanText);
     setEditItemValue(item.value);
     setEditItemColor(hexToColorName(item.color as any));
   };
@@ -232,11 +264,11 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
         </p>
       </div>
       
-      {/* Canvas Grid - VĚTŠÍ! */}
-      <div className="bg-gray-50 rounded-xl shadow-lg p-4 md:p-8 overflow-x-auto">
-        <div className="grid gap-4 min-w-[800px]" style={{
+      {/* Canvas Grid - FIXNÍ ŠÍŘKA 920px pro konzistenci (fit v 1152px containeru s paddingem) */}
+      <div className="bg-gray-50 rounded-xl shadow-lg p-3 md:p-4 overflow-x-auto">
+        <div className="grid gap-3 min-w-[920px]" style={{
           gridTemplateColumns: 'repeat(10, 1fr)',
-          gridTemplateRows: 'repeat(3, minmax(220px, auto))',
+          gridTemplateRows: 'minmax(240px, auto) minmax(240px, auto) minmax(200px, auto)', // Větší výšky pro více štítků
           gridTemplateAreas: `
             "partners partners activities activities value value relationships relationships segments segments"
             "partners partners resources resources value value channels channels segments segments"
@@ -248,7 +280,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
               key={section.id}
               id={`canvas-section-${section.id}`}
               data-canvas-section={section.id}
-              className={`bg-white border-2 rounded-lg p-3 flex flex-col transition-all ${
+              className={`bg-white border-2 rounded-lg p-3 flex flex-col transition-all overflow-visible ${
                 highlightSection === section.id 
                   ? 'border-green-500 ring-2 ring-green-300' 
                   : 'border-gray-300'
@@ -256,13 +288,13 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
               style={{ gridArea: section.gridArea }}
             >
               {/* Section Title */}
-              <h4 className="font-bold text-gray-900 mb-2 text-sm border-b border-gray-200 pb-1.5">
+              <h4 className="font-bold text-gray-700 mb-2 text-sm border-b border-gray-200 pb-1 pt-2 flex-shrink-0">
                 {section.title}
               </h4>
 
               {/* Sticky Notes - NOVÝ DESIGN: čtvercové, nakloněné */}
-              <div className="flex-1 mb-2">
-                <div className="flex flex-wrap gap-2 items-start content-start justify-start">
+              <div className="overflow-visible flex-1">
+                <div className="flex flex-wrap gap-1.5 items-start content-start justify-start">
                 {section.items.map((item, index) => {
                   // ✅ Převod HEX → název barvy
                   const colorName = hexToColorName(item.color as any);
@@ -270,10 +302,15 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                   
                   // 🌐 Detekuj "globální" štítky v byznysových sekcích
                   const isGlobalColor = colorName === 'global';
-                  const isBusinessSection = ['partners', 'activities', 'resources', 'costs', 'revenue', 'channels', 'relationships'].includes(section.id);
+                  // ✅ Global JEN v: partners, activities, resources, costs, revenue (NE v channels, relationships!)
+                  const isBusinessSection = ['partners', 'activities', 'resources', 'costs', 'revenue'].includes(section.id);
                   const isGlobalItem = isGlobalColor && isBusinessSection;
                   
-                  // Inteligentní náklom - menší v preview módu pro lepší využití prostoru
+                  // 🔧 FIX: Odstraň čísla z textu (starší data měla číslo přímo v textu)
+                  // Regex: odstraň mezery + čísla na konci textu (např. "Manažinky 500" → "Manažinky")
+                  const cleanText = item.text.replace(/\s+\d+(\s*Kč)?$/g, '').trim();
+                  
+                  // ✅ OPTIMALIZOVANÁ VELIKOST: 75px (z 85px) - menší ale stále čitelné
                   const rotationAngle = previewMode ? 1 : 2;
                   const randomRotate = index % 2 === 0 ? rotationAngle : -rotationAngle;
                   return (
@@ -285,11 +322,11 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                           startEditItem(section.id, index);
                         }
                       }}
-                      className={`${colorClasses.bg} ${colorClasses.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-1.5 rounded shadow-md hover:shadow-lg transition-all flex items-center justify-center group relative ${!previewMode && (!allowedSection || allowedSection === section.id) ? 'cursor-pointer hover:scale-105' : 'cursor-default'}`}
+                      className={`${colorClasses.bg} ${colorClasses.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-2 rounded shadow-md hover:shadow-lg transition-all flex items-center justify-center group relative flex-shrink-0 ${!previewMode && (!allowedSection || allowedSection === section.id) ? 'cursor-pointer hover:scale-105' : 'cursor-default'}`}
                       title={isGlobalItem ? '🌐 Pro celý byznys model' : ''}
                       style={{
-                        width: '80px',
-                        minHeight: '80px',
+                        width: '75px',
+                        minHeight: '75px',
                         transform: `rotate(${randomRotate}deg)`,
                       }}
                     >
@@ -297,9 +334,9 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                         <span className="absolute top-0.5 right-0.5 text-[9px] opacity-60">🌐</span>
                       )}
                       <p 
-                        className={`${previewMode ? 'text-[10px]' : 'text-[11px]'} ${colorClasses.text} leading-tight font-medium text-center break-words`}
+                        className={`text-xs ${colorClasses.text} leading-tight text-center break-words font-medium`}
                       >
-                        {item.text}
+                        {cleanText}
                       </p>
                       {/* HODNOTA SE UKLÁDÁ, ALE NEZOBRAZUJE (pro výpočty v Modulu 2, Lekci 2) */}
                       {/* ✅ KŘÍŽEK JEN pokud je sekce povolená (nebo není žádné omezení) */}
@@ -320,9 +357,9 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                 </div>
               </div>
 
-              {/* Add Item Form */}
+              {/* Add Item Form nebo + Přidat tlačítko - VŽDYCKY DOLE (mt-auto) */}
               {editingSection === section.id ? (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-auto pt-2 border-t border-gray-200">
                   <input
                     type="text"
                     value={newItem}
@@ -346,63 +383,42 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                     />
                   )}
                   
-                  {/* Color Picker - DYNAMICKÝ (zákaznické vs byznysové) */}
+                  {/* Color Picker - DYNAMICKÝ (zákaznické vs byznysové vs globální) */}
                   {(() => {
-                    const isCustomerSection = ['segments', 'value', 'channels', 'relationships'].includes(section.id);
+                    // 🎨 Zákaznické sekce (segments, value, channels, relationships) - JEN barevné
+                    const allowsGlobal = ['partners', 'activities', 'resources', 'costs', 'revenue'].includes(section.id);
                     
-                    if (isCustomerSection) {
-                      // ✅ ZÁKAZNICKÉ SEKCE: Jen barevné segmenty (BEZ GLOBAL!)
-                      return (
-                        <div className="flex gap-1 items-center flex-wrap">
-                          <span className="text-xs text-gray-600 mr-1">Barva segmentu:</span>
-                          {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
-                            const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
-                            return (
-                              <button
-                                key={color}
-                                onClick={() => setSelectedColor(color as any)}
-                                className={`w-6 h-6 rounded ${classes.bg} ${classes.border} border-2 hover:scale-110 transition-transform ${
-                                  selectedColor === color ? 'ring-2 ring-gray-900' : ''
-                                }`}
-                              />
-                            );
-                          })}
-                        </div>
-                      );
-                    } else {
-                      // ✅ BYZNYSOVÉ SEKCE: Segmenty + Global
-                      return (
-                        <div className="space-y-2">
-                          <div className="flex gap-1 items-center flex-wrap">
-                            <span className="text-xs text-gray-600 mr-1">Segment:</span>
-                            {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
-                              const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
-                              return (
-                                <button
-                                  key={color}
-                                  onClick={() => setSelectedColor(color as any)}
-                                  className={`w-6 h-6 rounded ${classes.bg} ${classes.border} border-2 hover:scale-110 transition-transform ${
-                                    selectedColor === color ? 'ring-2 ring-gray-900' : ''
-                                  }`}
-                                />
-                              );
-                            })}
-                          </div>
-                          <div className="flex gap-1 items-center flex-wrap">
-                            <span className="text-xs text-gray-600 mr-1">Globální:</span>
+                    return (
+                      <div className="flex gap-1 flex-wrap">
+                        {/* Barevné segmenty (vždy) */}
+                        {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
+                          const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
+                          return (
                             <button
-                              onClick={() => setSelectedColor('global')}
-                              className={`w-6 h-6 rounded ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border-2 hover:scale-110 transition-transform flex items-center justify-center ${
-                                selectedColor === 'global' ? 'ring-2 ring-gray-900' : ''
+                              key={color}
+                              onClick={() => setSelectedColor(color as any)}
+                              className={`w-7 h-7 rounded ${classes.bg} ${classes.border} border hover:scale-110 transition-transform ${
+                                selectedColor === color ? 'ring-2 ring-gray-900' : ''
                               }`}
-                              title="🌐 Pro celý byznys"
-                            >
-                              <span className="text-[8px]">🌐</span>
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    }
+                              title={`Segment ${color}`}
+                            />
+                          );
+                        })}
+                        
+                        {/* Global (JEN pro vybrané byznysové sekce) */}
+                        {allowsGlobal && (
+                          <button
+                            onClick={() => setSelectedColor('global')}
+                            className={`w-7 h-7 rounded ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border hover:scale-110 transition-transform flex items-center justify-center ${
+                              selectedColor === 'global' ? 'ring-2 ring-gray-900' : ''
+                            }`}
+                            title="🌐 Pro celý byznys"
+                          >
+                            <span className="text-[10px]">🌐</span>
+                          </button>
+                        )}
+                      </div>
+                    );
                   })()}
 
                   <div className="flex gap-1">
@@ -428,20 +444,20 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                   </div>
                 </div>
               ) : (
-                // Zobraz tlačítko "Přidat" jen pokud:
-                // 1. allowedSection není nastaveno (= volný režim) NEBO
-                // 2. allowedSection === section.id (= tato sekce je povolená)
-                (!allowedSection || allowedSection === section.id) && (
-                  <Button
-                    onClick={() => setEditingSection(section.id)}
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs h-8"
-                  >
-                    <Plus className="w-3 h-3 mr-1" />
-                    Přidat
-                  </Button>
-                )
+                <>
+                  {/* Add Button - JEN pokud je sekce povolená (nebo není žádné omezení) - VŽDYCKY DOLE */}
+                  {!previewMode && (!allowedSection || allowedSection === section.id) && (
+                    <Button
+                      onClick={() => setEditingSection(section.id)}
+                      variant="outline"
+                      size="sm"
+                      className="w-full border-2 border-dashed border-blue-400 hover:bg-blue-50 text-xs h-8 mt-auto"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Přidat
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           ))}
@@ -471,7 +487,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
               <strong>• Náklady a příjmy:</strong> Uvádějte měsíční částky
             </div>
             <div>
-              <strong>• 🌐 Globální (šedá):</strong> Pro celý byznys model
+              <strong>• 🌐 Globální (šedá):</strong> Jen pro partners, activities, resources, costs, revenue
             </div>
           </div>
         </div>
@@ -515,7 +531,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                 ) : null;
               })()}
 
-              {/* Color Picker - 2 ŘÁDKY */}
+              {/* Color Picker - 2 ŘÁDKY (s podmínkou pro global) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Barva:</label>
                 
@@ -539,25 +555,31 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
                   </div>
                 </div>
                 
-                {/* Řádek 2: Globální */}
-                <div>
-                  <p className="text-xs text-gray-600 mb-1">Globální (celý byznys):</p>
-                  <div className="flex gap-2 flex-wrap">
-                    <button
-                      onClick={() => setEditItemColor('global')}
-                      className={`w-10 h-10 rounded ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border-2 hover:scale-110 transition-transform ${
-                        editItemColor === 'global' ? 'ring-2 ring-gray-900' : ''
-                      }`}
-                      title="�� Pro celý byznys"
-                    >
-                      <span className="text-xs">🌐</span>
-                    </button>
-                  </div>
-                </div>
-                
-                {editItemColor === 'global' && (
-                  <p className="text-xs text-gray-500 mt-2">🌐 Globální = pro celý byznys model</p>
-                )}
+                {/* Řádek 2: Globální - JEN pro vybrané byznysové sekce */}
+                {(() => {
+                  const section = canvas.find(s => s.id === editingItem.sectionId);
+                  const allowsGlobal = section && ['partners', 'activities', 'resources', 'costs', 'revenue'].includes(section.id);
+                  
+                  return allowsGlobal ? (
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Globální (celý byznys):</p>
+                      <div className="flex gap-2 flex-wrap">
+                        <button
+                          onClick={() => setEditItemColor('global')}
+                          className={`w-10 h-10 rounded ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border-2 hover:scale-110 transition-transform ${
+                            editItemColor === 'global' ? 'ring-2 ring-gray-900' : ''
+                          }`}
+                          title="🌐 Pro celý byznys"
+                        >
+                          <span className="text-xs">🌐</span>
+                        </button>
+                      </div>
+                      {editItemColor === 'global' && (
+                        <p className="text-xs text-gray-500 mt-2">🌐 Globální = pro celý byznys model</p>
+                      )}
+                    </div>
+                  ) : null;
+                })()}
               </div>
 
               {/* Buttons */}

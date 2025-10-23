@@ -143,7 +143,7 @@ První v ČR. Poprvé v češtině.
     }
   },
 
-  // AD #2: PRAVDA (Z MyCreativeAdSetsFixed.tsx - HOTOVÝ!)
+  // AD #2: PRAVDA (Z MyCreativeAdSetsFixed.tsx - ORIGINÁL!)
   {
     id: 'truth-blue',
     name: 'Ad #2: PRAVDA (MODRÁ) ✅',
@@ -151,29 +151,29 @@ První v ČR. Poprvé v češtině.
     budget: '80 Kč/den',
     background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
     content: (
-      <div className="flex flex-col items-center justify-center h-full text-center px-8 py-8">
-        <div className="bg-red-600 text-white px-10 py-4 rounded-lg mb-8 shadow-lg">
+      <div className="flex flex-col items-center justify-center h-full text-center px-8 py-6">
+        <div className="bg-red-600 text-white px-10 py-4 rounded-lg mb-6 shadow-lg">
           <p className="text-3xl font-black">
             ⚠️ PRAVDA, KTEROU NIKDO NEŘEKNE
           </p>
         </div>
 
-        <h1 className="text-7xl font-black text-white mb-10 leading-tight drop-shadow-lg">
+        <h1 className="text-6xl font-black text-white mb-8 leading-tight drop-shadow-lg">
           V Česku žádná<br/>
           <span className="text-red-400">REÁLNÁ POMOC</span><br/>
-          není.
+          podnikatelům není.
         </h1>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 mb-8 max-w-3xl w-full border-2 border-white/30">
-          <div className="space-y-5 text-left">
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-7 mb-7 max-w-3xl w-full border-2 border-white/30">
+          <div className="space-y-4 text-left">
             <p className="text-2xl">
-              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Guru kurzy?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(50 hodin teorie)</span>
+              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Guru kurzy?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(50 hodin teorie, nula praxe)</span>
             </p>
             <p className="text-2xl">
               <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">AI automaty?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(Nic neřeší)</span>
             </p>
             <p className="text-2xl">
-              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Konzultanti?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(Obecné rady)</span>
+              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Online konzultanti?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(Obecné rady)</span>
             </p>
             <p className="text-3xl font-black mt-6" style={{ color: '#fbbf24' }}>
               ❌ KONKRÉTNÍ METODA? NIKDE.
@@ -181,21 +181,30 @@ První v ČR. Poprvé v češtině.
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black rounded-xl px-10 py-6 mb-8 shadow-lg">
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black rounded-xl px-10 py-6 mb-7 shadow-lg">
           <p className="text-4xl font-black mb-2">
             TAK JSME TO VYTVOŘILI.
           </p>
           <p className="text-2xl font-bold">
-            První v ČR • Bez keců
+            První v ČR • Konečně realita • Bez keců
           </p>
         </div>
 
-        <div className="bg-white text-black px-16 py-7 rounded-xl shadow-2xl mb-6">
+        <div className="mb-7">
+          <p className="text-5xl font-black text-white mb-3">
+            PODNIKATELSKÁ ČTVRTKA
+          </p>
+          <p className="text-2xl text-gray-300">
+            2 nástroje poprvé v češtině • 90 minut • Hotovo
+          </p>
+        </div>
+
+        <div className="bg-white text-black px-16 py-7 rounded-xl shadow-2xl mb-5">
           <p className="text-5xl font-black">CHCI VIDĚT! →</p>
         </div>
 
         <p className="text-yellow-300 text-2xl font-bold">
-          🔥 Jenom 50 lidí • Sleva 40%
+          🔥 Jenom 50 lidí • První v ČR
         </p>
       </div>
     ),
@@ -216,11 +225,15 @@ PODNIKATELSKÁ ČTVRTKA = první v ČR.
 
 2 vědecké nástroje poprvé v češtině.
 90 minut práce.
-Hotový byznys model + marketing.
+Hotový byznys model + marketing strategie.
 
-Bez teorií. Bez keců.
+Bez teorií. Bez keců. Bez čekání.
 
-🔥 JENOM 50 LIDÍ • Sleva 40%`,
+🔥 JENOM 50 LIDÍ
+→ První v ČR dostanou průkopnickou cenu
+→ Sleva 40% navždy
+
+⏰ Není čas na váhání.`,
       headline: 'První v ČR • Konečně realita',
       cta: 'Chci vidět'
     }
@@ -480,13 +493,13 @@ VÝSLEDEK: Hotový plán
     }
   },
 
-  // AD #5: KAMARÁD VYDĚLAL 100k (NOVÝ - ENVY!)
+  // AD #5: ALL-IN-ONE (Z Final3AdSets.tsx - ÚSPORA!)
   {
-    id: 'friend-success',
-    name: 'Ad #5: KAMARÁD 100k. JÁ? CASHFLOW. 🆕',
-    category: 'Envy • Social Comparison • Konkrétní',
-    budget: '75 Kč/den',
-    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+    id: 'all-in-one',
+    name: 'Ad #5: ALL-IN-ONE ✅',
+    category: 'Value • Úspora • All-in-one řešení',
+    budget: '70 Kč/den',
+    background: 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)',
     content: (
       <div className="flex flex-col items-center justify-center h-full text-center px-8 py-6">
         <div className="text-5xl mb-6">📱</div>

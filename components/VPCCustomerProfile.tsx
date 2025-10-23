@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
 import { CustomerProfileContextHints } from "./CustomerProfileContextHints";
+import { trackCourseEvent, trackError } from "../lib/sentry";
 
 interface Props {
   userId: string;
@@ -137,14 +138,17 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
     if (!userId || !selectedSegment) return;
     
     const saveTimeout = setTimeout(async () => {
+      console.log('🔄 VPCCustomerProfile AUTO-SAVE triggered:', { userId, selectedSegment, jobs, pains, gains });
       await saveVPC();
     }, 1000);
     
     return () => clearTimeout(saveTimeout);
-  }, [jobs, pains, gains]);
+  }, [jobs, pains, gains, userId, selectedSegment]);
   
   const saveVPC = async () => {
     if (!userId || !selectedSegment || isSaving) return;
+    
+    console.log('💾 saveVPC called with:', { userId, selectedSegment, jobs, pains, gains, vpcId });
     
     setIsSaving(true);
     
@@ -157,33 +161,63 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
         gains
       };
       
+      console.log('💾 Saving VPC data:', vpcData);
+      
       if (vpcId) {
-        const { error } = await supabase
+        console.log('💾 Updating existing VPC (id:', vpcId, ')');
+        const { data, error } = await supabase
           .from('value_proposition_canvas')
           .update(vpcData)
-          .eq('id', vpcId);
+          .eq('id', vpcId)
+          .select();
         
+        console.log('💾 Update result:', { data, error });
         if (error) throw error;
       } else {
+        console.log('💾 Inserting new VPC');
         const { data, error } = await supabase
           .from('value_proposition_canvas')
           .insert([vpcData])
           .select()
           .single();
         
+        console.log('💾 Insert result:', { data, error });
         if (error) throw error;
-        if (data) setVpcId(data.id);
+        if (data) {
+          console.log('💾 New VPC created with id:', data.id);
+          setVpcId(data.id);
+        }
       }
+      
+      console.log('✅ VPC saved successfully');
+      
+      // 🚨 SENTRY: Track successful save
+      trackCourseEvent.vpcSave({
+        userId,
+        segmentName: selectedSegment,
+        hasJobs: jobs.length > 0,
+        hasPains: pains.length > 0,
+        hasGains: gains.length > 0,
+      });
     } catch (err) {
-      console.error('Error saving VPC:', err);
+      console.error('❌ Error saving VPC:', err);
       toast.error('Chyba při ukládání');
+      
+      // 🚨 SENTRY: Track error
+      trackError.saveError('VPCCustomerProfile', err as Error, {
+        userId,
+        segmentName: selectedSegment,
+        hasJobs: jobs.length > 0,
+        hasPains: pains.length > 0,
+        hasGains: gains.length > 0,
+      });
     } finally {
       setIsSaving(false);
     }
   };
   
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="space-y-6">
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6 rounded-t-xl">
         <h2 className="text-2xl font-bold mb-2">👥 Zákaznický Profil</h2>
         <p className="text-blue-100">

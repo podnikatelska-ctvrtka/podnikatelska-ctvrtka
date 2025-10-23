@@ -15,13 +15,19 @@ import {
   ChevronDown,
   Info,
   X,
-  RotateCcw
+  RotateCcw,
+  Plus,
+  Sparkles
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription } from "./ui/alert";
 import { FitStepInstructions } from "./FitStepInstructions";
+import { trackCourseEvent, trackError } from "../lib/sentry";
 import { toast } from "sonner";
+import { BottomSheet } from "./BottomSheet";
+import { haptic } from "../lib/haptics";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 
 interface Props {
   userId: string;
@@ -31,6 +37,7 @@ interface Props {
   onNavigateToLesson?: (lessonId: number) => void;
   onComplete?: (fitScore: number) => void; // ✅ Callback pro dokončení lekce
   isLessonCompleted?: boolean; // ✅ Je lekce 16 již dokončená?
+  onAchievementUnlocked?: (achievementId: string) => void; // 🎉 Achievement callback
 }
 
 interface VPCItem {
@@ -46,7 +53,7 @@ interface ValueMapItem {
   color: string;
 }
 
-// ➕ Add Item Input Component
+// ➕ Add Item Input Component - MOBILNÍ VERZE s BottomSheet
 function AddItemInput({ 
   category, 
   placeholder, 
@@ -58,88 +65,136 @@ function AddItemInput({
   onAdd: (text: string) => Promise<boolean | void>;
   color: 'yellow' | 'red' | 'green';
 }) {
-  const [isAdding, setIsAdding] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [newText, setNewText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const handleAdd = async () => {
     if (!newText.trim()) return;
     
+    haptic('light');
     setIsSubmitting(true);
     const success = await onAdd(newText);
     setIsSubmitting(false);
     
     // ✅ Success je handled v onAdd (má vlastní toast) - jen reset field
     if (success !== false) {
+      haptic('success');
       setNewText('');
-      setIsAdding(false);
+      setIsSheetOpen(false);
     }
     // ❌ Error je taky handled v onAdd - nic nedělej
+  };
+
+  const handleOpen = () => {
+    haptic('light');
+    setIsSheetOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsSheetOpen(false);
+    setNewText('');
   };
   
   const borderColor = color === 'yellow' ? 'border-yellow-300' 
                     : color === 'red' ? 'border-red-300' 
                     : 'border-green-300';
   
+  const bgColor = color === 'yellow' ? 'bg-yellow-50' 
+                : color === 'red' ? 'bg-red-50' 
+                : 'bg-green-50';
+  
   const textColor = color === 'yellow' ? 'text-yellow-700' 
                   : color === 'red' ? 'text-red-700' 
                   : 'text-green-700';
-  
-  if (!isAdding) {
-    return (
-      <button
-        onClick={() => setIsAdding(true)}
-        className={`w-full p-3 border-2 border-dashed ${borderColor} rounded-lg ${textColor} hover:bg-gray-50 transition-all text-sm flex items-center justify-center gap-2`}
-      >
-        ➕ {placeholder}
-      </button>
-    );
-  }
+
+  const buttonColor = color === 'yellow' ? 'bg-yellow-600 hover:bg-yellow-700' 
+                    : color === 'red' ? 'bg-red-600 hover:bg-red-700' 
+                    : 'bg-green-600 hover:bg-green-700';
+
+  const categoryLabel = category === 'jobs' ? 'Úkol zákazníka'
+                      : category === 'pains' ? 'Bolest zákazníka'
+                      : 'Zisk zákazníka';
   
   return (
-    <div className={`p-3 border-2 ${borderColor} rounded-lg bg-white space-y-2`}>
-      <input
-        type="text"
-        value={newText}
-        onChange={(e) => setNewText(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-        autoFocus
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            console.log(`⌨️ [${category}-ENTER] Enter pressed`);
-            e.preventDefault();
-            handleAdd();
-          }
-          if (e.key === 'Escape') setIsAdding(false);
-        }}
-        disabled={isSubmitting}
-      />
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          onClick={() => {
-            console.log(`🖱️ [${category}-BUTTON] Button clicked`);
-            handleAdd();
-          }}
-          disabled={!newText.trim() || isSubmitting}
-          className="flex-1"
-        >
-          {isSubmitting ? '...' : 'Přidat'}
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            setIsAdding(false);
-            setNewText('');
-          }}
-          disabled={isSubmitting}
-        >
-          Zrušit
-        </Button>
-      </div>
-    </div>
+    <>
+      {/* Add Button */}
+      <button
+        onClick={handleOpen}
+        className={`w-full p-3 border-2 border-dashed ${borderColor} rounded-lg ${textColor} hover:bg-gray-50 transition-all text-sm flex items-center justify-center gap-2`}
+      >
+        <Plus className="w-4 h-4" />
+        {placeholder}
+      </button>
+
+      {/* Bottom Sheet */}
+      <BottomSheet
+        isOpen={isSheetOpen}
+        onClose={handleClose}
+        title={categoryLabel}
+        snapPoints={[0.5, 0.85]}
+        defaultSnap={0}
+      >
+        <div className="space-y-4">
+          {/* Instrukční text */}
+          <div className={`p-3 ${bgColor} rounded-lg`}>
+            <p className={`text-sm ${textColor}`}>
+              {category === 'jobs' && '📋 Jakou práci/úkol se zákazník snaží splnit?'}
+              {category === 'pains' && '😰 Co zákazníka trápí, frustruje nebo brzdí?'}
+              {category === 'gains' && '🎯 Jaké výhody nebo zisky zákazník hledá?'}
+            </p>
+          </div>
+
+          {/* Text Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Text položky
+            </label>
+            <input
+              type="text"
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+              placeholder={placeholder}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  console.log(`⌨️ [${category}-ENTER] Enter pressed`);
+                  e.preventDefault();
+                  handleAdd();
+                }
+              }}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              onClick={() => {
+                console.log(`🖱️ [${category}-BUTTON] Button clicked`);
+                handleAdd();
+              }}
+              disabled={!newText.trim() || isSubmitting}
+              size="lg"
+              className={`flex-1 h-14 text-lg ${buttonColor}`}
+            >
+              <CheckCircle className="w-5 h-5 mr-2" />
+              {isSubmitting ? 'Přidávám...' : 'Přidat'}
+            </Button>
+            <Button
+              onClick={handleClose}
+              variant="outline"
+              size="lg"
+              className="h-14 px-6"
+              disabled={isSubmitting}
+            >
+              Zrušit
+            </Button>
+          </div>
+        </div>
+      </BottomSheet>
+    </>
   );
 }
 
@@ -247,36 +302,59 @@ function PriorityItemWithScore({
         </div>
       </div>
       
-      {/* Input pro počet lidí */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <label className="text-sm text-gray-600">Kolik lidí:</label>
-        <input
-          type="number"
-          min="0"
-          max={totalRespondents}
-          value={count}
-          onChange={(e) => {
-            const newCount = parseInt(e.target.value) || 0;
-            // ⚠️ LIMIT: Nemůžeš mít víc než total respondentů
-            onUpdateCount(Math.min(newCount, totalRespondents));
-          }}
-          className="w-16 px-2 py-1 border-2 border-gray-300 rounded focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-        />
-        <span className="text-sm text-gray-600">/ {totalRespondents}</span>
+      {/* Input pro počet lidí + Progress Bar */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <label className="text-sm text-gray-600">Kolik lidí:</label>
+          <input
+            type="number"
+            min="0"
+            max={totalRespondents}
+            value={count}
+            onChange={(e) => {
+              const newCount = parseInt(e.target.value) || 0;
+              // ⚠️ LIMIT: Nemůžeš mít víc než total respondentů
+              onUpdateCount(Math.min(newCount, totalRespondents));
+            }}
+            onFocus={(e) => e.target.select()}
+            className="w-16 px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-center font-medium"
+          />
+          <span className="text-sm text-gray-600">/ {totalRespondents}</span>
+          
+          {/* Automatické % a hvězdičky */}
+          {count > 0 && (
+            <>
+              <span className={`text-sm font-bold ${
+                percentage >= 70 ? 'text-green-600' : 
+                percentage >= 40 ? 'text-blue-600' : 
+                'text-gray-600'
+              }`}>
+                = {percentage}%
+              </span>
+              <div className="flex items-center gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star 
+                    key={i} 
+                    className={`w-3 h-3 ${i < stars ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
         
-        {/* Automatické % a hvězdičky */}
+        {/* Progress Bar */}
         {count > 0 && (
-          <>
-            <span className="text-sm font-bold text-blue-600">= {percentage}%</span>
-            <div className="flex items-center gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star 
-                  key={i} 
-                  className={`w-3 h-3 ${i < stars ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
-                />
-              ))}
-            </div>
-          </>
+          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              style={{ width: `${percentage}%` }}
+              className={`h-full transition-all duration-500 ${
+                percentage >= 70 ? 'bg-green-500' : 
+                percentage >= 40 ? 'bg-blue-500' : 
+                'bg-gray-400'
+              }`}
+            />
+          </div>
         )}
       </div>
       
@@ -321,7 +399,7 @@ function getGuideForSegment(segmentName: string) {
   };
 }
 
-export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onValueChange, onNavigateToLesson, onComplete, isLessonCompleted }: Props) {
+export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onValueChange, onNavigateToLesson, onComplete, isLessonCompleted, onAchievementUnlocked }: Props) {
   // Step state: 1 = Discovery, 2 = Prioritization, 3 = Validation
   const [currentStep, setCurrentStep] = useState(1);
   
@@ -556,7 +634,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
       ? availableValues.filter(v => v.color === '#d1d5db' || v.color.toLowerCase() === 'white')
       : availableValues.filter(v => v.color === segmentData.color);
     
-    // Pokud je jen 1 matching hodnota a není vybraná, automaticky vyber
+    // Pokud je jen 1 matching hodnota a nen�� vybraná, automaticky vyber
     if (matchingValues.length === 1 && !localSelectedValue) {
       setLocalSelectedValue(matchingValues[0].text);
       if (onValueChange) onValueChange(matchingValues[0].text);
@@ -1735,16 +1813,34 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     hasValidData
   } = fitScoreData;
   
-  // 🔍 DEBUG: Co je v destructured values?
-
+  // 🎉 ACHIEVEMENT: FIT Score milestones - POSTUPNĚ všechny dosažené levely!
+  useEffect(() => {
+    if (!isLoading && fitScore > 0 && onAchievementUnlocked) {
+      // ✅ Použij samostatné IF bloky aby se spustily VŠECHNY dosažené levely!
+      if (fitScore >= 70) {
+        console.log('🎯 FIT Score 70%+ reached! Triggering achievement...');
+        onAchievementUnlocked('fit-70-percent');
+      }
+      if (fitScore >= 80) {
+        console.log('🎯 FIT Score 80%+ reached! Triggering achievement...');
+        onAchievementUnlocked('product-fit-master');
+      }
+      if (fitScore >= 90) {
+        console.log('🎯 FIT Score 90%+ reached! Triggering achievement...');
+        onAchievementUnlocked('fit-90-percent');
+      }
+      if (fitScore >= 100) {
+        console.log('🎯 FIT Score 100%! PERFEKTNÍ FIT! Triggering achievement...');
+        onAchievementUnlocked('product-fit-master');
+      }
+    }
+  }, [fitScore, isLoading, onAchievementUnlocked]);
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl border-2 border-gray-200 p-12 text-center">
-          <RefreshCw className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Načítám vaše VPC data...</p>
-        </div>
+      <div className="bg-white rounded-xl border-2 border-gray-200 p-12 text-center">
+        <RefreshCw className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+        <p className="text-gray-600">Načítám vaše VPC data...</p>
       </div>
     );
   }
@@ -1754,11 +1850,11 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   const isBilySegment = currentSegmentData?.color === '#d1d5db' || currentSegmentData?.color?.toLowerCase() === 'white';
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Segment/Value Selector */}
       {availableSegments.length > 0 && (
-        <div className="mb-6 bg-white rounded-xl border-2 border-blue-200 p-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+        <div className="mb-4 sm:mb-6 bg-white rounded-lg sm:rounded-xl border-2 border-blue-200 p-4 sm:p-6">
+          <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-start md:items-center">
             <div className="flex-1">
               <label className="block text-sm font-bold text-gray-700 mb-2">
                 📊 Validuji segment:
@@ -1841,24 +1937,24 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         </div>
       )}
       
-      {/* 🎯 GLOBAL STICKY BAR - vždy nahoře! */}
-      <div className="sticky top-0 z-50 bg-white border-b-2 border-gray-200 shadow-md -mx-6 px-6 py-3 mb-6">
-        {/* Progress Steps - kompaktní */}
-        <div className="flex items-center justify-center gap-3 mb-3">
+      {/* 🎯 GLOBAL STICKY BAR - Responzivní */}
+      <div className="sticky top-0 z-50 bg-white border-b-2 border-gray-200 shadow-md -mx-2 sm:-mx-6 px-2 sm:px-6 py-2 sm:py-3 mb-4 sm:mb-6">
+        {/* Progress Steps - kompaktní, skryté na malých mobilech */}
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2 sm:mb-3">
           <StepIndicator 
             number={1} 
             title="Průzkum" 
             isActive={currentStep === 1}
             isComplete={currentStep > 1}
           />
-          <div className="w-12 h-0.5 bg-gray-300" />
+          <div className="w-6 sm:w-12 h-0.5 bg-gray-300" />
           <StepIndicator 
             number={2} 
             title="Prioritizace" 
             isActive={currentStep === 2}
             isComplete={currentStep > 2}
           />
-          <div className="w-12 h-0.5 bg-gray-300" />
+          <div className="w-6 sm:w-12 h-0.5 bg-gray-300" />
           <StepIndicator 
             number={3} 
             title="FIT Score" 
@@ -1867,18 +1963,18 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           />
         </div>
         
-        {/* Segment & Value selectors - kompaktní řádek */}
-        <div className="flex items-center justify-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
+        {/* Segment & Value selectors - stack na mobilu */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="text-gray-600 font-medium">Segment:</span>
-            <div className="text-gray-900 font-semibold">{localSelectedSegment || selectedSegment}</div>
+            <div className="text-gray-900 font-semibold truncate max-w-[150px] sm:max-w-none">{localSelectedSegment || selectedSegment}</div>
           </div>
           {localSelectedValue && (
             <>
-              <span className="text-gray-400">→</span>
-              <div className="flex items-center gap-2">
+              <span className="text-gray-400 hidden sm:inline">→</span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <span className="text-gray-600 font-medium">Hodnota:</span>
-                <div className="text-gray-900 font-semibold">{localSelectedValue}</div>
+                <div className="text-gray-900 font-semibold truncate max-w-[150px] sm:max-w-none">{localSelectedValue}</div>
               </div>
             </>
           )}
@@ -1889,13 +1985,13 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         {/* STEP 1: DISCOVERY */}
         {currentStep === 1 && (
           <div
-            className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
+            className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
           >
-            {/* Kompaktní header + collapsible help */}
-            <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl p-6 flex items-center justify-between">
+            {/* Kompaktní header + collapsible help - Responzivní */}
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg sm:rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-0 sm:justify-between">
               <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-1">{guide.title}</h2>
-                <p className="text-white/90">{guide.description}</p>
+                <h2 className="text-lg sm:text-2xl font-bold mb-1">{guide.title}</h2>
+                <p className="text-sm sm:text-base text-white/90">{guide.description}</p>
               </div>
               
               <button
@@ -1905,10 +2001,10 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     helpEl.classList.toggle('hidden');
                   }
                 }}
-                className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors flex items-center gap-2 ml-4"
+                className="px-3 sm:px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm sm:text-base self-end sm:self-auto sm:ml-4"
               >
-                <Lightbulb className="w-5 h-5" />
-                Help
+                <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Help</span>
               </button>
             </div>
             
@@ -1917,13 +2013,13 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               <FitStepInstructions step={1} />
             </div>
 
-            {/* Methodology */}
-            <div className="bg-white rounded-xl border-2 border-gray-200 p-8">
-              <h3 className="mb-6 text-gray-900">
+            {/* Methodology - Responzivní */}
+            <div className="bg-white rounded-lg sm:rounded-xl border-2 border-gray-200 p-4 sm:p-8">
+              <h3 className="text-base sm:text-lg mb-4 sm:mb-6 text-gray-900">
                 🔍 Jak zjistit co je pro {selectedSegment || 'váš segment'} kritické?
               </h3>
               
-              <div className="mb-6 bg-blue-50 border-2 border-blue-300 rounded-xl p-6">
+              <div className="mb-4 sm:mb-6 bg-blue-50 border-2 border-blue-300 rounded-lg sm:rounded-xl p-4 sm:p-6">
                 <div className="flex gap-3">
                   <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <p className="text-blue-900">
@@ -1933,7 +2029,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-6">
+              {/* DESKTOP: Grid (md+) */}
+              <div className="hidden md:grid md:grid-cols-3 gap-6">
                 {/* Jobs Discovery */}
                 <div className="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-300">
                   <h4 className="mb-3 text-yellow-900 flex items-center gap-2">
@@ -2007,6 +2104,93 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </div>
               </div>
 
+              {/* MOBILE: Accordion (sm only) */}
+              <Accordion type="single" collapsible className="md:hidden space-y-3">
+                {/* Jobs Accordion */}
+                <AccordionItem value="jobs" className="bg-yellow-50 border-2 border-yellow-300 rounded-xl overflow-hidden">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2 text-yellow-900">
+                      <Target className="w-5 h-5" />
+                      <span className="font-bold">Cíle/Důvody (Jobs)</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="space-y-3 mb-4">
+                      <p className="font-bold text-yellow-800">Otázky k položení:</p>
+                      {guide.questions.jobs.map((q, i) => (
+                        <p key={i} className="text-sm text-yellow-900">• {q}</p>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-bold text-yellow-800">Příklady odpovědí:</p>
+                      {guide.examples.jobs.map((ex, i) => (
+                        <div key={i} className="bg-white p-3 pl-4 rounded-lg border-l-4 border-yellow-400 shadow-sm">
+                          <p className="text-sm text-yellow-800 leading-relaxed">
+                            "{ex}"
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Pains Accordion */}
+                <AccordionItem value="pains" className="bg-red-50 border-2 border-red-300 rounded-xl overflow-hidden">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2 text-red-900">
+                      <AlertCircle className="w-5 h-5" />
+                      <span className="font-bold">Obavy/Problémy (Pains)</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="space-y-3 mb-4">
+                      <p className="font-bold text-red-800">Otázky k položení:</p>
+                      {guide.questions.pains.map((q, i) => (
+                        <p key={i} className="text-sm text-red-900">• {q}</p>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-bold text-red-800">Příklady odpovědí:</p>
+                      {guide.examples.pains.map((ex, i) => (
+                        <div key={i} className="bg-white p-3 pl-4 rounded-lg border-l-4 border-red-400 shadow-sm">
+                          <p className="text-sm text-red-800 leading-relaxed">
+                            "{ex}"
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Gains Accordion */}
+                <AccordionItem value="gains" className="bg-green-50 border-2 border-green-300 rounded-xl overflow-hidden">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2 text-green-900">
+                      <Sparkles className="w-5 h-5" />
+                      <span className="font-bold">Touhy/Přínosy (Gains)</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="space-y-3 mb-4">
+                      <p className="font-bold text-green-800">Otázky k položení:</p>
+                      {guide.questions.gains.map((q, i) => (
+                        <p key={i} className="text-sm text-green-900">• {q}</p>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-bold text-green-800">Příklady odpovědí:</p>
+                      {guide.examples.gains.map((ex, i) => (
+                        <div key={i} className="bg-white p-3 pl-4 rounded-lg border-l-4 border-green-400 shadow-sm">
+                          <p className="text-sm text-green-800 leading-relaxed">
+                            "{ex}"
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
               {/* Action Steps */}
               <div className="mt-6 bg-purple-50 border-l-4 border-purple-500 p-6 rounded-xl">
                 <h4 className="mb-3 text-purple-900">💪 Vaše akce PŘED pokračováním:</h4>
@@ -2018,27 +2202,27 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </ol>
               </div>
 
-              {/* Status vašich dat */}
-              <div className="mt-6 bg-blue-50 border-2 border-blue-300 rounded-xl p-6">
-                <h4 className="mb-4 text-blue-900">📊 Vaše současná data z Lekce 1:</h4>
-                <div className="grid grid-cols-3 gap-4 mb-4">
+              {/* Status vašich dat - Responzivní */}
+              <div className="mt-4 sm:mt-6 bg-blue-50 border-2 border-blue-300 rounded-lg sm:rounded-xl p-4 sm:p-6">
+                <h4 className="mb-3 sm:mb-4 text-sm sm:text-base text-blue-900">📊 Vaše současná data z Lekce 1:</h4>
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-4">
                   <div className="text-center">
-                    <div className={`text-3xl font-bold mb-1 ${jobs.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
+                    <div className={`text-2xl sm:text-3xl font-bold mb-1 ${jobs.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
                       {jobs.length}
                     </div>
-                    <p className="text-sm text-gray-600">Jobs (Cíle)</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Jobs</p>
                   </div>
                   <div className="text-center">
-                    <div className={`text-3xl font-bold mb-1 ${pains.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
+                    <div className={`text-2xl sm:text-3xl font-bold mb-1 ${pains.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
                       {pains.length}
                     </div>
-                    <p className="text-sm text-gray-600">Pains (Obavy)</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Pains</p>
                   </div>
                   <div className="text-center">
-                    <div className={`text-3xl font-bold mb-1 ${gains.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
+                    <div className={`text-2xl sm:text-3xl font-bold mb-1 ${gains.length > 0 ? 'text-green-600' : 'text-gray-400'}`}>
                       {gains.length}
                     </div>
-                    <p className="text-sm text-gray-600">Gains (Očekávání)</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Gains</p>
                   </div>
                 </div>
                 
@@ -2093,14 +2277,14 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           <div
             className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
           >
-            {/* Kompaktní header s controls */}
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Target className="w-6 h-6 text-orange-600" />
+            {/* Kompaktní header s controls - Responzivní */}
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg sm:rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:justify-between">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Target className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 flex-shrink-0" />
                   <div>
-                    <h2 className="text-gray-900">🎯 Prioritizace</h2>
-                    <p className="text-gray-600">
+                    <h2 className="text-base sm:text-lg font-bold text-gray-900">🎯 Prioritizace</h2>
+                    <p className="text-xs sm:text-sm text-gray-600">
                       {step2View === 'customer' 
                         ? 'Označte kolik lidí každou položku zmiňovalo'
                         : 'Zkontrolujte co nabízíte'}
@@ -2115,15 +2299,15 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                       helpEl.classList.toggle('hidden');
                     }
                   }}
-                  className="px-4 py-2 bg-white/80 hover:bg-white text-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+                  className="px-3 sm:px-4 py-2 bg-white/80 hover:bg-white text-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm sm:text-base self-end sm:self-auto"
                 >
-                  <Lightbulb className="w-5 h-5" />
-                  Help
+                  <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>Help</span>
                 </button>
               </div>
               
-              {/* Controls */}
-              <div className="flex items-center gap-4 flex-wrap">
+              {/* Controls - Stack na mobilu */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                 <div className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-sm">
                   <button
                     onClick={() => setStep2View('customer')}
@@ -2239,9 +2423,9 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               </>
             ) : null}
 
-            {/* Prioritization Grids */}
+            {/* Prioritization Grids - DESKTOP */}
             {step2View === 'customer' && (
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+            <div className="hidden md:grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
               {/* Jobs - ✅ ALWAYS SHOW! */}
               <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -2372,6 +2556,143 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   </div>
                 </div>
             </div>
+            )}
+
+            {/* MOBILE: Accordion pro Jobs/Pains/Gains */}
+            {step2View === 'customer' && (
+              <Accordion type="single" collapsible className="md:hidden space-y-3">
+                {/* Jobs Accordion */}
+                <AccordionItem value="jobs" className="bg-yellow-50 border-2 border-yellow-300 rounded-xl overflow-hidden">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center justify-between w-full pr-3">
+                      <div className="flex items-center gap-2">
+                        <Target className="w-5 h-5 text-yellow-600" />
+                        <span className="font-bold text-yellow-900">Cíle (Jobs)</span>
+                      </div>
+                      <span className="text-xs text-yellow-700 bg-yellow-200 px-2 py-1 rounded">
+                        {jobs.length} položek
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="text-xs text-gray-600 mb-3">
+                      Kolik lidí (z {totalRespondents}) toto zmiňovalo
+                    </div>
+                    <div className="space-y-3">
+                      {jobs.map((job, index) => (
+                        <PriorityItemWithScore
+                          key={job.id}
+                          text={job.text}
+                          index={index}
+                          total={jobs.length}
+                          totalRespondents={totalRespondents}
+                          count={job.count || 0}
+                          percentage={job.percentage || 0}
+                          color="yellow"
+                          onUpdateCount={(count) => updateItemCount('jobs', index, count)}
+                          onDelete={() => deleteItem('jobs', job.id, job.text)}
+                          showPriorities={hasUserSorted}
+                          allItems={jobs}
+                        />
+                      ))}
+                      <AddItemInput
+                        category="jobs"
+                        placeholder="Přidat nový cíl..."
+                        onAdd={(text) => addItem('jobs', text)}
+                        color="yellow"
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Pains Accordion */}
+                <AccordionItem value="pains" className="bg-red-50 border-2 border-red-300 rounded-xl overflow-hidden">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center justify-between w-full pr-3">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="w-5 h-5 text-red-600" />
+                        <span className="font-bold text-red-900">Obavy (Pains)</span>
+                      </div>
+                      <span className="text-xs text-red-700 bg-red-200 px-2 py-1 rounded">
+                        {pains.length} položek
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="text-xs text-gray-600 mb-3">
+                      Kolik lidí (z {totalRespondents}) toto zmiňovalo
+                    </div>
+                    <div className="space-y-3">
+                      {pains.map((pain, index) => (
+                        <PriorityItemWithScore
+                          key={pain.id}
+                          text={pain.text}
+                          index={index}
+                          total={pains.length}
+                          totalRespondents={totalRespondents}
+                          count={pain.count || 0}
+                          percentage={pain.percentage || 0}
+                          color="red"
+                          onUpdateCount={(count) => updateItemCount('pains', index, count)}
+                          onDelete={() => deleteItem('pains', pain.id, pain.text)}
+                          showPriorities={hasUserSorted}
+                          allItems={pains}
+                        />
+                      ))}
+                      <AddItemInput
+                        category="pains"
+                        placeholder="Přidat novou obavu..."
+                        onAdd={(text) => addItem('pains', text)}
+                        color="red"
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Gains Accordion */}
+                <AccordionItem value="gains" className="bg-green-50 border-2 border-green-300 rounded-xl overflow-hidden">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center justify-between w-full pr-3">
+                      <div className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-green-600" />
+                        <span className="font-bold text-green-900">Očekávání (Gains)</span>
+                      </div>
+                      <span className="text-xs text-green-700 bg-green-200 px-2 py-1 rounded">
+                        {gains.length} položek
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="text-xs text-gray-600 mb-3">
+                      Kolik lidí (z {totalRespondents}) toto zmiňovalo
+                    </div>
+                    <div className="space-y-3">
+                      {gains.map((gain, index) => (
+                        <PriorityItemWithScore
+                          key={gain.id}
+                          text={gain.text}
+                          index={index}
+                          total={gains.length}
+                          totalRespondents={totalRespondents}
+                          count={gain.count || 0}
+                          percentage={gain.percentage || 0}
+                          color="green"
+                          onUpdateCount={(count) => updateItemCount('gains', index, count)}
+                          onDelete={() => deleteItem('gains', gain.id, gain.text)}
+                          showPriorities={hasUserSorted}
+                          allItems={gains}
+                        />
+                      ))}
+                      <AddItemInput
+                        category="gains"
+                        placeholder="Přidat nové očekávání..."
+                        onAdd={(text) => addItem('gains', text)}
+                        color="green"
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             )}
 
             {/* Value Map Grids - EDITOVATELNÉ! */}
@@ -2654,28 +2975,28 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           <div
             className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300"
           >
-            {/* Kompaktní header s FIT Score */}
-            <div className={`rounded-xl p-6 ${hasFit ? 'bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200' : 'bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200'}`}>
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Target className={`w-6 h-6 ${hasFit ? 'text-green-600' : 'text-orange-600'}`} />
-                    <h2 className="text-2xl font-bold text-gray-900">🎯 FIT Validace</h2>
+            {/* Kompaktní header s FIT Score - Responzivní */}
+            <div className={`rounded-lg sm:rounded-xl p-4 sm:p-6 ${hasFit ? 'bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200' : 'bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200'}`}>
+              <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:justify-between">
+                <div className="flex-1 w-full">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <Target className={`w-5 h-5 sm:w-6 sm:h-6 ${hasFit ? 'text-green-600' : 'text-orange-600'} flex-shrink-0`} />
+                    <h2 className="text-lg sm:text-2xl font-bold text-gray-900">🎯 FIT Validace</h2>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <div key={`fit-score-${fitScore}`}>
-                      <span className={`text-4xl font-bold ${hasFit ? 'text-green-600' : 'text-orange-600'}`}>{fitScore}%</span>
-                      <span className="text-sm text-gray-600 ml-2">Product-Market Fit</span>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6">
+                    <div key={`fit-score-${fitScore}`} className="flex items-baseline gap-2">
+                      <span className={`text-3xl sm:text-4xl font-bold ${hasFit ? 'text-green-600' : 'text-orange-600'}`}>{fitScore}%</span>
+                      <span className="text-xs sm:text-sm text-gray-600">Product-Market Fit</span>
                     </div>
-                    <div className="flex-1 max-w-md">
-                      <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="flex-1 w-full sm:max-w-md">
+                      <div className="h-2 sm:h-3 bg-gray-200 rounded-full overflow-hidden">
                         <div
                           key={`progress-${fitScore}`}
                           style={{ width: `${fitScore}%` }}
                           className={`h-full transition-all duration-1000 ease-out ${hasFit ? 'bg-green-500' : 'bg-orange-500'}`}
                         />
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-xs sm:text-sm text-gray-600 mt-1">
                         {hasFit 
                           ? `✅ Pokrýváte ${topPains.length > 0 ? Math.round((coveredPainsCount / topPains.length) * 100) : 0}% top problémů`
                           : '⚠️ Propojte řešení s prioritami zákazníků'}
@@ -2684,7 +3005,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2 ml-4">
+                <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
                   <button
                     onClick={async () => {
                       if (!confirm('🔄 Resetovat FIT data?\n\nToto vymaže všechna propojení mezi řešeními a prioritami pro tento segment. Použijte když jste změnili Jobs/Pains/Gains v Lekci 1.')) {
@@ -2713,11 +3034,11 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                         toast.error('❌ Chyba při resetování FIT dat');
                       }
                     }}
-                    className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                    className="px-3 sm:px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                     title="Vymazat stará FIT data když jste změnili Customer Profile"
                   >
-                    <RotateCcw className="w-4 h-4" />
-                    Reset
+                    <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Reset</span>
                   </button>
                   
                   <button
@@ -2727,10 +3048,10 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                         helpEl.classList.toggle('hidden');
                       }
                     }}
-                    className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+                    className="px-3 sm:px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base"
                   >
-                    <Lightbulb className="w-5 h-5" />
-                    Help
+                    <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Help</span>
                   </button>
                 </div>
               </div>
@@ -3267,26 +3588,29 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
 
             {/* Navigation */}
             <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-center gap-3">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setCurrentStep(2)}
-                  className="gap-2"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                  Upravit prioritizaci
-                </Button>
-                
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={loadVPC}
-                  className="gap-2"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Načíst znovu
-                </Button>
+              <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 flex-1">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => setCurrentStep(2)}
+                    className="gap-2 flex-1 sm:flex-none"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="hidden sm:inline">Upravit prioritizaci</span>
+                    <span className="sm:hidden">Upravit</span>
+                  </Button>
+                  
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={loadVPC}
+                    className="gap-2 flex-1 sm:flex-none"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Načíst znovu
+                  </Button>
+                </div>
                 
                 {/* Tlačítko "Uložit a dokončit" JEN pokud lekce NENÍ dokončená */}
                 {!isLessonCompleted && (
@@ -3294,15 +3618,28 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     size="lg"
                     onClick={async () => {
                       await saveFitProgress();
+                      
+                      // 🏆 Trigger achievement - FIT Validator dokončen!
+                      if (onAchievementUnlocked) {
+                        // 🎯 ODEMKNI AKČNÍ PLÁN!
+                        onAchievementUnlocked('action-plan-unlocked');
+                      }
+                      
                       // 🎉 Zavolej onComplete callback s FIT Score
                       if (onComplete) {
                         onComplete(fitScore);
                       }
+                      
+                      // 📋 TOAST: Akční plán odemknut!
+                      toast.success('🎉 Gratulujeme! Odemkl jsi Akční plán!', {
+                        description: 'Najdeš ho v sidebaru v sekci "Tools" → "Akční plán"',
+                        duration: 6000,
+                      });
                     }}
-                    className="gap-2 bg-green-600 hover:bg-green-700"
+                    className="gap-2 bg-green-600 hover:bg-green-700 w-full sm:w-auto"
                   >
                     <CheckCircle className="w-5 h-5" />
-                    Uložit a dokončit lekci
+                    Uložit a dokončit
                   </Button>
                 )}
                 

@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, Info, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Info, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { ReadOnlyBusinessModelCanvas } from "./ReadOnlyBusinessModelCanvas";
 
 interface Props {
@@ -149,154 +150,154 @@ const BUSINESS_MODELS: BusinessModel[] = [
     }
   },
 
-  // 🍕 PIZZERIE - VERZE A: Family friendly
+  // 🍕 PIZZERIE - VERZE A: S rozvozem
   {
     id: 'pizza-a',
     name: 'Pizzerie',
-    version: 'A - Family Friendly',
+    version: 'A - S rozvozem',
     category: 'Restaurace',
     emoji: '🍕',
-    description: 'Rodinná pizzerie s dětským koutkem',
+    description: 'Pizzerie s rozvozem a osobním odběrem',
     segments: [
-      { text: 'Rodiny s dětmi 3-10 let', color: 'blue' },
-      { text: 'Narozeninové oslavy', color: 'purple' }
+      { text: 'Rodiny s dětmi (večeře)', color: 'blue' },
+      { text: 'Studenti v kolejích', color: 'green' }
     ],
     value: [
-      { text: 'Dětský koutek + menu', color: 'blue' },
-      { text: 'Narozeninové balíčky', color: 'purple' }
+      { text: 'Rozvoz do 30 min', color: 'blue' },
+      { text: '20% sleva při odběru', color: 'global' }
     ],
     channels: [
-      { text: 'Facebook rodinné skupiny', color: 'blue' },
-      { text: 'Instagram (fotky dětí)', color: 'blue' },
-      { text: 'Doporučení rodičů', color: 'blue' }
+      { text: 'Facebook (rodiny)', color: 'blue' },
+      { text: 'Instagram (studenti)', color: 'green' },
+      { text: 'Vlastní web + mobil app', color: 'global' }
     ],
     relationships: [
       { text: 'Věrnostní program', color: 'blue' },
-      { text: 'Organizace narozenin', color: 'purple' }
+      { text: 'SMS notifikace', color: 'global' }
     ],
     revenue: [
-      { text: 'Běžné návštěvy rodin', color: 'blue', percentage: '60%' },
-      { text: 'Narozeninové party', color: 'purple', percentage: '25%' },
-      { text: 'Nápoje a zmrzlina', color: 'global', percentage: '15%' }
+      { text: 'Pizza (70% tržeb)', color: 'global', percentage: '70%' },
+      { text: 'Nápoje', color: 'global', percentage: '20%' },
+      { text: 'Přílohy (hranolky)', color: 'global', percentage: '10%' }
     ],
     activities: [
       { text: 'Příprava pizzy', color: 'global' },
-      { text: 'Organizace narozenin', color: 'purple' },
-      { text: 'Údržba dětského koutku', color: 'blue' }
+      { text: 'Rozvoz', color: 'global' },
+      { text: 'Marketing (social media)', color: 'blue' }
     ],
     resources: [
-      { text: 'Kuchaři (2)', color: 'global' },
-      { text: 'Pec na pizzu', color: 'global' },
-      { text: 'Dětský koutek', color: 'blue' },
-      { text: 'Party místnost', color: 'purple' }
+      { text: 'Pizza pec', color: 'global' },
+      { text: 'Kuchaři (3)', color: 'global' },
+      { text: 'Řidiči (2 auta)', color: 'global' }
     ],
     partnerships: [
       { text: 'Dodavatel surovin', color: 'global' },
-      { text: 'Animátor pro narozeniny', color: 'purple' }
+      { text: 'Damejidlo.cz', color: 'global' }
     ],
     costs: [
       { text: 'Suroviny', percentage: '30%' },
-      { text: 'Nájem velkého prostoru', percentage: '35%' },
-      { text: 'Mzdy + animátor', percentage: '35%' }
+      { text: 'Mzdy (kuchaři + řidiči)', percentage: '40%' },
+      { text: 'Nájem + energie', percentage: '30%' }
     ],
     insights: {
-      crossSell: 'Nápoje a zmrzlina pro děti (15% příjmů, vysoká marže)',
-      revenueBreakdown: 'Běžné jídlo 60% + Narozeniny 25% (vysoká marže!) + Nápoje 15%',
-      keySuccess: 'Dětský koutek = rodiče zůstávají déle (průměr 90 min vs 45 min)',
-      whyItWorks: 'Rodiče potřebují místo kde děti můžou běhat = ochota platit více'
+      crossSell: '20% sleva na odběr = 40% zákazníků si vybere odběr → vyšší marže (bez nákladů na rozvoz)',
+      revenueBreakdown: 'Pizza 70% + Nápoje 20% (vysoká marže!) + Přílohy 10%',
+      keySuccess: 'Rodiny objednávají večer (18-21h) = peak time s vysokými objednávkami',
+      whyItWorks: 'Rodiče nechtějí večer vařit + studenti chtějí levné jídlo = 2 segmenty, 1 produkt'
     }
   },
 
-  // 🍕 PIZZERIE - VERZE B: Student takeaway
+  // 🍕 PIZZERIE - VERZE B: Prémiová
   {
     id: 'pizza-b',
     name: 'Pizzerie',
-    version: 'B - Student Takeaway',
+    version: 'B - Prémiová',
     category: 'Restaurace',
     emoji: '🍕',
-    description: 'Rychlá pizza u univerzity (slice model)',
+    description: 'Řemeslná pizzerie s unikátními ingrediencemi',
     segments: [
-      { text: 'Studenti (rychlý oběd)', color: 'blue' },
-      { text: 'Večerní party skupiny', color: 'green' }
+      { text: 'Foodie (IG influenceři)', color: 'blue' },
+      { text: 'Mladí profesionálové', color: 'green' }
     ],
     value: [
-      { text: 'Pizza slice za 40 Kč', color: 'blue' },
-      { text: 'Mega party box 4 pizzy', color: 'green' }
+      { text: 'Limitované edice (měsíční)', color: 'blue' },
+      { text: 'Craft pivo pairing', color: 'green' }
     ],
     channels: [
-      { text: 'Instagram stories', color: 'blue' },
-      { text: 'Univerzitní nástěnky', color: 'blue' },
-      { text: 'WhatsApp objednávky', color: 'green' }
+      { text: 'Instagram (fotky jídla)', color: 'blue' },
+      { text: 'Food bloggeři', color: 'blue' },
+      { text: 'Rezervace online', color: 'green' }
     ],
     relationships: [
-      { text: 'Slevová karta pro studenty', color: 'blue' },
-      { text: 'Party objednávky přes WhatsApp', color: 'green' }
+      { text: 'Exclusive previews (IG)', color: 'blue' },
+      { text: 'Členství (priority booking)', color: 'green' }
     ],
     revenue: [
-      { text: 'Slice prodej (oběd)', color: 'blue', percentage: '50%' },
-      { text: 'Party objednávky (večer)', color: 'green', percentage: '35%' },
-      { text: 'Nápoje', color: 'global', percentage: '15%' }
+      { text: 'Prémiové pizzy', color: 'global', percentage: '60%' },
+      { text: 'Craft pivo', color: 'green', percentage: '25%' },
+      { text: 'Dezerty', color: 'global', percentage: '15%' }
     ],
     activities: [
-      { text: 'Pečení pizzy', color: 'global' },
-      { text: 'Prep work (připravené slicy)', color: 'blue' },
-      { text: 'Party balení', color: 'green' }
+      { text: 'Vývoj nových receptur', color: 'blue' },
+      { text: 'Spolupráce s farmami', color: 'global' },
+      { text: 'Marketing (IG content)', color: 'blue' }
     ],
     resources: [
-      { text: 'Kuchaři (2)', color: 'global' },
-      { text: 'Velká pec (slice ready)', color: 'blue' },
-      { text: 'Malý prostor (hlavně takeaway)', color: 'global' }
+      { text: 'Import pizza pec (Itálie)', color: 'global' },
+      { text: 'Pizzaiolo (certifikát)', color: 'global' },
+      { text: 'Prémiový prostor', color: 'green' }
     ],
     partnerships: [
-      { text: 'Dodavatel surovin', color: 'global' },
-      { text: 'Studentské organizace', color: 'blue' }
+      { text: 'Lokální farmy (bio)', color: 'global' },
+      { text: 'Craft pivovary', color: 'green' },
+      { text: 'Food influenceři', color: 'blue' }
     ],
     costs: [
-      { text: 'Suroviny', percentage: '35%' },
-      { text: 'Nájem (blízko uni)', percentage: '30%' },
-      { text: 'Mzdy', percentage: '35%' }
+      { text: 'Prémiové ingredience', percentage: '40%' },
+      { text: 'Mzdy (vysoká kvalifikace)', percentage: '35%' },
+      { text: 'Nájem (centrum)', percentage: '25%' }
     ],
     insights: {
-      crossSell: 'Nápoje k pizze (15% příjmů, vysoká marže)',
-      revenueBreakdown: 'Oběd slices 50% + Party večer 35% + Nápoje 15% = 2 peak times',
-      keySuccess: 'Lokace u univerzity + nízká cena (40 Kč slice) = denně 200+ studentů',
-      whyItWorks: 'Studenti nemají čas ani peníze = rychlost + nízká cena wins!'
+      crossSell: 'Craft pivo pairing = 25% tržeb (marže 70%!)',
+      revenueBreakdown: 'Pizza 60% + Pivo 25% + Dezerty 15% = vysoké AVG check',
+      keySuccess: '50% vyšší cena pizzy (350 Kč vs 230 Kč standard) = marže 65%',
+      whyItWorks: 'Instagram fotogenická jídla = virální marketing (foodie chtějí sdílet!) + prémiové ceny bez problémů'
     }
   },
 
-  // 🏋️ FITNESS - VERZE A: Prémiové studio
+  // 🏋️ FITNESS - VERZE A: Personal training
   {
     id: 'fitness-a',
     name: 'Fitness',
-    version: 'A - Premium',
+    version: 'A - Personal Training',
     category: 'Fitness',
     emoji: '🏋️',
-    description: 'Prémiové studio s personal trainéry',
+    description: 'Boutique studio s osobními trenéry',
     segments: [
-      { text: 'Profesionálové 30-45 let', color: 'blue' },
-      { text: 'Věkové skupiny 50+ (rehabilitace)', color: 'green' }
+      { text: 'Profesionálové 35-50 let', color: 'blue' },
+      { text: 'Post-rehab klienti', color: 'green' }
     ],
     value: [
-      { text: 'Personal training', color: 'blue' },
-      { text: 'Rehabilitační programy', color: 'green' }
+      { text: '1-on-1 personal training', color: 'blue' },
+      { text: 'Výživový plán', color: 'blue' },
+      { text: 'Rehabilitační péče', color: 'green' }
     ],
     channels: [
       { text: 'LinkedIn (profesionálové)', color: 'blue' },
-      { text: 'Doporučení lékařů', color: 'green' },
-      { text: 'Instagram (transformace)', color: 'blue' }
+      { text: 'Doporučení od lékařů', color: 'green' },
+      { text: 'Google "personal trainer"', color: 'blue' }
     ],
     relationships: [
-      { text: 'Osobní trenér (vždy stejný)', color: 'blue' },
-      { text: 'Měsíční checkup', color: 'blue' }
+      { text: 'Osobní přístup (WhatsApp)', color: 'blue' },
+      { text: 'Měsíční check-ins', color: 'blue' }
     ],
     revenue: [
-      { text: 'Personal training', color: 'blue', percentage: '50%' },
+      { text: 'PT sessions (50%)', color: 'blue', percentage: '50%' },
       { text: 'Měsíční členství', color: 'global', percentage: '30%' },
       { text: 'Suplementy', color: 'global', percentage: '20%' }
     ],
     activities: [
       { text: 'Personal training', color: 'blue' },
-      { text: 'Rehabilitační lekce', color: 'green' },
       { text: 'Výživa konzultace', color: 'global' }
     ],
     resources: [
@@ -386,27 +387,37 @@ const CATEGORIES = [
 ];
 
 export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
+  // 📱 LAYOUT DETECTION - Používáme POUZE šířku okna (ne touch detection!)
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
   const [selectedCategory, setSelectedCategory] = useState('Kavárny');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedVersion, setSelectedVersion] = useState('a');
   const [showInsights, setShowInsights] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
+  // Listen for window resize to update isMobile
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Filter models by category
   const filteredModels = BUSINESS_MODELS.filter(m => m.category === selectedCategory);
-  const currentModel = filteredModels[currentIndex];
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % filteredModels.length);
-    setShowInsights(false);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + filteredModels.length) % filteredModels.length);
-    setShowInsights(false);
-  };
+  
+  // Get current model
+  const currentModel = filteredModels.find(m => m.id.endsWith(`-${selectedVersion}`));
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
-    setCurrentIndex(0);
+    setSelectedVersion('a');
+    setShowInsights(false);
+  };
+
+  const handleVersionChange = (version: string) => {
+    setSelectedVersion(version);
     setShowInsights(false);
   };
 
@@ -422,7 +433,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
         </p>
       </div>
 
-      {/* Category filters - JEN IKONY */}
+      {/* Category filters */}
       <div className="flex gap-3 justify-center flex-wrap">
         {CATEGORIES.map((cat) => (
           <Button
@@ -438,31 +449,61 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
         ))}
       </div>
 
-      {/* Main Canvas Display */}
-      <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
-          {/* Model Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-b-2 border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  {currentModel.emoji} {currentModel.name} - {currentModel.version}
-                </h4>
-                <p className="text-sm text-gray-600">{currentModel.description}</p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowInsights(!showInsights)}
-                className="gap-2"
+      {/* 📱 MOBILE: TABS pro přepínání A/B verzí */}
+      {isMobile && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4">
+          <h4 className="text-sm font-bold text-blue-900 mb-3 text-center">
+            📊 Porovnejte různé strategie:
+          </h4>
+          <Tabs value={selectedVersion} onValueChange={handleVersionChange} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-white border-2 border-blue-300 p-1 rounded-lg shadow-sm">
+              <TabsTrigger 
+                value="a" 
+                className="gap-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-bold py-3"
               >
-                <Info className="w-4 h-4" />
-                {showInsights ? 'Skrýt' : 'Proč to funguje?'}
-              </Button>
-            </div>
-          </div>
+                <span className="text-xs sm:text-sm">
+                  {filteredModels.find(m => m.id.endsWith('-a'))?.version.split(' - ')[1] || 'Verze A'}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="b" 
+                className="gap-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-bold py-3"
+              >
+                <span className="text-xs sm:text-sm">
+                  {filteredModels.find(m => m.id.endsWith('-b'))?.version.split(' - ')[1] || 'Verze B'}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
 
-          {/* Canvas - POUŽITÍ EXISTUJÍCÍHO KOMPONENTY */}
-          <div className="px-4 py-6">
+      {/* 🎨 CANVAS DISPLAY - Společné pro mobile i desktop */}
+      <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
+        {/* Model Header */}
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 border-b-2 border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h4 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                {currentModel.emoji} {currentModel.name} - {currentModel.version}
+              </h4>
+              <p className="text-sm sm:text-base text-gray-600">{currentModel.description}</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowInsights(!showInsights)}
+              className="gap-2 shrink-0"
+            >
+              <Info className="w-4 h-4" />
+              {showInsights ? 'Skrýt' : 'Proč to funguje?'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Canvas - DESKTOP ONLY */}
+        {!isMobile && (
+          <div className="p-4">
             <ReadOnlyBusinessModelCanvas
               key={`${currentModel.name}-${currentModel.version}`}
               sections={[
@@ -479,67 +520,152 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
               highlightSections={['segments', 'value']}
             />
           </div>
+        )}
 
-          {/* Insights Panel */}
-          {showInsights && (
-            <div
-              className="bg-gradient-to-r from-amber-50 to-yellow-50 border-t-2 border-amber-200 p-6"
-            >
-              <h5 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Info className="w-5 h-5 text-amber-600" />
-                💡 Proč tento model funguje?
+        {/* Mobile Cards - klíčové informace v kartách */}
+        {isMobile && (
+          <div className="px-4 py-6 space-y-4">
+            {/* Segmenty zákazníků */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-xl p-4">
+              <h5 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                👥 Segmenty zákazníků
               </h5>
-              <div className="space-y-3">
-                <div className="bg-white border border-amber-200 rounded-lg p-4">
-                  <p className="text-sm font-bold text-amber-900 mb-2">🎯 Klíč k úspěchu:</p>
-                  <p className="text-sm text-amber-800">{currentModel.insights.keySuccess}</p>
-                </div>
-                <div className="bg-white border border-amber-200 rounded-lg p-4">
-                  <p className="text-sm font-bold text-amber-900 mb-2">🧠 Proč to funguje:</p>
-                  <p className="text-sm text-amber-800">{currentModel.insights.whyItWorks}</p>
-                </div>
-                <div className="bg-white border border-amber-200 rounded-lg p-4">
-                  <p className="text-sm font-bold text-amber-900 mb-2">💰 Cross-sell strategie:</p>
-                  <p className="text-sm text-amber-800">{currentModel.insights.crossSell}</p>
-                </div>
-                <div className="bg-white border border-amber-200 rounded-lg p-4">
-                  <p className="text-sm font-bold text-amber-900 mb-2">📊 Struktura příjmů:</p>
-                  <p className="text-sm text-amber-800">{currentModel.insights.revenueBreakdown}</p>
-                </div>
+              <div className="space-y-2">
+                {currentModel.segments.map((seg, idx) => (
+                  <div key={idx} className="bg-white rounded-lg p-3 shadow-sm">
+                    <p className="text-sm text-gray-800">{seg.text}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
-        </div>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <Button
-          onClick={handlePrev}
-          variant="outline"
-          className="gap-2"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Předchozí
-        </Button>
+            {/* Hodnotová nabídka */}
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-300 rounded-xl p-4">
+              <h5 className="font-bold text-purple-900 mb-3 flex items-center gap-2">
+                💎 Hodnotová nabídka
+              </h5>
+              <div className="space-y-2">
+                {currentModel.value.map((val, idx) => (
+                  <div key={idx} className="bg-white rounded-lg p-3 shadow-sm">
+                    <p className="text-sm text-gray-800">{val.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        <div className="text-center">
-          <p className="text-sm font-bold text-gray-900">
-            {currentIndex + 1} / {filteredModels.length}
-          </p>
-          <p className="text-xs text-gray-500">
-            {currentModel.version}
-          </p>
-        </div>
+            {/* Příjmy */}
+            <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-xl p-4">
+              <h5 className="font-bold text-green-900 mb-3 flex items-center gap-2">
+                💰 Zdroje příjmů
+              </h5>
+              <div className="space-y-2">
+                {currentModel.revenue.map((rev, idx) => (
+                  <div key={idx} className="bg-white rounded-lg p-3 shadow-sm flex items-center justify-between">
+                    <p className="text-sm text-gray-800">{rev.text}</p>
+                    {rev.percentage && (
+                      <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded">
+                        {rev.percentage}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        <Button
-          onClick={handleNext}
-          variant="outline"
-          className="gap-2"
-        >
-          Další
-          <ChevronRight className="w-4 h-4" />
-        </Button>
+            {/* Klíčové aktivity */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-300 rounded-xl p-4">
+              <h5 className="font-bold text-orange-900 mb-3 flex items-center gap-2">
+                🎯 Klíčové aktivity
+              </h5>
+              <div className="space-y-2">
+                {currentModel.activities.map((act, idx) => (
+                  <div key={idx} className="bg-white rounded-lg p-3 shadow-sm">
+                    <p className="text-sm text-gray-800">{act.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Insights Panel */}
+        {showInsights && (
+          <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-t-2 border-amber-200 p-4 sm:p-6">
+            <h5 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Info className="w-5 h-5 text-amber-600" />
+              💡 Proč tento model funguje?
+            </h5>
+            <div className="space-y-3">
+              <div className="bg-white border border-amber-200 rounded-lg p-3 sm:p-4">
+                <p className="text-sm font-bold text-amber-900 mb-2">🎯 Klíč k úspěchu:</p>
+                <p className="text-sm text-amber-800">{currentModel.insights.keySuccess}</p>
+              </div>
+              <div className="bg-white border border-amber-200 rounded-lg p-3 sm:p-4">
+                <p className="text-sm font-bold text-amber-900 mb-2">🧠 Proč to funguje:</p>
+                <p className="text-sm text-amber-800">{currentModel.insights.whyItWorks}</p>
+              </div>
+              <div className="bg-white border border-amber-200 rounded-lg p-3 sm:p-4">
+                <p className="text-sm font-bold text-amber-900 mb-2">💰 Cross-sell strategie:</p>
+                <p className="text-sm text-amber-800">{currentModel.insights.crossSell}</p>
+              </div>
+              <div className="bg-white border border-amber-200 rounded-lg p-3 sm:p-4">
+                <p className="text-sm font-bold text-amber-900 mb-2">📊 Struktura příjmů:</p>
+                <p className="text-sm text-amber-800">{currentModel.insights.revenueBreakdown}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* 🖥️ DESKTOP ONLY: VERSION SELECTOR BUTTONS dole pod canvasem */}
+      {!isMobile && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6">
+          <h4 className="font-bold text-blue-900 mb-4 text-center text-lg">
+            📊 Porovnejte různé strategie ve stejném odvětví:
+          </h4>
+          <p className="text-sm text-blue-700 text-center mb-6">
+            Každý model funguje jinak - všimněte si rozdílů v segmentech, hodnotě a příjmech!
+          </p>
+          
+          {/* Version Buttons */}
+          <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+            {filteredModels.map((model) => {
+              const version = model.id.endsWith('-a') ? 'a' : 'b';
+              const isActive = selectedVersion === version;
+              
+              return (
+                <button
+                  key={model.id}
+                  onClick={() => handleVersionChange(version)}
+                  className={`
+                    relative p-6 rounded-xl border-2 transition-all
+                    ${isActive 
+                      ? 'bg-blue-500 border-blue-600 text-white shadow-lg scale-105' 
+                      : 'bg-white border-blue-300 text-gray-900 hover:border-blue-400 hover:shadow-md'
+                    }
+                  `}
+                >
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                  )}
+                  
+                  <div className="text-left">
+                    <h5 className={`font-bold mb-2 ${isActive ? 'text-white' : 'text-gray-900'}`}>
+                      {model.version}
+                    </h5>
+                    <p className={`text-sm ${isActive ? 'text-blue-100' : 'text-gray-600'}`}>
+                      {model.description}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Vysvětlení zvýraznění */}
       <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 text-center">
@@ -605,43 +731,6 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-// Helper component for canvas sections
-function CanvasSection({ 
-  title, 
-  items, 
-  getColorClass, 
-  highlight = false,
-  highlightColor = 'blue',
-  fullHeight = false
-}: { 
-  title: string; 
-  items: any[]; 
-  getColorClass: (color: string) => string;
-  highlight?: boolean;
-  highlightColor?: string;
-  fullHeight?: boolean;
-}) {
-  const ringClass = highlightColor === 'blue' ? 'ring-2 ring-blue-400' : 'ring-2 ring-green-400';
-  
-  return (
-    <div className={`${highlight ? ringClass : ''} bg-gray-50 border-2 border-gray-200 rounded-lg p-3 ${fullHeight ? 'h-full' : ''}`}>
-      <h5 className="text-xs font-bold text-gray-700 mb-2">{title}</h5>
-      <div className="space-y-1.5">
-        {items.map((item, idx) => (
-          <div
-            key={idx}
-            className={`text-xs px-2 py-1.5 rounded border ${getColorClass(item.color || 'white')}`}
-          >
-            <div className="font-medium leading-snug">{item.text || item}</div>
-            {item.price && <div className="text-[10px] opacity-75 mt-0.5">{item.price}</div>}
-            {item.percentage && <div className="text-[10px] opacity-75 font-bold mt-0.5">{item.percentage}</div>}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { CheckCircle, Lock, ChevronRight, BookOpen, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
+import { useOrientation } from "../lib/useOrientation";
 
 interface Module {
   id: number;
@@ -27,6 +28,8 @@ export function MobileSidebarContent({
   onShowDashboard,
   showingDashboard = false
 }: MobileSidebarContentProps) {
+  const orientation = useOrientation();
+  const isLandscape = orientation === 'landscape';
   // Calculate progress
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
   const completedCount = completedLessons.size;
@@ -40,84 +43,92 @@ export function MobileSidebarContent({
 
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-blue-600">
-        <div className="flex items-center gap-3 text-white mb-3">
-          <BookOpen className="w-6 h-6" />
+      {/* Header - Kompaktnější v landscape */}
+      <div className={`border-b border-gray-200 bg-gradient-to-r from-blue-500 to-blue-600 ${
+        isLandscape ? 'p-2' : 'p-4'
+      }`}>
+        <div className={`flex items-center gap-2 text-white ${isLandscape ? 'mb-1' : 'mb-3'}`}>
+          <BookOpen className={isLandscape ? 'w-4 h-4' : 'w-6 h-6'} />
           <div className="flex-1">
-            <h2 className="font-bold">Podnikatelská Čtvrtka</h2>
-            <p className="text-xs text-blue-100">Navigace kurzu</p>
+            <h2 className={`font-bold ${isLandscape ? 'text-sm' : ''}`}>Podnikatelská Čtvrtka</h2>
+            {!isLandscape && <p className="text-xs text-blue-100">Navigace kurzu</p>}
           </div>
         </div>
         
         {/* Progress */}
-        <div className="bg-white/20 rounded-full h-2 overflow-hidden">
+        <div className={`bg-white/20 rounded-full overflow-hidden ${isLandscape ? 'h-1' : 'h-2'}`}>
           <div
             className="h-full bg-white transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
-        <p className="text-xs text-blue-100 mt-1">
+        <p className={`text-blue-100 ${isLandscape ? 'text-[10px] mt-0.5' : 'text-xs mt-1'}`}>
           {completedCount}/{totalLessons} lekcí ({progressPercent}%)
         </p>
       </div>
 
-      {/* Dashboard Button */}
-      <div className="p-3 border-b border-gray-200">
+      {/* Dashboard Button - Kompaktnější v landscape */}
+      <div className={`border-b border-gray-200 ${isLandscape ? 'p-1.5' : 'p-3'}`}>
         <button
           onClick={onShowDashboard}
-          className={`w-full flex items-center gap-2 p-3 rounded-lg transition-all duration-200 ${
+          className={`w-full flex items-center gap-2 rounded-lg transition-all duration-200 ${
+            isLandscape ? 'p-1.5' : 'p-3'
+          } ${
             showingDashboard 
               ? 'bg-blue-50 border-2 border-blue-300 text-blue-700' 
               : 'hover:bg-blue-50 hover:border-blue-200 border-2 border-transparent'
           }`}
         >
-          <LayoutDashboard className="w-4 h-4" />
-          <span className="font-medium">📊 Dashboard</span>
+          <LayoutDashboard className={isLandscape ? 'w-3 h-3' : 'w-4 h-4'} />
+          <span className={`font-medium ${isLandscape ? 'text-xs' : ''}`}>📊 Dashboard</span>
         </button>
       </div>
 
-      {/* Modules & Lessons - Scrollable */}
-      <div className="flex-1 overflow-y-auto p-3">
-        <div className="space-y-4">
+      {/* Modules & Lessons - Scrollable, kompaktnější v landscape */}
+      <div className={`flex-1 overflow-y-auto ${isLandscape ? 'p-1.5' : 'p-3'}`}>
+        <div className={isLandscape ? 'space-y-2' : 'space-y-4'}>
           {modules.map((module) => {
             const moduleCompleted = module.lessons.every(l => completedLessons.has(l.id));
             const moduleLessonsCompleted = module.lessons.filter(l => completedLessons.has(l.id)).length;
             const isCurrentModule = module.id === currentModuleId;
 
             return (
-              <div key={module.id} className="space-y-2">
-                {/* Module Header */}
-                <div className={`p-3 rounded-lg ${
+              <div key={module.id} className={isLandscape ? 'space-y-1' : 'space-y-2'}>
+                {/* Module Header - Kompaktnější v landscape */}
+                <div className={`rounded-lg ${
+                  isLandscape ? 'p-1.5' : 'p-3'
+                } ${
                   isCurrentModule 
                     ? 'bg-blue-50 border-2 border-blue-300' 
                     : moduleCompleted 
                     ? 'bg-green-50 border border-green-200'
                     : 'bg-gray-50 border border-gray-200'
                 }`}>
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center ${isLandscape ? 'gap-1.5' : 'gap-2'}`}>
                     {moduleCompleted ? (
-                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <CheckCircle className={`text-green-600 flex-shrink-0 ${isLandscape ? 'w-3 h-3' : 'w-4 h-4'}`} />
                     ) : moduleLessonsCompleted > 0 ? (
-                      <div className="w-4 h-4 rounded-full border-2 border-blue-500 flex-shrink-0" />
+                      <div className={`rounded-full border-2 border-blue-500 flex-shrink-0 ${isLandscape ? 'w-3 h-3' : 'w-4 h-4'}`} />
                     ) : (
-                      <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <Lock className={`text-gray-400 flex-shrink-0 ${isLandscape ? 'w-3 h-3' : 'w-4 h-4'}`} />
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className={`text-sm font-bold ${
+                      <h3 className={`font-bold ${
+                        isLandscape ? 'text-xs' : 'text-sm'
+                      } ${
                         isCurrentModule ? 'text-blue-900' : 'text-gray-900'
                       }`}>
                         Modul {module.id}
                       </h3>
-                      <p className="text-xs text-gray-600 truncate">
+                      <p className={`text-gray-600 truncate ${isLandscape ? 'text-[10px]' : 'text-xs'}`}>
                         {moduleLessonsCompleted}/{module.lessons.length} lekcí
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Lessons */}
-                <div className="ml-2 space-y-1">
+                {/* Lessons - Kompaktnější v landscape */}
+                <div className={isLandscape ? 'ml-1 space-y-0.5' : 'ml-2 space-y-1'}>
                   {module.lessons.map((lesson, lessonIndex) => {
                     const isCompleted = completedLessons.has(lesson.id);
                     const isCurrent = !showingDashboard && isCurrentModule && lessonIndex === currentLessonIndex;
@@ -140,7 +151,9 @@ export function MobileSidebarContent({
                         key={lesson.id}
                         onClick={() => !isLocked && onSelectLesson(module.id, lessonIndex)}
                         disabled={isLocked}
-                        className={`w-full flex items-center gap-2 p-2 rounded text-left transition-all ${
+                        className={`w-full flex items-center rounded text-left transition-all ${
+                          isLandscape ? 'gap-1.5 p-1' : 'gap-2 p-2'
+                        } ${
                           isLocked
                             ? 'opacity-50 cursor-not-allowed'
                             : isCurrent
@@ -150,7 +163,9 @@ export function MobileSidebarContent({
                             : 'hover:bg-gray-100'
                         }`}
                       >
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-xs ${
+                        <div className={`rounded-full flex items-center justify-center flex-shrink-0 ${
+                          isLandscape ? 'w-4 h-4 text-[10px]' : 'w-5 h-5 text-xs'
+                        } ${
                           isLocked
                             ? 'bg-gray-300 text-gray-500'
                             : isCompleted 
@@ -160,25 +175,27 @@ export function MobileSidebarContent({
                             : 'bg-gray-200 text-gray-600'
                         }`}>
                           {isLocked ? (
-                            <Lock className="w-3 h-3" />
+                            <Lock className={isLandscape ? 'w-2 h-2' : 'w-3 h-3'} />
                           ) : isCompleted ? (
-                            <CheckCircle className="w-3 h-3" />
+                            <CheckCircle className={isLandscape ? 'w-2 h-2' : 'w-3 h-3'} />
                           ) : (
                             <span>{lessonIndex + 1}</span>
                           )}
                         </div>
                         
-                        <span className={`text-xs flex-1 min-w-0 truncate ${
+                        <span className={`flex-1 min-w-0 truncate ${
+                          isLandscape ? 'text-[10px]' : 'text-xs'
+                        } ${
                           isLocked ? 'text-gray-400' : isCurrent ? 'font-bold text-blue-900' : 'text-gray-700'
                         }`}>
                           {lesson.title}
                         </span>
 
                         {isLocked && (
-                          <Lock className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                          <Lock className={`text-gray-400 flex-shrink-0 ${isLandscape ? 'w-2 h-2' : 'w-3 h-3'}`} />
                         )}
                         {isCurrent && !isLocked && (
-                          <ChevronRight className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                          <ChevronRight className={`text-blue-600 flex-shrink-0 ${isLandscape ? 'w-3 h-3' : 'w-4 h-4'}`} />
                         )}
                       </button>
                     );

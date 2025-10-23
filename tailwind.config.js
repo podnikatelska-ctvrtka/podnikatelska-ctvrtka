@@ -9,6 +9,9 @@ export default {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        '7xl': '1280px', // 🔧 FORCE OVERRIDE - Tailwind default is 80rem = 1280px
+      },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',

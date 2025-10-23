@@ -154,7 +154,7 @@ const VALIDATION_RULES: ValidationRule[] = [
   {
     id: 'value-numbers',
     title: '💰 Finanční data',
-    description: 'Příjmy a náklady musí mít čísla',
+    description: 'Příjmy a náklady musí mít č��sla',
     check: (data) => {
       const revenue = data.revenue || [];
       const costs = data.costs || [];
@@ -690,7 +690,7 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                     Toto budeme validovat podle osvědčených pravidel
                   </p>
                 </div>
-                <div className="bg-white rounded-xl p-4 shadow-lg border-2 border-blue-200">
+                <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-blue-200">
                   <BusinessModelCanvasSimple
                     userId={userId}
                     hideTips={true}
@@ -846,9 +846,10 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                     <Button
                       onClick={onNavigateNext}
                       size="lg"
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-sm sm:text-base"
                     >
-                      Pokračovat na další lekci ��
+                      <span className="hidden sm:inline">Pokračovat na další lekci →</span>
+                      <span className="sm:hidden">Další →</span>
                     </Button>
                   )}
                   <Button

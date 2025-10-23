@@ -1,0 +1,10 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="64" fill="#3B82F6"/>
+  
+  <!-- Icon Letter P + Č -->
+  <text x="256" y="320" font-family="Arial, sans-serif" font-size="280" font-weight="bold" fill="white" text-anchor="middle">PČ</text>
+  
+  <!-- Subtle accent -->
+  <circle cx="400" cy="112" r="48" fill="#60A5FA" opacity="0.6"/>
+</svg>

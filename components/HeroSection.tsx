@@ -1,14 +1,21 @@
-import { CheckCircle, Target, Users, Zap, ChevronDown, X } from "lucide-react";
+import { CheckCircle, Map, Users, Compass, ChevronDown, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
 import { QuickEmailCaptureModal } from "./QuickEmailCaptureModal";
+import { getRemainingSpots } from "../lib/scarcity";
 
 export function HeroSection() {
   const [activeCanvasBlock, setActiveCanvasBlock] = useState('value');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileTooltip, setMobileTooltip] = useState<string | null>(null);
+  const [remainingSpots, setRemainingSpots] = useState(50);
+  
+  // Update spots on mount
+  useEffect(() => {
+    setRemainingSpots(getRemainingSpots());
+  }, []);
 
   const tooltipData = {
     'partners': {
@@ -115,7 +122,7 @@ export function HeroSection() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4 }}
                   >
-                    <strong>Za 90 minut sestavte kompletní strategii</strong> na jednu čtvrtku.
+                    Za 90 minut vyplníte Čtvrtku krok za krokem a <strong>víte přesně, co dělat dál.</strong>
                   </motion.p>
                   
                   <motion.p 
@@ -124,7 +131,9 @@ export function HeroSection() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.45 }}
                   >
-                    <span className="text-indigo-600 font-medium">Ideální pro e-shopy, restaurace, kadeřnice a služby.</span> Vyřešte nedostatek zákazníků a chaotické podnikání bez složitých teorií.
+                    <span className="text-indigo-600 font-medium">Pro každého podnikatele – od e-shopů po freelancery a služby.</span>
+                    <br className="hidden sm:block" />
+                    Žádná teorie – vyplňujete přímo v kurzu a odcházíte s konkrétním výsledkem.
                   </motion.p>
                 </div>
               </div>
@@ -136,21 +145,21 @@ export function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, staggerChildren: 0.1 }}
               >
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg">
+                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
                   <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-700">Jasná strategie za 90 minut</span>
+                  <span className="text-gray-700">Čtvrtka za 90 minut</span>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg">
-                  <Target className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                  <span className="text-gray-700">Přesné zacílení zákazníků</span>
+                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
+                  <Map className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                  <span className="text-gray-700">Mapa celého byznysu</span>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg">
+                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
                   <Users className="w-5 h-5 text-purple-500 flex-shrink-0" />
-                  <span className="text-gray-700">Stabilní tok zákazníků</span>
+                  <span className="text-gray-700">Profil ideálního zákazníka</span>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg">
-                  <Zap className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                  <span className="text-gray-700">Konkurenční výhoda</span>
+                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
+                  <Compass className="w-5 h-5 text-indigo-500 flex-shrink-0" />
+                  <span className="text-gray-700">Víte přesně, co dělat</span>
                 </div>
               </motion.div>
 
@@ -181,11 +190,11 @@ export function HeroSection() {
                     className="w-full"
                     onClick={() => setIsModalOpen(true)}
                   >
-                    Chci ten list papíru
+                    Chci slevu 40% (zbývá {remainingSpots} míst)
                   </EnhancedCTA>
                 </TouchFeedback>
                 <p className="text-xs text-gray-600 mt-2 font-medium">
-                  🎁 Začni 3-denním mini kurzem ZDARMA
+                  ⏰ Sleva platí 24 hodin od registrace
                 </p>
               </motion.div>
 
@@ -201,13 +210,13 @@ export function HeroSection() {
               {/* Moderní interaktivní čtvrtka */}
               <div className="text-center mb-8">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  Toto je Čtvrtka, kterou se naučíte vyplnit
+                  Těchto 9 bloků vyplníte krok za krokem
                 </h3>
                 <p className="text-sm text-gray-600 hidden md:block">
-                  Klikněte na jakýkoli blok a zjistěte, co vám každý segment přinese
+                  Klikněte na políčko a zjistěte, co každá část Čtvrtky řeší
                 </p>
                 <p className="text-sm text-gray-600 md:hidden">
-                  Klikněte na blok a zjistěte, co vám přinese
+                  Klikněte a zjistěte, co políčko řeší
                 </p>
               </div>
 
@@ -325,22 +334,22 @@ export function HeroSection() {
               >
                 {/* Desktop verze */}
                 <p className="text-sm text-gray-600 mb-2 hidden md:block">
-                  <span className="font-semibold text-indigo-600">9 stavebních prvků byznysu</span>
-                  <span> na jedné čtvrtce - kompletní mapa pro úspěšné podnikání</span>
+                  <span className="font-semibold text-indigo-600">Podnikatelská Čtvrtka</span>
+                  <span> – vyplníte 9 políček a máte kompletní mapu byznysu</span>
                 </p>
                 <div className="items-center justify-center gap-2 text-xs text-gray-500 hidden md:flex">
                   <span>🎯</span>
-                  <span>Kompletní mapa byznysu • 90 minut práce • Jasné výsledky</span>
+                  <span>Krok za krokem • 90 minut práce • Vyplněná Čtvrtka v ruce</span>
                 </div>
 
                 {/* Mobilní verze - kratší text */}
                 <p className="text-sm text-gray-600 mb-2 md:hidden">
-                  <span className="font-semibold text-indigo-600">9 prvků úspěšného byznysu</span>
-                  <span> na jedné čtvrtce</span>
+                  <span className="font-semibold text-indigo-600">Podnikatelská Čtvrtka</span>
+                  <span> – 9 políček k vyplnění</span>
                 </p>
                 <div className="flex items-center justify-center gap-2 text-xs text-gray-500 md:hidden">
                   <span>🎯</span>
-                  <span>90 minut • Jasná strategie • Více zákazníků</span>
+                  <span>90 minut • Vyplněná Čtvrtka • Jasný plán</span>
                 </div>
               </motion.div>
 

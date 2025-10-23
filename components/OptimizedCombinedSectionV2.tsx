@@ -47,7 +47,7 @@ export function OptimizedCombinedSectionV2() {
     },
     {
       icon: <Clock className="w-6 h-6" />,
-      title: "Jasnost okamžitě, výsledky za 4-6 týdnů",
+      title: "Jasnost okamžitě, první výsledky za 1-2 týdny",
       description: "90 minut práce, celoživotní strategický nástroj"
     }
   ];
@@ -161,7 +161,7 @@ export function OptimizedCombinedSectionV2() {
             {/* What You Get */}
             <div className="mb-8 md:mb-10">
               <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-4">
-                Co přesně získáte za <span className="text-blue-600">víkend</span>
+                Co přesně získáte za <span className="text-blue-600">90 minut</span>
               </h3>
               <p className="text-gray-600 text-base md:text-lg mb-5 md:mb-6">
                 Jedno odpoledne, které změní směr vašeho byznysu

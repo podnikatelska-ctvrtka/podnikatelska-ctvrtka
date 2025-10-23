@@ -44,14 +44,15 @@ export function ReadOnlyBusinessModelCanvas({ sections, highlightSections = ['se
         key={sectionId}
         className={`bg-gray-50 border-2 ${
           isHighlighted ? 'border-blue-400 ring-2 ring-blue-300' : 'border-gray-300'
-        } rounded-lg p-3 overflow-y-auto`}
+        } rounded-lg p-2 flex flex-col overflow-visible`}
         style={{ gridArea }}
       >
-        <h3 className="text-xs font-bold text-gray-700 mb-3 sticky top-0 bg-gray-50 pb-1">
+        <h3 className="text-xs font-bold text-gray-700 mb-2 pt-2 flex-shrink-0">
           {title}
         </h3>
-        <div className="flex flex-wrap gap-2 items-start content-start justify-start">
-          {section.items.map((item, idx) => {
+        <div className="overflow-visible">
+          <div className="flex flex-wrap gap-2 items-start content-start justify-start">
+            {section.items.map((item, idx) => {
             const colorName = hexToColorName(item.color as any);
             const colorStyle = STICKY_COLORS[colorName] || STICKY_COLORS.blue;
             
@@ -63,33 +64,36 @@ export function ReadOnlyBusinessModelCanvas({ sections, highlightSections = ['se
             return (
               <div
                 key={idx}
-                className={`${colorStyle.bg} ${colorStyle.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-2 rounded shadow-md hover:shadow-lg hover:scale-105 transition-all flex items-center justify-center relative`}
+                className={`${colorStyle.bg} ${colorStyle.border} ${isGlobalItem ? 'border-dashed' : 'border-2'} p-2 rounded shadow-md hover:shadow-lg transition-all flex items-center justify-center relative flex-shrink-0`}
                 style={{
                   width: '85px',
                   minHeight: '85px',
-                  transform: `rotate(${idx % 2 === 0 ? 1 : -1}deg)`,
+                  transform: `rotate(${idx % 2 === 0 ? 2 : -2}deg)`,
                 }}
                 title={isGlobalItem ? '🌐 Pro celý byznys model' : ''}
               >
                 {isGlobalItem && (
                   <span className="absolute top-0.5 right-0.5 text-[9px] opacity-60">🌐</span>
                 )}
-                <p className={`text-[12px] ${colorStyle.text} leading-tight font-medium text-center break-words`}>
+                <p className={`text-xs ${colorStyle.text} leading-tight text-center break-words font-medium`}>
                   {item.text}
-                  {/* ❌ SKRYTO: Cena a % - galerie je jen pro inspiraci, ne konkrétní čísla */}
                 </p>
+                {/* ❌ HODNOTY SKRYTÉ - galerie je jen pro inspiraci, ne konkrétní čísla! */}
+                {/* {item.price && <div className="text-[10px] font-bold mt-1">{item.price}</div>} */}
+                {/* {item.percentage && <div className="text-[10px] font-bold mt-1">{item.percentage}</div>} */}
               </div>
             );
           })}
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 p-4 animate-in fade-in duration-500">
+    <div className="bg-white rounded-lg border-2 border-gray-200 p-3 animate-in fade-in duration-500">
       <div
-        className="grid gap-3"
+        className="grid gap-4"
         style={{
           gridTemplateAreas: `
             "partners partners activities activities value value relationships relationships segments segments"
@@ -97,7 +101,7 @@ export function ReadOnlyBusinessModelCanvas({ sections, highlightSections = ['se
             "costs costs costs costs costs revenue revenue revenue revenue revenue"
           `,
           gridTemplateColumns: "repeat(10, 1fr)",
-          gridTemplateRows: "repeat(3, minmax(220px, auto))",
+          gridTemplateRows: "minmax(220px, auto) minmax(220px, auto) minmax(180px, auto)", // Flexibilní výšky - expandují s obsahem
         }}
       >
         {renderSection("partners", "🤝 Klíčová partnerství", "partners")}

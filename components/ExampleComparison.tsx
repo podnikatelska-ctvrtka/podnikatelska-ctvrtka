@@ -7,11 +7,12 @@ interface ExampleComparisonProps {
 
 export function ExampleComparison({ good, bad }: ExampleComparisonProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="font-bold text-gray-900 mb-6 text-lg">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+      <h3 className="font-bold text-gray-900 mb-4 sm:mb-6 text-lg">
         📝 Příklady v praxi
       </h3>
       
+      {/* ✅ TWO COLUMN GRID - good/bad side by side on desktop */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Good examples */}
         <div className="space-y-4">
@@ -29,7 +30,7 @@ export function ExampleComparison({ good, bad }: ExampleComparisonProps) {
                 key={i}
                 className="bg-green-50 border border-green-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
-                <p className="text-sm text-green-900 leading-relaxed">{example}</p>
+                <p className="text-sm text-green-900 leading-normal">{example}</p>
               </div>
             ))}
           </div>
@@ -51,7 +52,7 @@ export function ExampleComparison({ good, bad }: ExampleComparisonProps) {
                 key={i}
                 className="bg-red-50 border border-red-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
-                <p className="text-sm text-red-900 leading-relaxed">{example}</p>
+                <p className="text-sm text-red-900 leading-normal">{example}</p>
               </div>
             ))}
           </div>

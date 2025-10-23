@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
+import * as Sentry from '@sentry/react';
 
 interface Props {
   children: ReactNode;
@@ -11,20 +12,34 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  eventId: string | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, eventId: null };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error, eventId: null };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    // 🚨 POŠLI DO SENTRY
+    const eventId = Sentry.captureException(error, {
+      contexts: {
+        react: {
+          componentStack: errorInfo.componentStack,
+        },
+      },
+    });
+    
+    this.setState({ eventId });
+    
+    console.log('🚨 Error sent to Sentry. Event ID:', eventId);
   }
 
   handleReset = () => {
@@ -58,9 +73,15 @@ export class ErrorBoundary extends Component<Props, State> {
                 Něco se pokazilo
               </h2>
               
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-4">
                 Aplikace narazila na neočekávanou chybu. Zkuste stránku obnovit.
               </p>
+              
+              {this.state.eventId && (
+                <p className="text-sm text-gray-500 mb-6">
+                  Chyba byla automaticky nahlášena. ID: {this.state.eventId.substring(0, 8)}
+                </p>
+              )}
               
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <div className="mb-6 p-4 bg-red-50 rounded-lg text-left">
@@ -87,6 +108,15 @@ export class ErrorBoundary extends Component<Props, State> {
                   Obnovit stránku
                 </Button>
               </div>
+              
+              {this.state.eventId && (
+                <button
+                  onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId || undefined })}
+                  className="mt-4 text-sm text-blue-600 hover:text-blue-700 underline"
+                >
+                  Popsat co se stalo
+                </button>
+              )}
             </div>
           </motion.div>
         </div>

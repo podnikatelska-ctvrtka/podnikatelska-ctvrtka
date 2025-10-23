@@ -17,6 +17,7 @@ import {
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
+import { trackCourseEvent, trackError } from "../lib/sentry";
 
 interface BusinessActionPlanProps {
   userId: string;
@@ -60,12 +61,15 @@ interface ProductAnalysis {
 interface ActionItem {
   id: string;
   text: string;
+  deadline?: string; // e.g. "7 dní", "14 dní", "30 dní"
+  tip?: string; // Konkrétní tip jak na to
   lessonId?: number;
   lessonName?: string;
 }
 
 export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refreshTrigger, onAchievementUnlocked }: BusinessActionPlanProps) {
   const [loading, setLoading] = useState(true);
+  
   const [segments, setSegments] = useState<SegmentEconomics[]>([]);
   const [topSegment, setTopSegment] = useState<SegmentEconomics | null>(null);
   const [topJobs, setTopJobs] = useState<TopPriority[]>([]);
@@ -124,6 +128,9 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
 
   useEffect(() => {
     loadData();
+    
+    // 🏆 ACHIEVEMENT 'action-plan-unlocked' se triggeruje při dokončení FIT Validatoru (Lekce 16)
+    // Ne zde, protože Akční plán je dostupný rovnou v sidebaru (není "první otevření")
   }, [userId]);
 
   // 🔄 Auto-refresh když se změní refreshTrigger (při návratu z lekce)
@@ -158,6 +165,23 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
       await new Promise(resolve => setTimeout(resolve, 300));
       
       console.log('🔄 BusinessActionPlan: Loading data for userId:', userId);
+      
+      // 🎯 NEW: Load experience level
+      try {
+        const { data: experienceData } = await supabase
+          .from('user_canvas_data')
+          .select('content')
+          .eq('user_id', userId)
+          .eq('section_key', 'experience_level')
+          .single();
+        
+        if (experienceData?.content?.level) {
+          setExperienceLevel(experienceData.content.level);
+          console.log('📊 Loaded experience level:', experienceData.content.level);
+        }
+      } catch (err) {
+        console.log('⚠️ No experience level saved, defaulting to experienced');
+      }
       
       // ✅ DEFINUJ PROMĚNNÉ NA ZAČÁTKU - aby byly v scope pro celou funkci!
       let rankings: SegmentRanking[] = [];
@@ -399,7 +423,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
 
       // 🔍 DEBUG: Check prerequisites (MIMO if revenueData blok!)
       try {
-        console.log('🔍🔍🔍 STARTING PRODUCT ANALYSIS (OUTSIDE REVENUE BLOCK) 🔍🔍����');
+        console.log('🔍🔍🔍 STARTING PRODUCT ANALYSIS (OUTSIDE REVENUE BLOCK) 🔍🔍🔍');
         console.log('Rankings available:', rankings);
         console.log('Value Map Data available:', valueMapData);
         console.log('🔍 Product Analysis Prerequisites:', {
@@ -626,83 +650,87 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
 
         setProducts(productAnalysis);
         console.log('📦 setProducts called with:', productAnalysis);
+        
+        // 🚨 SENTRY: Track successful action plan generation
+        trackCourseEvent.actionPlanComplete(userId);
       } else {
         console.log('❌ Product analysis skipped - no value maps or rankings');
       }
       } catch (error) {
         console.error('💥 CRASH in product analysis:', error);
+        
+        // 🚨 SENTRY: Track error
+        trackError.loadError('BusinessActionPlan', error as Error, {
+          userId,
+        });
       }
 
-      // Generate action items - konkrétní akce (TAKY MIMO revenue blok!)
+      // Generate action items - JEDNODUCHÉ KROKY (TAKY MIMO revenue blok!)
       if (revenueData?.content && costsData?.content) {
         const actions: ActionItem[] = [];
-        console.log('🎯 Generating actions...');
+        console.log('🎯 Generating simple action items...');
         
-        // Načti produkty z právě vytvořené productAnalysis (ne ze state!)
-        const currentProducts = products.length > 0 ? products : [];
-        console.log('📦 Current products for actions:', currentProducts);
+        // Načti top segment z rankings
+        const hasTopSegment = rankings.length > 0;
+        const topSegmentName = hasTopSegment ? rankings[0].name : '';
+        const topSegmentRevenue = hasTopSegment ? Math.round(rankings[0].potentialRevenue) : 0;
         
-        // Akce #1: Focus na nejlepší produkt
-        const topProduct = currentProducts[0];
-        if (topProduct && topProduct.status === 'good') {
+        // Načti top priority z FIT data
+        const hasTopPains = sortedPains.length > 0;
+        const hasTopGains = sortedGains.length > 0;
+        const hasTopJobs = sortedJobs.length > 0;
+        
+        // 📋 AKCE #1: Vylepšete produkt pro TOP pains
+        if (hasTopPains) {
           actions.push({
-            id: 'focus-product',
-            text: `Zaměřte se na: ${topProduct.name} - nejvyšší potenciál!`
+            id: 'improve-pain-relievers',
+            text: 'Řešte TOP obtíže zákazníků',
+            deadline: '14 dní',
+            tip: `🎯 Zaměřte se na tyto problémy zákazníků:\n• ${sortedPains[0].text} (${sortedPains[0].percentage}%)\n${sortedPains[1] ? `• ${sortedPains[1].text} (${sortedPains[1].percentage}%)\n` : ''}${sortedPains[2] ? `• ${sortedPains[2].text} (${sortedPains[2].percentage}%)` : ''}\n\nPřidejte funkce nebo upravte produkt aby tyto problémy lépe řešil.`
           });
-        } else if (fitValue) {
+        }
+        
+        // ✨ AKCE #2: Zdůrazněte TOP gains v komunikaci
+        if (hasTopGains) {
           actions.push({
-            id: 'focus-value',
-            text: `Vylepšete produkt: ${fitValue} (pro ${fitSegment})`
+            id: 'highlight-gain-creators',
+            text: 'Zdůrazněte TOP přínosy v marketingu',
+            deadline: '14 dní',
+            tip: `💬 Komunikujte tyto benefity všude (web, emaily, reklamy):\n• ${sortedGains[0].text} (${sortedGains[0].percentage}%)\n${sortedGains[1] ? `• ${sortedGains[1].text} (${sortedGains[1].percentage}%)\n` : ''}${sortedGains[2] ? `• ${sortedGains[2].text} (${sortedGains[2].percentage}%)` : ''}\n\nZákazníci toto očekávají nejvíc!`
+          });
+        }
+        
+        // 📊 AKCE #3: Měřte klíčové metriky
+        if (hasTopSegment) {
+          actions.push({
+            id: 'track-metrics',
+            text: 'Nastavte měření úspěchu',
+            deadline: '7 dní',
+            tip: `📈 Sledujte tyto metriky (Google Sheets nebo notebook):\n• Počet leadů/týden z "${topSegmentName}"\n• Konverze: lead → klient (%)\n• Průměrná hodnota zakázky (Kč)\n• Měsíční příjem (cíl: ${topSegmentRevenue.toLocaleString()} Kč)\n\nCo se měří, to se zlepšuje!`
+          });
+        }
+        
+        // 🚀 AKCE #4: Škálujte do dalšího segmentu (pokud mají víc segmentů)
+        if (rankings.length > 1) {
+          const secondSegment = rankings[1];
+          actions.push({
+            id: 'scale-to-next',
+            text: `Připravte expanzi do: ${secondSegment.name}`,
+            deadline: '30 dní',
+            tip: `🎯 Až zvládnete "${topSegmentName}", expandujte:\n• Segment: ${secondSegment.name}\n• Potenciál: ${Math.round(secondSegment.potentialRevenue).toLocaleString()} Kč/měsíc\n\nAnalyzujte rozdíly v jejich potřebách a upravte produkt/messaging.`
           });
         } else {
+          // Pokud mají jen 1 segment, navrhni optimalizaci
           actions.push({
-            id: 'create-value',
-            text: 'Dokončete FIT Validator pro analýzu produktu',
-            lessonId: 16,
-            lessonName: 'FIT Validator'
+            id: 'optimize-current',
+            text: 'Optimalizujte aktuální segment',
+            deadline: '30 dní',
+            tip: `💡 Zaměřte se na zlepšení v "${topSegmentName}":\n• Zvyšte konverzi leadů\n• Zlepšete průměrnou hodnotu zakázky\n• Získejte více zákazníků z tohoto segmentu\n\nMůžete také přidat nový segment do Business Model Canvas.`
           });
         }
-        
-        // Akce #2: Řešte TOP pain
-        if (sortedPains.length > 0) {
-          actions.push({
-            id: 'address-top-pain',
-            text: `Zdůrazněte řešení: "${sortedPains[0].text}" (${sortedPains[0].percentage}% zákazníků)`
-          });
-        }
-        
-        // Akce #3: Komunikujte TOP gain
-        if (sortedGains.length > 0) {
-          actions.push({
-            id: 'communicate-gain',
-            text: `Komunikujte benefit: "${sortedGains[0].text}" (${sortedGains[0].percentage}% zákazníků)`
-          });
-        }
-        
-        // Akce #4: Zaměřte se na nejvýdělečnější segment (z již načtených rankings)
-        if (rankings.length > 0) {
-          const topSegment = rankings[0]; // Už je seřazeno podle potentialRevenue!
-          actions.push({
-            id: 'focus-segment',
-            text: `Prioritní segment: ${topSegment.name} (${Math.round(topSegment.potentialRevenue).toLocaleString()} Kč/měsíc potenciál)`
-          });
-        }
-        
-        // Akce #5: MVP
-        actions.push({
-          id: 'test-mvp',
-          text: 'Vytvořte MVP a testujte s prvními 10 zákazníky z TOP segmentu'
-        });
 
         setActionItems(actions);
-        
-        // 🏆 Achievement: Odemknutí Akčního plánu - při PRVNÍM načtení
-        if (actions.length > 0) {
-          const unlocked = unlockAchievement(userId, 'action-plan-unlocked');
-          if (unlocked && onAchievementUnlocked) {
-            onAchievementUnlocked('action-plan-unlocked');
-          }
-        }
+        console.log('✅ Simple action items generated:', actions);
       }
       
       // 🏆 Achievement checking - kontroluj všechny FIT score achievementy
@@ -752,8 +780,8 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
   const totalBacklog = backlogItems.jobs.length + backlogItems.pains.length + backlogItems.gains.length;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 py-6 sm:py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Back Button */}
         {onBack && (
           <Button
@@ -772,13 +800,13 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4">
-            <Trophy className="w-10 h-10 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-3 sm:mb-4">
+            <Trophy className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
-          <h1 className="mb-2 text-gray-900">
+          <h1 className="mb-2 text-gray-900 text-2xl sm:text-3xl">
             🎯 Váš akční plán
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-base sm:text-xl text-gray-600">
             Analýza vašeho byznysu + Kam dál
           </p>
           
@@ -818,7 +846,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-200"
+          className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8 border-2 border-green-200"
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-green-500 rounded-full p-3">
@@ -852,7 +880,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + idx * 0.1 }}
-                  className={`p-6 rounded-xl border-2 ${
+                  className={`p-4 sm:p-6 rounded-xl border-2 ${
                     isTopRank
                       ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-300'
                       : 'bg-gray-50 border-gray-200'
@@ -912,7 +940,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200"
+            className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8 border-2 border-purple-200"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-purple-500 rounded-full p-3">
@@ -1036,7 +1064,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-xl p-8 border-2 border-blue-200"
+            className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8 border-2 border-blue-200"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-blue-500 rounded-full p-3">
@@ -1044,21 +1072,51 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
-                  🎯 TOP Priority{fitValue ? `: ${fitValue}` : ''} 
-                  {fitSegment && <span className="text-gray-600 text-lg"> (pro {fitSegment})</span>}
+                  🎯 Zaměřte se na: {segmentRankings[0].name}
                 </h2>
                 <p className="text-gray-600">
                   {segmentRankings[0].name === fitSegment 
-                    ? '✅ Pro EKONOMICKY nejlepší segment (TOP 3)'
-                    : `⚠️ Nemáte FIT data pro TOP segment "${segmentRankings[0].name}" - zobrazuji "${fitSegment}"`}
+                    ? 'Co zákazníci z tohoto segmentu potřebují'
+                    : `Nemáte FIT data pro TOP segment "${segmentRankings[0].name}"`}
                 </p>
               </div>
             </div>
 
-            {(topJobs.length > 0 || topPains.length > 0 || topGains.length > 0) ? (
-            <div className="grid md:grid-cols-3 gap-6">
+            {(segmentRankings[0].name === fitSegment && (topJobs.length > 0 || topPains.length > 0 || topGains.length > 0)) ? (
+            <>
+              {/* PROČ TENTO SEGMENT? */}
+              <div className="mb-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border-2 border-purple-200">
+                <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-purple-600" />
+                  Proč tento segment?
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✅</span>
+                    <p className="text-sm text-gray-700">
+                      <span className="font-bold">Nejvyšší potenciál:</span> {Math.round(segmentRankings[0].potentialRevenue).toLocaleString()} Kč/měsíc
+                    </p>
+                  </div>
+                  {segmentRankings[0].name === fitSegment && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-green-600 mt-0.5">✅</span>
+                      <p className="text-sm text-gray-700">
+                        <span className="font-bold">Máte FIT data:</span> Víte přesně co potřebují
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✅</span>
+                    <p className="text-sm text-gray-700">
+                      <span className="font-bold">Jasný směr:</span> Zaměřte všechny aktivity na tento segment
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
               {/* Jobs */}
-              <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200">
+              <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 sm:p-6 border-2 border-orange-200">
                 <div className="flex items-center gap-2 mb-4">
                   <Target className="w-5 h-5 text-orange-600" />
                   <h3 className="font-bold text-orange-900">Jobs</h3>
@@ -1081,7 +1139,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               </div>
 
               {/* Pains */}
-              <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-6 border-2 border-red-200">
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 sm:p-6 border-2 border-red-200">
                 <div className="flex items-center gap-2 mb-4">
                   <AlertCircle className="w-5 h-5 text-red-600" />
                   <h3 className="font-bold text-red-900">Pains</h3>
@@ -1104,7 +1162,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               </div>
 
               {/* Gains */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 sm:p-6 border-2 border-green-200">
                 <div className="flex items-center gap-2 mb-4">
                   <Star className="w-5 h-5 text-green-600" />
                   <h3 className="font-bold text-green-900">Gains</h3>
@@ -1126,14 +1184,15 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 </div>
               </div>
             </div>
+            </>
           ) : (
-            <div className="text-center py-8 bg-yellow-50 rounded-xl border-2 border-yellow-200">
-                <AlertCircle className="w-12 h-12 mx-auto mb-3 text-yellow-600" />
+            <div className="text-center py-8 bg-gray-50 rounded-xl border-2 border-gray-200">
+                <Package className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                 <p className="font-bold text-gray-900 mb-2">
-                  Nemáte vyplněná FIT data pro segment &quot;{segmentRankings[0].name}&quot;
+                  Nemáte FIT data pro TOP segment &quot;{segmentRankings[0].name}&quot;
                 </p>
                 <p className="text-sm text-gray-700 mb-4">
-                  Dokončete FIT Validator (Modul 3, Lekce 16) a vyberte segment &quot;{segmentRankings[0].name}&quot; pro kompletní analýzu.
+                  Dokončete FIT Validator (Modul 3, Lekce 16) a vyberte segment &quot;{segmentRankings[0].name}&quot;
                 </p>
                 {onNavigateToLesson && (
                   <Button onClick={() => onNavigateToLesson(16)} variant="outline">
@@ -1150,10 +1209,10 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-2xl shadow-xl p-8 border-2 border-orange-200"
+          className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8 border-2 border-purple-200"
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-orange-500 rounded-full p-3">
+            <div className="bg-purple-500 rounded-full p-3">
               <Package className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -1267,15 +1326,22 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-8 text-white"
+          className="bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8 border-2 border-orange-200"
         >
-          <h2 className="mb-2 text-white">✅ CO DĚLAT TEĎ</h2>
-          <p className="text-blue-100 mb-6">Váš plán na příštích 30 dní</p>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-orange-500 rounded-full p-3">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="mb-0 text-gray-900">✅ Váš akční plán</h2>
+              <p className="text-gray-600">Zaměřte se na TOP segment a jejich priority</p>
+            </div>
+          </div>
 
           {actionItems.length === 0 ? (
-            <div className="bg-white/10 rounded-xl p-6 text-center">
-              <p className="text-white mb-2">🚀 Začněte vyplňovat data v kurzu abychom mohli vytvořit váš akční plán!</p>
-              <p className="text-sm text-blue-200">Dokončete FIT Validator (Modul 3) a ProfitCalculator (Modul 2)</p>
+            <div className="bg-white rounded-xl p-6 text-center border-2 border-orange-200">
+              <p className="text-gray-900 mb-2 font-medium">🚀 Začněte vyplňovat data v kurzu abychom mohli vytvořit váš akční plán!</p>
+              <p className="text-sm text-gray-600">Dokončete FIT Validator (Modul 3) a ProfitCalculator (Modul 2)</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -1283,12 +1349,16 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               const isCompleted = completedActions.has(action.id);
               
               return (
-                <div
+                <motion.div
                   key={action.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.01 }}
                   className={`p-4 rounded-xl transition-all cursor-pointer ${
                     isCompleted
-                      ? 'bg-green-500/30 border-2 border-green-300'
-                      : 'bg-white/10 border-2 border-white/20 hover:bg-white/20'
+                      ? 'bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300'
+                      : 'bg-white border-2 border-orange-200 hover:border-orange-300 hover:shadow-md'
                   }`}
                   onClick={() => toggleAction(action.id)}
                 >
@@ -1297,23 +1367,33 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                       className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                         isCompleted
                           ? 'bg-green-500 border-green-400'
-                          : 'border-white/40'
+                          : 'border-orange-400 bg-white'
                       }`}
                     >
                       {isCompleted && <CheckCircle2 className="w-4 h-4 text-white" />}
                     </div>
                     
                     <div className="flex-1">
-                      <p className={`font-medium text-white ${isCompleted ? 'line-through opacity-75' : ''}`}>
+                      <p className={`font-medium text-gray-900 ${isCompleted ? 'line-through opacity-75' : ''}`}>
                         {action.text}
                       </p>
+                      {action.deadline && (
+                        <p className="text-sm text-orange-600 mt-1 font-medium">
+                          📅 Deadline: {action.deadline}
+                        </p>
+                      )}
+                      {action.tip && !isCompleted && (
+                        <p className="text-sm text-gray-700 mt-2 bg-yellow-50 rounded-lg p-2 border border-yellow-200">
+                          {action.tip}
+                        </p>
+                      )}
                       {action.lessonId && onNavigateToLesson && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onNavigateToLesson(action.lessonId!);
                           }}
-                          className="text-sm text-blue-200 hover:text-white flex items-center gap-1 mt-1"
+                          className="text-sm text-orange-600 hover:text-orange-700 flex items-center gap-1 mt-1 font-medium"
                         >
                           <Edit className="w-3 h-3" />
                           Upravit v {action.lessonName}
@@ -1321,7 +1401,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                       )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
             </div>
@@ -1332,13 +1412,13 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
             <div className="mt-6">
               <button
                 onClick={() => setShowBacklog(!showBacklog)}
-                className="w-full bg-white/10 hover:bg-white/20 rounded-xl p-4 flex items-center justify-between transition-all"
+                className="w-full bg-white hover:bg-gray-50 rounded-xl p-4 flex items-center justify-between transition-all border-2 border-gray-200"
               >
                 <div className="flex items-center gap-2">
-                  <span className="font-bold">📋 Backlog ({totalBacklog} položek)</span>
-                  <span className="text-sm text-blue-200">Řešte později</span>
+                  <span className="font-bold text-gray-900">📋 Backlog ({totalBacklog} položek)</span>
+                  <span className="text-sm text-gray-600">Řešte později</span>
                 </div>
-                {showBacklog ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                {showBacklog ? <ChevronUp className="w-5 h-5 text-gray-600" /> : <ChevronDown className="w-5 h-5 text-gray-600" />}
               </button>
 
               {showBacklog && (
@@ -1349,14 +1429,14 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                   className="mt-4 space-y-4"
                 >
                   {backlogItems.jobs.length > 0 && (
-                    <div className="bg-white/10 rounded-xl p-4">
-                      <h4 className="font-bold mb-2 flex items-center gap-2">
-                        <Target className="w-4 h-4" />
+                    <div className="bg-white rounded-xl p-4 border-2 border-orange-200">
+                      <h4 className="font-bold mb-2 flex items-center gap-2 text-gray-900">
+                        <Target className="w-4 h-4 text-orange-600" />
                         Jobs ({backlogItems.jobs.length})
                       </h4>
                       <div className="space-y-1">
                         {backlogItems.jobs.map((job, idx) => (
-                          <p key={idx} className="text-sm text-blue-100">
+                          <p key={idx} className="text-sm text-gray-700">
                             • {job.text} ({job.percentage}%)
                           </p>
                         ))}
@@ -1365,14 +1445,14 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                   )}
 
                   {backlogItems.pains.length > 0 && (
-                    <div className="bg-white/10 rounded-xl p-4">
-                      <h4 className="font-bold mb-2 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" />
+                    <div className="bg-white rounded-xl p-4 border-2 border-red-200">
+                      <h4 className="font-bold mb-2 flex items-center gap-2 text-gray-900">
+                        <AlertCircle className="w-4 h-4 text-red-600" />
                         Pains ({backlogItems.pains.length})
                       </h4>
                       <div className="space-y-1">
                         {backlogItems.pains.map((pain, idx) => (
-                          <p key={idx} className="text-sm text-blue-100">
+                          <p key={idx} className="text-sm text-gray-700">
                             • {pain.text} ({pain.percentage}%)
                           </p>
                         ))}
@@ -1381,14 +1461,14 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                   )}
 
                   {backlogItems.gains.length > 0 && (
-                    <div className="bg-white/10 rounded-xl p-4">
-                      <h4 className="font-bold mb-2 flex items-center gap-2">
-                        <Star className="w-4 h-4" />
+                    <div className="bg-white rounded-xl p-4 border-2 border-green-200">
+                      <h4 className="font-bold mb-2 flex items-center gap-2 text-gray-900">
+                        <Star className="w-4 h-4 text-green-600" />
                         Gains ({backlogItems.gains.length})
                       </h4>
                       <div className="space-y-1">
                         {backlogItems.gains.map((gain, idx) => (
-                          <p key={idx} className="text-sm text-blue-100">
+                          <p key={idx} className="text-sm text-gray-700">
                             • {gain.text} ({gain.percentage}%)
                           </p>
                         ))}

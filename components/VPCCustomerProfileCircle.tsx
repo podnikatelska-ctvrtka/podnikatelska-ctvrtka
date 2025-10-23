@@ -21,9 +21,10 @@ interface Props {
   userId: string;
   selectedSegment: string | null;
   onSelectSegment: (segment: string) => void;
+  onAchievementUnlocked?: (achievementId: string) => void; // 🎉 Achievement callback
 }
 
-export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegment }: Props) {
+export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegment, onAchievementUnlocked }: Props) {
   const [jobs, setJobs] = useState<Tag[]>([]);
   const [pains, setPains] = useState<Tag[]>([]);
   const [gains, setGains] = useState<Tag[]>([]);
@@ -173,6 +174,12 @@ export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegm
         if (error) throw error;
         if (data) setVpcId(data.id);
       }
+      
+      // 🎉 ACHIEVEMENT: Customer Profile Complete
+      if (jobs.length > 0 && pains.length > 0 && gains.length > 0 && onAchievementUnlocked) {
+        console.log('✅ Customer Profile complete! Triggering achievement...');
+        onAchievementUnlocked('customer-profile-complete');
+      }
     } catch (err) {
       console.error('Error saving VPC:', err);
     } finally {
@@ -211,7 +218,7 @@ export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegm
   };
   
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="space-y-6">
       {/* Segment Selector */}
       <div className="mb-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border-2 border-gray-300 p-4">
         <div className="flex items-center gap-3 mb-3">

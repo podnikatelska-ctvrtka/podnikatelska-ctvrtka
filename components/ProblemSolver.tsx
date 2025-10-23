@@ -98,86 +98,70 @@ const SCENARIOS: Scenario[] = [
         id: 'cheaper-partner',
         title: '💸 Levnější dodavatel',
         description: 'Najděte alternativního partnera s nižší cenou (např. jiný software, jiný výrobce)',
-        canvasAction: 'Nahraďte položku v "Klíčová partnerství" nebo snižte hodnotu v "Struktura nákladů"',
+        canvasAction: 'Upravte existující položku v "Klíčová partnerství" nebo přidejte novou',
         difficulty: 'medium',
         impact: 'medium'
       },
       {
-        id: 'automation',
+        id: 'automate',
         title: '🤖 Automatizace',
-        description: 'Automatizujte opakující se činnosti (email sekvence, onboarding, fakturace)',
-        canvasAction: 'Přidejte "Automatizace" do "Klíčové aktivity" + snižte náklady na manuální práci',
+        description: 'Ušetřete čas a peníze automatizací (e-mailový automat místo ručního psaní, booking systém místo telefonů)',
+        canvasAction: 'Aktualizujte "Klíčové činnosti" - zaměřte se na automatizaci',
         difficulty: 'hard',
         impact: 'high'
       },
       {
         id: 'outsource',
-        title: '🌍 Outsourcing',
-        description: 'Některé činnosti můžete dělat levněji přes externího dodavatele (grafika, účetnictví)',
-        canvasAction: 'Přesuňte položku z "Klíčové zdroje" do "Klíčová partnerství" + snižte náklady',
-        difficulty: 'medium',
+        title: '👥 Outsourcing',
+        description: 'Najděte freelancery nebo agentury pro nestandardní úkoly místo stálých zaměstnanců',
+        canvasAction: 'Přidejte položku do "Klíčová partnerství" pro outsourcing',
+        difficulty: 'easy',
         impact: 'medium'
       }
     ]
   },
   {
     id: 'low-retention',
-    problem: '🔄 Zákazníci odcházejí',
+    problem: '🔄 Odcházejí zákazníci',
     icon: Zap,
     color: 'blue',
-    description: 'Zákazníci kupují jednou a pak odchází, nízká retention',
+    description: 'Zákazníci nakoupí jednou a už se nevrátí',
     solutions: [
       {
-        id: 'improve-relationship',
-        title: '❤️ Zlepšit vztah',
-        description: 'Přidejte osobní komunikaci, community, support (email newslettery, Facebook skupina)',
-        canvasAction: 'Přidejte položky do "Vztahy se zákazníky"',
-        difficulty: 'easy',
-        impact: 'high'
-      },
-      {
-        id: 'add-value',
-        title: '🎁 Přidat hodnotu',
-        description: 'Vylepšete produkt/službu (nové funkce, bonusy, garance)',
-        canvasAction: 'Přidejte položky do "Hodnotová nabídka"',
+        id: 'loyalty-program',
+        title: '🎁 Věrnostní program',
+        description: 'Odměňujte opakované nákupy (sleva po 5 nákupech, body za každý nákup)',
+        canvasAction: 'Přidejte "Věrnostní program" do "Vztahy se zákazníky"',
         difficulty: 'medium',
         impact: 'high'
       },
       {
         id: 'subscription',
-        title: '🔁 Subscription model',
-        description: 'Přejděte na předplatné místo jednorázového prodeje (stabilnější příjem)',
-        canvasAction: 'Změňte "Zdroje příjmů" z jednorázové platby na měsíční předplatné',
-        difficulty: 'hard',
+        title: '💳 Předplatné / Membership',
+        description: 'Vytvořte měsíční předplatné s benefity (např. káva: 10 káv za 800 Kč = sleva 20%)',
+        canvasAction: 'Přidejte "Předplatné" s NOVOU BARVOU do "Zdroje příjmů"',
+        difficulty: 'easy',
         impact: 'high'
+      },
+      {
+        id: 'email-automation',
+        title: '📧 Email automation',
+        description: 'Oslovte zákazníky automaticky po X dnech s nabídkou (např. po 14 dnech "vrať se a dostaneš 15% slevu")',
+        canvasAction: 'Přidejte "Email automation" do "Kanály"',
+        difficulty: 'medium',
+        impact: 'medium'
       }
     ]
   }
 ];
 
-// 🗺️ MAPPING: Solution ID → Canvas Section + Lesson
-const SOLUTION_MAPPING: Record<string, { section: string, lessonId: number }> = {
-  'new-segment': { section: 'segments', lessonId: 1 },
-  'new-channel': { section: 'channels', lessonId: 3 },
-  'partnership': { section: 'partnerships', lessonId: 8 },
-  'price-increase': { section: 'value', lessonId: 2 },
-  'premium-tier': { section: 'value', lessonId: 2 },
-  'upsell': { section: 'revenue', lessonId: 5 },
-  'cheaper-partner': { section: 'partnerships', lessonId: 8 },
-  'automation': { section: 'activities', lessonId: 7 },
-  'outsource': { section: 'partnerships', lessonId: 8 },
-  'improve-relationship': { section: 'relationships', lessonId: 4 },
-  'add-value': { section: 'value', lessonId: 2 },
-  'subscription': { section: 'revenue', lessonId: 5 },
-};
-
 interface Props {
-  userId: string;
   onComplete: () => void;
   onNavigateNext?: () => void;
+  onAchievementUnlocked?: (achievementId: string) => void;
 }
 
-export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
+export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocked }: Props) {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [selectedSolution, setSelectedSolution] = useState<Solution | null>(null);
   const [appliedSolutions, setAppliedSolutions] = useState<Set<string>>(new Set());
@@ -187,72 +171,87 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
   const handleApplySolution = (solution: Solution) => {
     setAppliedSolutions(prev => new Set([...prev, solution.id]));
     setSelectedSolution(solution);
-    setHasReadContent(true); // Označit že viděl obsah
+    
+    // 🏆 Trigger achievement
+    if (onAchievementUnlocked) {
+      onAchievementUnlocked('solution-applied');
+    }
   };
 
   const handleOpenCanvas = (solution: Solution) => {
-    const mapping = SOLUTION_MAPPING[solution.id];
-    if (!mapping) {
-      console.error('No mapping found for solution:', solution.id);
-      return;
-    }
+    const mapping: Record<string, { section: string, lessonId: string }> = {
+      'new-segment': { section: 'segments', lessonId: 'module1-lesson4' },
+      'new-channel': { section: 'channels', lessonId: 'module1-lesson4' },
+      'partnership': { section: 'partners', lessonId: 'module1-lesson4' },
+      'price-increase': { section: 'value', lessonId: 'module1-lesson4' },
+      'premium-tier': { section: 'value', lessonId: 'module1-lesson4' },
+      'upsell': { section: 'revenue', lessonId: 'module1-lesson4' },
+      'cheaper-partner': { section: 'partners', lessonId: 'module1-lesson4' },
+      'automate': { section: 'activities', lessonId: 'module1-lesson4' },
+      'outsource': { section: 'partners', lessonId: 'module1-lesson4' },
+      'loyalty-program': { section: 'relationships', lessonId: 'module1-lesson4' },
+      'subscription': { section: 'revenue', lessonId: 'module1-lesson4' },
+      'email-automation': { section: 'channels', lessonId: 'module1-lesson4' }
+    };
 
-    // Dispatch event s parametry pro CourseDemoV3
+    const map = mapping[solution.id];
+    if (!map) return;
+
+    // Dispatch event to open Canvas
     window.dispatchEvent(new CustomEvent('open-canvas-section', {
       detail: {
-        section: mapping.section,
-        lessonId: mapping.lessonId,
+        section: map.section,
+        lessonId: map.lessonId,
         solutionTitle: solution.title
       }
     }));
   };
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-100 text-green-700 border-green-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
-      case 'hard': return 'bg-red-100 text-red-700 border-red-300';
-      default: return 'bg-gray-100 text-gray-700 border-gray-300';
+      case 'easy': return { label: '🟢 Snadné', color: 'bg-green-50 text-green-700 border-green-200' };
+      case 'medium': return { label: '🟡 Střední', color: 'bg-yellow-50 text-yellow-700 border-yellow-200' };
+      case 'hard': return { label: '🔴 Obtížné', color: 'bg-red-50 text-red-700 border-red-200' };
+      default: return { label: '', color: '' };
     }
   };
 
-  const getImpactColor = (impact: string) => {
+  const getImpactBadge = (impact: string) => {
     switch (impact) {
-      case 'high': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'low': return 'text-gray-600';
-      default: return 'text-gray-600';
+      case 'high': return { label: '🚀 Vysoký dopad', color: 'text-green-600' };
+      case 'medium': return { label: '📊 Střední dopad', color: 'text-yellow-600' };
+      case 'low': return { label: '📉 Nízký dopad', color: 'text-gray-600' };
+      default: return { label: '', color: '' };
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header - ČISTŠÍ */}
-      <div className="text-center mb-8">
-        <h3 className="text-3xl font-bold text-gray-900 mb-3">🚀 Řešení typických situací</h3>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+    <div className="space-y-4">
+      {/* 🎨 NEW: Colorful Header */}
+      <div className="bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 rounded-2xl shadow-md p-6 text-center">
+        <h3 className="mb-2 text-white">🚀 Řešení typických situací</h3>
+        <p className="text-orange-50 text-sm sm:text-base">
           Vyberte váš největší problém a najděte konkrétní řešení
         </p>
       </div>
 
       {!selectedScenario ? (
-        /* Scenario Selection */
+        /* Scenario Selection - Cleaner cards */
         <>
-          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6">
-            <p className="text-blue-900">
+          <div className="bg-blue-50 border border-blue-200 p-2 rounded-lg">
+            <p className="text-blue-900 text-xs">
               💡 <strong>Volitelné:</strong> Projděte si 4 typické problémy a jejich řešení. Můžete pokračovat i bez výběru.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {SCENARIOS.map((scenario, index) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {SCENARIOS.map((scenario) => {
               const Icon = scenario.icon;
-              // ✅ ČISTŠÍ - jen bílé karty s barevnou ikonou
               const iconColors = {
-                red: 'text-red-600 bg-red-50',
-                yellow: 'text-yellow-600 bg-yellow-50',
-                purple: 'text-purple-600 bg-purple-50',
-                blue: 'text-blue-600 bg-blue-50'
+                red: 'bg-red-50 text-red-600 border-red-100',
+                yellow: 'bg-yellow-50 text-yellow-600 border-yellow-100',
+                purple: 'bg-purple-50 text-purple-600 border-purple-100',
+                blue: 'bg-blue-50 text-blue-600 border-blue-100'
               }[scenario.color];
 
               return (
@@ -262,18 +261,18 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
                     setSelectedScenario(scenario);
                     setHasReadContent(true);
                   }}
-                  className="bg-white border-2 border-gray-200 hover:border-blue-400 p-6 rounded-xl text-left transition-all hover:shadow-lg group"
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-300 p-4 sm:p-6 text-left transition-all group"
                 >
-                  <div className={`w-14 h-14 rounded-full ${iconColors} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-7 h-7" />
+                  <div className={`w-12 h-12 rounded-xl ${iconColors} border flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-6 h-6" />
                   </div>
-                  <h4 className="mb-2">{scenario.problem}</h4>
-                  <p className="text-gray-600 mb-3">
+                  <h4 className="mb-2 text-lg font-semibold text-gray-900">{scenario.problem}</h4>
+                  <p className="text-gray-600 text-sm mb-3">
                     {scenario.description}
                   </p>
                   <p className="text-sm text-blue-600 font-medium flex items-center gap-1">
                     {scenario.solutions.length} možných řešení 
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </p>
                 </button>
               );
@@ -281,7 +280,7 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
           </div>
         </>
       ) : (
-        /* Solutions View */
+        /* Solutions View - Cleaner */
         <div className="space-y-4">
           <Button
             onClick={() => {
@@ -294,64 +293,63 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
             ← Zpět na výběr problému
           </Button>
 
-          <div className="bg-white border-2 border-gray-200 p-6 rounded-xl">
-            <h4 className="mb-2 flex items-center gap-2">
-              <AlertTriangle className="w-6 h-6 text-orange-600" />
-              {selectedScenario.problem}
-            </h4>
-            <p className="text-gray-600 mb-6">
-              {selectedScenario.description}
-            </p>
-            <p className="text-gray-600 mb-4">
-              Vyberte řešení které nejlépe sedí na vaši situaci:
-            </p>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <div className="flex items-start gap-3 mb-4">
+              <AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0" />
+              <div>
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">{selectedScenario.problem}</h4>
+                <p className="text-gray-600 text-xs sm:text-sm mb-2">
+                  {selectedScenario.description}
+                </p>
+                <p className="text-gray-600 text-xs sm:text-sm">
+                  Vyberte řešení které nejlépe sedí na vaši situaci:
+                </p>
+              </div>
+            </div>
 
-            <div className="space-y-4">
-              {selectedScenario.solutions.map((solution, index) => {
+            <div className="space-y-3">
+              {selectedScenario.solutions.map((solution) => {
                 const isApplied = appliedSolutions.has(solution.id);
+                const difficulty = getDifficultyBadge(solution.difficulty);
+                const impact = getImpactBadge(solution.impact);
 
                 return (
                   <div
                     key={solution.id}
-                    className={`border-2 rounded-lg p-5 ${
+                    className={`rounded-xl p-3 sm:p-4 transition-all ${
                       isApplied 
-                        ? 'bg-green-50 border-green-300' 
-                        : 'bg-white border-gray-200 hover:border-blue-300'
-                    } transition-all`}
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                        ? 'bg-green-50 border-2 border-green-300' 
+                        : 'bg-gray-50 border border-gray-200 hover:border-gray-300'
+                    }`}
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h5 className="mb-1 flex items-center gap-2">
-                          {solution.title}
-                          {isApplied && <CheckCircle className="w-5 h-5 text-green-600" />}
-                        </h5>
-                        <p className="text-gray-600 mb-3">
-                          {solution.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-3 flex-wrap">
-                      <span className={`text-xs px-2 py-1 rounded border ${getDifficultyColor(solution.difficulty)}`}>
-                        {solution.difficulty === 'easy' && '🟢 Snadné'}
-                        {solution.difficulty === 'medium' && '🟡 Střední'}
-                        {solution.difficulty === 'hard' && '🔴 Obtížné'}
-                      </span>
-                      <span className={`text-xs font-bold ${getImpactColor(solution.impact)}`}>
-                        {solution.impact === 'high' && '🚀 Vysoký dopad'}
-                        {solution.impact === 'medium' && '📊 Střední dopad'}
-                        {solution.impact === 'low' && '📉 Nízký dopad'}
-                      </span>
-                    </div>
-
-                    <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded mb-3">
-                      <p className="text-blue-900">
-                        <strong>📝 Akce v Canvas:</strong><br />
-                        {solution.canvasAction}
+                    <div className="mb-2">
+                      <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-1 flex items-center gap-2">
+                        {solution.title}
+                        {isApplied && <CheckCircle className="w-4 h-4 text-green-600" />}
+                      </h5>
+                      <p className="text-gray-600 text-xs sm:text-sm mb-2">
+                        {solution.description}
                       </p>
                     </div>
 
+                    {/* Badges - Stack on mobile */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 mb-2">
+                      <span className={`text-xs px-2 py-1 rounded-lg border font-medium inline-block w-fit ${difficulty.color}`}>
+                        {difficulty.label}
+                      </span>
+                      <span className={`text-xs font-semibold inline-block w-fit ${impact.color}`}>
+                        {impact.label}
+                      </span>
+                    </div>
+
+                    {/* Canvas Action - Compact */}
+                    <div className="bg-blue-50 border-l-4 border-blue-400 p-2 rounded-lg mb-2">
+                      <p className="text-blue-900 text-xs">
+                        <strong>📝 Canvas:</strong> <span className="text-blue-800">{solution.canvasAction}</span>
+                      </p>
+                    </div>
+
+                    {/* Button */}
                     <Button
                       onClick={() => {
                         handleApplySolution(solution);
@@ -384,15 +382,13 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
         </div>
       )}
 
-      {/* CTA - Dokončit lekci */}
+      {/* CTA - Complete Lesson */}
       {!isCompleted ? (
-        <div
-          className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-center shadow-2xl mt-6 transition-all duration-300 ease-out"
-        >
-          <h3 className="mb-3 text-white">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 sm:p-8 text-center shadow-lg">
+          <h3 className="mb-2 text-white text-xl sm:text-2xl">
             ✅ Hotovo! Znáte řešení typických problémů
           </h3>
-          <p className="text-green-100 mb-6">
+          <p className="text-green-50 mb-6 text-sm sm:text-base max-w-xl mx-auto">
             {appliedSolutions.size > 0 
               ? `Skvělá práce! Prohlédli jste si ${appliedSolutions.size} ${appliedSolutions.size === 1 ? 'řešení' : 'řešení'}.`
               : 'Můžete se kdykoliv vrátit a prohlédnout si řešení.'
@@ -404,30 +400,29 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
               onComplete();
             }}
             size="lg"
-            className="bg-white text-green-700 hover:bg-green-50 font-bold text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+            className="bg-white text-green-700 hover:bg-green-50 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
           >
-            Dokončit lekci a pokračovat →
+            <span className="hidden sm:inline">Dokončit lekci a pokračovat →</span>
+            <span className="sm:hidden">Dokončit a pokračovat →</span>
           </Button>
         </div>
       ) : (
-        <div
-          className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-8 text-white shadow-xl mt-6 transition-all duration-300 ease-out"
-        >
-          <div className="flex items-start gap-4 mb-6">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-              <CheckCircle2 className="w-8 h-8 text-white" />
+        <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
+          <div className="flex items-start gap-3 sm:gap-4 mb-6">
+            <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3">
+              <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
             <div className="flex-1">
-              <h4 className="text-2xl font-bold mb-2">
+              <h4 className="text-xl sm:text-2xl font-bold mb-2">
                 ✅ Lekce dokončena!
               </h4>
-              <p className="text-green-50 text-lg">
+              <p className="text-green-50 text-sm sm:text-base">
                 Skvělá práce! Vybrali jste řešení a můžete ho aplikovat v Canvas (Modul 1).
               </p>
             </div>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex flex-col-reverse sm:flex-row gap-3">
             <Button
               onClick={() => setIsCompleted(false)}
               variant="outline"
@@ -442,7 +437,8 @@ export function ProblemSolver({ userId, onComplete, onNavigateNext }: Props) {
                 size="lg"
                 className="flex-1 bg-white text-green-600 hover:bg-green-50"
               >
-                Pokračovat na další lekci →
+                <span className="hidden sm:inline">Pokračovat na další lekci →</span>
+                <span className="sm:hidden">Další →</span>
               </Button>
             )}
           </div>

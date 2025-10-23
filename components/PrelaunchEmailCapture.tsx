@@ -6,6 +6,8 @@ import { Input } from "./ui/input";
 import { toast } from "sonner";
 import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
+import { trackCourseEvent, trackError } from "../lib/sentry";
+import { getRemainingSpots, isCampaignFull, getUrgencyText } from "../lib/scarcity";
 
 // 🎯 EMAIL SERVICE CONFIG - Choose your method!
 const EMAIL_SERVICE = {
@@ -45,34 +47,23 @@ const FLOWLANCE_REDIRECT_CONFIG = {
 
 const FLOWLANCE_OPTIN_URL = 'https://my.flowlance.com/TVOJE-PRODUKT-URL'; // ← NAHRAĎ svým Flowlance optin URL!
 
-// Dynamic availability tracker
-const getAvailableSpots = () => {
-  if (typeof window === 'undefined') return 50;
-  
-  const stored = localStorage.getItem('pvs_available_spots');
-  if (stored) {
-    // Existing user - slightly decrease spots
-    const current = parseInt(stored);
-    const newCount = Math.max(35, current - Math.floor(Math.random() * 3 + 1));
-    localStorage.setItem('pvs_available_spots', newCount.toString());
-    return newCount;
-  } else {
-    // New user - random between 40-50
-    const initial = Math.floor(Math.random() * 11) + 40;
-    localStorage.setItem('pvs_available_spots', initial.toString());
-    return initial;
-  }
-};
-
 export function PrelaunchEmailCapture() {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [availableSpots, setAvailableSpots] = useState(50);
+  const [remainingSpots, setRemainingSpots] = useState(50);
+  const [wasWaitlist, setWasWaitlist] = useState(false); // 🆕 Track if it was waitlist
 
-  // Initialize spots on mount
+  // Initialize spots on mount + update every minute
   useEffect(() => {
-    setAvailableSpots(getAvailableSpots());
+    setRemainingSpots(getRemainingSpots());
+    
+    // Update every minute for realtime feel
+    const interval = setInterval(() => {
+      setRemainingSpots(getRemainingSpots());
+    }, 60000); // 1 minuta
+    
+    return () => clearInterval(interval);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,6 +91,10 @@ export function PrelaunchEmailCapture() {
     }
 
     setIsLoading(true);
+    
+    // 🎯 CHECK IF IT'S WAITLIST (campaign full)
+    const isWaitlist = isCampaignFull();
+    setWasWaitlist(isWaitlist);
 
     // Save to localStorage for tracking
     registeredEmails.push(email.toLowerCase());
@@ -144,7 +139,7 @@ export function PrelaunchEmailCapture() {
               email: email,
               timestamp: new Date().toISOString(),
               source: 'landing_page_prelaunch',
-              spotNumber: 50 - availableSpots + 1,
+              spotNumber: 50 - remainingSpots + 1,
               productId: EMAIL_SERVICE.make.productId,
             }),
           });
@@ -241,8 +236,17 @@ export function PrelaunchEmailCapture() {
           }
           
           console.log('✅ Email sent to Smartemailing - SUCCESS!', data);
+          
+          // 🚨 SENTRY: Track successful email capture
+          trackCourseEvent.actionPlanComplete(email); // Using actionPlanComplete as email capture event
         } catch (error) {
           console.error('⚠️ Smartemailing error:', error);
+          
+          // 🚨 SENTRY: Track error
+          trackError.saveError('PrelaunchEmailCapture-Smartemailing', error as Error, {
+            email,
+            method: 'smartemailing',
+          });
         }
       }
     }
@@ -251,15 +255,100 @@ export function PrelaunchEmailCapture() {
     setTimeout(() => {
       setIsSubmitted(true);
       setIsLoading(false);
-      setAvailableSpots(prev => Math.max(35, prev - 1));
+      setRemainingSpots(prev => Math.max(0, prev - 1));
       
-      toast.success("🎉 Úspěšně! Sledujte svůj email pro mini kurz!", {
-        duration: 5000,
-      });
+      // 🎯 Different toast based on waitlist status
+      if (isWaitlist) {
+        toast.success("📝 Přidáni na čekací listinu! Ozveme se až spustíme další běh.", {
+          duration: 5000,
+        });
+      } else {
+        toast.success("🎉 Úspěšně! Sledujte svůj email pro slevu 40%!", {
+          duration: 5000,
+        });
+      }
     }, 500);
   };
 
   if (isSubmitted) {
+    // 📝 WAITLIST SUCCESS SCREEN
+    if (wasWaitlist) {
+      return (
+        <motion.section 
+          className="py-16 bg-gradient-to-br from-gray-50 via-slate-50 to-blue-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <motion.div
+              className="bg-white rounded-2xl p-8 shadow-lg border border-blue-200"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Mail className="w-16 h-16 text-blue-500 mx-auto mb-6" />
+              <h2 className="text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                📝 PŘIDÁNI NA ČEKACÍ LISTINU!
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">
+                <strong className="text-blue-600">Děkujeme za zájem!</strong> Všechna místa v prvním běhu jsou obsazena.<br/><br/>
+                <strong className="text-gray-700">Přidali jsme vás na čekací listinu:</strong><br/>
+                • 📧 <strong>Dáme vám vědět až spustíme další běh</strong><br/>
+                • 🎯 <strong>Budete mezi prvními kdo se dozví</strong><br/>
+                • 💡 <strong>Možná dostanete exkluzivní slevu</strong>
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                  <div className="flex items-center gap-2 text-blue-700 font-bold mb-2">
+                    <Mail className="w-5 h-5" />
+                    <span>📝 ČEKACÍ LISTINA</span>
+                  </div>
+                  <p className="text-sm text-blue-600 font-medium">Ozveme se brzy!</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+                  <div className="flex items-center gap-2 text-purple-700 font-bold mb-2">
+                    <Star className="w-5 h-5" />
+                    <span>🎁 MOŽNÁ SLEVA</span>
+                  </div>
+                  <p className="text-sm text-purple-600 font-medium">Pro čekající!</p>
+                </div>
+              </div>
+
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+                <h3 className="text-xl font-bold text-blue-900 mb-3">📧 Co dál?</h3>
+                <ul className="text-left space-y-3 text-blue-700">
+                  <li className="flex items-start gap-3">
+                    <Mail className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <strong className="block">Zkontrolujte email</strong>
+                      <span className="text-sm text-blue-600">Potvrzení čekací listiny (i spam!)</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <strong className="block">Čekejte na další běh</strong>
+                      <span className="text-sm text-blue-600">Dáme vám vědět jako prvním</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Star className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <strong className="block text-purple-700">Možná dostanete slevu</strong>
+                      <span className="text-sm text-purple-600">Pro ty co čekali!</span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+          </div>
+        </motion.section>
+      );
+    }
+    
+    // 🔥 EARLY BIRD SUCCESS SCREEN (original)
     return (
       <motion.section 
         className="py-16 bg-gradient-to-br from-green-50 via-blue-50 to-indigo-50"
@@ -280,10 +369,10 @@ export function PrelaunchEmailCapture() {
             </h2>
             <p className="text-lg text-gray-600 mb-6">
               <strong className="text-red-600">Gratulujeme!</strong> Právě jste se stali oficiálním PRŮKOPNÍKEM!<br/><br/>
-              <strong className="text-orange-600">Poslali jsme vám:</strong><br/>
-              • 📧 <strong>Link na 3-denní mini kurz ZDARMA</strong><br/>
-              • 🎯 <strong>Info o spuštění Podnikatelské Čtvrtky</strong><br/>
-              • 💰 <strong>Průkopnická cena: 4.999,- Kč bez DPH (ušetříte 3.500,- Kč)</strong>
+              <strong className="text-orange-600">Poslali jsme vám do emailu:</strong><br/>
+              • 💰 <strong>Slevu 40% (ušetříte 3.333 Kč) - platnost 24 hodin</strong><br/>
+              • 🎯 <strong>Link na objednávkovou stránku</strong><br/>
+              • 🎁 <strong>BONUS po nákupu: Mini kurz zdarma (hodnota 997 Kč)</strong>
             </p>
 
             
@@ -295,60 +384,59 @@ export function PrelaunchEmailCapture() {
                 </div>
                 <p className="text-sm text-blue-600 font-medium">Mezi prvními!</p>
               </div>
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
-                <div className="flex items-center gap-2 text-purple-700 font-bold mb-2">
-                  <Gift className="w-5 h-5" />
-                  <span>🎁 BONUS</span>
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
+                <div className="flex items-center gap-2 text-orange-700 font-bold mb-2">
+                  <Clock className="w-5 h-5" />
+                  <span>⏰ SLEVA 40%</span>
                 </div>
-                <p className="text-sm text-purple-600 font-medium">Mini kurz ZDARMA</p>
+                <p className="text-sm text-orange-600 font-medium">Platnost 24 hodin!</p>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
                 <div className="flex items-center gap-2 text-green-700 font-bold mb-2">
                   <CheckCircle className="w-5 h-5" />
                   <span>💰 UŠETŘÍTE</span>
                 </div>
-                <p className="text-sm text-green-600 font-medium">3.500,- Kč (-41%)</p>
+                <p className="text-sm text-green-600 font-medium">3.333 Kč</p>
               </div>
             </div>
             
             <div className="mb-6">
               <Button 
                 onClick={() => {
-                  // TODO: Nahradit správnou URL mini kurzu
-                  window.open(`https://podnikatelskactvrtka.cz/minikurz?email=${encodeURIComponent(email)}`, '_blank');
+                  window.location.href = '/#objednavka';
                 }}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
+                className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-6 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
               >
-                🚀 ZAČÍT MINI KURZ HNED
+                🔥 CHCI KURZ SE SLEVOU 40%
               </Button>
               <p className="text-sm text-gray-500 mt-2 text-center">
-                (Nebo klikněte na link v emailu)
+                (Nebo použijte link z emailu)
               </p>
             </div>
             
             {/* Informace o dalších krocích */}
-            <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
-              <h3 className="text-xl font-bold text-blue-900 mb-3">📧 Co dál?</h3>
-              <ul className="text-left space-y-3 text-blue-700">
+            <div className="p-6 bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-xl">
+              <h3 className="text-xl font-bold text-orange-900 mb-3">⏰ Co dál?</h3>
+              <ul className="text-left space-y-3 text-orange-700">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
                   <div>
                     <strong className="block">Zkontrolujte email</strong>
-                    <span className="text-sm text-blue-600">Přijde do 5 minut (i spam složku!)</span>
+                    <span className="text-sm text-orange-600">Přijde do 5 minut (i spam složku!)</span>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <Clock className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <strong className="block">Začněte mini kurz HNED</strong>
-                    <span className="text-sm text-blue-600">3 dny • Zpětná vazba + konkurence + komunikace</span>
+                    <strong className="block">Klikněte na slevu v emailu</strong>
+                    <span className="text-sm text-orange-600">Sleva 40% - automaticky aplikována na objednávce</span>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <Clock className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <strong className="block">Po 3 dnech: Launch Podnikatelské Čtvrtky</strong>
-                    <span className="text-sm text-blue-600">Průkopnická cena 4.999,- Kč bez DPH (ušetříte 3.500,- Kč)</span>
+                    <strong className="block text-red-700">POZOR: Sleva vyprší za 24 hodin!</strong>
+                    <span className="text-sm text-red-600">Po vypršení = plná cena 8.332 Kč</span>
                   </div>
                 </li>
               </ul>
@@ -421,14 +509,32 @@ export function PrelaunchEmailCapture() {
             </div>
             
             <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">STAŇTE SE PRŮKOPNÍKEM!</span><br/>
-              <span className="text-white text-2xl md:text-4xl">První kurz s Podnikatelskou čtvrtkou</span>
+              {!isCampaignFull() ? (
+                <>
+                  <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">STAŇTE SE PRŮKOPNÍKEM!</span><br/>
+                  <span className="text-white text-2xl md:text-4xl">Získejte 40% slevu na prvních 24 hodin 🔥</span>
+                </>
+              ) : (
+                <>
+                  <span className="bg-gradient-to-r from-gray-300 to-slate-300 bg-clip-text text-transparent">MÍSTA OBSAZENA</span><br/>
+                  <span className="text-white text-2xl md:text-4xl">Přihlaste se na čekací listinu</span>
+                </>
+              )}
             </h2>
             
             <div className="max-w-3xl mx-auto mb-8">
               <p className="text-lg md:text-xl text-white/90 leading-relaxed">
-                Získejte <strong className="text-blue-300">Podnikatelskou Čtvrtku</strong> za průkopnickou cenu<br/>
-                <strong className="text-white">Začněte 3-denním mini kurzem ZDARMA</strong>
+                {!isCampaignFull() ? (
+                  <>
+                    Získejte <strong className="text-blue-300">Podnikatelskou Čtvrtku</strong> se slevou 40%<br/>
+                    <strong className="text-orange-300">Sleva platí 24 hodin od registrace!</strong>
+                  </>
+                ) : (
+                  <>
+                    <strong className="text-blue-300">Podnikatelská Čtvrtka</strong> - první běh je plný<br/>
+                    <strong className="text-gray-300">Dáme vám vědět až spustíme další běh!</strong>
+                  </>
+                )}
               </p>
             </div>
           </motion.div>
@@ -445,7 +551,11 @@ export function PrelaunchEmailCapture() {
                 <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 p-4 md:p-6 rounded-xl border border-blue-400/20 backdrop-blur-sm shadow-lg">
                   <h3 className="text-lg font-bold text-center mb-6">
                     <span className="mr-2">🎯</span>
-                    <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">PROČ BÝT PRŮKOPNÍK?</span>
+                    {!isCampaignFull() ? (
+                      <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">PROČ BÝT PRŮKOPNÍK?</span>
+                    ) : (
+                      <span className="bg-gradient-to-r from-gray-300 to-slate-300 bg-clip-text text-transparent">CO KURZ OBSAHUJE?</span>
+                    )}
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 bg-gradient-to-r from-blue-500/15 to-indigo-500/15 px-3 py-3 rounded-lg border border-blue-400/30 backdrop-blur-sm transition-all hover:shadow-lg hover:scale-[1.02]">
@@ -469,13 +579,15 @@ export function PrelaunchEmailCapture() {
                         <span className="text-purple-300 text-sm">Kurz plníme konkrétními příklady (stále přidáváme)</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-3 py-3 rounded-lg border border-green-400/40 backdrop-blur-sm transition-all hover:shadow-lg hover:scale-[1.02]">
-                      <Gift className="w-5 h-5 text-green-300 flex-shrink-0" />
-                      <div>
-                        <span className="text-white font-medium block">BONUS: Mini kurz ZDARMA</span>
-                        <span className="text-green-300 text-sm font-medium">Začněte hned 3-denním kurzem (hodnota 2.999,- Kč)</span>
+                    {!isCampaignFull() && (
+                      <div className="flex items-center gap-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-3 py-3 rounded-lg border border-green-400/40 backdrop-blur-sm transition-all hover:shadow-lg hover:scale-[1.02]">
+                        <Gift className="w-5 h-5 text-green-300 flex-shrink-0" />
+                        <div>
+                          <span className="text-white font-medium block">BONUS po nákupu</span>
+                          <span className="text-green-300 text-sm font-medium">Mini kurz zdarma (hodnota 997 Kč)</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
@@ -487,29 +599,43 @@ export function PrelaunchEmailCapture() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.6 }}
                 >
-                  <div className="text-center mb-4">
-                    <h3 className="text-xl font-bold text-white mb-2">🔥 OMEZENÁ KAPACITA</h3>
-                    <div className="text-white/90 text-base font-medium mb-3">
-                      Průkopnická cena jen pro první registrace
+                  {!isCampaignFull() ? (
+                    <>
+                      <div className="text-center mb-4">
+                        <h3 className="text-xl font-bold text-white mb-2">🔥 OMEZENÁ KAPACITA</h3>
+                        <div className="text-orange-300 text-base font-bold mb-3">
+                          {getUrgencyText(remainingSpots)}
+                        </div>
+                        <div className="text-white/70 text-sm">
+                          Sleva 40% jen pro první registrace
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-white/80 text-sm">
+                          <Clock className="w-4 h-4 text-orange-300" />
+                          <span>Sleva 40% do emailu (platnost 24h)</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-white/80 text-sm">
+                          <CheckCircle className="w-4 h-4 text-green-300" />
+                          <span>Ušetříte 3.333 Kč</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-white/80 text-sm">
+                          <Gift className="w-4 h-4 text-purple-300" />
+                          <span>BONUS: Mini kurz po nákupu</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold text-red-300 mb-2">⚠️ PLNÉ!</h3>
+                      <div className="text-white/90 text-base mb-3">
+                        Všech 50 míst obsazeno
+                      </div>
+                      <div className="text-white/70 text-sm">
+                        Přihlaste se na čekací listinu
+                      </div>
                     </div>
-                    <div className="text-green-300 text-sm">
-                      Rezervujte si místo mezi průkopníky!
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-white/80 text-sm">
-                      <Gift className="w-4 h-4 text-purple-300" />
-                      <span>Mini kurz HNED po registraci</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-white/80 text-sm">
-                      <Users className="w-4 h-4 text-blue-300" />
-                      <span>Průkopnická cena (ušetříte 3.500,- Kč)</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-white/80 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-300" />
-                      <span>Kompletní strategie na 1 listu</span>
-                    </div>
-                  </div>
+                  )}
                 </motion.div>
 
               </div>
@@ -526,16 +652,32 @@ export function PrelaunchEmailCapture() {
               >
                 <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl p-6 mb-6 border border-blue-400/60 shadow-lg ring-1 ring-blue-300/30 transition-all hover:shadow-2xl hover:scale-[1.02]">
                   <div className="text-center mb-4">
-                    <div className="text-blue-200 text-base font-bold mb-3">⚡ PRŮKOPNICKÁ VÝHODA</div>
+                    {!isCampaignFull() ? (
+                      <div className="text-blue-200 text-base font-bold mb-3">⚡ PRŮKOPNICKÁ VÝHODA</div>
+                    ) : (
+                      <div className="text-gray-300 text-base font-bold mb-3">📋 INFORMACE O KURZU</div>
+                    )}
                     
                     {/* Cenový design */}
                     <div className="text-center">
-                      {/* Hlavní cena */}
-                      <div className="text-4xl md:text-5xl font-bold text-white bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-2 drop-shadow-lg">
-                        4.999,- Kč
-                      </div>
-                      <div className="text-white/60 text-sm mb-2">(normálně 8.499,- Kč)</div>
-                      <div className="text-white/50 text-xs mb-4">bez DPH</div>
+                      {!isCampaignFull() ? (
+                        <>
+                          {/* Hlavní cena SE SLEVOU */}
+                          <div className="text-4xl md:text-5xl font-bold text-white bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-2 drop-shadow-lg">
+                            4.999,- Kč
+                          </div>
+                          <div className="text-white/60 text-sm mb-2">(normálně 8.499,- Kč)</div>
+                          <div className="text-white/50 text-xs mb-4">bez DPH</div>
+                        </>
+                      ) : (
+                        <>
+                          {/* Normální cena BEZ SLEVY */}
+                          <div className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+                            8.499,- Kč
+                          </div>
+                          <div className="text-white/50 text-xs mb-4">bez DPH (běžná cena)</div>
+                        </>
+                      )}
                       
                       {/* Co obsahuje */}
                       <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-4 max-w-xs mx-auto">
@@ -553,28 +695,45 @@ export function PrelaunchEmailCapture() {
                           <div className="flex justify-between">
                             <span>• Úspěšné modely (příklady)</span>
                           </div>
-                          <div className="border-t border-white/30 mt-2 pt-2 flex justify-between text-green-300 font-medium">
-                            <span>🎁 BONUS: Mini kurz</span>
-                            <span>ZDARMA</span>
-                          </div>
+                          {!isCampaignFull() && (
+                            <div className="border-t border-white/30 mt-2 pt-2 flex justify-between text-green-300 font-medium">
+                              <span>🎁 BONUS: Mini kurz</span>
+                              <span>ZDARMA</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                       
-                      {/* Sleva info */}
-                      <div className="inline-flex flex-col items-center gap-1 bg-gradient-to-r from-green-500/25 to-emerald-500/25 px-5 py-3 rounded-xl border-2 border-green-400/50 transition-all hover:shadow-xl hover:scale-105">
-                        <div className="text-green-300 font-bold text-lg">💰 UŠETŘÍTE 3.500,- Kč</div>
-                        <div className="text-green-200 text-sm">Průkopnická cena -41%</div>
-                      </div>
+                      {/* Sleva info - jen když není plno */}
+                      {!isCampaignFull() && (
+                        <div className="inline-flex flex-col items-center gap-1 bg-gradient-to-r from-green-500/25 to-emerald-500/25 px-5 py-3 rounded-xl border-2 border-green-400/50 transition-all hover:shadow-xl hover:scale-105">
+                          <div className="text-green-300 font-bold text-lg">💰 UŠETŘÍTE 3.333 Kč</div>
+                          <div className="text-green-200 text-sm">Sleva 40%</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
                   <div className="text-center border-t border-white/20 pt-4">
-                    <div className="text-purple-300 font-medium text-sm mb-2">🎁 PO REGISTRACI ZÍSKÁTE:</div>
-                    <div className="text-white/90 text-sm space-y-1">
-                      <div>✅ 3-denní mini kurz HNED (2.999,- Kč)</div>
-                      <div>🎯 Info o spuštění Čtvrtky</div>
-                      <div>💡 Průkopnická cena (4.999,- Kč bez DPH)</div>
-                    </div>
+                    {!isCampaignFull() ? (
+                      <>
+                        <div className="text-orange-300 font-medium text-sm mb-2">📧 PO REGISTRACI OBDRŽÍTE:</div>
+                        <div className="text-white/90 text-sm space-y-1">
+                          <div>💰 Slevu 40% do emailu (platnost 24h)</div>
+                          <div>🎯 Link na objednávkovou stránku</div>
+                          <div>🎁 BONUS po nákupu: Mini kurz (997 Kč)</div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-blue-300 font-medium text-sm mb-2">📧 PO PŘIHLÁŠENÍ NA ČEKACÍ LISTINU:</div>
+                        <div className="text-white/90 text-sm space-y-1">
+                          <div>📝 Potvrzení registrace do emailu</div>
+                          <div>🔔 Upozornění na další běh (jako první!)</div>
+                          <div>💡 Možná exkluzivní sleva pro čekající</div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -602,13 +761,20 @@ export function PrelaunchEmailCapture() {
                     
                     {isLoading ? (
                       "🚀 PŘIPOJUJI VÁS..."
+                    ) : isCampaignFull() ? (
+                      <>
+                        <span className="relative z-10">
+                          📝 ČEKACÍ LISTINA
+                        </span>
+                        <ArrowRight className="ml-2 w-5 h-5 inline-block relative z-10" />
+                      </>
                     ) : (
                       <>
                         <span className="block sm:hidden relative z-10">
-                          🔥 REZERVOVAT #{50 - availableSpots + 1}/50
+                          🔥 REZERVOVAT (zbývá {remainingSpots})
                         </span>
                         <span className="hidden sm:block relative z-10">
-                          🔥 CHCI BÝT PRŮKOPNÍK #{50 - availableSpots + 1}
+                          🔥 CHCI SLEVU 40% (zbývá {remainingSpots} míst)
                         </span>
                         <ArrowRight className="ml-2 w-5 h-5 inline-block relative z-10" />
                       </>

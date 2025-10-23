@@ -118,7 +118,7 @@ export function ValuePropositionCanvas({ userId, selectedSegment = "Můj segment
   };
   
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full">
       <div className="bg-gradient-to-r from-blue-500 to-green-500 text-white p-6 rounded-t-xl">
         <h2 className="text-2xl font-bold mb-2">💎 Hodnotová Mapa</h2>
         <p className="text-blue-100">

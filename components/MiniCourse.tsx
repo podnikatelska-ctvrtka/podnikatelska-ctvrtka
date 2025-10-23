@@ -306,7 +306,7 @@ DĚKUJEME!`,
         {
           step: 2,
           title: "Krok 2: 5 komunikačních triků (5 min)",
-          description: "Vyberte alespoň 2 triky z těch nahoře a napište jak je použijete.",
+          description: "Vyberte alespoň 3 triky z těch nahoře a napište jak je použijete.",
           templateType: 'checklist',
           template: `5 TRIKŮ KTERÉ PRODÁVAJÍ:
 
@@ -387,10 +387,17 @@ export function MiniCourse() {
 
   // 🔐 ACCESS CONTROL - Zkontroluj token při načtení
   useEffect(() => {
-    // Načti token z URL (?token=abc123)
+    // Načti token z URL - může být buď /#minikurz?token=abc nebo ?token=abc
+    const hash = window.location.hash; // např. "#minikurz?token=abc123"
+    const hashParams = hash.includes('?') ? hash.split('?')[1] : '';
+    const hashUrlParams = new URLSearchParams(hashParams);
+    const hashToken = hashUrlParams.get('token');
+    const hashReset = hashUrlParams.get('reset');
+    
+    // Fallback na klasický query string (pro podporu obou variant)
     const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get('token');
-    const resetParam = urlParams.get('reset');
+    const urlToken = hashToken || urlParams.get('token');
+    const resetParam = hashReset || urlParams.get('reset');
     
     // 🔄 RESET FUNKCIONALITA (pro testování) - ?reset=true
     if (resetParam === 'true') {
@@ -488,7 +495,19 @@ export function MiniCourse() {
   
 
   const updateFormData = (key: string, value: string) => {
-    // Ochrana struktury u konkurentů - nepovolí smazat "1. 2. 3."
+    // Ochrana struktury - zabraňuje smazání důležitých nadpisů a struktury
+    
+    // Day 1 - Plan zpětné vazby
+    if (key === 'day1-plan-zpetna-vazba') {
+      const requiredParts = ['📧 EMAIL:', '📄 OFFLINE:'];
+      const missingParts = requiredParts.filter(part => !value.includes(part));
+      if (missingParts.length > 0) {
+        // Pokusí se smazat strukturu - zabraň tomu
+        return;
+      }
+    }
+    
+    // Day 2 - Konkurenti
     if (key === 'day2-konkurenti') {
       const requiredStructure = /1\.\s*[\s\S]*2\.\s*[\s\S]*3\.\s*/;
       if (!requiredStructure.test(value)) {
@@ -497,13 +516,77 @@ export function MiniCourse() {
       }
     }
     
-    // Ochrana struktury u příležitostí - nepovolí smazat nadpisy
+    // Day 2 - Konkurence dobré stránky
+    if (key === 'day2-konkurence-dobre') {
+      // Pokud má nějaký obsah (není prázdné), kontroluj strukturu
+      if (value.trim().length > 0) {
+        // Kontroluj strukturu - všech 5 aspektů musí být přítomno
+        const requiredAspects = ['Produkt:', 'Cena:', 'Komunikace:', 'Bonus:', 'Recenze:'];
+        const missingAspects = requiredAspects.filter(aspect => !value.includes(aspect));
+        if (missingAspects.length > 0) {
+          return; // Pokusí se smazat strukturu
+        }
+        // Kontroluj minimálně 10 checkmarků (2 konkurenti × 5 aspektů)
+        const matches = value.match(/✅/g);
+        if (!matches || matches.length < 10) {
+          return;
+        }
+      }
+    }
+    
+    // Day 2 - Konkurence špatné stránky
+    if (key === 'day2-konkurence-spatne') {
+      // Pokud má nějaký obsah (není prázdné), kontroluj strukturu
+      if (value.trim().length > 0) {
+        // Kontroluj strukturu - všech 5 aspektů musí být přítomno
+        const requiredAspects = ['Produkt:', 'Cena:', 'Komunikace:', 'Bonus:', 'Recenze:'];
+        const missingAspects = requiredAspects.filter(aspect => !value.includes(aspect));
+        if (missingAspects.length > 0) {
+          return; // Pokusí se smazat strukturu
+        }
+        // Kontroluj minimálně 10 křížků (2 konkurenti × 5 aspektů)
+        const matches = value.match(/❌/g);
+        if (!matches || matches.length < 10) {
+          return;
+        }
+      }
+    }
+    
+    // Day 2 - Příležitosti
     if (key === 'day2-prilezitosti') {
       const requiredHeaders = value.includes('V ČEM MŮŽEME BÝT LEPŠÍ:') && 
                               value.includes('CO NAVÍC MŮŽEME NABÍDNOUT:') && 
                               value.includes('KDE A JAK TO ŘÍCT ZÁKAZNÍKŮM:');
       if (!requiredHeaders) {
         // Pokusí se smazat nadpisy - zabraň tomu
+        return;
+      }
+    }
+    
+    // Day 3 - Nabídka
+    if (key === 'day3-nabidka') {
+      if (!value.includes('Moje nabídka:')) {
+        // Pokusí se smazat nadpis - zabraň tomu
+        return;
+      }
+    }
+    
+    // Day 3 - Komunikační triky
+    if (key === 'day3-komunikacni-triky') {
+      // Kontrola že obsahuje minimálně 2 výskyty "✅ TRIK #"
+      const matches = value.match(/✅ TRIK #/g);
+      if (!matches || matches.length < 2) {
+        // Pokusí se smazat strukturu - zabraň tomu
+        return;
+      }
+    }
+    
+    // Day 3 - Akční plán
+    if (key === 'day3-akcni-plan') {
+      const requiredParts = ['✅ CO ZMĚNÍM DNES:', '✅ KDE TO POUŽIJU:'];
+      const missingParts = requiredParts.filter(part => !value.includes(part));
+      if (missingParts.length > 0) {
+        // Pokusí se smazat strukturu - zabraň tomu
         return;
       }
     }
@@ -1464,6 +1547,21 @@ export function MiniCourse() {
                           style={{ WebkitTextSizeAdjust: '100%' }}
                         />
                         
+                        {/* Hint o ochraně struktury */}
+                        {(step.input === 'plan-zpetna-vazba' || 
+                          step.input === 'konkurenti' || 
+                          step.input === 'konkurence-dobre' ||
+                          step.input === 'konkurence-spatne' ||
+                          step.input === 'prilezitosti' || 
+                          step.input === 'nabidka' || 
+                          step.input === 'komunikacni-triky' || 
+                          step.input === 'akcni-plan') && (
+                          <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                            <span>💡</span>
+                            <span>Předvyplněné nadpisy nelze smazat (jsou potřeba pro export do PDF)</span>
+                          </p>
+                        )}
+                        
 
                         {/* Helper text pro Den 1 Step 2 */}
                         {currentLesson.day === 1 && step.input === 'plan-zpetna-vazba' && (
@@ -1592,8 +1690,8 @@ export function MiniCourse() {
                   <div className="bg-white/50 border border-green-200 rounded-lg p-4">
                     <p className="text-sm font-semibold text-green-800 mb-2">📅 Co vás čeká dál:</p>
                     <p className="text-sm text-gray-700">
-                      <strong>Podnikatelská Čtvrtka</strong> - kompletní kurz na vytvoření prodejní stránky která skutečně prodává - se blíží k launchi. 
-                      Brzy vám přijde email s podrobnostmi.
+                      <strong>Podnikatelská Čtvrtka</strong> - kompletní kurz na vytvoření prodejní stránky která skutečně prodává - 
+                      brzy startuje! V emailu vám přijde speciální nabídka s exkluzivní slevou.
                     </p>
                   </div>
                   <p className="text-sm text-gray-600">

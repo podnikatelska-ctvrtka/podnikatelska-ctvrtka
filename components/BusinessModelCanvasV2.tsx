@@ -5,13 +5,12 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { supabase } from "../lib/supabase";
 import { hexToColorName } from "../lib/colorUtils";
+import { trackCourseEvent, trackError } from "../lib/sentry";
 
 interface CanvasItem {
   text: string;
   color: 'blue' | 'green' | 'yellow' | 'pink' | 'purple' | 'gray' | 'global';
-  value?: number;        // Jednoduchá hodnota (cena, náklady, příjmy)
-  currentValue?: number; // TEĎ - POUZE pro zákazníky!
-  targetValue?: number;  // CÍL - POUZE pro zákazníky!
+  value?: number; // Jednoduchá hodnota (cena, náklady, příjmy, průměrná útrata)
 }
 
 interface CanvasSection {
@@ -45,21 +44,20 @@ const INITIAL_CANVAS: CanvasSection[] = [
   { id: "channels", title: "Kanály", items: [], gridArea: "channels" },
   { id: "segments", title: "Zákaznické segmenty", items: [], gridArea: "segments", valueLabel: "Průměrná útrata (Kč)" }, // ✅ Průměr na návštěvu
   { id: "costs", title: "Struktura nákladů", items: [], gridArea: "costs", valueLabel: "Náklady (Kč/měsíc)" },
-  { id: "revenue", title: "Zdroje příjmů", items: [], gridArea: "revenue", valueLabel: "Příjmy (Kč/měsíc)" },
+  { id: "revenue", title: "Zdroje příjmů", items: [], gridArea: "revenue", valueLabel: "Příjmy (K��/měsíc)" },
 ];
 
 interface Props {
   userId: string;
   highlightSection?: string; // Pro guided tour - highlight specific section
+  onAchievementUnlocked?: (achievementId: string) => void; // 🎉 Achievement callback
 }
 
-export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
+export function BusinessModelCanvasV2({ userId, highlightSection, onAchievementUnlocked }: Props) {
   const [canvas, setCanvas] = useState<CanvasSection[]>(INITIAL_CANVAS);
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [newItem, setNewItem] = useState("");
-  const [newValue, setNewValue] = useState<number | undefined>(); // Pro jednoduchá pole (value, costs, revenue)
-  const [newCurrentValue, setNewCurrentValue] = useState<number | undefined>(); // TEĎ (jen segments)
-  const [newTargetValue, setNewTargetValue] = useState<number | undefined>(); // CÍL (jen segments)
+  const [newValue, setNewValue] = useState<number | undefined>(); // Pro všechny sekce s valueLabel
   const [selectedColor, setSelectedColor] = useState<'blue' | 'green' | 'yellow' | 'pink' | 'purple' | 'gray' | 'global'>('blue');
   const [isSaving, setIsSaving] = useState(false);
   const [showCalculations, setShowCalculations] = useState(true);
@@ -95,6 +93,11 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
       }
     } catch (err) {
       console.warn('Failed to load canvas:', err);
+      
+      // 🚨 SENTRY: Track load error
+      trackError.loadError('BusinessModelCanvasV2', err as Error, {
+        userId,
+      });
     }
   };
 
@@ -116,9 +119,62 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
 
       if (error) throw error;
       toast.success("✅ Uloženo!");
+      
+      // 🚨 SENTRY: Track successful save
+      trackCourseEvent.vpcSave({
+        userId,
+        segmentName: sectionId,
+        hasJobs: items.length > 0,
+        hasPains: false,
+        hasGains: false,
+      });
+      
+      // 🎉 ACHIEVEMENT TRIGGERING (real-time, desktop V2)
+      if (onAchievementUnlocked) {
+        const itemCount = items.length;
+        
+        // First segment/value
+        if (sectionId === 'segments' && itemCount === 1) {
+          onAchievementUnlocked('first-segment');
+        } else if (sectionId === 'value' && itemCount === 1) {
+          onAchievementUnlocked('first-value');
+        }
+        
+        // Profit calculated
+        if ((sectionId === 'revenue' || sectionId === 'costs') && items.some(i => i.value && i.value > 0)) {
+          onAchievementUnlocked('profit-calculated');
+        }
+        
+        // Check all sections filled & profitable
+        const { data: allSections } = await supabase
+          .from('user_canvas_data')
+          .select('section_key, content')
+          .eq('user_id', userId);
+        
+        if (allSections) {
+          const requiredSections = ['segments', 'value', 'channels', 'relationships', 'revenue', 'resources', 'activities', 'partners', 'costs'];
+          const filledSections = allSections.filter(s => 
+            requiredSections.includes(s.section_key) && s.content?.length > 0
+          );
+          
+          if (filledSections.length === 9) {
+            onAchievementUnlocked('all-sections-filled');
+          }
+          
+          // ❌ "profitable-business" achievement SE NETRIGGERUJE ZDE!
+          // Triggeruje se v ProfitCalculator (Modul 2, Lekce 2) když user VIDÍ finanční analýzu
+        }
+      }
     } catch (err) {
       console.error('Save failed:', err);
       toast.error("Chyba při ukládání");
+      
+      // 🚨 SENTRY: Track error
+      trackError.saveError('BusinessModelCanvasV2', err as Error, {
+        userId,
+        sectionId,
+        itemCount: items.length,
+      });
     } finally {
       setIsSaving(false);
     }
@@ -129,20 +185,13 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
 
     const updated = canvas.map(section => {
       if (section.id === sectionId) {
-        // Zákaznické segmenty: TEĎ/CÍL
-        const newItemData = sectionId === 'segments' 
-          ? { 
-              text: newItem.trim(), 
-              color: selectedColor,
-              currentValue: newCurrentValue,
-              targetValue: newTargetValue 
-            }
-          // Ostatní: jen value
-          : { 
-              text: newItem.trim(), 
-              color: selectedColor,
-              value: newValue 
-            };
+        // ❌ ODSTRANĚNO: TEĎ/CÍL pro segments - matoucí!
+        // VŠECHNY sekce: jen text, color, value
+        const newItemData = { 
+          text: newItem.trim(), 
+          color: selectedColor,
+          value: newValue 
+        };
         
         const newItems = [...section.items, newItemData];
         saveCanvasData(sectionId, newItems);
@@ -154,8 +203,6 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
     setCanvas(updated);
     setNewItem("");
     setNewValue(undefined);
-    setNewCurrentValue(undefined);
-    setNewTargetValue(undefined);
     setEditingSection(null);
   };
 
@@ -223,7 +270,7 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="px-6 space-y-6">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-lg p-6 print:shadow-none">
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -316,18 +363,9 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
                         )}
                         <div className="flex-1">
                           <div className={colorClasses.text}>{item.text}</div>
-                          {/* Zákaznické segmenty: TEĎ vs CÍL */}
-                          {section.id === 'segments' && (item.currentValue !== undefined || item.targetValue !== undefined) && (
-                            <div className={`${colorClasses.text} font-bold mt-1 text-xs`}>
-                              {item.currentValue !== undefined && <div>TEĎ: {item.currentValue.toLocaleString('cs-CZ')}</div>}
-                              {item.targetValue !== undefined && <div>CÍL: {item.targetValue.toLocaleString('cs-CZ')}</div>}
-                              {item.currentValue !== undefined && item.targetValue !== undefined && (
-                                <div className="text-orange-600">→ +{(item.targetValue - item.currentValue).toLocaleString('cs-CZ')}</div>
-                              )}
-                            </div>
-                          )}
-                          {/* Ostatní: jen jednoduchá hodnota */}
-                          {section.id !== 'segments' && item.value !== undefined && (
+                          {/* ❌ ODSTRANĚNO: TEĎ/CÍL pro segments - byly matoucí */}
+                          {/* Hodnota (cena, náklady, příjmy, průměrná útrata) */}
+                          {item.value !== undefined && (
                             <div className={`${colorClasses.text} font-bold mt-1 text-xs`}>
                               {item.value.toLocaleString('cs-CZ')} {section.valueLabel?.includes('Kč') ? 'Kč' : ''}
                             </div>
@@ -364,34 +402,15 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
                   {/* Value inputs */}
                   {section.valueLabel && (
                     <>
-                      {/* Zákaznické segmenty: TEĎ a CÍL */}
-                      {section.id === 'segments' ? (
-                        <div className="grid grid-cols-2 gap-2">
-                          <input
-                            type="number"
-                            value={newCurrentValue || ''}
-                            onChange={(e) => setNewCurrentValue(e.target.value ? parseInt(e.target.value) : undefined)}
-                            placeholder="TEĎ (počet)"
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:ring-2 focus:ring-blue-500"
-                          />
-                          <input
-                            type="number"
-                            value={newTargetValue || ''}
-                            onChange={(e) => setNewTargetValue(e.target.value ? parseInt(e.target.value) : undefined)}
-                            placeholder="CÍL (počet)"
-                            className="w-full px-2 py-1 border border-green-300 rounded text-xs focus:ring-2 focus:ring-green-500"
-                          />
-                        </div>
-                      ) : (
-                        /* Ostatní: jen jedna hodnota */
-                        <input
-                          type="number"
-                          value={newValue || ''}
-                          onChange={(e) => setNewValue(e.target.value ? parseInt(e.target.value) : undefined)}
-                          placeholder={section.valueLabel}
-                          className="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:ring-2 focus:ring-blue-500"
-                        />
-                      )}
+                      {/* ❌ ODSTRANĚNO: TEĎ/CÍL pro segments - matoucí! Segments mají jen průměrnou útratu */}
+                      {/* Všechny sekce s valueLabel: jen jedna hodnota */}
+                      <input
+                        type="number"
+                        value={newValue || ''}
+                        onChange={(e) => setNewValue(e.target.value ? parseInt(e.target.value) : undefined)}
+                        placeholder={section.valueLabel}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:ring-2 focus:ring-blue-500"
+                      />
                     </>
                   )}
                   
@@ -466,8 +485,7 @@ export function BusinessModelCanvasV2({ userId, highlightSection }: Props) {
                       onClick={() => {
                         setEditingSection(null);
                         setNewItem("");
-                        setNewCurrentValue(undefined);
-                        setNewTargetValue(undefined);
+                        setNewValue(undefined);
                       }}
                       size="sm"
                       className="text-xs h-7"

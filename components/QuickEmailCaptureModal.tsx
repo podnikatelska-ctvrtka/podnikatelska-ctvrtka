@@ -107,7 +107,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                 </DialogTitle>
                 <DialogDescription className="text-sm text-gray-600 text-center leading-relaxed">
                   <span className="font-semibold text-gray-800">Od prvního úspěšného podnikání vás dělí 90 minut.</span><br/>
-                  První kurz s Podnikatelskou Čtvrtkou v ČR.
+                  Omezená kapacita - 50 průkopnických míst!
                 </DialogDescription>
               </DialogHeader>
 
@@ -127,7 +127,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                     </div>
                     <div className="text-xs text-indigo-600 mb-2">(bez DPH)</div>
                     <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold">
-                      💰 Ušetříte: 3.500,- Kč (jen pro první!)
+                      💰 Ušetříte: 3.333 Kč (sleva 40%)
                     </div>
                   </div>
                 </motion.div>
@@ -141,12 +141,12 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                   <div className="flex items-start gap-3 mb-3">
                     <Gift className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-bold text-purple-900 mb-1">🎁 BONUS PRO PRVNÍ:</div>
+                      <div className="font-bold text-purple-900 mb-1">⏰ SLEVA 40% DO EMAILU:</div>
                       <div className="text-sm text-purple-800 font-medium">
-                        3-denní mini kurz ZDARMA (hodnota 2.999,- Kč)
+                        Platnost 24 hodin od registrace!
                       </div>
                       <div className="text-xs text-purple-600 mt-1">
-                        Začněte ještě dnes! Zlepšete podnikání hned.
+                        🎁 Bonus po nákupu: Mini kurz zdarma (997 Kč)
                       </div>
                     </div>
                   </div>
@@ -187,7 +187,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                   </Button>
 
                   <p className="text-xs text-center text-gray-500">
-                    📧 Okamžitě dostanete přístup k 3-dennímu mini kurzu ZDARMA
+                    💰 Slevu 40% pošleme do emailu během 5 minut!
                   </p>
                 </motion.form>
 

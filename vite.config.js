@@ -56,5 +56,11 @@ export default defineConfig({
       'lucide-react',
       '@supabase/supabase-js'
     ]
+  },
+  
+  // ✅ Server config - povolí network access (testování na mobilu)
+  server: {
+    host: true, // Povolí přístup z mobilu (0.0.0.0)
+    port: 5173,
   }
 })

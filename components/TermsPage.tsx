@@ -84,7 +84,7 @@ export default function TermsPage() {
                 Plná refundace je možná pouze pokud:
               </p>
               <ul className="list-disc pl-6 space-y-1 text-sm mt-2">
-                <li>Nedošlo k absolvování více než 20% obsahu kurzu (max. 1 modul z 3)</li>
+                <li>Nedošlo k absolvování více než 20% obsahu kurzu (max. 3 lekce z celkových 16 lekcí)</li>
                 <li>Nebyly zkopírovány business modely z galerie</li>
                 <li>Nebyly vyplněny interaktivní nástroje (Business Model Canvas, Value Proposition Canvas)</li>
               </ul>

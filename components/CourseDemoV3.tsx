@@ -5,12 +5,15 @@ import { toast } from "sonner";
 import { Toaster } from "./ui/sonner";
 import { supabase, verifyAccessToken } from "../lib/supabase";
 import { loadCourseProgress, saveLessonProgress, resetAllProgress } from "../lib/courseProgress";
+import { trackCourseEvent } from "../lib/sentry";
 import { BusinessModelCanvasSimple } from "./BusinessModelCanvasSimple";
 import { GuidedTour, scrollToSection } from "./GuidedTour";
 import { SimpleDashboard } from "./SimpleDashboard";
 import { BusinessActionPlan } from "./BusinessActionPlan";
 import { CourseSidebar } from "./CourseSidebar";
 import { MobileSidebarContent } from "./MobileSidebarContent";
+import { TargetCalculatorTool } from "./TargetCalculatorTool";
+import { SegmentSizeTool } from "./SegmentSizeTool";
 import { MobileCanvasAccordion } from "./MobileCanvasAccordion";
 import { MobileSingleSection } from "./MobileSingleSection";
 import { CanvasValidator } from "./CanvasValidator";
@@ -18,6 +21,7 @@ import { ProfitCalculator } from "./ProfitCalculator";
 import { ProblemSolver } from "./ProblemSolver";
 import { LessonContentRenderer } from "./LessonContentRenderer";
 import { BusinessModelGallery } from "./BusinessModelGallery";
+import { SimpleBusinessExamples } from "./SimpleBusinessExamples";
 import { ValuePropositionCanvas } from "./ValuePropositionCanvas";
 import { FitValidatorV2 } from "./FitValidatorV2";
 import { MODULE_3 } from "./module3-data";
@@ -29,9 +33,12 @@ import { VPCCustomerProfileCircle } from "./VPCCustomerProfileCircle";
 import { VPCCustomerProfileStory } from "./VPCCustomerProfileStory";
 import { AutosaveIndicator } from "./AutosaveIndicator";
 import { AchievementNotification } from "./AchievementNotification";
+import { PullToRefresh } from "./PullToRefresh";
+import { SwipeLessonNavigation, useSwipeNavigation } from "./SwipeLessonNavigation";
 import { celebrateModuleComplete, celebrateLessonComplete } from "../lib/confetti";
-import { getAchievement, unlockAchievement, loadUnlockedAchievements, ACHIEVEMENTS } from "../lib/achievements";
+import { getAchievement, unlockAchievement, loadUnlockedAchievements, loadUnlockedAchievementsFromDB, ACHIEVEMENTS } from "../lib/achievements";
 import type { Achievement } from "../lib/achievements";
+import { useOrientation } from "../lib/useOrientation";
 
 // Verify token
 async function verifyToken(token: string) {
@@ -54,32 +61,67 @@ const MODULE_1 = {
       description: "Kdo jsou vaši zákazníci? Naučte se je identifikovat.",
       content: `
         <h3>👥 Co je to Zákaznický segment?</h3>
-        <p><strong>Zákaznický segment</strong> je skupina lidí nebo firem, kteří mají společné potřeby, chování nebo charakteristiky.</p>
+        <p><strong>Zákaznický segment</strong> je konkrétní skupina lidí, která má <strong>stejný problém</strong> a za jeho řešení jsou ochotni <strong>platit</strong>.</p>
+        
+        <h4>🎯 Jak identifikovat vaše segmenty (krok za krokem):</h4>
+        
+        <p><strong>KROK 1: Zamyslete se nad problémem</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Jaký problém řešíte? Kdo ho pravděpodobně má?</p>
+        
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-3">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Podívejte se na tržby - <strong>komu prodáváte nejvíc?</strong></li>
+            <li>Kdo nakupuje <strong>nejčastěji?</strong> Kdo utrácí <strong>nejvíc?</strong></li>
+            <li>Příklad: "Profesionálky 30-50 let mi dělají 60% tržeb"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-3">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Napište si <strong>2-3 hypotézy</strong> - kdo by mohl mít ten problém?</li>
+            <li>Příklad: "Myslím že zaneprázdněné maminky (30-40 let) s dětmi"</li>
+            <li><strong>Najděte je online</strong> (FB skupiny, fóra, Instagram)</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Validujte to!</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Zeptejte se 10 lidí z té skupiny</p>
+        <ul class="text-sm text-gray-600 ml-8 mt-1">
+          <li>"Řešíte tento problém?"</li>
+          <li>"Kolik vás to stojí času/peněz?"</li>
+          <li>"Kolik byste byli ochotni zaplatit za řešení?"</li>
+        </ul>
+        
+        <p class="mt-3"><strong>KROK 4: Buďte KONKRÉTNÍ!</strong></p>
+        <p class="text-sm text-gray-600 ml-4">❌ Špatně: "Ženy", "Mladí lidé", "Firmy"</p>
+        <p class="text-sm text-gray-600 ml-4">✅ Dobře: "Profesionálky 30-50 let které spěchají do práce a potřebují rychlé řešení"</p>
+        
+        <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
+          <p class="text-purple-900"><strong>💡 TIP:</strong> Začněte s <strong>1-2 segmenty</strong> a zaměřte se na ty co vám vydělávají (nebo budou vydělávat) nejvíc peněz. Lepší je dokonale obsloužit 2 segmenty než špatně 10!</p>
+        </div>
         
         <h4>Proč je to důležité?</h4>
-        <p>Nemůžete prodávat všem! Čím konkrétnější je váš segment, tím:</p>
+        <p>Nemůžete prodávat všem! Když budete mít <strong>2-3 konkrétní segmenty</strong> místo "všichni", dokážete:</p>
         <ul>
-          <li>✅ Lépe cílíte marketing</li>
-          <li>✅ Snáze oslovujete zákazníky</li>
-          <li>✅ Přesněji vytváříte hodnotu</li>
+          <li>✅ <strong>Lépe cílit reklamu</strong> - víte kde je najít a co jim nabídnout</li>
+          <li>✅ <strong>Vyšší cenu</strong> - konkrétní řešení = vyšší hodnota pro zákazníka</li>
+          <li>✅ <strong>Rychlejší růst</strong> - zaměříte energii na ty správné lidi</li>
         </ul>
         
         <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
-        <p><strong>Každý segment = jedna barva štítku.</strong> Tuto barvu pak použijete ve všech sekcích Canvas (hodnota, kanály, příjmy) pro tento segment.</p>
-        
-        <h4>Klíčové otázky:</h4>
-        <ul>
-          <li><strong>Pro koho</strong> vytváříme hodnotu?</li>
-          <li><strong>Kdo</strong> konkrétně platí za náš produkt?</li>
-          <li><strong>Kde</strong> tyto lidi najdeme?</li>
-        </ul>
+        <p><strong>Každý segment = jedna barva.</strong> Barva sleduje cestu: 🔵 Segment → 🔵 Hodnota → 🔵 Kanál → 🔵 Příjem</p>
+        <p>Díky tomu <strong>na první pohled vidíte</strong> co prodáváte komu, kde a za kolik! 🎯</p>
       `,
       examples: {
         good: [
           "🍕 Pizzerie: Rodiny s dětmi 5-12 let (hledají rychlé rozvážky)",
           "🔧 Autoservis: Majitelé aut 5+ let starých (potřebují opravy)",
           "👗 E-shop: Ženy 25-40 let sledující módu (chtějí trendy oblečení)",
-          "💇 Kadeřnice: Profesionálky 30-50 let (��et��í čas, chtějí kvalitu)"
+          "💇 Kadeřnice: Profesionálky 30-50 let (šetří čas, chtějí kvalitu)"
         ],
         bad: [
           "Všichni co mají hlad",
@@ -89,9 +131,11 @@ const MODULE_1 = {
         ]
       },
       tips: [
-        "💡 Buďte KONKRÉTNÍ: věk, situace, bolest, místo",
+        "💡 Buďte KONKRÉTNÍ: věk, situace, bolest, kde je najdete",
         "🎨 Každý segment = JEDNA BARVA (např. 🔵 rodiny, 🟢 profesionálky)",
-        "📊 Potenciál musí být velký (závisí na ceně - dražší = stačí méně zákazníků)"
+        "🚀 Začínající: Začněte s 1 segmentem, až budete mít data přidejte další",
+        "💰 Už podnikám: Zaměřte se na top 2-3 segmenty co vydělávají nejvíc",
+        "💬 Validujte! FB skupiny, fóra, Instagram - zjistěte jestli ten problém opravdu mají"
       ],
       showDemo: false
     },
@@ -103,35 +147,70 @@ const MODULE_1 = {
       description: "Co nabízíte a proč si vybrat právě vás?",
       content: `
         <h3>💎 Co je to Hodnotová nabídka?</h3>
-        <p><strong>Hodnotová nabídka</strong> je konkrétní produkt nebo služba, která <strong>řeší problém zákazníka</strong> a za kterou vám platí peníze.</p>
+        <p><strong>Hodnotová nabídka</strong> = produkt/služba + <strong>proč si vybrat právě VÁS</strong> místo konkurence.</p>
+        
+        <h4>⚠️ POZOR: Produkt ≠ Hodnota!</h4>
+        <p>❌ <strong>Špatně:</strong> "Prodávám pizzu" (to prodává každý)</p>
+        <p>✅ <strong>Správně:</strong> "Rodinná pizza XXL + dětské menu zdarma za 20 min" (proto si vyberou VÁS!)</p>
+        
+        <h4>🎯 Jak vytvořit hodnotu (krok za krokem):</h4>
+        
+        <p><strong>KROK 1: Začněte produktem</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Co konkrétně prodáváte? (pizza, servis, kurz, oblečení...)</p>
+        
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-3">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Zeptejte se TOP 10 zákazníků <strong>"Proč si nás vybíráte?"</strong></li>
+            <li>Jejich odpověď = vaše hodnota!</li>
+            <li>Příklad: "Protože mi to stihnete do večera" → Hodnota = Rychlost</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-3">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Napište si <strong>hypotézu</strong> - co by zákazníka motivovalo k nákupu?</li>
+            <li>Příklad: "Myslím že rodiny chtějí rychlou rozvážku do 20 min"</li>
+            <li>Zjistěte co nabízí konkurence a <strong>čím se lišíte</strong></li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Přidejte benefit + unikátnost</strong></p>
+        <p class="text-sm text-gray-600 ml-4"><strong>Produkt</strong> + Proč je to užitečné? + Proč právě VY?</p>
+        <p class="text-sm text-gray-600 ml-4">Příklad: "Pizza XXL" + "nasytí celou rodinu" + "za 20 min u vás doma"</p>
+        
+        <p class="mt-3"><strong>KROK 4: Validujte to!</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Nabídněte pre-order nebo MVP - platí lidé za to? Pokud ano, máte hodnotu! ✅</p>
+        
+        <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
+          <p class="text-purple-900"><strong>💡 TIP:</strong> Stejný produkt (pizza) může mít <strong>různé hodnoty</strong> pro různé segmenty! 🔵 Rodiny chtějí rychlost + objem, 🟢 studenti chtějí cenu.</p>
+        </div>
         
         <h4>Proč je to důležité?</h4>
+        <p>Když víte <strong>PROČ si vás zákazníci vybírají</strong>, můžete:</p>
         <ul>
-          <li>✅ Jasně vidíte <strong>CO přesně prodáváte</strong> a KOMU</li>
-          <li>✅ Můžete se zaměřit na <strong>nejvýdělečnější produkty</strong></li>
-          <li>✅ Zjistíte, jestli nabídka <strong>opravdu řeší problém</strong> vašich zákazníků</li>
+          <li>✅ <strong>Vidět CO prodáváte KOMU</strong> - každá hodnota má svou barvu = svého zákazníka</li>
+          <li>✅ <strong>Zaměřit se na top příjmy</strong> - ne všechny produkty vydělávají stejně!</li>
+          <li>✅ <strong>Jasně komunikovat</strong> - když víte "proč VY", snadno to sdělíte zákazníkům</li>
         </ul>
         
         <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
-        <p>Každý produkt má <strong>barvu podle segmentu</strong>, kterému ho prodáváte:</p>
+        <p><strong>Každá hodnota = barva segmentu</strong>, kterému ji prodáváte:</p>
         <ul>
-          <li><strong>🔵 Modrý segment</strong> (Rodiny) → <strong>🔵 modrá hodnota</strong> (Rodinná pizza XXL)</li>
-          <li><strong>🟢 Zelený segment</strong> (Studenti) → <strong>🟢 zelená hodnota</strong> (Pizza slice 40 Kč)</li>
+          <li><strong>🔵 Modrý segment</strong> (Rodiny) → <strong>🔵 modrá hodnota</strong> (Pizza XXL + dětské menu zdarma za 20 min)</li>
+          <li><strong>🟢 Zelený segment</strong> (Studenti) → <strong>🟢 zelená hodnota</strong> (Pizza slice 40 Kč + rozvoz do 15 min)</li>
         </ul>
-        
-        <h4>Klíčové otázky:</h4>
-        <ul>
-          <li><strong>Co konkrétně</strong> prodáváte a KOMU?</li>
-          <li><strong>Kolik</strong> z toho vyděláváte? (zaměřte se na hlavní příjmy!)</li>
-          <li><strong>Proč</strong> si zákazník vybere právě VÁS?</li>
-        </ul>
+        <p class="text-sm text-gray-600 mt-2">💡 Vidíte? Stejný produkt (pizza), ale <strong>jiná hodnota</strong> pro každý segment!</p>
       `,
       examples: {
         good: [
           "🍕 Pizzerie (🔵 Rodiny): Rodinná pizza XXL + dětské menu zdarma",
-          "🔧 Autoservis (🟢 Majitelé starších aut): Servis za 1 den + náhradní vůz zdarma",
+          "���� Autoservis (🟢 Majitelé starších aut): Servis za 1 den + náhradní vůz zdarma",
           "👗 E-shop (🟡 Módní ženy): Nové kolekce každý týden + vrácení do 60 dní",
-          "💇 Kadeřnice (🟣 Profesionálky): Večerní termíny 18-21h + express strih 30 min"
+          "💇 Kadeřnice (🟣 Profesionálky): Večerní termíny 18-21h + střih 30 min"
         ],
         bad: [
           "Kvalitní jídlo",
@@ -141,8 +220,8 @@ const MODULE_1 = {
         ]
       },
       tips: [
-        "🎨 Stejná barva jako segment (🔵 rodiny → 🔵 pizza) - uvidíte co prodáváte komu",
-        "💎 Hodnota NENÍ produkt! Je to BENEFIT pro zákazníka",
+        "🎨 Stejná barva jako segment (🔵 rodiny → 🔵 Pizza XXL + dětské menu zdarma za 20 min)",
+        "💎 Hodnota NENÍ produkt! Je to produkt + BENEFIT + unikátnost",
         "🎯 Ptejte se: 'Proč právě MY?' - odpověď je vaše hodnota",
         "📊 Více hodnot pro jeden segment = diverzifikace příjmů"
       ]
@@ -154,22 +233,72 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Jak se dostáváte k zákazníkům?",
       content: `
-        <h3>📢 Kanály</h3>
-        <p><strong>Kanály</strong> jsou místa a způsoby, kterými oslovujete zákazníky a dodáváte jim hodnotu.</p>
+        <h3>📢 Co jsou to Kanály?</h3>
+        <p><strong>Kanály</strong> jsou místa a způsoby, kterými <strong>oslovujete zákazníky</strong> a dodáváte jim hodnotu. Jednoduše: <strong>Kde zákazníky najdete?</strong></p>
         
-        <h4>🎨 PRAVIDLO: Kde jsou VAŠI zákazníci?</h4>
-        <p>Zjistěte kde vaše segmenty tráví čas a tam je oslovte! <strong>Stejná barva</strong> jako segment.</p>
+        <h4>🎯 Jak najít správné kanály (krok za krokem):</h4>
         
-        <h4>Klíčové otázky:</h4>
-        <ul>
-          <li><strong>Kde</strong> se pohybují vaši zákazníci?</li>
-          <li><strong>Jak</strong> si u vás objednají?</li>
-          <li><strong>Kde</strong> vás najdou když vás hledají?</li>
+        <p><strong>KROK 1: Kde se pohybují vaši zákazníci?</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Instagram? Facebook skupiny? Doporučení? Google?</p>
+        
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-4">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Zeptejte se 20 zákazníků: <strong>"Kde jste nás našli?"</strong></li>
+            <li>Podívejte se do analytics (FB, Google, IG...)</li>
+            <li>Příklad: "80% zákazníků nás našlo přes Instagram stories"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-4">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li><strong>Hypotéza:</strong> Kde se pohybuje váš segment?</li>
+            <li>Příklad: "Myslím že rodiny jsou v FB skupinách 'Maminky v Praze'"</li>
+            <li><strong>Zjistěte kde je konkurence</strong> - tam jsou i zákazníci!</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Testujte!</strong></p>
+        <p class="text-sm text-gray-600 ml-4"><strong>Vyberte 2-3 kanály</strong> a testujte 2 týdny. Co přináší zákazníky?</p>
+        <ul class="text-sm text-gray-600 ml-8 mt-1">
+          <li>Měřte reakce (kliknutí, zprávy, objednávky)</li>
+          <li>Pokud nefunguje → zkuste jiný kanál!</li>
         </ul>
+        
+        <p class="mt-3"><strong>KROK 4: ZAČNĚTE S JEDNÍM!</strong></p>
+        <p class="text-sm text-gray-600 ml-4">❌ Chyba: být všude (vyhoříte!)</p>
+        <p class="text-sm text-gray-600 ml-4">✅ Správně: 1 kanál dobře > 5 kanálů špatně</p>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>TIP</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3"><strong>Začínám:</strong> Začněte s organickými kanály (FB skupiny, doporučení, Google My Business). Reklamy až když víte CO FUNGUJE!</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Analyzujte data! Možná 80% zákazníků přichází z 20% kanálů. Zaměřte se na ty top!</p>
+        </div>
+        
+        <h4>Proč jsou kanály důležité?</h4>
+        <ul>
+          <li>✅ <strong>Ušetříte čas</strong> - nebudete ztrácet čas tam, kde nejsou zákazníci</li>
+          <li>✅ <strong>Ušetříte peníze</strong> - investujete jen do kanálů co fungují</li>
+          <li>✅ <strong>Vidíte kde růst</strong> - když kanál funguje, můžete do něj víc investovat</li>
+        </ul>
+        
+        <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
+        <p><strong>Každý kanál = barva segmentu</strong>, který tam oslovujete:</p>
+        <ul>
+          <li><strong>🔵 Modrý segment</strong> (Rodiny) → <strong>🔵 modrý kanál</strong> (Instagram stories, FB skupiny Maminky)</li>
+          <li><strong>🟢 Zelený segment</strong> (Studenti) → <strong>🟢 zelený kanál</strong> (TikTok, studentské slevy)</li>
+        </ul>
+        <p class="text-sm text-gray-600 mt-2">💡 Stejný kanál (Instagram) může oslovovat <strong>různé segmenty</strong> - použijte barvu podle toho!</p>
       `,
       examples: {
         good: [
-          "🍕 Pizzerie (🔵 Rodiny): Instagram stories + Google rozvoz",
+          "🍕 Pizzerie (🔵 Rodiny): Instagram stories + Wolt/Foodora rozvoz",
           "🔧 Autoservis (🟢 Starší auta): Doporučení + lokální Facebook skupina",
           "👗 E-shop (🟡 Móda): Instagram + Pinterest + TikTok",
           "💇 Kadeřnice (🟣 Profesionálky): LinkedIn + Google (hledají večerní termíny)"
@@ -182,9 +311,11 @@ const MODULE_1 = {
         ]
       },
       tips: [
-        "🎨 BARVA = stejná jako segment! (🔵 rodiny → 🔵 Instagram)",
+        "🎨 BARVA = segment! (🔵 rodiny → 🔵 Instagram stories + FB skupiny Maminky)",
         "📍 Buďte tam KDE jsou zákazníci, ne kde chcete vy být!",
-        "🎯 Jeden segment může mít více kanálů - diverzifikujte!"
+        "🚀 Začínající: ORGANICKÉ kanály (FB skupiny, doporučení) → levné a efektivní!",
+        "💰 Už podnikám: Analyzujte data - investujte do top kanálů!",
+        "🎯 ZAČNĚTE S JEDNÍM kanálem a perfektně ho zvládněte!"
       ]
     },
     {
@@ -194,25 +325,104 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Jaký vztah budujete se zákazníky?",
       content: `
-        <h3>❤️ Vztahy se zákazníky</h3>
-        <p><strong>Vztahy</strong> určují jak zákazníky získáváte, udržujete a motivujete k nákupům.</p>
+        <h3>❤️ Co jsou Vztahy se zákazníky?</h3>
+        <p><strong>Vztahy</strong> určují jak <strong>získáváte, udržujete a motivujete</strong> zákazníky k opakovaným nákupům. Jednoduše: <strong>Jak je přimějete vrátit se ZNOVU?</strong></p>
         
-        <h4>🎨 PRAVIDLO: Jak je udržíte?</h4>
-        <p>Každý segment potřebuje jiný přístup! <strong>Barva = segment</strong>.</p>
+        <h4>⚡ PROČ JE TO KLÍ��OVÉ?</h4>
+        <p><strong>Získat nového zákazníka stojí 5-10× více</strong> než udržet stávajícího! Opakovaný zákazník = <strong>základ vašeho byznysu</strong>.</p>
         
-        <h4>Klíčové otázky:</h4>
-        <ul>
-          <li><strong>Jak</strong> získáváte nové zákazníky?</li>
-          <li><strong>Jak</strong> si je udržujete aby se vraceli?</li>
-          <li><strong>Co</strong> je motivuje k opakovaným nákupům?</li>
+        <h4>🎯 Jak "zamknout" zákazníky (krok za krokem):</h4>
+        
+        <p><strong>KROK 1: Proč se vrací?</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Co je motivuje k opakovaným nákupům?</p>
+        
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-3">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Analyzujte <strong>kdo se vrací</strong> a kdo nakupuje jen jednou</li>
+            <li>Zeptejte se TOP 10 opakovaných zákazníků: <strong>"Proč se vracíte právě k nám?"</strong></li>
+            <li>Příklad: "Vrací se rodiny které využívají věrnostní kartu"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-3">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li><strong>Hypotéza:</strong> Co by je mohlo motivovat k návratu?</li>
+            <li>Příklad: "Myslím že rodiny se vrátí pokud budou spokojené s kvalitou a rychlostí"</li>
+            <li><strong>Podívejte se na konkurence</strong> - proč zákazníci odcházejí?</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Vyberte MECHANISMUS "zamčení"</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Jak si je "uzamknete" aby nemohli jít ke konkurenci?</p>
+        
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-400 rounded-xl p-5 my-4">
+          <p class="text-blue-900"><strong>🔒 7 OSVĚDČENÝCH ZPŮSOBŮ jak udržet zákazníky:</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 mt-3 space-y-2 no-bullet">
+            <li><strong>1️⃣ NEJDŮLEŽITĚJŠÍ: Perfektní produkt/služba!</strong> → Když jste spokojení, vrátíte se sami! Bez toho nic nefunguje.</li>
+            <li><strong>2️⃣ Personalizace a paměť</strong> → "Víme co máte rádi - máme to připravené!" (kadeřnice si pamatuje vaš styl)</li>
+            <li><strong>3️⃣ Automatické připomínky</strong> → SMS/Email: "Čas na servis! Máme pro vás termín..." (ušetříte jim starosti)</li>
+            <li><strong>4️⃣ Pravidelné rezervace</strong> → "Rezervace každých 6 týdnů automaticky" (pohodlí!)</li>
+            <li><strong>5️⃣ Předplatné/členství</strong> → "Roční servisní balíček -30%" (motivace k dlouhodobé spolupráci)</li>
+            <li><strong>6️⃣ Exkluzivní přístup pro stálé</strong> → "Early access k novinkám jen pro vás" (pocit výjimečnosti!)</li>
+            <li><strong>7️⃣ Věrnostní program</strong> → (⚠️ POZOR: Funguje jen když máte už skvělý produkt! Sám o sobě nezachrání špatnou službu)</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 4: Implementujte a AUTOMATIZUJTE!</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Vztahy musí fungovat <strong>automaticky</strong>, jinak vyhoříte!</p>
+        <ul class="text-sm text-gray-600 ml-8 mt-1">
+          <li><strong>SMS/Email automatizace</strong> → připomínky, novinky (Smartemailing, Mailchimp...)</li>
+          <li><strong>Jednoduchá databáze</strong> → Google Sheets, Excel... (jméno, telefon, co kupují)</li>
+          <li><strong>Osobní přístup</strong> → "Ahoj Petře, máme pro tebe novou kolekci!" (personalizace!)</li>
         </ul>
+        
+        <p class="mt-3"><strong>KROK 5: Měřte a optimalizujte!</strong></p>
+        <ul class="text-sm text-gray-600 ml-4 mt-1">
+          <li>Kolik % zákazníků se vrací?</li>
+          <li>Jak často nakupují?</li>
+          <li>Pokud se nevracejí → zkuste jiný mechanismus!</li>
+        </ul>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>TIP</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3"><strong>Začínám:</strong> Začněte s PERFEKTNÍ HODNOTOU! Když jsou spokojení, vrátí se sami. Pak přidejte jednoduché nástroje - SMS/Email připomínky, Google Sheets na zákazníky.</p>
+          <p class="text-sm text-gray-700 mt-3"><strong>Už podnikám:</strong> Analyzujte své zákazníky! DATA jsou nejdůležitější:</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2 space-y-1">
+            <li>Zákazník A: Co chce? Kupuje pravidelně? Jak mu více pomoci?</li>
+            <li>Zákazník B: Nakoupil jednou? Proč už nenakoupil znovu?</li>
+            <li>⚠️ Obecné slevy otravují! Segmentujte!</li>
+          </ul>
+        </div>
+        
+        <h4>Proč jsou vztahy klíčové?</h4>
+        <ul class="no-bullet">
+          <li>✅ <strong>10× levnější</strong> než získat nového zákazníka</li>
+          <li>✅ <strong>Opakovaný zákazník = stabilní příjem</strong> (předvídatelné tržby!)</li>
+          <li>✅ <strong>Doporučení</strong> - spokojení stálí zákazníci vás doporučí dalším!</li>
+          <li>✅ <strong>"Zamčené" zákazníky = konkurence je neukradne</strong></li>
+        </ul>
+        
+        <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
+        <p><strong>Každý segment = jiný vztah!</strong> Co funguje pro rodiny, nemusí fungovat pro profesionálky.</p>
+        <ul class="no-bullet">
+          <li><strong>🔵 Modrý segment</strong> (Rodiny) → <strong>🔵 modrý vztah</strong> (Věrnostní karta: 5. pizza zdarma)</li>
+          <li><strong>🟢 Zelený segment</strong> (Studenti) → <strong>🟢 zelený vztah</strong> (Studentská sleva -20% s ISIC kartou)</li>
+        </ul>
+        <p class="text-sm text-gray-600 mt-2">💡 <strong>Každý segment chce něco jiného!</strong> Rodiny chtějí slevy, profesionálky chtějí VIP přístup a rychlost.</p>
       `,
       examples: {
         good: [
-          "🍕 Pizzerie (🔵 Rodiny): Věrnostní karta 5. pizza zdarma",
-          "🔧 Autoservis (🟢 Starší auta): SMS upozornění na STK + servisní balíčky",
-          "👗 E-shop (🟡 Móda): VIP club + early access k novinkám",
-          "💇 Kadeřnice (🟣 Profesionálky): Pravidelné rezervace každé 6 týdnů + SMS připomínka"
+          "🍕 Pizzerie (🔵 Rodiny): Perfektní kvalita za 20 min + email s novinkami a akční cenou pro stálé zákazníky",
+          "🔧 Autoservis (🟢 Starší auta): Spolehlivost + SMS upozornění na STK + servisní balíčky",
+          "👗 E-shop (🟡 Móda): Skvělá kvalita + VIP club s early access k novinkám",
+          "💇 Kadeřnice (🟣 Profesionálky): Perfektní střih + pravidelné rezervace každé 6 týdnů automaticky"
         ],
         bad: [
           "Dobrý zákaznický servis",
@@ -222,9 +432,13 @@ const MODULE_1 = {
         ]
       },
       tips: [
-        "🎨 BARVA = segment! (🔵 rodiny → 🔵 věrnostní karta)",
-        "🔄 Zaměřte se na OPAKOVANÉ nákupy - to je klíč k růstu!",
-        "💡 Automatizujte co můžete (SMS připomínky, emaily...)"
+        "🎨 BARVA = segment! (🔵 rodiny → 🔵 SMS připomínky, 🟢 studenti → 🟢 sleva s ISIC)",
+        "💎 NEJDŮLEŽITĚJŠÍ: Perfektní hodnota! Když jsou spokojení, vrátí se sami!",
+        "🔄 Získat nového zákazníka stojí 5-10× více než udržet stávajícího!",
+        "💡 Automatizujte! (SMS, emaily, Google Sheets) - jinak vyhoříte",
+        "🚀 Začínající: Začněte s hodnotou, pak přidejte jednoduché nástroje",
+        "💰 Už podnikám: DATA! Analyzujte kdo se vrací a proč. Segmentujte!",
+        "⚠️ Obecné slevy otravují! Segmentujte místo paušálních akcí!"
       ]
     },
     {
@@ -237,25 +451,65 @@ const MODULE_1 = {
         <h3>💰 Zdroje příjmů</h3>
         <p><strong>Příjmy</strong> jsou konkrétní peníze které dostanete od zákazníků za hodnotu.</p>
         
-        <h4>🎨 PRAVIDLO: Barva = hodnota!</h4>
-        <p>Pokud prodáváte <strong>🔵 modrou hodnotu</strong>, příjem z ní musí být také <strong>🔵 modrý</strong>!</p>
+        <h4>🎯 Jak na to (krok za krokem):</h4>
         
-        <h4>🌐 GLOBÁLNÍ příjmy:</h4>
-        <p>Některé příjmy mohou být <strong>🌐 globální</strong> (šedivá) - pokud jeden příjem dělá pro více hodnot. Např. "Membership" pokrývá jak 🔵 coworking tak 🟢 akce.</p>
+        <p><strong>KROK 1: Určete typ příjmu</strong></p>
+        <p class="text-sm text-gray-600 ml-4"><strong>🎨 BAREVNÝ příjem</strong> = pro konkrétní segment (🔵 pizza pro rodiny)</p>
+        <p class="text-sm text-gray-600 ml-4"><strong>🌐 GLOBÁLNÍ příjem</strong> = pro všechny segmenty (káva, nápoje...)</p>
         
-        <h4>Klíčové otázky:</h4>
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-3">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Použijte <strong>reálná čísla</strong> z vašich tržeb</li>
+            <li>Příklad: "🔵 50 rodin × 250 Kč/měsíc = 12 500 Kč/měsíc"</li>
+            <li>Spočítejte pro každý segment zvlášť</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-3">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Použijte <strong>odhady</strong> - kolik zákazníků očekáváte?</li>
+            <li>Příklad: "🔵 10 zákazníků × 65 Kč = 650 Kč/den"</li>
+            <li>→ × 25 dní = 16 250 Kč/měsíc</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Spočítejte příjmy</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Pro každý příjem zadejte <strong>Počet zákazníků × Cena = Celkový příjem</strong></p>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>TIP</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3">Většina byznysu má <strong>MIX barevných + globálních příjmů</strong>. Např. 🔵 Rodinná pizza (barevná) + 🌐 Nápoje (globální pro všechny).</p>
+          <p class="text-sm text-yellow-800 mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            <strong>⚠️ POZOR:</strong> Zaměřte se na DŮLEŽITÉ příjmy - ty co dělají byznys! Ne marginální (káva kolemjdoucím).
+          </p>
+        </div>
+        
+        <h4>Proč je to důležité?</h4>
+        <p>Když víte <strong>ODKUD vám plynou peníze</strong>, můžete:</p>
         <ul>
-          <li><strong>Kolik</strong> vám zákazník zaplatí za hodnotu?</li>
-          <li><strong>Jak často</strong> platí? (jednorázově, měsíčně...)</li>
-          <li><strong>Kolik</strong> zákazníků × cena = celkový příjem?</li>
+          <li>✅ <strong>Optimalizovat nabídku</strong> - zaměřit se na nejvýnosnější produkty</li>
+          <li>✅ <strong>Plánovat růst</strong> - víte kolik potřebujete zákazníků</li>
+          <li>✅ <strong>Vidět souvislosti</strong> - barvy ukazují cestu od segmentu k příjmu</li>
         </ul>
+        
+        <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
+        <p><strong>🎨 BAREVNÝ příjem</strong> = pro konkrétní segment (🔵 Segment A → 🔵 Hodnota A → 🔵 Příjem A)</p>
+        <p><strong>🌐 GLOBÁLNÍ příjem</strong> = pro všechny segmenty (nápoje, doplňkové služby...)</p>
+        <p class="text-sm text-gray-600 mt-2">⚠️ Ale pozor: Globální příjem musí být <strong>důležitý</strong>! Ne jen "marginální prodej kávy kolemjdoucím".</p>
       `,
       examples: {
         good: [
-          "🍕 (🔵 Rodinná pizza): 50 rodin × 250 Kč/týden = 12 500 Kč/týden",
+          "🍕 (🔵 Rodinná pizza): 50 rodin × 250 Kč/měsíc = 12 500 Kč/měsíc",
           "🔧 (🟢 Velký servis): 20 aut × 8000 Kč = 160 000 Kč/měsíc",
           "👗 (🟡 Trendy oblečení): 100 objednávek × 1500 Kč = 150 000 Kč/měsíc",
-          "💇 (🟣 Express strih): 80 profesionálek × 800 Kč = 64 000 Kč/měsíc"
+          "💇 (🌐 Nápoje): 200 nápojů × 50 Kč = 10 000 Kč/měsíc (pro všechny segmenty)"
         ],
         bad: [
           "Prodej produktů",
@@ -265,9 +519,12 @@ const MODULE_1 = {
         ]
       },
       tips: [
-        "🎨 BARVA = hodnota! (🔵 pizza → 🔵 příjem z pizzy)",
-        "💰 ZADEJTE ��ÍSLO! Počet zákazníků × cena",
-        "🌐 Globální = příjmy pro celý byznys (káva, nápoje...)"
+        "🎨 BARVA = segment! (🔵 Rodinná pizza → 🔵 příjem z rodinných pizz)",
+        "🌐 GLOBÁLNÍ = příjem pro VŠECHNY segmenty (nápoje, doplňkové služby...)",
+        "💰 ZADEJTE MĚSÍČNÍ ČÍSLO! Počet zákazníků × cena/měsíc (reálná data nebo odhad)",
+        "⚠️ Jen DŮLEŽITÉ příjmy! Ne marginální prodeje (káva kolemjdoucím)",
+        "🚀 Začínající: Použijte odhady, později je upravíte podle reality",
+        "📊 Už podnikám: Použijte reálná čísla z vašich tržeb za poslední měsíc"
       ]
     },
     {
@@ -277,19 +534,100 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Co potřebujete k fungování?",
       content: `
-        <h3>🏭 Klíčové zdroje</h3>
-        <p><strong>Zdroje</strong> jsou věci které MUSÍTE mít, aby byznys fungoval.</p>
+        <h3>🏭 Co jsou Klíčové zdroje?</h3>
+        <p><strong>Zdroje</strong> jsou věci které <strong>MUSÍTE mít</strong>, aby byznys vůbec fungoval. <strong>BEZ ČEHO to nejde?</strong></p>
         
-        <h4>🌐 VĚTŠINOU GLOBÁLNÍ BARVA!</h4>
-        <p>Zdroje jsou obvykle <strong>sdílené pro celý byznys</strong> (pec, prostor, tým...).</p>
+        <h4>🎯 Jak najít klíčové zdroje (krok za krokem):</h4>
         
-        <h4>4 typy zdrojů:</h4>
-        <ul>
-          <li><strong>Fyzické:</strong> budovy, zařízení, auta...</li>
-          <li><strong>Lidské:</strong> zaměstnanci, odbornost...</li>
-          <li><strong>Finanční:</strong> hotovost, úvěr...</li>
-          <li><strong>Intelektuální:</strong> značka, patenty, data...</li>
+        <p><strong>KROK 1: Co MUSÍTE mít?</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Bez čeho váš byznys nemůže fungovat?</p>
+        
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-3">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Co používáte <strong>KAŽDÝ DEN</strong>? Bez čeho to nejde?</li>
+            <li>Příklad: "Používám pec, prostor, 2 kuchaře, suroviny"</li>
+            <li><strong>Co vám chybí pro růst?</strong> (další zaměstnanci, větší prostor...)</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-3">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li><strong>MVP přístup:</strong> Co potřebujete MINIMÁLNĚ na start?</li>
+            <li>Příklad: "Na start potřebuji domácí pec, kuchyň, já sám"</li>
+            <li><strong>Nemusíte vlastnit vše!</strong> (pronájem, sdílené prostory, outsourcing)</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Rozdělte zdroje do 4 kategorií</strong></p>
+        
+        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
+          <p><strong>🏗️ 1. FYZICKÉ zdroje</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 mt-1">
+            <li>Budovy, prostory, stroje, zařízení, auta, materiál...</li>
+            <li>Příklad: "Pec na pizzu, prostor 50m², dodávka"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
+          <p><strong>👥 2. LIDSKÉ zdroje</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 mt-1">
+            <li>Zaměstnanci, odbornost, certifikace, dovednosti...</li>
+            <li>Příklad: "2 kuchaři, 1 rozvozce, můj management"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
+          <p><strong>💰 3. FINANČNÍ zdroje</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 mt-1">
+            <li>Hotovost, úvěr, investice, provozní kapitál...</li>
+            <li>Příklad: "Investice 150k (pec) + provozní kapitál 50k (suroviny)"</li>
+            <li>⚠️ <strong>POZOR:</strong> Ve Čtvrtce píšete co kupujete (pec, vybavení), ne částky! Částky = náklady.</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
+          <p><strong>🧠 4. INTELEKTUÁLNÍ zdroje</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 mt-1">
+            <li>Značka, patenty, databáze zákazníků, know-how, recepty...</li>
+            <li>Příklad: "Tajný recept na těsto, databáze 500 stálých zákazníků"</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 4: Vlastnit vs. Pronajímat?</strong></p>
+        <ul class="text-sm text-gray-600 ml-4 mt-1">
+          <li>❌ Nemusíte vlastnit vše! → Pronájem, sdílené prostory, outsourcing</li>
+          <li>✅ Klíčové zdroje = to co vás odlišuje (know-how, značka...)</li>
+          <li>Příklad: "Prostor pronajímám, ale recept na těsto je MŮJ!"</li>
         </ul>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>TIP</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3"><strong>Začínám:</strong> Začněte s minimem! Nemusíte mít dokonalou výbavu. Pronajměte si prostor nebo začněte z domova. Investujte až když víte že to funguje!</p>
+          <p class="text-sm text-gray-700 mt-3"><strong>Už podnikám:</strong> Co vám chybí pro růst?</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2 space-y-1">
+            <li>Analyzujte úzká místa - kde se zdržujete? Co vás omezuje?</li>
+            <li>Zeptejte se zákazníků - co jim chybí?</li>
+            <li>Prioritizujte - co když to vyřešíte? O kolik% poroste prodej?</li>
+          </ul>
+        </div>
+        
+        <h4>Proč jsou zdroje důležité?</h4>
+        <ul class="no-bullet">
+          <li>✅ <strong>Vidíte co potřebujete na start</strong> - jaká investice je nutná?</li>
+          <li>✅ <strong>Plánujete růst</strong> - co budete potřebovat později?</li>
+          <li>✅ <strong>Optimalizujete náklady</strong> - co můžete pronajímat místo vlastnit?</li>
+        </ul>
+        
+        <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
+        <p><strong>🌐 VĚTŠINOU GLOBÁLNÍ!</strong> Zdroje jsou sdílené pro celý byznys (pec, prostor, tým...).</p>
+        <p class="text-sm text-gray-600 mt-2">💡 Pouze <strong>výjimečně</strong> může být zdroj specifický pro jeden segment (např. speciální vybavení pro VIP segment).</p>
       `,
       examples: {
         good: [
@@ -306,9 +644,11 @@ const MODULE_1 = {
         ]
       },
       tips: [
-        "🌐 VĚTŠINOU GLOBÁLNÍ! Sdílené pro celý byznys",
+        "🌐 VĚTŠINOU GLOBÁLNÍ! Sdílené pro celý byznys (pec, prostor, tým...)",
         "🔍 Ptejte se: BEZ ČEHO to nejde? (to je klíčový zdroj)",
-        "💡 Nemusíte vlastnit vše - můžete pronajímat/outsourcovat"
+        "💡 Nemusíte vlastnit vše - pronájem, sdílené prostory, outsourcing!",
+        "🚀 Začínající: MVP - minimální zdroje na start, investujte až když víte že to funguje",
+        "💰 Už podnikám: Analyzujte úzká místa! Co vás omezuje? Zeptejte se zákazníků!"
       ]
     },
     {
@@ -318,37 +658,97 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Co musíte dělat?",
       content: `
-        <h3>⚙️ Kl��čové aktivity</h3>
-        <p><strong>Aktivity</strong> jsou činnosti které MUSÍTE dělat, aby byznys fungoval.</p>
+        <h3>⚙️ Co jsou Klíčové aktivity?</h3>
+        <p>Každý podnikatel ví CO musí udělat, aby produkt/služba vznikla (uvařit kávu, upéct pizzu, opravit auto...). <strong>To je samozřejmost.</strong></p>
         
-        <h4>🎨 BARVY: Většinou globální + někdy specifické!</h4>
-        <p>Základní činnosti <strong>🌐 globální</strong> (vaření, opravy). Specifické pro segment <strong>barevné</strong> (🔵 marketing na IG pro rodiny).</p>
+        <div class="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-400 rounded-xl p-4 my-4">
+          <p class="text-red-900 text-lg"><strong>🎯 ALE NEJVĚTŠÍ PROBLÉM</strong></p>
+          <p class="text-red-800 mt-2"><strong>Jak přimějete zákazníky, aby si váš produkt koupili?</strong></p>
+        </div>
         
-        <h4>Klíčové otázky:</h4>
-        <ul>
-          <li><strong>Co</strong> děláte každý den?</li>
-          <li><strong>Bez čeho</strong> by to nefungovalo?</li>
-          <li><strong>Co</strong> vás odlišuje od konkurence?</li>
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>MARKETING = Pro 90% podnikatelů by měla být NEJVĚTŠÍ aktivita (a není!)</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3 mb-2"><strong>Ptejte se konkrétně</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 space-y-1">
+            <li>Instagram/Facebook posty každý den?</li>
+            <li>Reklamy na Google/Facebook?</li>
+            <li>Prezence na trzích, networking, doporučení?</li>
+            <li>Nabídka na chodník, letáky, vizitky?</li>
+          </ul>
+          <p class="text-sm text-gray-600 mt-3 italic">
+            💡 Vyberte si jeden segment a zkuste k němu vymyslet 2-3 aktivity!
+          </p>
+        </div>
+        
+        <h4>🎯 Jak najít klíčové aktivity</h4>
+        
+        <p class="mt-3"><strong>KROK 1</strong> Jaký segment chci přilákat?</p>
+        <p class="text-sm text-gray-600 ml-4">Vyberte si konkrétní segment zákazníků z Čtvrtky</p>
+        <p class="text-sm text-gray-600 ml-4">→ Příklad: 🔵 Kolemjdoucí (spěchají do práce)</p>
+        
+        <p class="mt-3"><strong>KROK 2</strong> CO KONKRÉTNĚ udělám, aby TENTO segment přišel?</p>
+        <p class="text-sm text-gray-600 ml-4">Přemýšlejte - Co musím DĚLAT každý den/týden?</p>
+        <p class="text-sm text-gray-600 ml-4">→ Příklad: Stihnout kávu za 2 min, Instagram stories v 7:00, stojan před kavárnou</p>
+        
+        <p class="mt-3"><strong>KROK 3</strong> Rozdělte na GLOBÁLNÍ vs. SPECIFICKÉ</p>
+        <p class="text-sm text-gray-600 ml-4"><strong>🌐 Globální</strong> = kampaň pro více segmentů (Instagram pro rodiny + studenty)</p>
+        <p class="text-sm text-gray-600 ml-4"><strong>🎨 Specifické</strong> = barva segmentu (🔵 Instagram stories v 7h pro kolemjdoucí)</p>
+        
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-400 rounded-xl p-4 my-4">
+          <p class="text-blue-900"><strong>💡 PŘÍKLAD Kavárna</strong></p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Segment:</strong> 🔵 Kolemjdoucí (spěchají do práce)</p>
+          <p class="text-sm text-gray-700 mt-1"><strong>Otázka:</strong> Jak je přimějete, aby u mě nakoupili?</p>
+          <p class="text-sm text-gray-700 mt-3 mb-2"><strong>CO MUSÍM KONKRÉTNĚ DĚLAT</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 space-y-1 no-bullet">
+            <li>🔵 <strong>Stihnout kávu za 2 min</strong> každému (rychlá příprava)</li>
+            <li>🔵 Instagram stories každé ráno v 7 hodin (denní speciál)</li>
+            <li>🔵 Stojan s nabídkou před kavárnou (viditelnost)</li>
+          </ul>
+        </div>
+        
+        <h4>🎨 Logika barev</h4>
+        <p><strong>🌐 Globální</strong> = kampaň funguje pro více segmentů (Instagram pro rodiny + studenty, Google reklamy pro všechny)</p>
+        <p><strong>🔵 Specifické</strong> = aktivita jen pro JEDEN segment → použijte barvu segmentu! (🔵 modrý segment → 🔵 modrá aktivita)</p>
+        
+        <h4>Proč jsou aktivity důležité?</h4>
+        <ul class="no-bullet">
+          <li>✅ <strong>Víte CO DĚLAT</strong> - konkrétní marketingové činnosti, které vás posunou dopředu</li>
+          <li>✅ <strong>Zaměříte se na to podstatné</strong> - marketing = 90% byznysu!</li>
+          <li>✅ <strong>Plánujete růst</strong> - co budete muset dělat víc, když poroste poptávka?</li>
+        </ul>
+        
+        <h4>🎨 DŮLEŽITÉ - Logika barev!</h4>
+        <p><strong>Globální kampaň = 🌐 globální</strong> (funguje pro více segmentů)</p>
+        <p><strong>Marketing pro segment = barva segmentu!</strong></p>
+        <ul class="no-bullet">
+          <li><strong>🌐 Globální -</strong> Instagram kampaň pro rodiny + studenty, Google reklamy pro všechny</li>
+          <li><strong>🔵 Modrý segment</strong> (Kolemjdoucí) → <strong>🔵 modrá aktivita</strong> (Instagram stories v 7 hodin)</li>
+          <li><strong>🟢 Zelený segment</strong> (Studenti) → <strong>🟢 zelená aktivita</strong> (TikTok videa o akcích)</li>
         </ul>
       `,
       examples: {
         good: [
-          "🍕 Pizzerie: 🌐 Příprava jídla, 🔵 Instagram marketing pro rodiny",
-          "🔧 Autoservis: 🌐 Opravy a diagnostika, 🟢 Péče o náhradní vozy",
-          "👗 E-shop: 🌐 Správa objednávek, 🟡 Vyhledávání nových trendů",
-          "💇 Kadeřnice: 🌐 Stříhání a barvení, 🟣 Ve��erní provoz 18-21h"
+          "🍕 Pizzerie: 🌐 Facebook kampaň pro rodiny + studenty, 🔵 Instagram stories pro rodiny",
+          "🔧 Autoservis: 🌐 Google reklamy pro všechny, 🟢 Péče o náhradní vozy pro firemní",
+          "👗 E-shop: 🌐 TikTok kampaň pro mladé + studenty, 🟡 Instagram Reels pro mladé",
+          "💇 Kadeřnice: 🌐 Instagram kampaň pro více segmentů, 🟣 LinkedIn networking pro firmy"
         ],
         bad: [
-          "Řízení firmy",
-          "Poskytování služeb",
-          "Práce",
-          "Obchodní činnost"
+          "Řízení firmy (příliš obecné)",
+          "Poskytování služeb (co konkrétně?)",
+          "Večerní provoz (to je HODNOTA, ne aktivita!)",
+          "Rychlá rozvážka (to je HODNOTA, ne aktivita!)"
         ]
       },
       tips: [
-        "🌐 Základní činnosti = globální (vaření, opravy, stříhání)",
-        "🎨 Specifické pro segment = barva segmentu (🔵 IG marketing)",
-        "💡 Ptejte se: Co dělám DENNĚ? To je klíčová aktivita!"
+        "🎯 PROBLÉM - Jak přimějete zákazníky, aby si váš produkt koupili?",
+        "📢 MARKETING = Pro 90% by měla být největší aktivita (a není!)",
+        "💡 Vyberte 1 segment a zkuste k němu vymyslet 2-3 aktivity",
+        "🌐 Globální = kampaň pro více segmentů (IG pro rodiny + studenty)",
+        "🎨 Specifické = barva segmentu (🔵 IG stories v 7h pro kolemjdoucí)"
       ]
     },
     {
@@ -358,18 +758,87 @@ const MODULE_1 = {
       videoUrl: "",
       description: "S kým spolupracujete?",
       content: `
-        <h3>🤝 Klíčová partnerství</h3>
-        <p><strong>Partneři</strong> jsou firmy/lidé kterým outsourcujete činnosti nebo od nich kupujete zdroje.</p>
+        <h3>🤝 Co jsou Klíčová partnerství?</h3>
+        <p><strong>Partneři</strong> jsou firmy nebo lidé, <strong>kterým zadáváte práci externě</strong> nebo od nich <strong>kupujete klíčové zdroje</strong>. Jednoduše: <strong>Bez koho to nejde?</strong></p>
         
-        <h4>🎨 BARVY: Většinou globální!</h4>
-        <p>Partneři jsou obvykle <strong>🌐 globální</strong> (dodavatel surovin). Někdy <strong>specifičtí</strong> pro segment.</p>
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>KLÍČOVÉ! Partneři = SPOLEHLIVOST + KVALITA</strong></span>
+          </p>
+          <ul class="text-sm text-gray-700 ml-4 mt-3 space-y-1">
+            <li><strong>Dodávají včas</strong> - můžete se na ně spolehnout</li>
+            <li><strong>Garantují kvalitu</strong> - i když jsou třeba dražší</li>
+            <li><strong>Váš byznys stojí na nich</strong> - proto potřebujete tu kvalitu!</li>
+          </ul>
+        </div>
         
-        <h4>Klíčové otázky:</h4>
-        <ul>
-          <li><strong>Co</strong> NEKUPUJEME, ale dostáváme od partnerů?</li>
-          <li><strong>Co</strong> NEDĚLÁME sami, ale outsourcujeme?</li>
-          <li><strong>Kdo</strong> nám dodává klíčové suroviny/služby?</li>
+        <h4>⚡ PROČ MÍT PARTNERY?</h4>
+        <p>Partner vám může <strong>nahradit investici do zdrojů!</strong> Místo kupovat vlastní dodávku, můžete použít rozvoz od Wolt. Místo vlastní účetní, najměte si účetní firmu.</p>
+        
+        <h4>🎯 Jak najít klíčové partnery (krok za krokem):</h4>
+        
+        <p><strong>KROK 1: Co NEDĚLÁTE sami?</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Co outsourcujete nebo od koho nakupujete?</p>
+        
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-4">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Kdo jsou vaši <strong>TOP dodavatelé/partneři</strong>?</li>
+            <li>Bez koho byste <strong>nepřežili</strong>?</li>
+            <li>Příklad: "Dodavatel mouky a sýrů, Wolt rozvoz, účetní firma"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-4">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li><strong>Koho budete potřebovat?</strong> (dodavatelé, služby)</li>
+            <li>Příklad: "Budu potřebovat dodavatele mouky, účetní, kurýra"</li>
+            <li><strong>Kdo vám může pomoct začít levněji?</strong> (sdílené služby)</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Partner vs. Dodavatel - jaký je rozdíl?</strong></p>
+        
+        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
+          <p><strong>💡 Partner = někdo BEZ KOHO to NEJDE!</strong></p>
+          <ul class="text-sm text-gray-700 ml-4 mt-1">
+            <li>✅ <strong>Klíčový partner:</strong> Dodavatel mouky (bez mouky nemáte pizzu!)</li>
+            <li>❌ <strong>Běžný dodavatel:</strong> Dodavatel krabic (můžete změnit kdykoli)</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 4: Může partner nahradit investici?</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Někdy je <strong>levnější zadat práci externě</strong> než vlastnit!</p>
+        <ul class="text-sm text-gray-600 ml-4">→ Příklad: Rozvoz od Wolt (0 Kč investice) vs. vlastní dodávka (200 000 Kč)</ul>
+        <ul class="text-sm text-gray-600 ml-4">→ Příklad: Účetní firma (3 000 Kč/měsíc) vs. vlastní účetní (30 000 Kč/měsíc)</ul>
+        
+        <p class="mt-3"><strong>KROK 5: Vyberte TOP 3-5 partnerů</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Napište jen ty <strong>nejdůležitější</strong> - bez kterých byznys nefunguje!</p>
+        
+        <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
+          <p class="text-purple-900"><strong>💡 TIP</strong></p>
+          <p class="text-sm text-gray-700 mt-2">Kdo vám může pomoct <strong>začít levněji</strong> nebo ušetřit čas?</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2 space-y-1">
+            <li>Místo vlastní dodávky použijte Wolt (úspora investice)</li>
+            <li>Místo vlastní účetní najměte účetní firmu (úspora mzdy)</li>
+            <li>Zaměřte se na to co umíte nejlépe, zbytek nechte na partnerech</li>
+          </ul>
+        </div>
+        
+        <h4>Proč jsou partnerství důležitá?</h4>
+        <ul class="no-bullet">
+          <li>✅ <strong>Ušetříte investice</strong> externí spolupráce místo vlastnictví</li>
+          <li>✅ <strong>Ušetříte čas</strong> zaměřte se na to co umíte nejlépe</li>
+          <li>✅ <strong>Spolehlivost a kvalita</strong> partner má know-how a dodává včas</li>
         </ul>
+        
+        <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
+        <p><strong>🌐 VĚTŠINOU GLOBÁLNÍ!</strong> Partneři jsou sdílení pro celý byznys (dodavatelé surovin, účetní...).</p>
+        <p class="text-sm text-gray-600 mt-2">💡 Pouze <strong>výjimečně</strong> může být partner specifický pro jeden segment (např. influencer marketing pouze pro mladé ženy).</p>
       `,
       examples: {
         good: [
@@ -386,9 +855,10 @@ const MODULE_1 = {
         ]
       },
       tips: [
-        "🌐 VĚTŠINOU GLOBÁLNÍ! Dodavatelé surovin a služeb",
-        "🎨 Specifičtí partneři = barva produktu (pokud dělají jen pro jeden segment)",
-        "💡 Partner = někdo bez koho to NEJDE (ne jen známost)"
+        "🌐 VĚTŠINOU GLOBÁLNÍ! Dodavatelé surovin, účetní, doprava...",
+        "💡 Partner = SPOLEHLIVOST + KVALITA (dodává včas, stojí na nich byznys)",
+        "🚀 Kdo vám může pomoct začít levněji? Externí spolupráce > vlastnictví!",
+        "🔧 Partner může nahradit investici! (Wolt rozvoz vs. vlastní dodávka)"
       ]
     },
     {
@@ -398,16 +868,75 @@ const MODULE_1 = {
       videoUrl: "",
       description: "Kolik vás to stojí?",
       content: `
-        <h3>�� Struktura nákladů</h3>
-        <p><strong>Náklady</strong> jsou peníze které MUSÍTE platit, aby byznys fungoval.</p>
+        <h3>💸 Co je Struktura nákladů?</h3>
+        <p><strong>Náklady</strong> jsou peníze které <strong>MUSÍTE platit</strong>, aby byznys fungoval. <strong>Kolik vás to stojí měsíčně?</strong></p>
         
-        <h4>🎨 BARVY: Většinou globální + občas specifické!</h4>
-        <p><strong>🌐 Globální</strong> = pro celý byznys (nájem, mzdy). <strong>Barevné</strong> = specifické pro segment (🔵 IG reklama).</p>
+        <h4>⚡ PROČ JE TO KLÍČOVÉ?</h4>
+        <p><strong>Náklady určují kolik musíte vydělat</strong> aby byl byznys ziskový! Pokud máte náklady 50 000 Kč/měsíc, musíte vydělat víc než 50 000 Kč aby byl byznys v zisku.</p>
         
-        <h4>2 typy nákladů:</h4>
+        <h4>🎯 Jak spočítat náklady (krok za krokem):</h4>
+        
+        <p><strong>KROK 1: Co MUSÍTE platit?</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Jaké výdaje máte každý měsíc?</p>
+        
+        <p class="mt-3"><strong>KROK 2: Máte už data?</strong></p>
+        
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 my-4">
+          <p class="text-blue-900"><strong>✅ MÁM DATA</strong> (už prodávám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Podívejte se na <strong>reálná čísla z posledního měsíce</strong></li>
+            <li>Sečtěte VŠECHNY výdaje (nájem, mzdy, suroviny, energie)</li>
+            <li>Příklad: "Nájem 25k + Mzdy 40k + Suroviny 15k = 80 000 Kč/měsíc"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 my-4">
+          <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li><strong>Odhady:</strong> Co budete muset platit minimálně?</li>
+            <li>Googlujte průměrné ceny, ptejte se dodavatelů na ceníky</li>
+            <li>Příklad: "Odhad: Pronájem 20k + Suroviny 10k = 30 000 Kč/měsíc"</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>KROK 3: Rozdělte na GLOBÁLNÍ vs. SPECIFICKÉ</strong></p>
+        
+        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
+          <p><strong>🌐 GLOBÁLNÍ náklady</strong> (pro celý byznys):</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-1">
+            <li>Nájem, mzdy, suroviny, energie (sdílené pro všechny segmenty)</li>
+            <li>Příklad: "Nájem 25k, Mzdy 40k, Suroviny 15k"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white border-2 border-purple-300 rounded-xl p-4 my-4">
+          <p><strong>🎨 SPECIFICKÉ náklady</strong> (jen pro jeden segment):</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-1">
+            <li>Reklama, marketing specifický pro segment - <strong>použijte barvu segmentu!</strong></li>
+            <li>Příklad: "🔵 Instagram reklama pro rodiny 2 000 Kč"</li>
+          </ul>
+        </div>
+        
+        <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
+          <p class="text-purple-900"><strong>💡 TIP</strong></p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Použijte reálná čísla z posledního měsíce! Sečtěte VŠECHNY výdaje.</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Začínám:</strong> Googlujte průměrné ceny, ptejte se dodavatelů na ceníky. Později upravíte podle reality.</p>
+        </div>
+        
+        <h4>Proč jsou náklady důležité?</h4>
         <ul>
-          <li><strong>Fixní:</strong> Platíte vždy (nájem, mzdy, energie...)</li>
-          <li><strong>Variabilní:</strong> Platíte když prodáváte (suroviny, doprava...)</li>
+          <li>✅ <strong>Víte kolik musíte vydělat</strong> aby byl byznys ziskový</li>
+          <li>✅ <strong>Vidíte kde ušetřit</strong> můžete optimalizovat nejvyšší náklady</li>
+          <li>✅ <strong>Plánujete cashflow</strong> víte kolik peněz potřebujete měsíčně</li>
+        </ul>
+        
+        <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
+        <p><strong>🌐 VĚTŠINOU GLOBÁLNÍ!</strong> Nájem, mzdy, suroviny = pro celý byznys.</p>
+        <p><strong>🎨 Specifické náklady = barva segmentu!</strong></p>
+        <ul class="no-bullet">
+          <li><strong>🌐 Globální:</strong> Nájem 25k, Mzdy 40k, Suroviny 15k</li>
+          <li><strong>🔵 Modrý segment</strong> (Rodiny) → <strong>🔵 modrý náklad</strong> (Instagram reklama 2 000 Kč)</li>
+          <li><strong>🟢 Zelený segment</strong> (Studenti) → <strong>🟢 zelený náklad</strong> (TikTok reklama 1 500 Kč)</li>
         </ul>
       `,
       examples: {
@@ -415,7 +944,7 @@ const MODULE_1 = {
           "🍕 Pizzerie: 🌐 Nájem 25k, 🌐 Mzdy 40k, 🌐 Suroviny 15k, 🔵 IG reklama 2k",
           "🔧 Autoservis: 🌐 Nájem dílny 30k, 🌐 Mzdy 50k, 🌐 Autodíly 20k",
           "👗 E-shop: 🌐 Doprava 10k, 🌐 Skladování 5k, 🟡 Instagram ads 15k",
-          "💇 Kadeřnice: 🌐 Nájem salonu 20k, 🌐 Kosmetika 8k, 🌐 Energie 3k"
+          "💇 Kadeřnice: 🌐 Nájem salonu 20k, 🌐 Přípravky 8k, 🌐 Energie 3k"
         ],
         bad: [
           "Provozní náklady",
@@ -427,7 +956,9 @@ const MODULE_1 = {
       tips: [
         "🌐 VĚTŠINOU GLOBÁLNÍ! Nájem, mzdy, suroviny = pro celý byznys",
         "🎨 Specifické náklady = barva segmentu (🔵 IG reklama jen pro rodiny)",
-        "💰 ZADEJTE ČÍSLO! Měsíční částka v Kč"
+        "💰 ZADEJTE ČÍSLO! Měsíční částka v Kč (např. Nájem 25 000 Kč)",
+        "🚀 Začínající: Odhady OK! Googlujte ceny, ptejte se dodavatelů",
+        "💰 Už podnikám: Reálná čísla z posledního měsíce - sečtěte VŠECHNY výdaje"
       ]
     }
   ]
@@ -465,25 +996,94 @@ const MODULE_2 = {
     },
     {
       id: 11,
-      title: "Prosperuje váš model?",
+      title: "Finanční analýza",
       canvasSection: undefined,
       videoUrl: "",
-      description: "GAP analýza - porovnejte TEĎ vs CÍL",
+      description: "Vychází vám to finančně?",
       content: `
-        <h3>Finanční zdraví vašeho modelu</h3>
-        <p>Teď když máte hotový Canvas, pojďme se podívat jestli vám to vychází finančně.</p>
-        <h4>Klíčové otázky:</h4>
-        <ul>
-          <li>Kolik máte zákazníků TEĎ?</li>
-          <li>Kolik potřebujete zákazníků aby to bylo ziskové?</li>
-          <li>Jaký je rozdíl (GAP)?</li>
-          <li>Jak ho překlenete?</li>
+        <h3>💰 Finanční analýza vašeho modelu</h3>
+        <p>Teď když máte hotový Canvas, pojďme se podívat <strong>jestli vám to vychází finančně</strong>.</p>
+        
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-400 rounded-xl p-4 my-4">
+          <p class="text-blue-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>TOGGLE: Vyberte svůj přístup</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3">🚀 <strong>Začínám</strong> = 3 SCÉNÁŘE (pesimistický, realistický, optimistický)</p>
+          <p class="text-sm text-gray-700 mt-2">💰 <strong>Už podnikám</strong> = REÁLNÁ DATA z posledního měsíce</p>
+        </div>
+        
+        <h4>🚀 PRO ZAČÍNAJÍCÍ: 3 SCÉNÁŘE</h4>
+        <p>Když začínáte, <strong>NIKDY nevíte kolik zákazníků opravdu získáte!</strong> Proto je důležité připravit se na 3 možné varianty:</p>
+        
+        <div class="bg-red-50 border-2 border-red-300 rounded-xl p-4 my-4">
+          <p class="text-red-900"><strong>😰 PESIMISTICKÝ SCÉNÁŘ</strong> (25% plánu)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Co když získáte jen <strong>čtvrtinu zákazníků</strong> než jste plánovali?</li>
+            <li>Budete v <strong>ZTRÁTĚ?</strong> O kolik?</li>
+            <li>Jak dlouho to vydržíte? Máte rezervy?</li>
+          </ul>
+        </div>
+        
+        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 my-4">
+          <p class="text-yellow-900"><strong>🎯 REALISTICKÝ SCÉNÁŘ</strong> (50% plánu)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Získáte <strong>polovinu</strong> plánovaných zákazníků</li>
+            <li>Jste v <strong>ZISKU nebo ZTRÁTĚ?</strong></li>
+            <li>Kolik vám to vydělává měsíčně?</li>
+          </ul>
+        </div>
+        
+        <div class="bg-green-50 border-2 border-green-300 rounded-xl p-4 my-4">
+          <p class="text-green-900"><strong>🚀 OPTIMISTICKÝ SCÉNÁŘ</strong> (100% plánu)</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2">
+            <li>Získáte <strong>všechny plánované zákazníky</strong></li>
+            <li>Kolik vám to <strong>VYDĚLÁVÁ?</strong></li>
+            <li>Je to dost aby to stálo za to?</li>
+          </ul>
+        </div>
+        
+        <p class="mt-3"><strong>PROČ 3 SCÉNÁŘE?</strong></p>
+        <p class="text-sm text-gray-600">Realita je <strong>VŽDY MEZI</strong> optimistickým a pesimistickým scénářem. Když budete připravení na nejhorší, příjemně vás překvapí když to dopadne lépe!</p>
+        
+        <h4>💰 PRO TY CO UŽ PODNIKAJÍ: REÁLNÁ DATA</h4>
+        <p>Když už podnikáte, máte <strong>REÁLNÁ ČÍSLA</strong> z posledního měsíce:</p>
+        
+        <p class="mt-3"><strong>KROK 1: Celková bilance</strong></p>
+        <ul class="text-sm text-gray-600 ml-4 mt-1">
+          <li>💰 <strong>Celkové příjmy</strong> - kolik jste vydělali za měsíc?</li>
+          <li>💸 <strong>Celkové náklady</strong> - kolik jste utratili za měsíc?</li>
+          <li>📊 <strong>ZISK/ZTRÁTA</strong> = příjmy - náklady</li>
         </ul>
+        
+        <p class="mt-3"><strong>KROK 2: Breakdown po segmentech</strong></p>
+        <p class="text-sm text-gray-600 ml-4">Který segment vám <strong>VYDĚLÁVÁ nejvíc?</strong></p>
+        <ul class="text-sm text-gray-600 ml-4 mt-1">
+          <li>🔵 <strong>Segment A:</strong> 45k příjmy - 20k náklady = <strong>25k zisk</strong></li>
+          <li>🟢 <strong>Segment B:</strong> 30k příjmy - 25k náklady = <strong>5k zisk</strong></li>
+        </ul>
+        
+        <p class="mt-3"><strong>KROK 3: Akční kroky</strong></p>
+        <ul class="text-sm text-gray-600 ml-4 mt-1">
+          <li>📈 <strong>Co škálovat?</strong> Který segment má nejvyšší ziskovost?</li>
+          <li>💸 <strong>Kde ušetřit?</strong> Které náklady jsou zbytečně vysoké?</li>
+          <li>❌ <strong>Co ukončit?</strong> Který segment je ve ztrátě?</li>
+        </ul>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">🎯</span>
+            <span><strong>CÍL</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3"><strong>Začínám:</strong> Připravte se na všechny 3 scénáře. Mějte rezervy pro pesimistický případ!</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Analyzujte reálná data a zaměřte se na ziskové segmenty!</p>
+        </div>
       `,
       tips: [
-        "Kalkulačka vše spočítá automaticky z vašeho Canvas",
-        "Bod zvratu = kolik zákazníků potřebujete aby příjmy = náklady",
-        "Zaměřte se na strategická doporučení - konkrétní kroky co udělat"
+        "🚀 Začínající: Nikdy nevíte kolik zákazníků získáte - připravte se na 3 scénáře!",
+        "💰 Už podnikám: Použijte reálná čísla z posledního měsíce",
+        "📊 Zisk = Příjmy - Náklady (jednoduché!)",
+        "🎯 Zaměřte se na ziskové segmenty a škálujte je"
       ]
     },
     {
@@ -518,6 +1118,7 @@ export function CourseDemoV3() {
   const [currentModuleNumber, setCurrentModuleNumber] = useState(1); // 1, 2, nebo 3
   const [showMainDashboard, setShowMainDashboard] = useState(true); // Hlavní přehled (DEFAULT!)
   const [showActionPlan, setShowActionPlan] = useState(false);
+  const [showTool, setShowTool] = useState<string | null>(null); // 🧮 Nástroje: 'target-calculator' | 'segment-size' | null
   const [actionPlanRefreshTrigger, setActionPlanRefreshTrigger] = useState(0); // ✅ Business Action Plan
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
@@ -532,13 +1133,28 @@ export function CourseDemoV3() {
   const [selectedVPCValue, setSelectedVPCValue] = useState<string | null>(null); // VPC value selection
   
   // 🎉 ACHIEVEMENTS & GAMIFICATION
-  const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
+  const [visibleAchievements, setVisibleAchievements] = useState<Achievement[]>([]); // 🎨 VERTICAL STACK - všechny achievementy najednou!
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(new Set());
-  const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]); // Queue pro postupné zobrazování
   
   // 💾 AUTOSAVE INDICATOR
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | undefined>();
+  
+  // 📱 MOBILE DETECTION - Používáme POUZE šířku okna pro layout (ne touch detection!)
+  // Touch detection je důležitá pro GESTA (swipe), ale ne pro LAYOUT!
+  // ⚠️ DŮLEŽITÉ: 768px = Tailwind md: breakpoint = desktop layout začíná od 768px+
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  const orientation = useOrientation();
+  
+  // Listen for window resize to update isMobile
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 💾 PERSIST VPC SELECTIONS - Load from localStorage
   useEffect(() => {
@@ -576,6 +1192,40 @@ export function CourseDemoV3() {
   const isLastLesson = safeLessonIndex === currentModule.lessons.length - 1;
   const moduleCompleted = completedLessons.size === currentModule.lessons.length;
   const totalLessons = allModules.reduce((sum, m) => sum + m.lessons.length, 0);
+
+  // 🔥 SWIPE NAVIGATION - Pomocné funkce
+  const canGoPreviousLesson = currentModuleNumber > 1 || currentLessonIndex > 0;
+  // ✅ NEXT LESSON: Povolit jen když je aktuální lekce dokončená
+  const isCurrentLessonCompleted = completedLessons.has(currentLesson.id);
+  const hasNextLesson = currentModuleNumber < 3 || currentLessonIndex < currentModule.lessons.length - 1;
+  const canGoNextLesson = isCurrentLessonCompleted && hasNextLesson;
+
+  const handleSwipeToNextLesson = () => {
+    if (!canGoNextLesson) return;
+    
+    if (currentLessonIndex < currentModule.lessons.length - 1) {
+      // Další lekce v aktuálním modulu
+      setCurrentLessonIndex(currentLessonIndex + 1);
+    } else if (currentModuleNumber < 3) {
+      // Přejít na další modul
+      setCurrentModuleNumber(currentModuleNumber + 1);
+      setCurrentLessonIndex(0);
+    }
+  };
+
+  const handleSwipeToPreviousLesson = () => {
+    if (!canGoPreviousLesson) return;
+    
+    if (currentLessonIndex > 0) {
+      // Předchozí lekce v aktuálním modulu
+      setCurrentLessonIndex(currentLessonIndex - 1);
+    } else if (currentModuleNumber > 1) {
+      // Přejít na předchozí modul (poslední lekce)
+      const prevModule = currentModuleNumber === 2 ? MODULE_1 : MODULE_2;
+      setCurrentModuleNumber(currentModuleNumber - 1);
+      setCurrentLessonIndex(prevModule.lessons.length - 1);
+    }
+  };
 
   // Auth check
   // Handle redirect to specific Canvas section from Problem Solver
@@ -622,7 +1272,30 @@ export function CourseDemoV3() {
         return;
       }
       
-      // Real token verification
+      // 🔐 NEW: Check Supabase Auth session (for logged in users)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        console.log('✅ Supabase Auth session found:', session.user.email);
+        const user = {
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || session.user.email || 'User'
+        };
+        setIsAuthenticated(true);
+        setUserData(user);
+        setIsVerifying(false);
+        // Load progress for authenticated user
+        const progress = await loadCourseProgress(user.id);
+        setCompletedLessons(progress);
+        
+        // 🎯 Load achievements from SUPABASE (ne localStorage!)
+        const achievements = await loadUnlockedAchievementsFromDB(user.id);
+        setUnlockedAchievements(achievements);
+        
+        return;
+      }
+      
+      // Real token verification (for users with access token from email)
       if (token) {
         const user = await verifyAccessToken(token);
         
@@ -634,8 +1307,8 @@ export function CourseDemoV3() {
           const progress = await loadCourseProgress(user.id);
           setCompletedLessons(progress);
           
-          // 🎯 Load achievements from localStorage (simple & works)
-          const achievements = loadUnlockedAchievements(user.id);
+          // 🎯 Load achievements from SUPABASE (ne localStorage!)
+          const achievements = await loadUnlockedAchievementsFromDB(user.id);
           setUnlockedAchievements(achievements);
           
           return;
@@ -755,8 +1428,8 @@ export function CourseDemoV3() {
       console.log('🎉 NEW ACHIEVEMENT UNLOCKED:', achievementId);
       const achievement = getAchievement(achievementId);
       if (achievement) {
-        // ✅ ADD TO QUEUE (postupné zobrazování)
-        setAchievementQueue(prev => [...prev, achievement]);
+        // ✅ ADD TO VISIBLE STACK (zobrazení okamžitě!)
+        setVisibleAchievements(prev => [...prev, achievement]);
         
         // Update local state
         setUnlockedAchievements(prev => new Set([...prev, achievementId]));
@@ -789,7 +1462,10 @@ export function CourseDemoV3() {
         }
         
         // 💫 CHECK FOR ULTIMATE MASTER: Po každém novém achievementu zkontroluj jestli má všechny
-        const currentUnlocked = loadUnlockedAchievements(userData.id);
+        // Reload from Supabase to get fresh data
+        const currentUnlocked = await loadUnlockedAchievementsFromDB(userData.id);
+        setUnlockedAchievements(currentUnlocked);
+        
         const totalAchievements = ACHIEVEMENTS.length; // 20
         const unlockedWithoutUltimate = Array.from(currentUnlocked).filter(id => id !== 'ultimate-master').length;
         
@@ -813,20 +1489,17 @@ export function CourseDemoV3() {
     }
   }, [userData?.id]);
 
-  // 🎯 ACHIEVEMENT QUEUE PROCESSOR - zobrazuj achievementy postupně
+  // 🎨 AUTO-CLOSE ACHIEVEMENTS - všechny achievementy zmizí po 3s
   useEffect(() => {
-    if (achievementQueue.length > 0 && !currentAchievement) {
-      // Zobraz první achievement z fronty
-      const nextAchievement = achievementQueue[0];
-      setCurrentAchievement(nextAchievement);
-      setAchievementQueue(prev => prev.slice(1)); // Odstraň z fronty
+    if (visibleAchievements.length > 0) {
+      const timer = setTimeout(() => {
+        console.log('⏰ Auto-closing achievements:', visibleAchievements.length);
+        setVisibleAchievements([]);
+      }, 3000); // 3s = dost času na přečtení všech
       
-      // Auto-close po 5s
-      setTimeout(() => {
-        setCurrentAchievement(null);
-      }, 5000);
+      return () => clearTimeout(timer);
     }
-  }, [achievementQueue, currentAchievement]);
+  }, [visibleAchievements]);
 
   // 🔍 Check all achievements based on current data
   const checkAllAchievements = useCallback(async () => {
@@ -839,173 +1512,76 @@ export function CourseDemoV3() {
     });
 
     try {
-      // Check BMC achievements
+      // FALLBACK LOGIKA: Retroaktivne odemkni achievementy pro stavajici uzivatele
       const { data: canvasData } = await supabase
         .from('user_canvas_data')
         .select('*')
         .eq('user_id', userData.id);
 
+      // 🔄 FALLBACK: Odemkni achievementy které byly missované (silent)
       if (canvasData) {
-        console.log('📊 Canvas data:', canvasData.length, 'sections');
-        const segments = canvasData.find(s => s.section_key === 'segments');
-        const values = canvasData.find(s => s.section_key === 'value');
-        
-        // First segment
-        if (segments?.content?.length > 0) {
-          console.log('✅ Has segments:', segments.content.length);
-          triggerAchievement('first-segment');
-        }
-        
-        // First value
-        if (values?.content?.length > 0) {
-          console.log('✅ Has values:', values.content.length);
-          triggerAchievement('first-value');
-        }
-        
-        // All sections filled
         const allSections = ['segments', 'value', 'channels', 'relationships', 'revenue', 'resources', 'activities', 'partners', 'costs'];
-        const filledSections = canvasData.filter(s => 
+        const filledSections = canvasData.filter((s: any) => 
           allSections.includes(s.section_key) && s.content?.length > 0
         );
         
-        console.log('📋 Filled sections:', filledSections.length, '/ 9');
-        if (filledSections.length === 9) {
-          triggerAchievement('all-sections-filled');
+        const hasLesson1Complete = completedLessons.has(1);
+        const hasLesson11Complete = completedLessons.has(11);
+        
+        // validator-used FALLBACK
+        if (!unlockedAchievements.has('validator-used') && (filledSections.length >= 6 || hasLesson1Complete)) {
+          triggerAchievement('validator-used');
         }
         
-        // 🏆 profit-calculated: Check if user has financial data
-        const revenue = canvasData.find(s => s.section_key === 'revenue');
-        const costs = canvasData.find(s => s.section_key === 'costs');
-        if ((revenue?.content?.length > 0 && revenue.content.some((i: any) => i.value > 0)) ||
-            (costs?.content?.length > 0 && costs.content.some((i: any) => i.value > 0))) {
-          console.log('💰 Has financial data - triggering profit-calculated');
+        // profit-calculated FALLBACK
+        const revenue = canvasData.find((s: any) => s.section_key === 'revenue');
+        const costs = canvasData.find((s: any) => s.section_key === 'costs');
+        const hasFinancialData = (revenue?.content?.length > 0 && revenue.content.some((i: any) => i.value > 0)) ||
+                                 (costs?.content?.length > 0 && costs.content.some((i: any) => i.value > 0));
+        
+        if (!unlockedAchievements.has('profit-calculated') && hasFinancialData && hasLesson11Complete) {
           triggerAchievement('profit-calculated');
         }
         
-        // 🏆 validator-used: VYŘAZENO - Triggeruje se JEN když user skute��ně použije CanvasValidator!
-        // (Klikne na "Analyzovat canvas" v Lekci 6)
-        // Achievement se triggeruje v CanvasValidator.tsx řádek 344
-        // if (filledSections.length >= 6) {
-        //   console.log('✅ Has 6+ filled sections - triggering validator-used');
-        //   triggerAchievement('validator-used');
-        // }
-        
-        // 🏆 profitable-business: Check if revenue > costs
-        const totalRevenue = revenue?.content?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0;
-        const totalCosts = costs?.content?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0;
-        if (totalRevenue > 0 && totalCosts > 0 && totalRevenue > totalCosts) {
-          console.log('📈 Business is profitable - triggering profitable-business');
-          triggerAchievement('profitable-business');
-        }
-      }
-
-      // Check module completion achievements
-      console.log('📚 Checking modules:', {
-        module1: completedLessons.has(9),
-        module2: completedLessons.has(13),
-        module3: completedLessons.has(16)
-      });
-      
-      if (completedLessons.has(9)) {
-        triggerAchievement('module-1-complete');
-      }
-      if (completedLessons.has(13)) {
-        triggerAchievement('module-2-complete');
-      }
-      if (completedLessons.has(16)) {
-        triggerAchievement('module-3-complete');
-      }
-
-      // Check VPC achievements
-      const { data: vpcData } = await supabase
-        .from('value_proposition_canvas')
-        .select('*')
-        .eq('user_id', userData.id);
-
-      if (vpcData && vpcData.length > 0) {
-        vpcData.forEach(vpc => {
-          // Customer profile complete
-          if (vpc.jobs?.length > 0 && vpc.pains?.length > 0 && vpc.gains?.length > 0) {
-            triggerAchievement('customer-profile-complete');
+        // profitable-business FALLBACK
+        if (!unlockedAchievements.has('profitable-business')) {
+          const totalRevenue = revenue?.content?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0;
+          const totalCosts = costs?.content?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0;
+          if (totalRevenue > 0 && totalCosts > 0 && totalRevenue > totalCosts) {
+            triggerAchievement('profitable-business');
           }
-
-          // Value map complete (check selected_value record)
-          if (vpc.selected_value && vpc.products?.length > 0) {
-            triggerAchievement('value-map-complete');
-          }
-
-          // FIT score achievements - ✅ POSTUPNĚ od nejnižšího k nejvyššímu!
-          const fitScore = vpc.fit_validation_data?.fitScore || 0;
-          
-          // Triggeruj všechny achievements které uživatel splnil (od nejnižšího)
-          if (fitScore >= 70) {
-            triggerAchievement('fit-70-percent');
-          }
-          if (fitScore >= 80) {
-            triggerAchievement('product-fit-master');
-          }
-          if (fitScore >= 90) {
-            triggerAchievement('fit-90-percent');
-          }
-        });
-      }
-
-      // 🏆 Check completed actions achievements
-      const savedActions = localStorage.getItem(`action_plan_completed_${userData.id}`);
-      if (savedActions) {
-        try {
-          const completedActions = new Set(JSON.parse(savedActions));
-          console.log('📋 Completed actions:', completedActions.size);
-          
-          // Check achievements based on completed actions count
-          if (completedActions.size >= 1) {
-            triggerAchievement('first-action-completed');
-          }
-          if (completedActions.size >= 3) {
-            triggerAchievement('action-streak-3');
-          }
-          
-          // For all-actions-completed, we need to know total action count
-          // This will be checked in BusinessActionPlan itself
-        } catch (err) {
-          console.error('Failed to parse completed actions:', err);
         }
       }
       
-      // 🏆 master-of-tools: Check if user used all tools
-      // ✅ OPRAVENO: Kontrolujeme achievementy místo dat (persistentní!)
-      const hasValidator = unlockedAchievements.has('validator-used');
-      const hasCalculator = unlockedAchievements.has('profit-calculated');
-      const hasVPC = vpcData && vpcData.length > 0;
-      const hasActionPlan = unlockedAchievements.has('action-plan-unlocked');
+      // ✅ RELOAD achievements from DB (po fallbacku)
+      const currentUnlocked = await loadUnlockedAchievementsFromDB(userData.id);
+      setUnlockedAchievements(currentUnlocked);
       
-      console.log('🛠️ Tool usage check:', {
-        hasValidator,
-        hasCalculator,
-        hasVPC,
-        hasActionPlan
-      });
+      // 🛠️ master-of-tools: Check if all tools used
+      const hasValidator = currentUnlocked.has('validator-used');
+      const hasCalculator = currentUnlocked.has('profit-calculated');
+      const hasVPC = currentUnlocked.has('customer-profile-complete') || currentUnlocked.has('value-map-complete');
+      const hasActionPlan = currentUnlocked.has('action-plan-unlocked');
       
-      if (hasValidator && hasCalculator && hasVPC && hasActionPlan) {
-        console.log('🛠️ Used all tools - triggering master-of-tools');
+      if (!currentUnlocked.has('master-of-tools') && hasValidator && hasCalculator && hasVPC && hasActionPlan) {
         triggerAchievement('master-of-tools');
+        
+        // Reload again after triggering master-of-tools
+        const updated = await loadUnlockedAchievementsFromDB(userData.id);
+        setUnlockedAchievements(updated);
       }
       
-      // 💫 ultimate-master: Check if user has all other achievements (19 out of 20)
-      // Load from localStorage (not Supabase!)
-      const currentUnlocked = loadUnlockedAchievements(userData.id);
+      // 💫 ultimate-master: Final reload and check
+      const finalUnlocked = await loadUnlockedAchievementsFromDB(userData.id);
+      setUnlockedAchievements(finalUnlocked);
+      
       const totalAchievements = 20; // Total including ultimate-master
       const achievementsWithoutUltimate = totalAchievements - 1; // 19
+      const unlockedWithoutUltimate = Array.from(finalUnlocked).filter(id => id !== 'ultimate-master').length;
       
-      // Filter out ultimate-master from count
-      const unlockedWithoutUltimate = Array.from(currentUnlocked).filter(id => id !== 'ultimate-master').length;
-      
-      if (unlockedWithoutUltimate >= achievementsWithoutUltimate) {
-        console.log('💫 Has all 19 achievements - triggering ultimate-master');
+      if (!finalUnlocked.has('ultimate-master') && unlockedWithoutUltimate >= achievementsWithoutUltimate) {
         triggerAchievement('ultimate-master');
       }
-
-      console.log('✅ Achievement check complete');
 
     } catch (error) {
       console.error('Error checking achievements:', error);
@@ -1085,6 +1661,46 @@ export function CourseDemoV3() {
     }
   }, [userData?.id, checkAllAchievements]);
 
+  // 🏆 PROFIT-CALCULATED Achievement: Trigger když user přejde na Lekci 11 (Finanční analýza)
+  useEffect(() => {
+    const checkProfitCalculatorAchievement = async () => {
+      if (!userData?.id || !currentLesson) return;
+      
+      // ✅ Kontrola: Jsme na Lekci 11 (Finanční analýza)?
+      if (currentLesson.id === 11) {
+        console.log('💰 User navigated to Lesson 11 (Finanční analýza) - checking profit data...');
+        
+        try {
+          // Načti finanční data z Supabase
+          const { data: canvasData } = await supabase
+            .from('user_canvas_data')
+            .select('*')
+            .eq('user_id', userData.id);
+          
+          if (canvasData) {
+            const revenue = canvasData.find(s => s.section_key === 'revenue');
+            const costs = canvasData.find(s => s.section_key === 'costs');
+            
+            // ✅ Má user vyplněné Revenue NEBO Costs s hodnotou > 0?
+            const hasRevenueData = revenue?.content?.length > 0 && revenue.content.some((i: any) => i.value > 0);
+            const hasCostsData = costs?.content?.length > 0 && costs.content.some((i: any) => i.value > 0);
+            
+            if (hasRevenueData || hasCostsData) {
+              console.log('💰 User has financial data - triggering profit-calculated achievement');
+              triggerAchievement('profit-calculated');
+            } else {
+              console.log('⏭️ User on Lesson 11 but no financial data yet');
+            }
+          }
+        } catch (error) {
+          console.error('❌ Failed to check profit data:', error);
+        }
+      }
+    };
+    
+    checkProfitCalculatorAchievement();
+  }, [userData?.id, currentLesson, triggerAchievement]);
+
   const handleStartPractice = () => {
     // ✅ SAFE: Check if currentLesson exists
     if (!currentLesson) {
@@ -1134,17 +1750,14 @@ export function CourseDemoV3() {
     // Vypni GLOW (může přidat další položky)
     setHighlightedSectionId(undefined);
     
-    // 🎉 Trigger achievements based on section
-    if (currentLesson.canvasSection === 'segments') {
-      triggerAchievement('first-segment');
-    } else if (currentLesson.canvasSection === 'value') {
-      triggerAchievement('first-value');
-    }
+    // 🎉 Trigger achievements based on ACTUAL DATA (ne hned, musíme počkat na save)
+    // Achievements se triggerují ve funkci která ukládá data do Supabase
+    // (MobileSingleSection.tsx nebo MobileCanvasAccordion.tsx)
     
     // ❌ Odstraněno - duplicitní toast (achievement se zobrazuje vpravo)
   };
   
-  const handleNextLesson = () => {
+  const handleNextLesson = async () => {
     // Pokud to byla poslední lekce modulu → pokračuj na další modul
     if (isLastLesson) {
       if (currentModuleNumber < allModules.length) {
@@ -1165,7 +1778,7 @@ export function CourseDemoV3() {
         
         setShowCanvas(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        // ❌ Odstraněno - duplicitní toast (MEGA konfetti stačí)
+        // �� Odstraněno - duplicitní toast (MEGA konfetti stačí)
       }
     } else {
       setCurrentLessonIndex(prev => prev + 1);
@@ -1183,6 +1796,15 @@ export function CourseDemoV3() {
     
     setShowMainDashboard(true);
     setShowCanvas(false);
+    setShowTool(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handleSelectTool = (toolId: string) => {
+    setShowTool(toolId);
+    setShowMainDashboard(false);
+    setShowCanvas(false);
+    setShowActionPlan(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
@@ -1206,6 +1828,7 @@ export function CourseDemoV3() {
     setCurrentLessonIndex(lessonIndex);
     setShowMainDashboard(false);
     setShowCanvas(false);
+    setShowTool(null);
     console.log('✅ States set! showMainDashboard should be FALSE now');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -1220,6 +1843,7 @@ export function CourseDemoV3() {
           setCurrentLessonIndex(i);
           setShowMainDashboard(false);
           setShowCanvas(false);
+          setShowTool(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
@@ -1296,12 +1920,70 @@ export function CourseDemoV3() {
           onAchievementUnlocked={triggerAchievement}
         />
         
-        {/* 🎉 ACHIEVEMENT NOTIFICATION */}
-        <AchievementNotification 
-          achievement={currentAchievement}
-          onClose={() => setCurrentAchievement(null)}
-        />
+        {/* 🎉 ACHIEVEMENT NOTIFICATIONS - VERTICAL STACK */}
+        {visibleAchievements.map((achievement, index) => (
+          <AchievementNotification 
+            key={achievement.id}
+            achievement={achievement}
+            index={index}
+            onClose={() => {
+              // Remove tento konkrétní achievement z visible listu
+              setVisibleAchievements(prev => prev.filter(a => a.id !== achievement.id));
+            }}
+          />
+        ))}
       </>
+    );
+  }
+
+  // Show Tool - když je vybraný nástroj
+  if (showTool && isAuthenticated && userData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex">
+        {/* Sidebar */}
+        <div className="w-80 flex-shrink-0">
+          <CourseSidebar
+            modules={allModules}
+            currentModuleId={safeModuleNumber}
+            currentLessonIndex={safeLessonIndex}
+            completedLessons={completedLessons}
+            onSelectLesson={handleSelectLesson}
+            onShowDashboard={handleShowDashboard}
+            showingDashboard={false}
+            onSelectTool={handleSelectTool}
+            currentTool={showTool}
+          />
+        </div>
+
+        {/* Tool Content */}
+        <div className="flex-1">
+          {showTool === 'action-plan' && userData && (
+            <BusinessActionPlan
+              userId={userData.id}
+              onBack={() => {
+                setShowTool(null);
+                setShowMainDashboard(true);
+              }}
+              onNavigateToLesson={(lessonId) => {
+                // Find the lesson and navigate to it
+                allModules.forEach((module) => {
+                  const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
+                  if (lessonIdx !== -1) {
+                    setCurrentModuleNumber(module.id);
+                    setCurrentLessonIndex(lessonIdx);
+                    setShowTool(null);
+                    setShowMainDashboard(false);
+                  }
+                });
+              }}
+              refreshTrigger={actionPlanRefreshTrigger}
+              onAchievementUnlocked={triggerAchievement}
+            />
+          )}
+          {showTool === 'target-calculator' && <TargetCalculatorTool />}
+          {showTool === 'segment-size' && <SegmentSizeTool />}
+        </div>
+      </div>
     );
   }
 
@@ -1327,6 +2009,8 @@ export function CourseDemoV3() {
           }}
           onCheckAchievements={checkAllAchievements}
           unlockedAchievements={unlockedAchievements}
+          onSelectTool={handleSelectTool}
+          currentTool={showTool}
         />
       </>
     );
@@ -1344,90 +2028,55 @@ export function CourseDemoV3() {
     );
   }
 
+  // 🔍 CHECK: Je uživatel AKTIVNĚ V CVIČENÍ? (klikl "Začít cvičení")
+  const isInteractiveExercise = showCanvas; // TRUE jen když uživatel cvičí (Modul 1)
+  const shouldShowDesktopSidebar = !isInteractiveExercise; // 🔥 DESKTOP FIRST - žádné isMobile
+  
+  // 📏 WIDE LAYOUT: POUZE pro interaktivní cvičení (Modul 1, lekce 1-9)
+  const requiresWideLayout = isInteractiveExercise;
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Desktop Sidebar */}
-      <CourseSidebar
-        modules={allModules}
-        currentModuleId={currentModuleNumber}
-        currentLessonIndex={currentLessonIndex}
-        completedLessons={completedLessons}
-        onSelectLesson={handleSelectLesson}
-        onShowDashboard={handleShowDashboard}
-        showingDashboard={showMainDashboard}
-      />
-      
-      {/* Mobile Hamburger Button */}
-      <button
-        onClick={() => setShowMobileSidebar(true)}
-        className="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-lg shadow-lg border-2 border-gray-200 hover:bg-gray-50"
-      >
-        <Menu className="w-6 h-6 text-gray-700" />
-      </button>
-
-      {/* Mobile Sidebar Overlay */}
-      {showMobileSidebar && (
-        <div 
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setShowMobileSidebar(false)}
-        >
-          <div 
-            className="w-80 h-full bg-white shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
-            <button
-              onClick={() => setShowMobileSidebar(false)}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <X className="w-5 h-5 text-gray-600" />
-            </button>
-            
-            {/* Mobile Sidebar content */}
-            <MobileSidebarContent
-              modules={allModules}
-              currentModuleId={currentModuleNumber}
-              currentLessonIndex={currentLessonIndex}
-              completedLessons={completedLessons}
-              onSelectLesson={(moduleId, lessonIndex) => {
-                handleSelectLesson(moduleId, lessonIndex);
-                setShowMobileSidebar(false); // Close after selection
-              }}
-              onShowDashboard={() => {
-                handleShowDashboard();
-                setShowMobileSidebar(false);
-              }}
-              showingDashboard={showMainDashboard}
-            />
-          </div>
+      {/* 🖥️ DESKTOP SIDEBAR - ALWAYS VISIBLE (except during exercise) */}
+      {shouldShowDesktopSidebar && (
+        <div className="w-80 flex-shrink-0">
+          <CourseSidebar
+            modules={allModules}
+            currentModuleId={currentModuleNumber}
+            currentLessonIndex={currentLessonIndex}
+            completedLessons={completedLessons}
+            onSelectLesson={handleSelectLesson}
+            onShowDashboard={handleShowDashboard}
+            showingDashboard={showMainDashboard}
+            onSelectTool={handleSelectTool}
+            currentTool={showTool}
+          />
         </div>
       )}
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col md:ml-80">
-        {/* Header */}
+      {/* 🖥️ MAIN CONTENT - DESKTOP FIRST, FULL WIDTH */}
+      <div className="flex-1 flex flex-col relative z-10">
+        {/* 🖥️ DESKTOP HEADER - Sticky, Centered with Content */}
         <div className="bg-white border-b-2 border-gray-200 sticky top-0 z-20">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            {/* Top row */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                {/* Mobile spacer for hamburger */}
-                <div className="md:hidden w-10"></div>
-                <BookOpen className="w-5 h-5 text-blue-600" />
-                <div>
-                  <h1 className="text-sm font-bold text-gray-900">
-                    Modul {currentModuleNumber}: {currentModule.title}
-                  </h1>
-                  <p className="text-xs text-gray-500">
-                    Lekce {currentLessonIndex + 1}/{currentModule.lessons.length}
-                  </p>
+          <div className="w-full px-4 md:px-6 py-3">
+            {/* Centered wrapper - STEJNÁ ŠÍŘKA jako content! */}
+            <div className={`mx-auto ${requiresWideLayout ? 'max-w-[1600px]' : 'max-w-6xl'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <div className="text-base font-semibold text-gray-900">
+                      Modul {currentModuleNumber}: {currentModule.title}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Lekce {currentLessonIndex + 1}/{currentModule.lessons.length}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-2">
+                
                 {/* Progress Info */}
                 <div className="text-right">
-                  <div className="text-sm font-bold text-blue-600">
+                  <div className="text-sm font-semibold text-blue-600">
                     {Math.round((completedLessons.size / Math.max(1, totalLessons)) * 100)}%
                   </div>
                   <div className="text-xs text-gray-500">
@@ -1435,24 +2084,25 @@ export function CourseDemoV3() {
                   </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                style={{ width: `${Math.round((completedLessons.size / Math.max(1, totalLessons)) * 100)}%` }}
-                className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500 ease-out"
-              />
+              
+              {/* Progress Bar */}
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  style={{ width: `${Math.round((completedLessons.size / Math.max(1, totalLessons)) * 100)}%` }}
+                  className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500 ease-out"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 py-8 w-full">
-          <div className="flex flex-col gap-6">
-            {/* Lesson Header - Modern design */}
+        {/* 🖥️ DESKTOP CONTENT - 6xl pro lekce, 1600px pro cvičení A CanvasValidator */}
+        <div className="w-full px-4 md:px-6 py-8">
+          <div className={`flex flex-col gap-6 w-full mx-auto ${requiresWideLayout ? 'max-w-[1600px]' : 'max-w-6xl'}`}>
+            {/* 🖥️ DESKTOP LESSON HEADER */}
             {currentLesson.id !== 16 && (
-              <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white rounded-2xl p-8 shadow-lg relative overflow-hidden transition-all">
-                {/* Decorative background pattern */}
+              <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white rounded-2xl p-8 shadow-md relative overflow-hidden">
+                {/* Decorative background */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl transform translate-x-32 -translate-y-32" />
                   <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full blur-3xl transform -translate-x-24 translate-y-24" />
@@ -1460,14 +2110,14 @@ export function CourseDemoV3() {
                 
                 <div className="relative flex items-start justify-between gap-6">
                   <div className="flex-1">
-                    <div className="inline-block px-3 py-1 bg-white/20 rounded-full text-sm mb-3 backdrop-blur-sm">
+                    <div className="inline-block px-4 py-1.5 bg-white/20 rounded-full mb-3 backdrop-blur-sm">
                       Lekce {currentLessonIndex + 1} z {currentModule.lessons.length}
                     </div>
-                    <h2 className="text-3xl font-bold mb-3">{currentLesson.title}</h2>
-                    <p className="text-blue-100 text-lg leading-relaxed">{currentLesson.description}</p>
+                    <h2 className="font-bold mb-2">{currentLesson.title}</h2>
+                    <p className="text-blue-100 leading-relaxed">{currentLesson.description}</p>
                   </div>
                   {completedLessons.has(currentLesson.id) && (
-                    <div className="bg-green-500 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                    <div className="bg-green-500 rounded-xl p-4 shadow-lg flex-shrink-0">
                       <CheckCircle2 className="w-10 h-10 text-white" />
                     </div>
                   )}
@@ -1502,7 +2152,7 @@ export function CourseDemoV3() {
               )}
 
               {/* Text Content - Rich or Plain */}
-              <div>
+              <div className="w-full">
                 {/* MODUL 2 - Lekce 3: Problem Solver - VŽDY VIDITELNÝ! */}
                 {currentLesson.id === 12 && userData?.id && (
                   <ProblemSolver
@@ -1520,7 +2170,7 @@ export function CourseDemoV3() {
                   />
                 )}
                 
-                {/* MODUL 2 - Lekce 4: Business Model Gallery - VŽDY VIDITELNÁ! */}
+                {/* MODUL 2 - Lekce 4: Galerie Business Modelů */}
                 {currentLesson.id === 13 && currentModuleNumber === 2 && (
                   <BusinessModelGallery
                     onComplete={async () => {
@@ -1544,6 +2194,7 @@ export function CourseDemoV3() {
                         setSelectedVPCSegment(newSegment);
                         setSelectedVPCValue(null);
                       }}
+                      onAchievementUnlocked={triggerAchievement}
                       onComplete={async () => {
                         const newCompleted = new Set([...completedLessons, currentLesson.id]);
                         setCompletedLessons(newCompleted);
@@ -1565,6 +2216,7 @@ export function CourseDemoV3() {
                       selectedSegment={selectedVPCSegment || "Můj segment"}
                       selectedValue={selectedVPCValue}
                       onSelectValue={setSelectedVPCValue}
+                      onAchievementUnlocked={triggerAchievement}
                       onComplete={async () => {
                         console.log('🎯 Lekce 15 onComplete called!', { userId: userData?.id, lessonId: currentLesson.id });
                         
@@ -1601,6 +2253,7 @@ export function CourseDemoV3() {
                         onSegmentChange={setSelectedVPCSegment}
                         onValueChange={setSelectedVPCValue}
                         isLessonCompleted={completedLessons.has(16)}
+                        onAchievementUnlocked={triggerAchievement}
                         onNavigateToLesson={(lessonId) => {
                           // Navigate to Modul 3, Lesson with specific ID
                           const lessonIndex = MODULE_3.lessons.findIndex(l => l.id === lessonId);
@@ -1668,7 +2321,8 @@ export function CourseDemoV3() {
                     ) : currentLesson.content ? (
                       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all">
                         <div
-                          className="prose max-w-none"
+                          className="prose"
+                          style={{ maxWidth: 'none' }}
                           dangerouslySetInnerHTML={{ __html: currentLesson.content }}
                         />
                       </div>
@@ -1681,7 +2335,8 @@ export function CourseDemoV3() {
               {!showCanvas && currentModuleNumber === 1 && (
                 <>
                   {/* Desktop - Modern CTA */}
-                  <div className="hidden md:block bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-8 text-center shadow-xl relative overflow-hidden transition-all">
+                  {!isMobile && (
+                    <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-8 text-center shadow-xl relative overflow-hidden transition-all">
                     {/* Decorative elements */}
                     <div className="absolute inset-0 opacity-20">
                       <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full blur-2xl" />
@@ -1709,9 +2364,11 @@ export function CourseDemoV3() {
                       </Button>
                     </div>
                   </div>
+                  )}
 
                   {/* Mobile - Jednoduchá sekce (jen aktuální Canvas sekce) */}
-                  <div className="md:hidden space-y-4 transition-all">
+                  {isMobile && (
+                    <div className="space-y-4 transition-all">
                     <div className="text-center bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 shadow-lg">
                       <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 inline-block mb-2 text-xs text-white font-bold">
                         📱 MOBIL
@@ -1730,6 +2387,20 @@ export function CourseDemoV3() {
                     <MobileSingleSection
                       sectionTitle={currentLesson.title}
                       items={mobileCanvasData || []}
+                      valueLabel={
+                        currentLesson.canvasSection === 'revenue' || currentLesson.canvasSection === 'costs'
+                          ? 'Kč / měsíc'
+                          : undefined
+                      }
+                      allowGlobal={
+                        // Globální JEN pro: partners, activities, resources, costs, revenue
+                        // ❌ NE pro: segments, value, channels, relationships
+                        currentLesson.canvasSection === 'partners' ||
+                        currentLesson.canvasSection === 'activities' ||
+                        currentLesson.canvasSection === 'resources' ||
+                        currentLesson.canvasSection === 'costs' ||
+                        currentLesson.canvasSection === 'revenue'
+                      }
                       onAddItem={async (text, color, value) => {
                         if (!userData?.id || !currentLesson.canvasSection) return;
                         
@@ -1756,7 +2427,42 @@ export function CourseDemoV3() {
                             toast.error("Chyba: " + error.message);
                           } else {
                             setMobileCanvasData(updatedItems);
-                            // ❌ Odstraněno - duplicitní toast
+                            
+                            // 🎉 ACHIEVEMENT TRIGGERING (real-time)
+                            const section = currentLesson.canvasSection;
+                            const itemCount = updatedItems.length;
+                            
+                            // First segment/value
+                            if (section === 'segments' && itemCount === 1) {
+                              triggerAchievement('first-segment');
+                            } else if (section === 'value' && itemCount === 1) {
+                              triggerAchievement('first-value');
+                            }
+                            
+                            // Profit calculated (revenue/costs s value > 0)
+                            if ((section === 'revenue' || section === 'costs') && updatedItems.some((i: any) => i.value && i.value > 0)) {
+                              triggerAchievement('profit-calculated');
+                            }
+                            
+                            // Check if all 9 sections filled
+                            const { data: allSections } = await supabase
+                              .from('user_canvas_data')
+                              .select('section_key, content')
+                              .eq('user_id', userData.id);
+                            
+                            if (allSections) {
+                              const requiredSections = ['segments', 'value', 'channels', 'relationships', 'revenue', 'resources', 'activities', 'partners', 'costs'];
+                              const filledSections = allSections.filter(s => 
+                                requiredSections.includes(s.section_key) && s.content?.length > 0
+                              );
+                              
+                              if (filledSections.length === 9) {
+                                triggerAchievement('all-sections-filled');
+                              }
+                              
+                              // ❌ "profitable-business" achievement SE NETRIGGERUJE ZDE!
+                              // Triggeruje se v ProfitCalculator (Modul 2, Lekce 2) když user VIDÍ finanční analýzu
+                            }
                           }
                         } catch (err) {
                           console.error('Error adding item:', err);
@@ -1784,6 +2490,33 @@ export function CourseDemoV3() {
                           // ❌ Odstraněno - duplicitní toast
                         }
                       }}
+                      onEditItem={async (index, text, color, value) => {
+                        if (!userData?.id || !currentLesson.canvasSection) return;
+                        
+                        // ✅ IN-PLACE editace jako na desktopu
+                        const updatedItems = (mobileCanvasData || []).map((item: any, i: number) => {
+                          if (i === index) {
+                            return { ...item, text, color, value };
+                          }
+                          return item;
+                        });
+                        
+                        // Save to Supabase (UPSERT with conflict resolution!)
+                        const { error } = await supabase
+                          .from('user_canvas_data')
+                          .upsert({
+                            user_id: userData.id,
+                            section_key: currentLesson.canvasSection,
+                            content: updatedItems
+                          }, {
+                            onConflict: 'user_id,section_key'
+                          });
+                        
+                        if (!error) {
+                          setMobileCanvasData(updatedItems);
+                          toast.success("✅ Štítek upraven!");
+                        }
+                      }}
                       onComplete={async () => {
                         const newCompleted = new Set(completedLessons);
                         newCompleted.add(currentLesson.id);
@@ -1804,6 +2537,7 @@ export function CourseDemoV3() {
                       💡 Tip: Na PC uvidíte celý Canvas najednou
                     </p>
                   </div>
+                  )}
                 </>
               )}
               
@@ -1877,7 +2611,7 @@ export function CourseDemoV3() {
               >
                 {/* Canvas Header - Floating */}
                 <div className="sticky top-0 z-10 bg-white border-b-2 border-gray-200 shadow-sm">
-                  <div className="max-w-7xl mx-auto px-4 py-3">
+                  <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-16 py-3">
                     <div className="flex items-center justify-between">
                       <Button
                         onClick={handleBackToLesson}
@@ -1896,19 +2630,18 @@ export function CourseDemoV3() {
                   </div>
                 </div>
 
-                <div className="max-w-7xl mx-auto px-4 py-8">
-                  <div className="bg-white border-4 border-blue-500 rounded-xl p-8 shadow-2xl"
-              >
-                <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-5">
-                  <p className="text-blue-900 font-bold text-lg flex items-center gap-2">
-                    <span className="text-2xl">👇</span>
-                    <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na položku pro úpravu textu</span>
-                  </p>
-                </div>
+                <div className="w-full max-w-[1400px] mx-auto px-6 py-8">
+                  <div className="bg-white border-4 border-blue-500 rounded-xl p-6 shadow-2xl">
+                      <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-5">
+                        <p className="text-blue-900 font-bold text-lg flex items-center gap-2">
+                          <span className="text-2xl">👇</span>
+                          <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na položku pro úpravu textu</span>
+                        </p>
+                      </div>
 
-                {/* GLOW CSS */}
-                {highlightedSectionId && (
-                  <style>{`
+                      {/* GLOW CSS */}
+                      {highlightedSectionId && (
+                        <style>{`
                     [data-canvas-section="${highlightedSectionId}"] {
                       position: relative;
                       z-index: 45 !important;
@@ -1932,10 +2665,10 @@ export function CourseDemoV3() {
                         background-color: rgba(96, 165, 250, 0.08);
                       }
                     }
-                  `}</style>
-                )}
+                        `}</style>
+                      )}
 
-                <BusinessModelCanvasSimple
+                      <BusinessModelCanvasSimple
                   userId={userData?.id || "guest"}
                   highlightSection={highlightedSectionId}
                   hideTips={true}
@@ -1954,7 +2687,7 @@ export function CourseDemoV3() {
                         <CheckCircle2 className="w-8 h-8 text-white flex-shrink-0" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-2xl font-bold mb-2">
+                        <h4 className="text-2xl font-bold mb-2 text-white">
                           ✅ Skvělá práce!
                         </h4>
                         <p className="text-purple-50 text-lg">
@@ -1988,7 +2721,7 @@ export function CourseDemoV3() {
                           size="lg"
                           className="flex-1 bg-white text-purple-600 hover:bg-purple-50"
                         >
-                          Pokra��ovat na další lekci →
+                          Pokračovat na další lekci →
                         </Button>
                       )}
                       {isLastLesson && (
@@ -2007,9 +2740,9 @@ export function CourseDemoV3() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-
+          </div> {/* Konec flex flex-col gap-6 */}
+        </div> {/* Konec lesson content wrapper */}
+          
         {/* Guided Tour Popup */}
         <GuidedTour
           step={1}
@@ -2031,11 +2764,18 @@ export function CourseDemoV3() {
           show={!showMainDashboard}
         />
         
-        {/* 🎉 ACHIEVEMENT NOTIFICATION */}
-        <AchievementNotification 
-          achievement={currentAchievement}
-          onClose={() => setCurrentAchievement(null)}
-        />
+        {/* 🎉 ACHIEVEMENT NOTIFICATIONS - VERTICAL STACK */}
+        {visibleAchievements.map((achievement, index) => (
+          <AchievementNotification 
+            key={achievement.id}
+            achievement={achievement}
+            index={index}
+            onClose={() => {
+              // Remove tento konkrétní achievement z visible listu
+              setVisibleAchievements(prev => prev.filter(a => a.id !== achievement.id));
+            }}
+          />
+        ))}
       </div>
     </div>
   );

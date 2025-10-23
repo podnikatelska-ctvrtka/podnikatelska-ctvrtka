@@ -5,24 +5,19 @@ import { useState, useEffect } from "react";
 interface AchievementNotificationProps {
   achievement: Achievement | null;
   onClose: () => void;
+  index?: number; // 🎨 Index pro vertical stacking (0 = nejvyšší)
 }
 
-export function AchievementNotification({ achievement, onClose }: AchievementNotificationProps) {
+export function AchievementNotification({ achievement, onClose, index = 0 }: AchievementNotificationProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (achievement) {
       setIsVisible(true);
-      
-      // Auto-close po 5 sekundách
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        setTimeout(onClose, 300); // Wait for exit animation
-      }, 5000);
-      
-      return () => clearTimeout(timer);
+      // ⚠️ Auto-close je nyní kontrolovaný z parenta (CourseDemoV3)
+      // Ale necháme slide-out animaci před onClose
     }
-  }, [achievement, onClose]);
+  }, [achievement]);
 
   if (!achievement) return null;
 
@@ -33,15 +28,19 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
     special: 'from-yellow-400 to-orange-500'
   }[achievement.category];
 
+  // 📐 Vypočti top pozici pro vertical stacking (každý achievement zabírá cca 140px + 12px gap)
+  const topPosition = 128 + (index * 152); // 128px (top-32) + index * (140px height + 12px gap)
+  
   return (
     <>
       {isVisible && (
         <div
           style={{ 
+            top: `${topPosition}px`,
             transform: isVisible ? 'translateX(0) scale(1)' : 'translateX(400px) scale(0.8)',
             opacity: isVisible ? 1 : 0
           }}
-          className="fixed top-32 right-4 z-50 max-w-sm transition-all duration-500 ease-out"
+          className="fixed right-4 z-50 max-w-sm transition-all duration-500 ease-out"
         >
           <div className={`bg-gradient-to-r ${bgGradient} text-white rounded-xl shadow-2xl overflow-hidden`}>
             {/* Glow efekt */}
@@ -74,12 +73,14 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
                     {achievement.description}
                   </p>
                   
-                  {achievement.points && (
-                    <div className="mt-2 inline-flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-xs font-bold opacity-0 animate-[fadeIn_0.5s_0.6s_ease-out_forwards]">
-                      <span>+{achievement.points}</span>
-                      <span className="opacity-75">bodů</span>
-                    </div>
-                  )}
+                  <div className="mt-2 flex items-center gap-2 flex-wrap">
+                    {achievement.points && (
+                      <div className="inline-flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-xs font-bold opacity-0 animate-[fadeIn_0.5s_0.6s_ease-out_forwards]">
+                        <span>+{achievement.points}</span>
+                        <span className="opacity-75">bodů</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 {/* Close button */}
@@ -95,14 +96,23 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
               </div>
             </div>
             
-            {/* Progress bar */}
-            <div 
-              className="h-1 bg-white/30 origin-left transition-transform duration-[5000ms] ease-linear"
-              style={{ transform: 'scaleX(1)' }}
-            />
+            {/* Progress bar - animated from 100% to 0% */}
+            <div className="relative h-1 bg-white/30 overflow-hidden">
+              <div 
+                className="absolute inset-0 bg-white/50 origin-right animate-[shrink_2.5s_linear_forwards]"
+              />
+            </div>
           </div>
         </div>
       )}
+      
+      {/* Animace pro progress bar */}
+      <style>{`
+        @keyframes shrink {
+          from { transform: scaleX(1); }
+          to { transform: scaleX(0); }
+        }
+      `}</style>
     </>
   );
 }
@@ -125,5 +135,5 @@ export function AchievementQueue({ achievements }: { achievements: Achievement[]
     setCurrent(null);
   };
 
-  return <AchievementNotification achievement={current} onClose={handleClose} />;
+  return <AchievementNotification achievement={current} onClose={handleClose} queueCount={queue.length} />;
 }

@@ -1,6 +1,8 @@
-import { CheckCircle, Lock, ChevronRight, ChevronLeft, BookOpen, LayoutDashboard } from "lucide-react";
+import { CheckCircle, Lock, ChevronRight, BookOpen, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { useIsMobile } from "./ui/use-mobile";
+import { ToolsSection } from "./ToolsSection";
 
 interface Module {
   id: number;
@@ -17,6 +19,10 @@ interface CourseSidebarProps {
   onSelectLesson: (moduleId: number, lessonIndex: number) => void;
   onShowDashboard: () => void;
   showingDashboard?: boolean;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+  onSelectTool?: (toolId: string) => void;
+  currentTool?: string | null;
 }
 
 export function CourseSidebar({
@@ -26,9 +32,13 @@ export function CourseSidebar({
   completedLessons,
   onSelectLesson,
   onShowDashboard,
-  showingDashboard = false
+  showingDashboard = false,
+  isCollapsed = false,
+  onToggleCollapse,
+  onSelectTool,
+  currentTool = null
 }: CourseSidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isMobile = useIsMobile();
 
   // Calculate progress
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
@@ -41,12 +51,16 @@ export function CourseSidebar({
   const isModule1Complete = module1 ? module1.lessons.every(l => completedLessons.has(l.id)) : false;
   const isModule2Complete = module2 ? module2.lessons.every(l => completedLessons.has(l.id)) : false;
 
+  // Na mobilu (portrait i landscape) sidebar skrytý - je přes hamburger menu
+  if (isMobile) {
+    return null;
+  }
+
   return (
     <>
       {/* Sidebar */}
       <div
-        style={{ transform: isCollapsed ? 'translateX(-280px)' : 'translateX(0)' }}
-        className="hidden md:flex fixed left-0 top-0 h-screen w-80 bg-white border-r border-gray-200 shadow-lg z-40 flex-col transition-transform duration-300 ease-out"
+        className="fixed left-0 top-0 h-screen w-80 bg-white border-r border-gray-200 shadow-lg z-40 flex flex-col"
       >
         {/* Header */}
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-blue-600">
@@ -71,19 +85,24 @@ export function CourseSidebar({
         </div>
 
         {/* Dashboard Button */}
-        <div className="p-3 border-b border-gray-200">
+        <div className="p-2 border-b border-gray-200">
           <button
             onClick={onShowDashboard}
-            className={`w-full flex items-center gap-2 p-3 rounded-lg transition-all duration-200 ${
+            className={`w-full flex items-center gap-2 p-2 rounded-lg transition-all duration-200 ${
               showingDashboard 
                 ? 'bg-blue-50 border-2 border-blue-300 text-blue-700' 
                 : 'hover:bg-blue-50 hover:border-blue-200 border-2 border-transparent'
             }`}
           >
             <LayoutDashboard className="w-4 h-4" />
-            <span className="font-medium">📊 Dashboard</span>
+            <span className="font-medium text-sm">📊 Dashboard</span>
           </button>
         </div>
+
+        {/* Tools Section */}
+        {onSelectTool && (
+          <ToolsSection onSelectTool={onSelectTool} currentTool={currentTool} />
+        )}
 
         {/* Modules & Lessons - Scrollable */}
         <div className="flex-1 overflow-y-auto p-3">
@@ -91,7 +110,8 @@ export function CourseSidebar({
             {modules.map((module) => {
               const moduleCompleted = module.lessons.every(l => completedLessons.has(l.id));
               const moduleLessonsCompleted = module.lessons.filter(l => completedLessons.has(l.id)).length;
-              const isCurrentModule = module.id === currentModuleId;
+              // ✅ FIX: Modul je aktivní pouze pokud NEJSME na Dashboard ani Tools
+              const isCurrentModule = !showingDashboard && !currentTool && module.id === currentModuleId;
 
               return (
                 <div key={module.id} className="space-y-2">
@@ -128,7 +148,8 @@ export function CourseSidebar({
                   <div className="ml-2 space-y-1">
                     {module.lessons.map((lesson, lessonIndex) => {
                       const isCompleted = completedLessons.has(lesson.id);
-                      const isCurrent = !showingDashboard && isCurrentModule && lessonIndex === currentLessonIndex;
+                      // ✅ FIX: Lekce je aktivní pouze pokud NEJSME na Dashboard ani Tools
+                      const isCurrent = !showingDashboard && !currentTool && isCurrentModule && lessonIndex === currentLessonIndex;
                       
                       // SEKVENČNÍ LOGIKA: Lekce je zamčená pokud předchozí není dokončená
                       let isLocked = false;
@@ -206,21 +227,6 @@ export function CourseSidebar({
         </div>
       </div>
 
-      {/* Collapse Toggle Button */}
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="hidden md:block fixed top-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded-r-lg p-2 shadow-lg z-50 hover:bg-gray-50 transition-all"
-        style={{ 
-          left: isCollapsed ? '0px' : '320px',
-          transition: 'left 0.3s ease'
-        }}
-      >
-        {isCollapsed ? (
-          <ChevronRight className="w-4 h-4 text-gray-600" />
-        ) : (
-          <ChevronLeft className="w-4 h-4 text-gray-600" />
-        )}
-      </button>
     </>
   );
 }

@@ -108,11 +108,16 @@ export async function handler(event, context) {
     const name = invoice.customer?.name || invoice.customer?.first_name || 'Zákazník';
     const amount = parseFloat(invoice.total || 0);
     
+    // 🎯 DETECT EARLY BIRD BY PRICE
+    // 4.999 Kč = Early Bird (průkopník, dostane hlavní + mini kurz)
+    // 8.499 Kč = Full Price (normální, dostane jen hlavní kurz)
+    const isEarlyBird = amount === 4999 || amount === 6049; // 4.999 bez DPH nebo 6.049 s DPH
+    
     if (!email) {
       throw new Error('No email in invoice.customer');
     }
     
-    console.log('👤 Customer:', { email, name, amount });
+    console.log('👤 Customer:', { email, name, amount, isEarlyBird });
     
     // ──────────────────────────────────────────
     // 🔑 GENERATE ACCESS TOKEN
@@ -154,11 +159,69 @@ export async function handler(event, context) {
     console.log('✅ User saved:', user.id);
     
     // ──────────────────────────────────────────
-    // 📧 SEND EMAIL
+    // 📧 SEND EMAIL - ROZDÍLNÉ TEMPLATY
     // ──────────────────────────────────────────
-    const accessUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${encodeURIComponent(accessToken)}`;
+    const mainCourseUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${encodeURIComponent(accessToken)}`;
+    const miniCourseUrl = `https://podnikatelskactvrtka.cz/minikurz`;
     
-    const emailHtml = `
+    // 🎯 TEMPLATE A: PRŮKOPNÍK (s minikurzem)
+    const earlyBirdEmailHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); padding: 40px 20px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">🔥 PRŮKOPNÍK! Vítejte v kurzu!</h1>
+          </div>
+          
+          <div style="background: white; padding: 40px 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px;">
+            <p style="font-size: 18px; margin-top: 0;">Ahoj ${name}!</p>
+            
+            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 20px;">
+              <p style="margin: 0; font-weight: 700; color: #92400e;">🚀 GRATULUJEME! Jste mezi průkopníky!</p>
+              <p style="margin: 8px 0 0 0; font-size: 14px; color: #78350f;">Koupili jste během prvních 24 hodin a získáváte exkluzivní bonus! 🎁</p>
+            </div>
+            
+            <p>Děkujeme za zakoupení kurzu <strong>Podnikatelská Čtvrtka</strong>! 🚀</p>
+            
+            <p><strong>Váš přístup je připraven:</strong></p>
+            
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+              <p style="margin: 0 0 15px 0; font-weight: 600; color: #667eea;">📚 HLAVNÍ KURZ - Podnikatelská Čtvrtka</p>
+              <a href="${mainCourseUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin-bottom: 10px;">
+                Vstoupit do hlavního kurzu
+              </a>
+              <p style="margin: 10px 0 0 0; font-size: 13px; color: #666;">⏱️ 12 lekcí • 90 minut práce • Kompletní byznys plán</p>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 8px; margin: 30px 0; border: 2px solid #f59e0b;">
+              <p style="margin: 0 0 15px 0; font-weight: 600; color: #92400e;">🎁 BONUS PRO PRŮKOPNÍKY - Mini Kurz</p>
+              <a href="${miniCourseUrl}" style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin-bottom: 10px;">
+                Vstoupit do mini kurzu
+              </a>
+              <p style="margin: 10px 0 0 0; font-size: 13px; color: #78350f;">⚡ 5 interaktivních nástrojů • Okamžité výsledky • Praktická příprava</p>
+            </div>
+            
+            <p style="color: #666; font-size: 14px;">
+              💡 <strong>Tip:</strong> Uložte si tento email - odkazy fungují natrvalo a můžete se kdykoliv vrátit!
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
+            
+            <p style="color: #999; font-size: 13px; margin-bottom: 0;">
+              Pokud máte jakékoliv dotazy, neváhejte odpovědět na tento email.<br>
+              Přejeme hodně úspěchů! 💪
+            </p>
+          </div>
+        </body>
+      </html>
+    `;
+    
+    // 📧 TEMPLATE B: NORMÁLNÍ ZÁKAZNÍK (jen hlavní kurz)
+    const normalEmailHtml = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -179,7 +242,7 @@ export async function handler(event, context) {
             
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
               <p style="margin: 0 0 15px 0; font-weight: 600; color: #667eea;">🔑 Váš přístupový odkaz:</p>
-              <a href="${accessUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+              <a href="${mainCourseUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
                 Vstoupit do kurzu
               </a>
             </div>
@@ -199,10 +262,16 @@ export async function handler(event, context) {
       </html>
     `;
     
-    console.log('📧 Sending email...');
+    // 🎯 CHOOSE EMAIL TEMPLATE BASED ON EARLY BIRD STATUS
+    const emailHtml = isEarlyBird ? earlyBirdEmailHtml : normalEmailHtml;
+    const emailSubject = isEarlyBird 
+      ? '🔥 PRŮKOPNÍK! Přístup do kurzu + BONUS Mini Kurz' 
+      : '🎉 Přístup do kurzu Podnikatelská Čtvrtka';
+    
+    console.log(`📧 Sending ${isEarlyBird ? 'EARLY BIRD' : 'NORMAL'} email...`);
     await sendEmail(
       email,
-      '🎉 Přístup do kurzu Podnikatelská Čtvrtka',
+      emailSubject,
       emailHtml
     );
     

@@ -15,7 +15,13 @@ interface LessonContentProps {
   hideTips?: boolean; // Pro Modul 1 kde se tipy zobrazují v interaktivním modalu
 }
 
-export function LessonContentRenderer({ content, examples, tips, showDemo, hideTips = false }: LessonContentProps) {
+export function LessonContentRenderer({ 
+  content, 
+  examples, 
+  tips, 
+  showDemo, 
+  hideTips = false
+}: LessonContentProps) {
   const [tipsExpanded, setTipsExpanded] = useState(false);
   
   return (
@@ -23,7 +29,8 @@ export function LessonContentRenderer({ content, examples, tips, showDemo, hideT
       {/* Main content - Clean card with shadow */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
         <div 
-          className="prose prose-blue max-w-none"
+          className="prose prose-blue"
+          style={{ maxWidth: 'none' }}
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>

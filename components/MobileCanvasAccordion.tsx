@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ChevronDown, Plus, X, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { hexToColorName } from "../lib/colorUtils";
+import { BottomSheet } from "./BottomSheet";
+import { haptic } from "../lib/haptics";
 
 interface CanvasItem {
   text: string;
@@ -49,10 +51,22 @@ export function MobileCanvasAccordion({
 
   const handleAddItem = (sectionId: string) => {
     if (!newItem.trim()) return;
+    haptic('success');
     onAddItem(sectionId, newItem, selectedColor, newValue);
     setNewItem("");
     setNewValue(undefined);
     setEditingSection(null);
+  };
+
+  const handleOpenSheet = (sectionId: string) => {
+    haptic('light');
+    setEditingSection(sectionId);
+  };
+
+  const handleCloseSheet = () => {
+    setEditingSection(null);
+    setNewItem("");
+    setNewValue(undefined);
   };
 
   return (
@@ -129,127 +143,17 @@ export function MobileCanvasAccordion({
                       })}
                     </div>
 
-                    {/* Add Form */}
+                    {/* Add Button */}
                     {isAllowed && (
-                      <>
-                        {editingSection === section.id ? (
-                          <div className="space-y-2 bg-gray-50 p-3 rounded-lg">
-                            <input
-                              type="text"
-                              value={newItem}
-                              onChange={(e) => setNewItem(e.target.value)}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) handleAddItem(section.id);
-                              }}
-                              placeholder="Přidat položku..."
-                              className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                              autoFocus
-                            />
-                            
-                            {section.valueLabel && (
-                              <input
-                                type="number"
-                                value={newValue || ''}
-                                onChange={(e) => setNewValue(e.target.value ? parseInt(e.target.value) : undefined)}
-                                placeholder={section.valueLabel}
-                                className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                              />
-                            )}
-                            
-                            {/* Color Picker - DYNAMICKÝ */}
-                            {(() => {
-                              const isCustomerSection = ['segments', 'value', 'channels', 'relationships'].includes(section.id);
-                              
-                              if (isCustomerSection) {
-                                // ✅ ZÁKAZNICKÉ: Jen barevné (BEZ GLOBAL!)
-                                return (
-                                  <div className="flex gap-1 items-center flex-wrap">
-                                    <span className="text-xs text-gray-600 mr-1">Barva segmentu:</span>
-                                    {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
-                                      const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
-                                      return (
-                                        <button
-                                          key={color}
-                                          onClick={() => setSelectedColor(color as any)}
-                                          className={`w-8 h-8 rounded ${classes.bg} ${classes.border} border-2 ${
-                                            selectedColor === color ? 'ring-2 ring-gray-900' : ''
-                                          }`}
-                                        />
-                                      );
-                                    })}
-                                  </div>
-                                );
-                              } else {
-                                // ✅ BYZNYSOVÉ: Segmenty + Global
-                                return (
-                                  <div className="space-y-2">
-                                    <div className="flex gap-1 items-center flex-wrap">
-                                      <span className="text-xs text-gray-600 mr-1">Segment:</span>
-                                      {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
-                                        const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
-                                        return (
-                                          <button
-                                            key={color}
-                                            onClick={() => setSelectedColor(color as any)}
-                                            className={`w-8 h-8 rounded ${classes.bg} ${classes.border} border-2 ${
-                                              selectedColor === color ? 'ring-2 ring-gray-900' : ''
-                                            }`}
-                                          />
-                                        );
-                                      })}
-                                    </div>
-                                    <div className="flex gap-1 items-center flex-wrap">
-                                      <span className="text-xs text-gray-600 mr-1">Globální:</span>
-                                      <button
-                                        onClick={() => setSelectedColor('global')}
-                                        className={`w-8 h-8 rounded ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border-2 flex items-center justify-center ${
-                                          selectedColor === 'global' ? 'ring-2 ring-gray-900' : ''
-                                        }`}
-                                        title="🌐 Pro celý byznys"
-                                      >
-                                        <span className="text-[9px]">🌐</span>
-                                      </button>
-                                    </div>
-                                  </div>
-                                );
-                              }
-                            })()}
-
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={() => handleAddItem(section.id)}
-                                size="sm"
-                                className="flex-1 h-9"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-1" />
-                                Přidat
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  setEditingSection(null);
-                                  setNewItem("");
-                                  setNewValue(undefined);
-                                }}
-                                variant="outline"
-                                size="sm"
-                                className="flex-1 h-9"
-                              >
-                                Zrušit
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <Button
-                            onClick={() => setEditingSection(section.id)}
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                          >
-                            <Plus className="w-4 h-4 mr-1" />
-                            Přidat položku
-                          </Button>
-                        )}
-                      </>
+                      <Button
+                        onClick={() => handleOpenSheet(section.id)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Přidat položku
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -257,6 +161,150 @@ export function MobileCanvasAccordion({
           </div>
         );
       })}
+
+      {/* Bottom Sheet - Add Item Form */}
+      {editingSection && (() => {
+        const currentSection = sections.find(s => s.id === editingSection);
+        if (!currentSection) return null;
+
+        const isCustomerSection = ['segments', 'value', 'channels', 'relationships'].includes(currentSection.id);
+
+        return (
+          <BottomSheet
+            isOpen={true}
+            onClose={handleCloseSheet}
+            title={`Přidat: ${currentSection.title}`}
+            snapPoints={[0.75, 0.95]}
+            defaultSnap={0}
+          >
+            <div className="space-y-4">
+              {/* Text Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Text položky
+                </label>
+                <input
+                  type="text"
+                  value={newItem}
+                  onChange={(e) => setNewItem(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) handleAddItem(currentSection.id);
+                  }}
+                  placeholder="Napište text..."
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  autoFocus
+                />
+              </div>
+
+              {/* Value Input (optional) */}
+              {currentSection.valueLabel && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {currentSection.valueLabel}
+                  </label>
+                  <input
+                    type="number"
+                    value={newValue || ''}
+                    onChange={(e) => setNewValue(e.target.value ? parseInt(e.target.value) : undefined)}
+                    placeholder={currentSection.valueLabel}
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              )}
+
+              {/* Color Picker - DYNAMICKÝ */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {isCustomerSection ? 'Barva segmentu' : 'Segment / Globální'}
+                </label>
+
+                {isCustomerSection ? (
+                  // ✅ ZÁKAZNICKÉ: Jen barevné (BEZ GLOBAL!)
+                  <div className="flex gap-3 flex-wrap">
+                    {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
+                      const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => {
+                            haptic('selection');
+                            setSelectedColor(color as any);
+                          }}
+                          className={`w-12 h-12 rounded-lg ${classes.bg} ${classes.border} border-2 transition-all ${
+                            selectedColor === color ? 'ring-4 ring-blue-500 scale-110' : 'hover:scale-105'
+                          }`}
+                          aria-label={`Barva: ${color}`}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  // ✅ BYZNYSOVÉ: Segmenty + Global
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-gray-600 mb-2">Segment zákazníka:</p>
+                      <div className="flex gap-3 flex-wrap">
+                        {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
+                          const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
+                          return (
+                            <button
+                              key={color}
+                              onClick={() => {
+                                haptic('selection');
+                                setSelectedColor(color as any);
+                              }}
+                              className={`w-12 h-12 rounded-lg ${classes.bg} ${classes.border} border-2 transition-all ${
+                                selectedColor === color ? 'ring-4 ring-blue-500 scale-110' : 'hover:scale-105'
+                              }`}
+                              aria-label={`Segment: ${color}`}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-2">Globální (celý byznys):</p>
+                      <button
+                        onClick={() => {
+                          haptic('selection');
+                          setSelectedColor('global');
+                        }}
+                        className={`w-12 h-12 rounded-lg ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border-2 flex items-center justify-center transition-all ${
+                          selectedColor === 'global' ? 'ring-4 ring-blue-500 scale-110' : 'hover:scale-105'
+                        }`}
+                        title="🌐 Pro celý byznys"
+                      >
+                        <span className="text-lg">🌐</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => handleAddItem(currentSection.id)}
+                  disabled={!newItem.trim()}
+                  size="lg"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 h-14 text-lg"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Přidat
+                </Button>
+                <Button
+                  onClick={handleCloseSheet}
+                  variant="outline"
+                  size="lg"
+                  className="h-14 px-6"
+                >
+                  Zrušit
+                </Button>
+              </div>
+            </div>
+          </BottomSheet>
+        );
+      })()}
     </div>
   );
 }

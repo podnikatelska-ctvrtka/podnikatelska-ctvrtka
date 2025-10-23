@@ -3,6 +3,7 @@ import { Plus, X, Save } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
+import { trackCourseEvent, trackError } from "../lib/sentry";
 
 interface Props {
   userId: string;
@@ -124,6 +125,13 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
         
         if (error && error.code !== 'PGRST116') {
           console.error('Error loading VPC:', error);
+          
+          // 🚨 SENTRY: Track load error
+          trackError.loadError('VPCValueMap', error as Error, {
+            userId,
+            segmentName: selectedSegment,
+            selectedValue: selectedValue || 'none',
+          });
           return;
         }
         
@@ -184,16 +192,34 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
         if (error) throw error;
         if (data) setVpcId(data.id);
       }
+      
+      // 🚨 SENTRY: Track successful save
+      trackCourseEvent.vpcSave({
+        userId,
+        segmentName: selectedSegment,
+        hasJobs: false,
+        hasPains: painRelievers.length > 0,
+        hasGains: gainCreators.length > 0,
+      });
     } catch (err) {
       console.error('Error saving VPC:', err);
-      // ❌ Odstraněno - duplicitní toast (console.error stačí)
+      
+      // 🚨 SENTRY: Track error
+      trackError.saveError('VPCValueMap', err as Error, {
+        userId,
+        segmentName: selectedSegment,
+        selectedValue: selectedValue || 'none',
+        hasProducts: products.length > 0,
+        hasPainRelievers: painRelievers.length > 0,
+        hasGainCreators: gainCreators.length > 0,
+      });
     } finally {
       setIsSaving(false);
     }
   };
   
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full">
       <div className="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-t-xl">
         <h2 className="text-2xl font-bold mb-2">💎 Hodnotová Mapa</h2>
         <p className="text-green-100">

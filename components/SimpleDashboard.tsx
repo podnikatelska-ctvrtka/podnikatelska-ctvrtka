@@ -1,13 +1,17 @@
-import { Trophy, BookOpen, ArrowRight, CheckCircle, Menu, X, Lock, Award, Star, Target } from "lucide-react";
+import { Trophy, BookOpen, ArrowRight, CheckCircle, Menu, X, Lock, Award, Star, Target, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import { BusinessModelCanvasSimple } from "./BusinessModelCanvasSimple";
 import { CourseSidebar } from "./CourseSidebar";
 import { MobileSidebarContent } from "./MobileSidebarContent";
+import { useOrientation } from "../lib/useOrientation";
 import { MobileCanvasPreview } from "./MobileCanvasPreview";
+import { OfflineIndicator, OfflineBadge } from "./OfflineIndicator";
+import { PullToRefresh } from "./PullToRefresh";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { ACHIEVEMENTS, calculateTotalPoints, loadUnlockedAchievements } from "../lib/achievements";
+import { ACHIEVEMENTS, calculateTotalPoints, loadUnlockedAchievements, loadUnlockedAchievementsFromDB, scanAndUnlockMissedAchievements } from "../lib/achievements";
 import type { Achievement } from "../lib/achievements";
+import { toast } from "sonner";
 
 interface Module {
   id: number;
@@ -26,9 +30,10 @@ interface SimpleDashboardProps {
   onSelectLesson: (moduleId: number, lessonIndex: number) => void;
   onShowDashboard: () => void;
   onProgressUpdate?: (progress: Set<number>) => void;
-  onShowActionPlan?: () => void;
   onCheckAchievements?: () => void;
   unlockedAchievements?: Set<string>;
+  onSelectTool?: (toolId: string) => void;
+  currentTool?: string | null;
 }
 
 export function SimpleDashboard({
@@ -41,14 +46,37 @@ export function SimpleDashboard({
   onSelectLesson,
   onShowDashboard,
   onProgressUpdate,
-  onShowActionPlan,
   onCheckAchievements,
-  unlockedAchievements: unlockedAchievementsProp
+  unlockedAchievements: unlockedAchievementsProp,
+  onSelectTool,
+  currentTool = null
 }: SimpleDashboardProps) {
+  // 📱 LAYOUT DETECTION - Používáme POUZE šířku okna (ne touch detection!)
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  const orientation = useOrientation();
+  const isLandscape = orientation === 'landscape';
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [canvasSections, setCanvasSections] = useState<any[]>([]);
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(unlockedAchievementsProp || new Set());
   const [hasError, setHasError] = useState(false);
+  
+  // 🔄 SYNC prop to state when parent updates
+  useEffect(() => {
+    if (unlockedAchievementsProp) {
+      setUnlockedAchievements(unlockedAchievementsProp);
+    }
+  }, [unlockedAchievementsProp]);
+  
+  // Listen for window resize to update isMobile
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // ✅ Error boundary
   if (hasError) {
@@ -81,6 +109,87 @@ export function SimpleDashboard({
   // 🏆 Achievement stats
   const totalPoints = calculateTotalPoints(unlockedAchievements);
   const achievementProgress = ACHIEVEMENTS.length > 0 ? Math.round((unlockedAchievements.size / ACHIEVEMENTS.length) * 100) : 0;
+  const [isScanning, setIsScanning] = useState(false);
+  const [hasAutoScanned, setHasAutoScanned] = useState(false);
+  
+  // 🔄 Handler: Re-scan achievements
+  const handleRescanAchievements = async () => {
+    if (!userId || isScanning) return;
+    
+    setIsScanning(true);
+    toast.info('🔍 Kontroluji missované achievementy...');
+    
+    try {
+      const { newlyUnlocked, totalChecked } = await scanAndUnlockMissedAchievements(userId, unlockedAchievements);
+      
+      if (newlyUnlocked.length > 0) {
+        // ✅ Reload achievements FROM SUPABASE (not just localStorage)
+        const updated = await loadUnlockedAchievementsFromDB(userId);
+        setUnlockedAchievements(updated);
+        
+        toast.success(`🎉 Odemkl jsi ${newlyUnlocked.length} nových achievementů!`, {
+          description: `Zkontrolováno: ${totalChecked} achievementů`
+        });
+        
+        // Trigger achievement check callback
+        if (onCheckAchievements) {
+          onCheckAchievements();
+        }
+      } else {
+        toast.info('✅ Všechny achievementy jsou odemčené!', {
+          description: `Zkontrolováno: ${totalChecked} achievementů`
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error rescanning achievements:', error);
+      toast.error('Chyba při kontrole achievementů', {
+        description: 'Zkuste to prosím znovu'
+      });
+    } finally {
+      setIsScanning(false);
+    }
+  };
+  
+  // 🔄 Auto-scan achievements on mount (once per session)
+  useEffect(() => {
+    if (!userId || hasAutoScanned || unlockedAchievements.size === ACHIEVEMENTS.length) return;
+    
+    // Check sessionStorage to avoid multiple scans in same session
+    const sessionKey = `achievement_scan_${userId}`;
+    const hasScannedThisSession = sessionStorage.getItem(sessionKey);
+    
+    if (hasScannedThisSession) {
+      setHasAutoScanned(true);
+      return;
+    }
+    
+    // Auto-scan in background - SILENT (no toast)
+    (async () => {
+      try {
+        const { newlyUnlocked } = await scanAndUnlockMissedAchievements(userId, unlockedAchievements);
+        
+        if (newlyUnlocked.length > 0) {
+          // ✅ Reload achievements FROM SUPABASE (not just localStorage)
+          const updated = await loadUnlockedAchievementsFromDB(userId);
+          setUnlockedAchievements(updated);
+          
+          // ✅ SILENT - no toast, only console log
+          console.log(`✅ Auto-scan: Odemkl jsem ${newlyUnlocked.length} missovaných achievementů silently.`);
+          
+          // Trigger achievement check callback
+          if (onCheckAchievements) {
+            onCheckAchievements();
+          }
+        }
+        
+        // Mark as scanned
+        sessionStorage.setItem(sessionKey, 'true');
+        setHasAutoScanned(true);
+      } catch (error) {
+        console.error('❌ Error auto-scanning achievements:', error);
+      }
+    })();
+  }, [userId, unlockedAchievements, hasAutoScanned, onCheckAchievements]);
   
   // Load Canvas data for mobile preview
   useEffect(() => {
@@ -142,54 +251,61 @@ export function SimpleDashboard({
   }, [userId, unlockedAchievementsProp, completedLessons]); // Reload when prop changes or lessons completed
 
   // 🔄 FORCE RELOAD progress from Supabase when dashboard opens
-  useEffect(() => {
-    const reloadProgress = async () => {
-      if (!userId) return;
-      
-      console.log('🔄 SimpleDashboard: Reloading fresh progress from Supabase...');
-      const { data, error } = await supabase
-        .from('user_progress')
-        .select('lesson_id')
-        .eq('user_id', userId);
-      
-      if (error) {
-        console.error('❌ Failed to reload progress:', error);
-        return;
-      }
-      
-      if (data) {
-        const freshProgress = new Set(data.map(item => item.lesson_id));
-        console.log('✅ Fresh progress loaded:', freshProgress.size, 'lessons');
-        
-        // ✅ Update parent component state!
-        if (onProgressUpdate && freshProgress.size !== completedLessons.size) {
-          console.log('🔄 Updating parent state from', completedLessons.size, 'to', freshProgress.size);
-          onProgressUpdate(freshProgress);
-        }
-      }
-    };
+  const handleRefreshProgress = async () => {
+    if (!userId) return;
     
-    reloadProgress();
+    console.log('🔄 SimpleDashboard: Reloading fresh progress from Supabase...');
+    const { data, error } = await supabase
+      .from('user_progress')
+      .select('lesson_id')
+      .eq('user_id', userId);
+    
+    if (error) {
+      console.error('❌ Failed to reload progress:', error);
+      return;
+    }
+    
+    if (data) {
+      const freshProgress = new Set(data.map(item => item.lesson_id));
+      console.log('✅ Fresh progress loaded:', freshProgress.size, 'lessons');
+      
+      // ✅ Update parent component state!
+      if (onProgressUpdate && freshProgress.size !== completedLessons.size) {
+        console.log('🔄 Updating parent state from', completedLessons.size, 'to', freshProgress.size);
+        onProgressUpdate(freshProgress);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleRefreshProgress();
   }, []); // Only on mount
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hamburger Button (vždy viditelný) */}
-      <button
-        onClick={() => setShowMobileSidebar(true)}
-        className="fixed top-4 left-4 z-30 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-lg shadow-lg"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
+    <div className="fixed inset-0 bg-gray-50 overflow-y-auto z-10">
+      {/* 📡 Offline Indicator */}
+      <OfflineIndicator showToast={true} persistent={false} />
 
-      {/* Sidebar Overlay */}
-      {showMobileSidebar && (
+      {/* Hamburger Button (pouze na mobile - portrait i landscape) */}
+      {isMobile && (
+        <button
+          onClick={() => setShowMobileSidebar(true)}
+          className="fixed top-4 left-4 z-30 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-lg shadow-lg"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+      )}
+
+      {/* Sidebar Overlay (pouze na mobile - portrait i landscape) */}
+      {isMobile && showMobileSidebar && (
         <div 
           className="fixed inset-0 bg-black/50 z-40"
           onClick={() => setShowMobileSidebar(false)}
         >
           <div 
-            className="w-80 h-full bg-white shadow-xl"
+            className={`fixed left-0 top-0 h-full bg-white shadow-xl overflow-y-auto ${
+              isLandscape ? 'w-56 max-w-[60vw]' : 'w-72 max-w-[85vw]'
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -218,20 +334,37 @@ export function SimpleDashboard({
         </div>
       )}
 
-      {/* Desktop Sidebar */}
-      <CourseSidebar
-        modules={modules}
-        currentModuleId={currentModuleId}
-        currentLessonIndex={currentLessonIndex}
-        completedLessons={completedLessons}
-        onSelectLesson={onSelectLesson}
-        onShowDashboard={onShowDashboard}
-        showingDashboard={true}
-      />
+      {/* Desktop Sidebar - skrytý na mobile (portrait i landscape) */}
+      <div className="hidden md:block">
+        {!isMobile && (
+          <CourseSidebar
+            modules={modules}
+            currentModuleId={currentModuleId}
+            currentLessonIndex={currentLessonIndex}
+            completedLessons={completedLessons}
+            onSelectLesson={onSelectLesson}
+            onShowDashboard={onShowDashboard}
+            showingDashboard={true}
+            isCollapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onSelectTool={onSelectTool}
+            currentTool={currentTool}
+          />
+        )}
+      </div>
 
-      {/* Main Dashboard Content */}
-      <div className="flex-1 md:ml-80 bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4">
-      <div className="max-w-[1400px] mx-auto">
+      {/* Main Dashboard Content - Wrapped in Pull-to-Refresh */}
+      <PullToRefresh
+        onRefresh={async () => {
+          await handleRefreshProgress();
+          // Delay pro vizuální feedback
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }}
+        enabled={true}
+        threshold={80}
+      >
+        <div className={`flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 py-12 transition-all duration-300 ${!sidebarCollapsed && !isMobile ? 'md:pl-80' : ''}`}>
+        <div className="w-full md:mx-auto px-4 sm:px-6 lg:px-8" style={{ maxWidth: '1400px' }}>
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4">
@@ -307,26 +440,7 @@ export function SimpleDashboard({
             })}
           </div>
 
-          {/* Action Plan Button - zobrazit když mají dokončený FIT Validator */}
-          {completedLessons.has(16) && onShowActionPlan && (
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-4 mb-4">
-              <p className="text-green-900 font-bold mb-2 flex items-center gap-2">
-                <Target className="w-5 h-5" />
-                🎯 Připraveno pro vás!
-              </p>
-              <p className="text-green-700 mb-3">
-                Váš personalizovaný akční plán je připraven. Podívejte se co dělat dál pro růst vašeho byznysu.
-              </p>
-              <Button
-                onClick={onShowActionPlan}
-                size="lg"
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-bold text-lg py-6 shadow-lg hover:shadow-xl transition-all"
-              >
-                <Target className="w-6 h-6 mr-2" />
-                Zobrazit Akční plán
-              </Button>
-            </div>
-          )}
+
 
           {/* Continue Button - SKRYJ pokud je kurz dokončený (100%) */}
           {progressPercent < 100 && (
@@ -369,6 +483,22 @@ export function SimpleDashboard({
               <div className="text-xs text-gray-500">bodů</div>
             </div>
           </div>
+          
+          {/* 🔄 Re-scan Button - pokud user nemá všechny achievementy */}
+          {unlockedAchievements.size < ACHIEVEMENTS.length && (
+            <div className="mb-4">
+              <Button
+                onClick={handleRescanAchievements}
+                variant="outline"
+                size="sm"
+                disabled={isScanning}
+                className="w-full border-yellow-400 text-yellow-700 hover:bg-yellow-50 disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${isScanning ? 'animate-spin' : ''}`} />
+                {isScanning ? 'Kontroluji...' : '🔄 Zkontrolovat missované achievementy'}
+              </Button>
+            </div>
+          )}
 
           {/* Achievement Progress Bar */}
           <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-6">
@@ -472,7 +602,7 @@ export function SimpleDashboard({
           </div>
 
           {/* Canvas - Desktop: Grid, Mobile: Accordion */}
-          <div className="hidden md:block px-4 pb-8">
+          <div className="hidden md:block pb-8">
             <BusinessModelCanvasSimple
               userId={userId}
               hideTips={true}
@@ -488,6 +618,7 @@ export function SimpleDashboard({
         </div>
       </div>
       </div>
+      </PullToRefresh>
     </div>
   );
 }

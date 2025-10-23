@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 🔧 COURSE LAYOUT: Full width content (minus sidebar on desktop) */
+
 :root {
   --background: #ffffff;
   --foreground: #0a0a0a;
@@ -62,51 +64,8 @@
     font-family: 'Inter', sans-serif;
     background-color: var(--background);
     color: var(--foreground);
-    font-size: 17px; /* Base font-size pro kurz - zvětšeno */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-  
-  /* 📏 GLOBÁLNÍ TYPOGRAFIE - bílé nadpisy PRO KURZ */
-  h1 {
-    font-size: 2rem; /* 32px */
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.3;
-  }
-  
-  h2 {
-    font-size: 1.75rem; /* 28px */
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.4;
-  }
-  
-  h3 {
-    font-size: 1.5rem; /* 24px */
-    font-weight: 600;
-    color: #ffffff;
-    line-height: 1.4;
-  }
-  
-  h4 {
-    font-size: 1.25rem; /* 20px */
-    font-weight: 600;
-    color: #1f2937;
-    line-height: 1.5;
-  }
-  
-  h5 {
-    font-size: 1.125rem; /* 18px */
-    font-weight: 600;
-    color: #ffffff;
-    line-height: 1.5;
-  }
-  
-  p {
-    font-size: 1.0625rem; /* 17px */
-    color: #374151;
-    line-height: 1.7;
   }
   
   /* Optimalizace pro smooth scrolling */
@@ -145,53 +104,37 @@
     display: none; /* Chrome/Safari/Opera */
   }
   
-  /* Prose styling pro lekce - TMAVÉ barvy pro bílé pozadí */
+  /* 📝 PROSE styling pro lekce v KURZU */
   .prose {
     color: #374151;
     line-height: 1.7;
-    font-size: 1rem; /* 16px base */
   }
   
   .prose h1 {
-    font-size: 1.75rem; /* 28px */
-    font-weight: 700;
-    color: #111827;
     margin-top: 2rem;
     margin-bottom: 1rem;
     line-height: 1.3;
   }
   
   .prose h2 {
-    font-size: 1.5rem; /* 24px */
-    font-weight: 700;
-    color: #1f2937;
     margin-top: 1.75rem;
     margin-bottom: 0.875rem;
     line-height: 1.4;
   }
   
   .prose h3 {
-    font-size: 1.25rem; /* 20px */
-    font-weight: 600;
-    color: #1f2937;
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
     line-height: 1.4;
   }
   
   .prose h4 {
-    font-size: 1.125rem; /* 18px */
-    font-weight: 600;
-    color: #374151;
     margin-top: 1.25rem;
     margin-bottom: 0.5rem;
     line-height: 1.5;
   }
   
   .prose h5 {
-    font-size: 1rem; /* 16px */
-    font-weight: 600;
-    color: #4b5563;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     line-height: 1.5;
@@ -201,8 +144,6 @@
   .prose > div > p {
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
-    font-size: 1rem; /* 16px */
-    color: #374151;
   }
   
   /* ✅ STICKY NOTES v canvasu NEJSOU .prose! */
@@ -244,45 +185,15 @@
     font-weight: bold;
   }
   
-  /* ⚠️ ORDER PAGE - override bílých nadpisů pro světlé pozadí */
-  [data-order-page] h1,
-  [data-order-page] h2,
-  [data-order-page] h3,
-  [data-order-page] h4,
-  [data-order-page] h5 {
-    color: #111827 !important;
+  /* 🎯 NO-BULLET class - pro seznamy s vlastními emoji/ikonami */
+  .no-bullet {
+    list-style-type: none !important;
   }
   
-  [data-order-page] p {
-    color: #374151 !important;
-  }
-  
-  /* Sekce s tmavým pozadím na order page potřebují bílé texty */
-  [data-order-page] [data-dark-section] h1,
-  [data-order-page] [data-dark-section] h2,
-  [data-order-page] [data-dark-section] h3,
-  [data-order-page] [data-dark-section] h4,
-  [data-order-page] [data-dark-section] h5,
-  [data-order-page] [data-dark-section] p {
-    color: #ffffff !important;
+  .no-bullet li::before {
+    content: none !important;
   }
 
-  /* Mobile optimizations */
-  @media (max-width: 640px) {
-    .prose h3 {
-      font-size: 1.125rem;
-    }
-    
-    .prose h4 {
-      font-size: 1rem;
-    }
-    
-    /* Reduce padding on mobile */
-    [class*="p-6"] {
-      padding: 1rem;
-    }
-  }
-  
   /* Touch target size pro mobily (min 44x44px) */
   @media (max-width: 768px) {
     button, a[role="button"] {
@@ -290,141 +201,43 @@
       min-width: 44px;
     }
   }
-  
-  /* 📊 SIDEBAR - normální velikosti */
-  [class*="sidebar"] h2,
-  [class*="Sidebar"] h2 {
-    font-size: 1.125rem; /* 18px */
-    font-weight: 700;
+
+  /* 📱 PWA - Safe Area Insets (iPhone notch support) */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
   }
-  
-  [class*="sidebar"] h3,
-  [class*="Sidebar"] h3 {
-    font-size: 1rem; /* 16px */
-    font-weight: 600;
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
-  
-  /* Sidebar modul titulky */
-  [class*="sidebar"] [class*="Module"],
-  [class*="Sidebar"] [class*="Module"] {
-    font-size: 0.9375rem; /* 15px */
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
   }
-  
-  /* Sidebar lekce */
-  [class*="sidebar"] [class*="lesson"],
-  [class*="Sidebar"] [class*="lesson"] {
-    font-size: 0.875rem; /* 14px */
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
   }
-  
-  /* 🎯 DASHBOARD - normální velikosti */
-  [class*="Dashboard"] h1 {
-    font-size: 1.875rem; /* 30px */
-    font-weight: 700;
+
+  /* Combined safe areas */
+  .safe-x {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
-  
-  [class*="Dashboard"] h2 {
-    font-size: 1.5rem; /* 24px */
-    font-weight: 700;
+
+  .safe-y {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
-  
-  [class*="Dashboard"] h3 {
-    font-size: 1.25rem; /* 20px */
-    font-weight: 600;
+
+  .safe-all {
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
   }
-  
-  [class*="Dashboard"] p {
-    font-size: 1rem; /* 16px */
-  }
-  
-  /* Dashboard CTA buttons */
-  [class*="Dashboard"] button {
-    font-size: 1rem; /* 16px */
-  }
-  
-  /* 🏆 ACHIEVEMENTS - menší texty pro lepší zobrazení */
-  [class*="achievement"] h3,
-  [class*="Achievement"] h3 {
-    font-size: 1.125rem; /* 18px */
-    font-weight: 700;
-  }
-  
-  [class*="achievement"] p,
-  [class*="Achievement"] p {
-    font-size: 0.875rem; /* 14px */
-  }
-  
-  [class*="achievement"] .points,
-  [class*="Achievement"] .points {
-    font-size: 0.875rem; /* 14px */
-  }
-  
-  /* ✅ VALIDATORS & CALCULATORS - normální velikosti */
-  [class*="Validator"] h2,
-  [class*="Calculator"] h2,
-  [class*="ActionPlan"] h2 {
-    font-size: 1.5rem; /* 24px */
-    font-weight: 700;
-  }
-  
-  [class*="Validator"] h3,
-  [class*="Calculator"] h3,
-  [class*="ActionPlan"] h3 {
-    font-size: 1.25rem; /* 20px */
-    font-weight: 600;
-  }
-  
-  [class*="Validator"] h4,
-  [class*="Calculator"] h4,
-  [class*="ActionPlan"] h4 {
-    font-size: 1rem; /* 16px */
-    font-weight: 600;
-  }
-  
-  [class*="Validator"] p,
-  [class*="Calculator"] p,
-  [class*="ActionPlan"] p {
-    font-size: 0.9375rem; /* 15px */
-  }
-  
-  /* Barevné info boxy ve validátorech */
-  [class*="Validator"] [class*="bg-blue-"],
-  [class*="Validator"] [class*="bg-green-"],
-  [class*="Validator"] [class*="bg-yellow-"],
-  [class*="Validator"] [class*="bg-purple-"],
-  [class*="Calculator"] [class*="bg-blue-"],
-  [class*="Calculator"] [class*="bg-green-"],
-  [class*="Calculator"] [class*="bg-yellow-"],
-  [class*="Calculator"] [class*="bg-purple-"] {
-    font-size: 0.9375rem; /* 15px */
-  }
-  
-  /* Malé texty v boxech (labels atd) */
-  [class*="Validator"] [class*="text-xs"],
-  [class*="Calculator"] [class*="text-xs"] {
-    font-size: 0.8125rem !important; /* 13px */
-  }
-  
-  [class*="Validator"] [class*="text-sm"],
-  [class*="Calculator"] [class*="text-sm"] {
-    font-size: 0.9375rem !important; /* 15px */
-  }
-  
-  /* 📱 MOBILE RESPONSIVENESS */
-  @media (max-width: 640px) {
-    body { font-size: 16px; }
-    
-    h1 { font-size: 1.5rem; } /* 24px */
-    h2 { font-size: 1.25rem; } /* 20px */
-    h3 { font-size: 1.125rem; } /* 18px */
-    h4 { font-size: 1rem; } /* 16px */
-    p { font-size: 0.9375rem; } /* 15px */
-    
-    .prose { font-size: 0.9375rem; } /* 15px */
-    .prose h1 { font-size: 1.5rem; }
-    .prose h2 { font-size: 1.25rem; }
-    .prose h3 { font-size: 1.125rem; }
-    .prose h4 { font-size: 1rem; }
-    .prose > p,
-    .prose > div > p { font-size: 0.9375rem; }
-  }
+
+  /* 📱 LANDSCAPE MODE - VYŘAZENO Z LEKCÍ */
+  /* Lekce zůstávají v portrait mobile view i v landscape režimu */
+  /* Landscape optimalizace jsou pouze pro Dashboard canvas preview */
 }

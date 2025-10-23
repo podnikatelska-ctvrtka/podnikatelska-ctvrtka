@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Plus, X, CheckCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { hexToColorName } from "../lib/colorUtils";
+import { BottomSheet } from "./BottomSheet";
+import { haptic } from "../lib/haptics";
 
 interface CanvasItem {
   text: string;
@@ -15,16 +17,18 @@ const STICKY_COLORS = {
   yellow: { bg: 'bg-yellow-100', border: 'border-yellow-300', text: 'text-yellow-900' },
   pink: { bg: 'bg-pink-100', border: 'border-pink-300', text: 'text-pink-900' },
   purple: { bg: 'bg-purple-100', border: 'border-purple-300', text: 'text-purple-900' },
-  white: { bg: 'bg-white', border: 'border-gray-400', text: 'text-gray-900' },
-  gray: { bg: 'bg-gray-100', border: 'border-gray-400', text: 'text-gray-700' },
+  // ❌ BÍLÁ A ŠEDÁ ODSTRANĚNY - není na desktop verzi, může docházet ke kolizi
+  global: { bg: 'bg-gray-50', border: 'border-gray-300', text: 'text-gray-800', icon: '🌐' }, // Pro celý byznys
 };
 
 interface Props {
   sectionTitle: string;
   items: CanvasItem[];
   valueLabel?: string;
+  allowGlobal?: boolean; // Povolit globální barvu? (default: true)
   onAddItem: (text: string, color: string, value?: number) => void;
   onRemoveItem: (index: number) => void;
+  onEditItem?: (index: number, text: string, color: string, value?: number) => void; // ✅ Nový callback pro editaci
   onComplete: () => void;
 }
 
@@ -32,21 +36,74 @@ export function MobileSingleSection({
   sectionTitle,
   items,
   valueLabel,
+  allowGlobal = true,
   onAddItem,
   onRemoveItem,
+  onEditItem,
   onComplete
 }: Props) {
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newItem, setNewItem] = useState("");
   const [newValue, setNewValue] = useState<number | undefined>();
   const [selectedColor, setSelectedColor] = useState<'blue' | 'green' | 'yellow' | 'pink' | 'purple' | 'white' | 'gray'>('blue');
 
   const handleAdd = () => {
     if (!newItem.trim()) return;
+    haptic('success');
     onAddItem(newItem, selectedColor, newValue);
     setNewItem("");
     setNewValue(undefined);
     setIsAdding(false);
+  };
+
+  const handleOpenSheet = () => {
+    haptic('light');
+    setIsAdding(true);
+  };
+
+  const handleCloseSheet = () => {
+    setIsAdding(false);
+    setIsEditing(false);
+    setEditingIndex(null);
+    setNewItem("");
+    setNewValue(undefined);
+  };
+  
+  const handleEdit = (index: number) => {
+    const item = items[index];
+    // 🔧 FIX: Vyčisti text od čísel (starší data měla číslo přímo v textu)
+    const cleanText = item.text.replace(/\s+\d+(\s*Kč)?$/g, '').trim();
+    
+    setEditingIndex(index);
+    setNewItem(cleanText);
+    setNewValue(item.value);
+    setSelectedColor(typeof item.color === 'string' ? hexToColorName(item.color as any) : item.color);
+    setIsEditing(true);
+    haptic('light');
+  };
+  
+  const handleSaveEdit = () => {
+    if (!newItem.trim() || editingIndex === null) return;
+    
+    haptic('success');
+    
+    // ✅ DESKTOP LOGIKA - IN-PLACE editace (ne remove+add!)
+    if (onEditItem) {
+      // Nový callback - edituje přímo na indexu
+      onEditItem(editingIndex, newItem, selectedColor, newValue);
+    } else {
+      // ❌ FALLBACK - stará logika (může způsobit duplicity!)
+      onRemoveItem(editingIndex);
+      onAddItem(newItem, selectedColor, newValue);
+    }
+    
+    // Reset
+    setIsEditing(false);
+    setEditingIndex(null);
+    setNewItem("");
+    setNewValue(undefined);
   };
 
   return (
@@ -75,111 +132,199 @@ export function MobileSingleSection({
             const colorName = hexToColorName(item.color as any);
             const colorClasses = STICKY_COLORS[colorName] || STICKY_COLORS.blue;
             const randomRotate = (index % 3 - 1) * 2;
+            const isGlobal = colorName === 'global';
+            
+            // 🔧 FIX: Odstraň čísla z textu (starší data měla číslo přímo v textu)
+            // Regex: odstraň mezery + čísla na konci textu (např. "Manažinky 500" → "Manažinky")
+            const cleanText = item.text.replace(/\s+\d+(\s*Kč)?$/g, '').trim();
             
             return (
               <div
                 key={index}
                 style={{ transform: `rotate(${randomRotate}deg)` }}
-                className={`${colorClasses.bg} ${colorClasses.border} border-2 p-3 rounded shadow-md text-sm group relative transition-all duration-300 ease-out`}
+                onClick={(e) => {
+                  // Detekuj double click/tap na mobile i desktop
+                  const now = Date.now();
+                  const DOUBLE_TAP_DELAY = 300;
+                  const target = e.currentTarget as any;
+                  
+                  if (now - (target.lastTap || 0) < DOUBLE_TAP_DELAY) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleEdit(index);
+                    target.lastTap = 0; // Reset po použití
+                  } else {
+                    target.lastTap = now;
+                  }
+                }}
+                className={`${colorClasses.bg} ${colorClasses.border} ${isGlobal ? 'border-dashed' : 'border-2'} p-3 rounded shadow-md text-sm group relative transition-all duration-300 ease-out cursor-pointer hover:scale-105 select-none`}
               >
+                {/* Globální ikona */}
+                {isGlobal && (
+                  <span className="absolute top-1 right-1 text-xs opacity-60">🌐</span>
+                )}
+                
                 <button
-                  onClick={() => onRemoveItem(index)}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveItem(index);
+                  }}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
                 >
                   <X className="w-4 h-4" />
                 </button>
                 
                 <div className={colorClasses.text}>
-                  <div className="font-medium">{item.text}</div>
-                  {item.value !== undefined && (
-                    <div className="font-bold mt-1">
-                      {item.value.toLocaleString('cs-CZ')} {valueLabel?.includes('Kč') ? 'Kč' : ''}
-                    </div>
-                  )}
+                  <div className="font-medium pr-4">{cleanText}</div>
+                  {/* HODNOTA SE UKLÁDÁ, ALE NEZOBRAZUJE (pro výpočty v Modulu 2, Lekci 2) */}
+                  <p className="text-xs opacity-0 group-hover:opacity-60 transition-opacity mt-1">
+                    Dvojklik = editace
+                  </p>
                 </div>
               </div>
             );
           })}
         </div>
+        {items.length > 0 && (
+          <p className="text-xs text-gray-500 text-center mt-2">
+            💡 Tip: Dvojklikem na štítek ho můžete editovat
+          </p>
+        )}
       </div>
 
-      {/* Add Form */}
-      {isAdding ? (
-        <div
-          className="space-y-3 bg-blue-50 p-4 rounded-lg border-2 border-blue-300 transition-all duration-300 ease-out"
-        >
-          <input
-            type="text"
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) handleAdd();
-            }}
-            placeholder="Napište text..."
-            className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg text-base"
-            autoFocus
-          />
+      {/* Add Button - Opens Bottom Sheet */}
+      <Button
+        onClick={handleOpenSheet}
+        variant="outline"
+        size="lg"
+        className="w-full h-12 border-2 border-dashed border-blue-400 hover:bg-blue-50"
+      >
+        <Plus className="w-5 h-5 mr-2" />
+        Přidat další položku
+      </Button>
+
+      {/* Bottom Sheet - Add/Edit Item Form */}
+      <BottomSheet
+        isOpen={isAdding || isEditing}
+        onClose={handleCloseSheet}
+        title={isEditing ? "Upravit položku" : "Přidat položku"}
+        snapPoints={[0.7, 0.95]}
+        defaultSnap={0}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Text položky
+            </label>
+            <input
+              type="text"
+              value={newItem}
+              onChange={(e) => setNewItem(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  if (isEditing) {
+                    handleSaveEdit();
+                  } else {
+                    handleAdd();
+                  }
+                }
+              }}
+              placeholder="Napište text..."
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              autoFocus
+            />
+          </div>
           
           {valueLabel && (
-            <input
-              type="number"
-              value={newValue || ''}
-              onChange={(e) => setNewValue(e.target.value ? parseInt(e.target.value) : undefined)}
-              placeholder={valueLabel}
-              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg text-base"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {valueLabel}
+              </label>
+              <input
+                type="number"
+                value={newValue || ''}
+                onChange={(e) => setNewValue(e.target.value ? parseInt(e.target.value) : undefined)}
+                placeholder={valueLabel}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
           )}
           
           {/* Color Picker */}
           <div>
-            <p className="text-xs text-gray-600 mb-2">Vyberte barvu:</p>
-            <div className="flex gap-2 flex-wrap">
-              {Object.entries(STICKY_COLORS).map(([color, classes]) => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedColor(color as any)}
-                  className={`w-10 h-10 rounded-lg ${classes.bg} ${classes.border} border-2 ${
-                    selectedColor === color ? 'ring-4 ring-blue-500' : ''
-                  }`}
-                />
-              ))}
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Vyberte barvu
+            </label>
+            
+            {/* Řádek 1: Barevné segmenty */}
+            <p className="text-xs text-gray-600 mb-2">Pro konkrétní segment:</p>
+            <div className="flex gap-3 flex-wrap mb-4">
+              {['blue', 'green', 'yellow', 'pink', 'purple'].map((color) => {
+                const classes = STICKY_COLORS[color as keyof typeof STICKY_COLORS];
+                return (
+                  <button
+                    key={color}
+                    onClick={() => {
+                      haptic('selection');
+                      setSelectedColor(color as any);
+                    }}
+                    className={`w-12 h-12 rounded-lg ${classes.bg} ${classes.border} border-2 transition-all ${
+                      selectedColor === color ? 'ring-4 ring-blue-500 scale-110' : 'hover:scale-105'
+                    }`}
+                    aria-label={`Barva: ${color}`}
+                  />
+                );
+              })}
             </div>
+            
+            {/* Řádek 2: Globální - JEN pokud je povoleno */}
+            {allowGlobal && (
+              <>
+                <p className="text-xs text-gray-600 mb-2">Globální (celý byznys):</p>
+                <div className="flex gap-3 flex-wrap">
+                  <button
+                    onClick={() => {
+                      haptic('selection');
+                      setSelectedColor('global');
+                    }}
+                    className={`w-12 h-12 rounded-lg ${STICKY_COLORS.global.bg} ${STICKY_COLORS.global.border} border-2 transition-all flex items-center justify-center ${
+                      selectedColor === 'global' ? 'ring-4 ring-blue-500 scale-110' : 'hover:scale-105'
+                    }`}
+                    aria-label="Globální barva pro celý byznys"
+                  >
+                    <span className="text-xl">🌐</span>
+                  </button>
+                </div>
+                
+                {selectedColor === 'global' && (
+                  <p className="text-xs text-gray-500 mt-2">🌐 Globální = pro celý byznys model</p>
+                )}
+              </>
+            )}
           </div>
 
-          <div className="flex gap-2">
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-2">
             <Button
-              onClick={handleAdd}
+              onClick={isEditing ? handleSaveEdit : handleAdd}
+              disabled={!newItem.trim()}
               size="lg"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 h-12"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 h-14 text-lg"
             >
               <CheckCircle className="w-5 h-5 mr-2" />
-              Přidat
+              {isEditing ? 'Uložit změny' : 'Přidat'}
             </Button>
             <Button
-              onClick={() => {
-                setIsAdding(false);
-                setNewItem("");
-                setNewValue(undefined);
-              }}
+              onClick={handleCloseSheet}
               variant="outline"
               size="lg"
-              className="h-12"
+              className="h-14 px-6"
             >
               Zrušit
             </Button>
           </div>
         </div>
-      ) : (
-        <Button
-          onClick={() => setIsAdding(true)}
-          variant="outline"
-          size="lg"
-          className="w-full h-12 border-2 border-dashed border-blue-400 hover:bg-blue-50"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Přidat další položku
-        </Button>
-      )}
+      </BottomSheet>
 
       {/* Complete Button */}
       {items.length > 0 && (
@@ -191,7 +336,7 @@ export function MobileSingleSection({
             size="lg"
             className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 h-12"
           >
-            ✅ Hotovo - pokračovat dál
+            ✅ Hotovo
           </Button>
         </div>
       )}
