@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generátor PNG ikon</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f3f4f6;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1e40af;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+    .preview {
+      display: flex;
+      gap: 30px;
+      margin: 30px 0;
+      padding: 30px;
+      background: #f9fafb;
+      border-radius: 12px;
+    }
+    .preview-item {
+      text-align: center;
+    }
+    .preview-item img {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .preview-item p {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    button {
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 10px 10px 10px 0;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    .instructions {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .instructions h3 {
+      margin-top: 0;
+      color: #1e40af;
+    }
+    .instructions ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .instructions li {
+      margin: 8px 0;
+      color: #1e3a8a;
+    }
+    canvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Generátor PNG ikon</h1>
+    <p class="subtitle">Převeď SVG ikonu na PNG pro PWA manifest</p>
+    
+    <div class="preview">
+      <div class="preview-item">
+        <img id="preview192" width="192" height="192" alt="192x192 preview">
+        <p>192×192 px</p>
+      </div>
+      <div class="preview-item">
+        <img id="preview512" width="192" height="192" alt="512x512 preview">
+        <p>512×512 px</p>
+      </div>
+    </div>
+    
+    <button onclick="downloadIcon(192)">📥 Stáhnout icon-192.png</button>
+    <button onclick="downloadIcon(512)">📥 Stáhnout icon-512.png</button>
+    
+    <div class="instructions">
+      <h3>📋 Instrukce:</h3>
+      <ol>
+        <li>Klikni na tlačítka výše a stáhni oba PNG soubory</li>
+        <li>Ulož je do <code>/public/</code> složky projektu</li>
+        <li>Soubory se musí jmenovat přesně <code>icon-192.png</code> a <code>icon-512.png</code></li>
+        <li>Hotovo! PWA manifest už na ně odkazuje 🎉</li>
+      </ol>
+    </div>
+  </div>
+  
+  <canvas id="canvas"></canvas>
+  
+  <script>
+    // Load SVG and convert to PNG
+    async function loadSVG() {
+      try {
+        const response = await fetch('/icon.svg');
+        const svgText = await response.text();
+        
+        // Create image from SVG
+        const img = new Image();
+        const svg = new Blob([svgText], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(svg);
+        
+        return new Promise((resolve) => {
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(img);
+          };
+          img.src = url;
+        });
+      } catch (error) {
+        console.error('Chyba načítání SVG:', error);
+        alert('Nepodařilo se načíst SVG ikonu. Zkontroluj že /icon.svg existuje.');
+      }
+    }
+    
+    // Convert image to PNG of specific size
+    function convertToPNG(img, size) {
+      const canvas = document.getElementById('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      
+      return canvas.toDataURL('image/png');
+    }
+    
+    // Download PNG
+    function downloadIcon(size) {
+      const dataUrl = size === 192 
+        ? document.getElementById('preview192').src
+        : document.getElementById('preview512').src;
+      
+      const link = document.createElement('a');
+      link.download = `icon-${size}.png`;
+      link.href = dataUrl;
+      link.click();
+    }
+    
+    // Initialize previews
+    async function init() {
+      const img = await loadSVG();
+      
+      // Generate previews
+      const png192 = convertToPNG(img, 192);
+      const png512 = convertToPNG(img, 512);
+      
+      document.getElementById('preview192').src = png192;
+      document.getElementById('preview512').src = png512;
+    }
+    
+    // Load on page load
+    init();
+  </script>
+</body>
+</html>

@@ -178,8 +178,8 @@ export function InstallPrompt() {
             </Button>
             <Button
               onClick={handleDismiss}
-              variant="outline"
-              className="border-white/30 text-white hover:bg-white/10"
+              variant="ghost"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/30"
             >
               Později
             </Button>

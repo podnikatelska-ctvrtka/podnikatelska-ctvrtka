@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platba přijata - Podnikatelská Čtvrtka</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f3f4f6;
+      line-height: 1.6;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+    .header {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .header .emoji {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .content {
+      padding: 32px 24px;
+    }
+    .greeting {
+      font-size: 18px;
+      color: #111827;
+      margin-bottom: 24px;
+    }
+    .success-box {
+      background-color: #ecfdf5;
+      border-left: 4px solid #10b981;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      border-radius: 4px;
+    }
+    .success-box p {
+      margin: 0;
+      color: #065f46;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .order-summary {
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .order-summary h2 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .order-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .order-item .label {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .order-item .value {
+      color: #111827;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .steps {
+      margin: 32px 0;
+    }
+    .steps h2 {
+      font-size: 20px;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .step-number {
+      background-color: #3b82f6;
+      color: #ffffff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-right: 12px;
+    }
+    .step-content {
+      flex: 1;
+      padding-top: 2px;
+    }
+    .step-title {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+    .step-description {
+      color: #6b7280;
+      font-size: 14px;
+      margin: 0;
+    }
+    .alert-box {
+      background-color: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 4px;
+    }
+    .alert-box p {
+      margin: 0;
+      color: #92400e;
+      font-size: 15px;
+    }
+    .alert-box strong {
+      font-weight: 700;
+    }
+    .divider {
+      height: 1px;
+      background-color: #e5e7eb;
+      margin: 32px 0;
+    }
+    .help-section {
+      background-color: #f0f9ff;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin: 24px 0;
+    }
+    .help-section h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #1e40af;
+    }
+    .help-section p {
+      margin: 0;
+      color: #1e3a8a;
+      font-size: 14px;
+    }
+    .footer {
+      background-color: #f9fafb;
+      padding: 24px;
+      text-align: center;
+      border-top: 1px solid #e5e7eb;
+    }
+    .footer p {
+      margin: 0 0 8px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .footer .signature {
+      color: #111827;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    .footer .ps {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #9ca3af;
+      font-style: italic;
+    }
+    @media only screen and (max-width: 600px) {
+      .header {
+        padding: 32px 20px;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      .content {
+        padding: 24px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="emoji">🎉</div>
+      <h1>Platba přijata!</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="greeting">
+        Ahoj <strong>{jmeno}</strong>,
+      </div>
+
+      <div class="success-box">
+        <p>✅ Tvoje platba byla úspěšně přijata!</p>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <h2>📦 Shrnutí objednávky</h2>
+        <div class="order-item">
+          <span class="label">Kurz:</span>
+          <span class="value">Podnikatelská Čtvrtka</span>
+        </div>
+        <div class="order-item">
+          <span class="label">Cena:</span>
+          <span class="value">{cena} Kč</span>
+        </div>
+        <div class="order-item">
+          <span class="label">Faktura:</span>
+          <span class="value">#{cislo_faktury}</span>
+        </div>
+      </div>
+
+      <!-- What happens next -->
+      <div class="steps">
+        <h2>🎓 Co se stane teďka?</h2>
+        
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-title">✅ Platba potvrzena</div>
+            <p class="step-description">Tento email potvrzuje, že jsme přijali tvou platbu.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-title">📧 Přístupový email</div>
+            <p class="step-description">Za chvíli ti pošleme email s unikátním přístupovým tokenem.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-title">🚀 Okamžitý přístup</div>
+            <p class="step-description">Klikneš na link a máš okamžitý přístup ke kurzu!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div class="alert-box">
+        <p>
+          <strong>⏱️ Očekávej další email do 5 minut!</strong><br>
+          Email s přístupem dorazí do tvé schránky během několika minut. Pokud ho nevidíš, zkontroluj SPAM složku.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Invoice note -->
+      <p style="color: #6b7280; font-size: 14px; margin-bottom: 24px;">
+        <strong>📄 Faktura:</strong> Fakturu najdeš v příloze tohoto emailu. Pro tvoje záznamy.
+      </p>
+
+      <!-- Help section -->
+      <div class="help-section">
+        <h3>💬 Potřebuješ pomoc?</h3>
+        <p>Narazil na problém? Prostě odpověz na tento email a já ti pomůžu! 😊</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Těším se, že tě uvidím uvnitř kurzu! 🚀</p>
+      <p class="signature">S pozdravem,<br><strong>[Tvoje jméno]</strong></p>
+      <p class="ps">
+        P.S. Nezapomeň si přidat email s přístupovým tokenem do "není spam" - ať ti další lekce nepřijdou do spamu! 📬
+      </p>
+    </div>
+  </div>
+</body>
+</html>

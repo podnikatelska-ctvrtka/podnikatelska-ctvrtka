@@ -150,31 +150,31 @@ export function SegmentSizeTool() {
                 <ol className="space-y-2 text-sm text-gray-700">
                   <li className="flex gap-2">
                     <span className="font-bold text-purple-600 flex-shrink-0">1.</span>
-                    <span>Jdi na <strong>czso.cz</strong> → Obyvatelstvo → Věkové složení</span>
+                    <span>Jdi na <strong>Veřejná databáze ČSÚ</strong> (tlačítko dole)</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="font-bold text-purple-600 flex-shrink-0">2.</span>
-                    <span>Vyber kraj/okres a věkovou kategorii v tabulkách</span>
+                    <span>Vyber <strong>„Vyhledávací díl"</strong> (pro vlastní filtr)</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="font-bold text-purple-600 flex-shrink-0">3.</span>
-                    <span>Nebo použij <strong>"Vyhledávání dat"</strong> pro vlastní filtr</span>
+                    <span>Zadej kategorii a věkovou skupu v tabulkách</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="font-bold text-purple-600 flex-shrink-0">4.</span>
-                    <span>Příklad: <strong>"Ženy 25-34 let v Praze = cca 85.000"</strong></span>
+                    <span>Příklad: <strong>„Ženy 25-34 let v Praze = cca 85.000"</strong></span>
                   </li>
                 </ol>
               </div>
 
               <div className="flex gap-3">
                 <a
-                  href="https://www.czso.cz/csu/czso/obyvatelstvo_hu"
+                  href="https://vdb.czso.cz/vdbvo2/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
                 >
-                  Otevřít ČSÚ - Obyvatelstvo
+                  Otevřít ČSÚ - Veřejná databáze
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>

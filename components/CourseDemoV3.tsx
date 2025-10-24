@@ -1303,6 +1303,13 @@ export function CourseDemoV3() {
           setIsAuthenticated(true);
           setUserData(user);
           setIsVerifying(false);
+          
+          // 📱 PWA: Uložit token do localStorage (pro auto-login po otevření z desktopu)
+          if (token) {
+            localStorage.setItem('course_access_token', token);
+            console.log('📱 Token uložen do localStorage pro PWA');
+          }
+          
           // Load progress for real user
           const progress = await loadCourseProgress(user.id);
           setCompletedLessons(progress);

@@ -97,6 +97,26 @@ export default function App() {
   const [showWebhookTester, setShowWebhookTester] = useState(false);
 
   
+  // 📱 PWA AUTO-REDIRECT: Pokud user otevře PWA z desktopu a má uložený token
+  useEffect(() => {
+    // Zjisti jestli jsme v PWA režimu
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                   (window.navigator as any).standalone === true;
+    
+    // Zjisti jestli jsme na landing page
+    const isLandingPage = window.location.pathname === '/' && 
+                          (!window.location.hash || window.location.hash === '#');
+    
+    // Zjisti jestli máme uložený token
+    const savedToken = localStorage.getItem('course_access_token');
+    
+    // Pokud VŠECHNY 3 podmínky platí → redirect do kurzu!
+    if (isPWA && isLandingPage && savedToken) {
+      console.log('📱 PWA otevřena z desktopu → redirect do kurzu s tokenem:', savedToken);
+      window.location.href = `/#course-v3?token=${savedToken}`;
+    }
+  }, []);
+  
   useEffect(() => {
     // 🔐 Check authentication state
     const checkAuth = async () => {

@@ -2709,24 +2709,6 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </p>
               </div>
               
-              {/* ⚠️ Pokud nemají žádné Value Map položky */}
-              {products.length === 0 && painRelievers.length === 0 && gainCreators.length === 0 && (
-                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 text-center">
-                  <p className="text-yellow-800 font-semibold mb-2">⚠️ Nemáte žádnou hodnotu vyplněnou!</p>
-                  <p className="text-sm text-yellow-700 mb-4">
-                    Přidejte produkty, řešení obtíží a tvorbu přínosů níže, nebo přejděte do Lekce 2.
-                  </p>
-                  <Button
-                    size="sm"
-                    onClick={() => onNavigateToLesson && onNavigateToLesson(15)}
-                    className="gap-2"
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                    Přejít do Lekce 2 (Hodnotová mapa)
-                  </Button>
-                </div>
-              )}
-              
               <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                 {/* Products - EDITOVATELNÉ */}
                 <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
@@ -2879,9 +2861,26 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               {(products.length === 0 || painRelievers.length === 0 || gainCreators.length === 0) && (
                 <Alert className="bg-amber-50 border-amber-200">
                   <Info className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>⚠️ Chybí hodnotová mapa:</strong> Musíte vyplnit <strong>VŠECHNY TŘI kategorie</strong>: Produkty/Služby, Řešení obtíží a Tvorba přínosů v Lekci 2 (Hodnotová mapa).
-                    Bez kompletních dat nemůžete pokračovat k FIT validaci.
+                  <AlertDescription className="space-y-3">
+                    <div>
+                      <strong>⚠️ Chybí hodnotová mapa:</strong> Musíte vyplnit <strong>VŠECHNY TŘI kategorie</strong>: Produkty/Služby, Řešení obtíží a Tvorba přínosů.
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <p className="text-sm text-amber-700">
+                        Můžete přidat položky přímo v Kroku 2 výše (přepněte na "Hodnotová mapa"), nebo:
+                      </p>
+                      {onNavigateToLesson && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onNavigateToLesson(15)}
+                          className="gap-2 border-amber-300 hover:bg-amber-100 self-start"
+                        >
+                          <ArrowRight className="w-4 h-4" />
+                          Přejít do Lekce 2
+                        </Button>
+                      )}
+                    </div>
                   </AlertDescription>
                 </Alert>
               )}

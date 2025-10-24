@@ -39,6 +39,20 @@
   scrollbar-width: none;
 }
 
+/* 🔢 REMOVE NUMBER INPUT SPINNERS (arrows) */
+/* Chrome, Safari, Edge, Opera */
+input[type="number"].no-spinner::-webkit-outer-spin-button,
+input[type="number"].no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"].no-spinner {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* Achievement fade in animation */
 @keyframes fadeIn {
   from {

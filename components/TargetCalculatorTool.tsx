@@ -146,12 +146,13 @@ export function TargetCalculatorTool() {
               <div className="relative">
                 <input
                   type="number"
+                  inputMode="numeric"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
                   placeholder="např. 50000"
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                  className="no-spinner w-full px-4 py-3 pr-24 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
                   Kč/měsíc
                 </span>
               </div>
@@ -169,12 +170,13 @@ export function TargetCalculatorTool() {
               <div className="relative">
                 <input
                   type="number"
+                  inputMode="numeric"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="např. 500"
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                  className="no-spinner w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
                   Kč
                 </span>
               </div>
@@ -193,15 +195,16 @@ export function TargetCalculatorTool() {
                 <div className="relative">
                   <input
                     type="number"
+                    inputMode="numeric"
                     value={frequency}
                     onChange={(e) => setFrequency(e.target.value)}
                     placeholder="8"
                     step="1"
                     min="1"
                     max="100"
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="no-spinner w-full px-4 py-3 pr-20 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
                     ×/měsíc
                   </span>
                 </div>
@@ -228,15 +231,16 @@ export function TargetCalculatorTool() {
               <div className="relative">
                 <input
                   type="number"
+                  inputMode="decimal"
                   value={conversionRate}
                   onChange={(e) => setConversionRate(e.target.value)}
                   placeholder="2"
                   step="0.1"
                   min="0.1"
                   max="100"
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                  className="no-spinner w-full px-4 py-3 pr-14 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
                   %
                 </span>
               </div>

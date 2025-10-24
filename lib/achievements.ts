@@ -372,7 +372,7 @@ export async function scanAndUnlockMissedAchievements(
           .upsert({
             user_id: userId,
             achievement_type: achievement.id,
-            unlocked_at: new Date().toISOString()
+            earned_at: new Date().toISOString()
           }, {
             onConflict: 'user_id,achievement_type',
             ignoreDuplicates: true
