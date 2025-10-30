@@ -1010,6 +1010,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Varianta A (4.999 Kč)"
                       loading="lazy"
@@ -1024,6 +1025,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Varianta B (8.499 Kč)"
                       loading="lazy"
@@ -1041,6 +1043,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Early Bird (4.999 Kč)"
                       loading="lazy"
@@ -1055,6 +1058,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Plná cena (8.499 Kč)"
                       loading="lazy"
