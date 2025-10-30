@@ -58,11 +58,11 @@ PODNIKATELSKÁ ČTVRTKA = 9 kroků k jasnému podnikání.
 Ne teorie. Ne guru kecy. Jen konkrétní kroky které fungují.
 
 🎁 PRŮKOPNICKÁ VÝHODA (prvních 50 lidí):
-→ Mini kurz ZDARMA po registraci (2.999 Kč)
-→ Průkopnická cena při spuštění (sleva 62%)
-→ Konzultace ZDARMA (prvních 50 kupujících)
+→ Sleva 40% během prvních 24 hodin (ušetříte 3.500 Kč)
+→ Průkopnická cena 4.999 Kč místo 8.499 Kč
+→ BONUS: 3-denní mini kurz ZDARMA pro prvních 50
 
-💰 CELKOVÁ ÚSPORA: 7.999 Kč
+💰 CELKOVÁ ÚSPORA: 3.500 Kč
 
 ⏰ Zbývá jen pár míst z 50.`,
       headline: 'Konečně mějte jasno v podnikání',

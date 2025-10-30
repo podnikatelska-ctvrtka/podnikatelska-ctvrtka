@@ -20,6 +20,43 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
   // 🎯 A/B TEST: Detekce varianty z URL (?variant=a nebo ?variant=b)
   const [forceVariant, setForceVariant] = useState<'a' | 'b' | null>(null);
 
+  // 🎯 AUTO-SCROLL: Když uživatel klikne v iframe, scrollne nahoru k platební bráně
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+    let lastScrollTime = 0;
+    
+    const handleWindowBlur = () => {
+      const now = Date.now();
+      // Prevence duplicitních scrollů (max 1x za 3 sekundy)
+      if (now - lastScrollTime < 3000) return;
+      
+      // Zkontroluj jestli byl focus v iframe
+      const activeElement = document.activeElement;
+      if (activeElement?.tagName === 'IFRAME') {
+        lastScrollTime = now;
+        
+        // Po 1.5 sekundě scrollne nahoru k platební bráně
+        scrollTimeout = setTimeout(() => {
+          const checkoutSection = document.getElementById('checkout-section');
+          if (checkoutSection) {
+            checkoutSection.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start' 
+            });
+          }
+        }, 1500);
+      }
+    };
+
+    // Poslouchej window blur (= uživatel klikl do iframe)
+    window.addEventListener('blur', handleWindowBlur);
+
+    return () => {
+      window.removeEventListener('blur', handleWindowBlur);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+    };
+  }, []);
+
   useEffect(() => {
     // Detekce A/B varianty z URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,29 +78,52 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
     const COUNTDOWN_KEY = 'podnikatelska_ctvrtka_countdown_start';
     const COUNTDOWN_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-    // Check if countdown exists in localStorage
-    const storedStart = localStorage.getItem(COUNTDOWN_KEY);
+    // 🎯 URL PARAMETR: Preferuje se před localStorage (funguje i v anonymu!)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlStartParam = urlParams.get('start');
+    
+    let startTime: number;
     const now = Date.now();
 
-    if (!storedStart) {
-      // First visit - store start timestamp
-      localStorage.setItem(COUNTDOWN_KEY, now.toString());
-      setTimeLeft(24 * 60 * 60); // 24 hours in seconds
-    } else {
-      // Calculate remaining time
-      const startTime = parseInt(storedStart, 10);
-      const elapsed = now - startTime;
-      const remaining = COUNTDOWN_DURATION - elapsed;
-
-      if (remaining <= 0) {
-        // Countdown expired
-        setIsExpired(true);
-        setTimeLeft(0);
-        return;
+    if (urlStartParam) {
+      // ✅ URL parametr existuje → použij ho (priorita #1)
+      startTime = parseInt(urlStartParam, 10);
+      
+      // Validace: timestamp musí být rozumný (ne v budoucnosti, ne starší než 7 dní)
+      const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+      if (isNaN(startTime) || startTime > now || startTime < sevenDaysAgo) {
+        // Nevalidní timestamp → fallback na localStorage/nový
+        startTime = parseInt(localStorage.getItem(COUNTDOWN_KEY) || now.toString(), 10);
       } else {
-        // Set remaining time in seconds
-        setTimeLeft(Math.floor(remaining / 1000));
+        // ✅ Validní URL timestamp → ulož do localStorage (aby fungoval i při refresh)
+        localStorage.setItem(COUNTDOWN_KEY, startTime.toString());
       }
+    } else {
+      // ❌ URL parametr neexistuje → fallback na localStorage
+      const storedStart = localStorage.getItem(COUNTDOWN_KEY);
+      
+      if (!storedStart) {
+        // První návštěva → vytvořit nový countdown
+        startTime = now;
+        localStorage.setItem(COUNTDOWN_KEY, now.toString());
+      } else {
+        // Existující countdown
+        startTime = parseInt(storedStart, 10);
+      }
+    }
+
+    // Vypočítat zbývající čas
+    const elapsed = now - startTime;
+    const remaining = COUNTDOWN_DURATION - elapsed;
+
+    if (remaining <= 0) {
+      // ⏰ Countdown vypršel
+      setIsExpired(true);
+      setTimeLeft(0);
+      return;
+    } else {
+      // ✅ Countdown stále běží
+      setTimeLeft(Math.floor(remaining / 1000));
     }
 
     // Update countdown every second
@@ -945,6 +1005,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                   // Varianta A = levnější (4.999 Kč)
                   return (
                     <iframe 
+                      key="fapi-form-variant-a"
                       src="https://form.fapi.cz/?id=47a3e4ff-233e-11eb-a0d2-0a74406df6c8"
                       width="100%" 
                       height="1400" 
@@ -958,6 +1019,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                   // Varianta B = dražší (8.499 Kč)
                   return (
                     <iframe 
+                      key="fapi-form-variant-b"
                       src="https://form.fapi.cz/?id=5d6ebf1c-95ca-4781-93d4-8d1052bea23e"
                       width="100%" 
                       height="1400" 
@@ -974,6 +1036,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                   // SLEVA PLATÍ = EARLY BIRD (4.999 Kč)
                   return (
                     <iframe 
+                      key="fapi-form-earlybird"
                       src="https://form.fapi.cz/?id=47a3e4ff-233e-11eb-a0d2-0a74406df6c8"
                       width="100%" 
                       height="1400" 
@@ -987,6 +1050,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                   // ❌ SLEVA VYPRŠELA = FULL PRICE (8.499 Kč)
                   return (
                     <iframe 
+                      key="fapi-form-fullprice"
                       src="https://form.fapi.cz/?id=5d6ebf1c-95ca-4781-93d4-8d1052bea23e"
                       width="100%" 
                       height="1400" 

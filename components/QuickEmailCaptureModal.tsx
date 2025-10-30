@@ -89,7 +89,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto p-6">
+      <DialogContent className="sm:max-w-[500px] p-6">
         <AnimatePresence mode="wait">
           {step === 1 ? (
             <motion.div
@@ -294,7 +294,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-purple-900">🎁 BONUS: 3-denní mini kurz ZDARMA</div>
-                      <div className="text-sm text-purple-700 font-medium">Začněte hned! První lekce už čeká v emailu (hodnota 2.999,- Kč)</div>
+                      <div className="text-sm text-purple-700 font-medium">Pro prvních 50 průkopníků! První lekce už čeká v emailu.</div>
                     </div>
                   </div>
                 </motion.div>

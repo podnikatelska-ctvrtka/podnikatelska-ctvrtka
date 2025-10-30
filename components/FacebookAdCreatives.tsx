@@ -33,15 +33,15 @@ export function AdCreative1() {
         <div className="space-y-4 mb-12">
           <div className="flex items-center justify-center gap-4 text-white text-2xl font-semibold">
             <Gift className="w-8 h-8 text-yellow-300" />
-            <span>Mini kurz ZDARMA (2.999 Kč)</span>
+            <span>Sleva 40% prvních 24h</span>
           </div>
           <div className="flex items-center justify-center gap-4 text-white text-2xl font-semibold">
             <TrendingUp className="w-8 h-8 text-green-300" />
-            <span>Sleva 62% (7.999 Kč úspora)</span>
+            <span>4.999 Kč místo 8.499 Kč</span>
           </div>
           <div className="flex items-center justify-center gap-4 text-white text-2xl font-semibold">
             <Users className="w-8 h-8 text-blue-300" />
-            <span>Konzultace ZDARMA (50×)</span>
+            <span>BONUS: Mini kurz (50×)</span>
           </div>
         </div>
         
@@ -92,8 +92,8 @@ export function AdCreative2() {
               </svg>
             </div>
             <div>
-              <p className="font-bold text-xl text-gray-800">Mini kurz ZDARMA</p>
-              <p className="text-purple-600 font-semibold text-base">Hodnota 2.999,- Kč</p>
+              <p className="font-bold text-xl text-gray-800">BONUS: 3-denní mini kurz</p>
+              <p className="text-purple-600 font-semibold text-base">Pro prvních 50 průkopníků ZDARMA</p>
             </div>
           </div>
           
