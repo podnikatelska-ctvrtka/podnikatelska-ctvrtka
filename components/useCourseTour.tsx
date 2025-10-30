@@ -9,7 +9,7 @@ export const TOUR_MODULES = {
     steps: [
       {
         title: 'Kdo jsou vaši zákazníci?',
-        description: 'Teď si vyzkoušíte první část Business Model Canvas. Přidejte alespoň jeden zákaznický segment.',
+        description: 'Teď si vyzkoušíte první část Podnikatelského modelu. Přidejte alespoň jeden zákaznický segment.',
         tips: [
           'Buďte konkrétní: "Mladé maminky 25-35 let" místo "ženy"',
           'Rozdělte podle potřeb, ne jen demografie',

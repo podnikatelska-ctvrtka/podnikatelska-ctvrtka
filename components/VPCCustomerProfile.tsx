@@ -133,9 +133,10 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
     loadVPC();
   }, [userId, selectedSegment]);
   
-  // Auto-save
+  // Auto-save (when data changes)
   useEffect(() => {
     if (!userId || !selectedSegment) return;
+    if (jobs.length === 0 && pains.length === 0 && gains.length === 0) return; // Don't save empty data
     
     const saveTimeout = setTimeout(async () => {
       console.log('🔄 VPCCustomerProfile AUTO-SAVE triggered:', { userId, selectedSegment, jobs, pains, gains });
@@ -143,7 +144,7 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
     }, 1000);
     
     return () => clearTimeout(saveTimeout);
-  }, [jobs, pains, gains, userId, selectedSegment]);
+  }, [jobs, pains, gains]); // Only trigger on data changes, NOT on userId/segment changes
   
   const saveVPC = async () => {
     if (!userId || !selectedSegment || isSaving) return;
@@ -153,43 +154,38 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
     setIsSaving(true);
     
     try {
+      console.log('💾 Saving VPC data...');
+      
       const vpcData = {
         user_id: userId,
         segment_name: selectedSegment,
+        selected_value: null,
         jobs,
         pains,
-        gains
+        gains,
+        products: [],
+        pain_relievers: [],
+        gain_creators: [],
+        updated_at: new Date().toISOString()
       };
       
-      console.log('💾 Saving VPC data:', vpcData);
-      
       if (vpcId) {
-        console.log('💾 Updating existing VPC (id:', vpcId, ')');
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('value_proposition_canvas')
           .update(vpcData)
-          .eq('id', vpcId)
-          .select();
+          .eq('id', vpcId);
         
-        console.log('💾 Update result:', { data, error });
         if (error) throw error;
       } else {
-        console.log('💾 Inserting new VPC');
         const { data, error } = await supabase
           .from('value_proposition_canvas')
           .insert([vpcData])
           .select()
           .single();
         
-        console.log('💾 Insert result:', { data, error });
         if (error) throw error;
-        if (data) {
-          console.log('💾 New VPC created with id:', data.id);
-          setVpcId(data.id);
-        }
+        if (data) setVpcId(data.id);
       }
-      
-      console.log('✅ VPC saved successfully');
       
       // 🚨 SENTRY: Track successful save
       trackCourseEvent.vpcSave({
@@ -280,10 +276,14 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
             />
             <Button
               size="sm"
-              onClick={() => {
+              onClick={async () => {
                 if (newJob.trim()) {
-                  setJobs([...jobs, newJob.trim()]);
+                  const newJobs = [...jobs, newJob.trim()];
+                  setJobs(newJobs);
                   setNewJob("");
+                  
+                  // ✅ Immediate save (don't wait for auto-save)
+                  setTimeout(() => saveVPC(), 100);
                 }
               }}
               style={{
@@ -347,10 +347,14 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
             />
             <Button
               size="sm"
-              onClick={() => {
+              onClick={async () => {
                 if (newPain.trim()) {
-                  setPains([...pains, newPain.trim()]);
+                  const newPains = [...pains, newPain.trim()];
+                  setPains(newPains);
                   setNewPain("");
+                  
+                  // ✅ Immediate save
+                  setTimeout(() => saveVPC(), 100);
                 }
               }}
               style={{
@@ -414,10 +418,14 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
             />
             <Button
               size="sm"
-              onClick={() => {
+              onClick={async () => {
                 if (newGain.trim()) {
-                  setGains([...gains, newGain.trim()]);
+                  const newGains = [...gains, newGain.trim()];
+                  setGains(newGains);
                   setNewGain("");
+                  
+                  // ✅ Immediate save
+                  setTimeout(() => saveVPC(), 100);
                 }
               }}
               style={{

@@ -1,7 +1,7 @@
 # 📦 ARCHIVE - HLAVNÍ INDEX
 
 **Vytvořeno:** 2025-01-21  
-**Poslední update:** 2025-01-21
+**Poslední update:** 2025-01-24 🎓 KURZ BACKUP
 
 ⚠️ **PRAVIDLO #1:** NIKDY NEMAZAT soubory z této složky!
 
@@ -24,8 +24,13 @@
 - *(Další reklamní strategie budou přidávány sem)*
 
 ### **🎓 `/ARCHIVE/course-components/`**
-- `README.md` - ✅ Kompletní dokumentace DESKTOP verze kurzu (v1, 2025-01-21)
-- *(Záloha funkční desktop verze před mobilními úpravami)*
+- `README.md` - ✅ Kompletní dokumentace všech komponent
+- `RESTORE_GUIDE.md` - 🚨 **JAK OBNOVIT desktop verzi** (2025-01-24)
+- `DESKTOP_BACKUP_2025-01-24.md` - 📊 Status aktuálního backupu
+- `mobile/` - 📱 Mobile helper komponenty
+  - `MobileModule1Canvas.tsx` - Mobile accordion view pro Module 1
+  - `README.md` - Dokumentace mobile komponent
+- ✅ **Funkční desktop verze:** `/components/CourseDemoV3.tsx` (2790 řádků)
 
 ### **📚 `/ARCHIVE/minikurz/`**
 - `README.md` - ✅ Kompletní dokumentace 3-denního minikurzu (v1, 2025-01-21)
@@ -121,6 +126,17 @@ SPRÁVNĚ:
 ---
 
 ## 📅 TIMELINE:
+
+### **2025-01-24:**
+- 🎓 **KURZ BACKUP VYTVOŘEN!**
+  - ✅ `RESTORE_GUIDE.md` - Návod jak obnovit desktop verzi
+  - ✅ `DESKTOP_BACKUP_2025-01-24.md` - Status backup
+  - ✅ Vytvořena `/ARCHIVE/course-components/mobile/` složka
+  - ✅ `MobileModule1Canvas.tsx` - Helper component pro mobile accordion
+  - ✅ Mobile README s dokumentací
+  - ✅ Aktualizován hlavní ARCHIVE README
+- ✅ Desktop verze je SAFE v `/components/CourseDemoV3.tsx`
+- 🎯 **Připraveno pro mobile implementaci!**
 
 ### **2025-01-21:**
 - ✅ Vytvořen `/ARCHIVE/` folder

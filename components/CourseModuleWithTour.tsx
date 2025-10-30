@@ -165,7 +165,7 @@ export function CourseModuleWithTour({
               🎯 TEĎ TO ZKUS!
             </h4>
             <p className="text-gray-700 mb-4">
-              Aplikujte to, co jste se naučili, přímo na vašem Business Model Canvas
+              Aplikujte to, co jste se naučili, přímo ve vaší Podnikatelské Čtvrtce
             </p>
             <Button
               onClick={handleStartPractice}

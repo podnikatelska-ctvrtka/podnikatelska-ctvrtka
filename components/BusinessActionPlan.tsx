@@ -725,7 +725,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
             id: 'optimize-current',
             text: 'Optimalizujte aktuální segment',
             deadline: '30 dní',
-            tip: `💡 Zaměřte se na zlepšení v "${topSegmentName}":\n• Zvyšte konverzi leadů\n• Zlepšete průměrnou hodnotu zakázky\n• Získejte více zákazníků z tohoto segmentu\n\nMůžete také přidat nový segment do Business Model Canvas.`
+            tip: `💡 Zaměřte se na zlepšení v "${topSegmentName}":\n• Zvyšte konverzi leadů\n• Zlepšete průměrnou hodnotu zakázky\n• Získejte více zákazníků z tohoto segmentu\n\nMůžete také přidat nový segment do Podnikatelského modelu.`
           });
         }
 

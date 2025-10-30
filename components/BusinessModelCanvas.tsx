@@ -177,7 +177,7 @@ export function BusinessModelCanvas() {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              🎨 Business Model Canvas
+              🎨 Podnikatelská Čtvrtka
             </h2>
             <p className="text-gray-600">
               Interaktivní šablona - klikněte na box a přidejte své informace

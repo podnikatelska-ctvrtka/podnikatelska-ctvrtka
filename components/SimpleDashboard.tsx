@@ -596,7 +596,7 @@ export function SimpleDashboard({
         >
           <div className="p-8 mb-6">
             <h2 className="text-2xl text-gray-900 mb-2">
-              🎨 Můj Business Model Canvas
+              🎨 Můj Podnikatelský model
             </h2>
             <p className="text-gray-600 mb-3">
               Váš rozpracovaný byznys model - aktualizuje se automaticky během kurzu

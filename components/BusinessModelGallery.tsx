@@ -7,6 +7,7 @@ import { ReadOnlyBusinessModelCanvas } from "./ReadOnlyBusinessModelCanvas";
 interface Props {
   onComplete?: () => void;
   onNavigateNext?: () => void;
+  isLessonCompleted?: boolean;
 }
 
 // Typ pro business model data
@@ -35,30 +36,30 @@ interface BusinessModel {
 }
 
 const BUSINESS_MODELS: BusinessModel[] = [
-  // ☕ KAVÁRNA - VERZE A: Workspace model
+  // ☕ KAVÁRNA - VERZE A: Coworkingový model
   {
     id: 'cafe-a',
     name: 'Kavárna',
-    version: 'A - Workspace',
+    version: 'A - Coworkingový prostor',
     category: 'Kavárny',
     emoji: '☕',
     description: 'Kavárna jako coworking prostor pro freelancery',
     segments: [
-      { text: 'Freelanceři (workspace)', color: 'blue' },
+      { text: 'Freelanceři (coworking)', color: 'blue' },
       { text: 'Studenti (příprava)', color: 'green' }
     ],
     value: [
-      { text: 'Workspace celý den + WiFi', color: 'blue' },
+      { text: 'Coworking celý den + WiFi', color: 'blue' },
       { text: 'Tichá místa pro učení', color: 'green' }
     ],
     channels: [
-      { text: 'Instagram (workspace fotky)', color: 'blue' },
+      { text: 'Instagram (coworking fotky)', color: 'blue' },
       { text: 'Google "kavárna WiFi"', color: 'blue' },
       { text: 'Univerzitní skupiny', color: 'green' }
     ],
     relationships: [
-      { text: 'Loyalty karty', color: 'blue' },
-      { text: 'Community events', color: 'blue' }
+      { text: 'Věrnostní karty', color: 'blue' },
+      { text: 'Komunitní akce', color: 'blue' }
     ],
     revenue: [
       { text: 'Káva a nápoje', color: 'global', percentage: '60%' },
@@ -67,7 +68,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     activities: [
       { text: 'Příprava kávy', color: 'global' },
-      { text: 'Údržba workspace', color: 'blue' },
+      { text: 'Údržba coworkingu', color: 'blue' },
       { text: 'Marketing (Instagram)', color: 'global' }
     ],
     resources: [
@@ -86,18 +87,18 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Mzdy', percentage: '30%' }
     ],
     insights: {
-      crossSell: 'Dezerty k ráno kávě (10% příjmů, marže 70%!)',
+      crossSell: '🍰 Dezerty k ranní kávě → 10% tržeb (marže 70%!) - kdo sedí 4 hodiny, koupí si 2-3 dezerty',
       revenueBreakdown: 'Káva 60% + Jídlo 30% + Dezerty 10% = stabilní příjem po celý den',
       keySuccess: 'Velký prostor + WiFi = freelanceři zůstávají 4-6 hodin (průměr 3 kávy!)',
-      whyItWorks: 'Freelanceři potřebují workspace ale nechce platit coworking → kavárna je levnější alternativa'
+      whyItWorks: '💡 Freelanceři potřebují workspace, ale coworking je drahý (3.000-8.000 Kč/měsíc) → kavárna je levnější řešení (káva za 60 Kč + celý den internet zdarma) + sociální prostředí zdarma'
     }
   },
   
-  // ☕ KAVÁRNA - VERZE B: Quick coffee model
+  // ☕ KAVÁRNA - VERZE B: Rychlá kavárna
   {
     id: 'cafe-b',
     name: 'Kavárna',
-    version: 'B - Quick Coffee',
+    version: 'B - Rychlá kavárna',
     category: 'Kavárny',
     emoji: '☕',
     description: 'Rychlá kavárna na rušné křižovatce (to-go model)',
@@ -143,10 +144,10 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Mzdy (3 směny)', percentage: '30%' }
     ],
     insights: {
-      crossSell: 'Bagety a dezerty k ranní kávě (10% příjmů, vysoká marže)',
+      crossSell: '🥖 Bagety a dezerty k ranní kávě → 10% tržeb (vysoká marže 65%) - "dáte si k tomu něco?" při platbě',
       revenueBreakdown: 'Ráno káva 50% + Oběd 40% + Cross-sell 10% = 2 peak times denně',
       keySuccess: 'Lokace na křižovatce = denně 500+ lidí projde kolem',
-      whyItWorks: 'Rychlost (2 min) + lokace = každé ráno stejní zákazníci (habits!)'
+      whyItWorks: '⚡ Rychlost + návyk = loajalita. Lidi si vytvoří ranní rituál (stejná kavárna, stejný čas) → když víš že budeš hotový za 2 minuty, vracíš se každé ráno. Premium lokace = platí se víc, ale obrat je 3x vyšší'
     }
   },
 
@@ -200,10 +201,10 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Nájem + energie', percentage: '30%' }
     ],
     insights: {
-      crossSell: '20% sleva na odběr = 40% zákazníků si vybere odběr → vyšší marže (bez nákladů na rozvoz)',
+      crossSell: '💰 20% sleva na odběr → 40% zákazníků si vybere odběr = úspora nákladů na rozvoz (řidič + benzín + doba) = marže +15%',
       revenueBreakdown: 'Pizza 70% + Nápoje 20% (vysoká marže!) + Přílohy 10%',
       keySuccess: 'Rodiny objednávají večer (18-21h) = peak time s vysokými objednávkami',
-      whyItWorks: 'Rodiče nechtějí večer vařit + studenti chtějí levné jídlo = 2 segmenty, 1 produkt'
+      whyItWorks: '🎯 Jeden produkt, dva segmenty s různými prioritami: (1) Rodiče → pohodlí večer (nechce se jim vařit po práci), platí plnou cenu za rozvoz. (2) Studenti → cena (chtějí ušetřit), přijdou si vyzvednout za slevu. Obě skupiny chtějí pizzu, jen z jiných důvodů'
     }
   },
 
@@ -258,18 +259,18 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Nájem (centrum)', percentage: '25%' }
     ],
     insights: {
-      crossSell: 'Craft pivo pairing = 25% tržeb (marže 70%!)',
+      crossSell: '🍺 Craft pivo pairing (doporučení konkrétního piva ke každé pizzě, jako víno k jídlu) → 25% tržeb (marže 70%!) - zákazník si koupí "zážitek", ne jen pivo',
       revenueBreakdown: 'Pizza 60% + Pivo 25% + Dezerty 15% = vysoké AVG check',
       keySuccess: '50% vyšší cena pizzy (350 Kč vs 230 Kč standard) = marže 65%',
-      whyItWorks: 'Instagram fotogenická jídla = virální marketing (foodie chtějí sdílet!) + prémiové ceny bez problémů'
+      whyItWorks: '📸 Instagram je tvůj hlavní prodejce: Fotogenická jídla + prémiový prostor = foodie to sdílejí zadarmo (virální marketing) → přivádí nové zákazníky bez placené reklamy. Foodie segment má peníze a neřeší cenu, když je to "unikátní zážitek"'
     }
   },
 
-  // 🏋️ FITNESS - VERZE A: Personal training
+  // 🏋️ FITNESS - VERZE A: Osobní tréninky
   {
     id: 'fitness-a',
     name: 'Fitness',
-    version: 'A - Personal Training',
+    version: 'A - Osobní tréninky',
     category: 'Fitness',
     emoji: '🏋️',
     description: 'Boutique studio s osobními trenéry',
@@ -278,26 +279,26 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Post-rehab klienti', color: 'green' }
     ],
     value: [
-      { text: '1-on-1 personal training', color: 'blue' },
+      { text: 'Osobní trénink 1-na-1', color: 'blue' },
       { text: 'Výživový plán', color: 'blue' },
       { text: 'Rehabilitační péče', color: 'green' }
     ],
     channels: [
       { text: 'LinkedIn (profesionálové)', color: 'blue' },
       { text: 'Doporučení od lékařů', color: 'green' },
-      { text: 'Google "personal trainer"', color: 'blue' }
+      { text: 'Google "osobní trenér"', color: 'blue' }
     ],
     relationships: [
       { text: 'Osobní přístup (WhatsApp)', color: 'blue' },
       { text: 'Měsíční check-ins', color: 'blue' }
     ],
     revenue: [
-      { text: 'PT sessions (50%)', color: 'blue', percentage: '50%' },
+      { text: 'Osobní tréninky (50%)', color: 'blue', percentage: '50%' },
       { text: 'Měsíční členství', color: 'global', percentage: '30%' },
       { text: 'Suplementy', color: 'global', percentage: '20%' }
     ],
     activities: [
-      { text: 'Personal training', color: 'blue' },
+      { text: 'Osobní tréninky', color: 'blue' },
       { text: 'Výživa konzultace', color: 'global' }
     ],
     resources: [
@@ -315,18 +316,18 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Vybavení', percentage: '20%' }
     ],
     insights: {
-      crossSell: 'Suplementy po tréninku (20% příjmů, marže 60%!)',
+      crossSell: '💊 Suplementy po tréninku → 20% tržeb (marže 60%!) - trenér ti přímo doporučí co potřebuješ = osobní přístup zvyšuje prodeje',
       revenueBreakdown: 'PT 50% + Členství 30% + Suplementy 20% = vysoké příjmy na osobu',
       keySuccess: 'Osobní trenéři = retention 85% (průměr industry je 40%)',
-      whyItWorks: 'Profesionálové mají peníze ale ne čas = ochota platit za osobní přístup'
+      whyItWorks: '⏰ Profesionálové 35-50 let mají peníze, ale NE čas: (1) Nemohou si dovolit zranění (práce = priorita) → platí za bezpečný trénink pod dohledem. (2) Nechtějí ztrácet čas hledáním cvičení online → platí za hotový plán "na míru". Čas > peníze pro tento segment'
     }
   },
 
-  // 🏋️ FITNESS - VERZE B: Group classes
+  // 🏋️ FITNESS - VERZE B: Skupinové lekce
   {
     id: 'fitness-b',
     name: 'Fitness',
-    version: 'B - Group Classes',
+    version: 'B - Skupinové lekce',
     category: 'Fitness',
     emoji: '🏋️',
     description: 'Velké studio se skupinovými lekcemi',
@@ -355,7 +356,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     activities: [
       { text: 'Skupinové lekce', color: 'global' },
       { text: 'Marketing (social media)', color: 'blue' },
-      { text: 'Community events', color: 'global' }
+      { text: 'Komunitní akce', color: 'global' }
     ],
     resources: [
       { text: 'Instruktoři (3)', color: 'global' },
@@ -372,10 +373,10 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Marketing', percentage: '20%' }
     ],
     insights: {
-      crossSell: 'Merch a šejkry (10% příjmů, marže 70%)',
+      crossSell: '👕 Merch a šejkry → 10% tržeb (marže 70%) - komunita nosí tvoje logo = branding zdarma + pocit příslušnosti',
       revenueBreakdown: 'Členství 70% (stabilní!) + Drop-in 20% + Merch 10%',
       keySuccess: 'Community = retention 70% (lidé přijdou kvůli přátelům)',
-      whyItWorks: 'Mladí lidé chtějí sociální zkušenost = fitness jako zábava'
+      whyItWorks: '🤝 Mladí lidé 20-35 let chtějí sociální zážitek, ne jen cvičení: Přijdou na lekci, poznají kámoše, vrací se kvůli přátelům (ne kvůli fitness!). Skupinové lekce = zábava + motivace + community. Když má někdo partu ve fitku, neodchází → retention 70%'
     }
   }
 ];
@@ -386,7 +387,7 @@ const CATEGORIES = [
   { id: 'Fitness', name: 'Fitness', emoji: '🏋️' }
 ];
 
-export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
+export function BusinessModelGallery({ onComplete, onNavigateNext, isLessonCompleted = false }: Props) {
   // 📱 LAYOUT DETECTION - Používáme POUZE šířku okna (ne touch detection!)
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
   const [selectedCategory, setSelectedCategory] = useState('Kavárny');
@@ -427,7 +428,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-xl">
-        <h3 className="text-2xl font-bold mb-2">💡 Galerie Business Modelů</h3>
+        <h3 className="text-2xl font-bold mb-2">💡 Galerie podnikatelských modelů</h3>
         <p className="text-purple-100">
           Porovnejte různé strategie ve stejném odvětví - každý model funguje jinak!
         </p>
@@ -675,61 +676,65 @@ export function BusinessModelGallery({ onComplete, onNavigateNext }: Props) {
         </p>
       </div>
 
-      {/* CTA - Dokončit Modul 2 */}
-      {!isCompleted ? (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-center shadow-2xl mt-6 animate-in fade-in duration-500">
-          <h3 className="mb-3 text-white">
-            🎉 Gratuluji! Viděli jste úspěšné modely
-          </h3>
-          <p className="text-green-100 mb-6">
-            Inspirovali jste se? Můžete se kdykoliv vrátit a prohlédnout si modely znovu.
-          </p>
-          <Button
-            onClick={() => {
-              setIsCompleted(true);
-              onComplete?.();
-            }}
-            size="lg"
-            className="bg-white text-green-700 hover:bg-green-50 font-bold text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
-          >
-            Dokončit Modul 2 🎉
-          </Button>
-        </div>
-      ) : (
-        <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-6 animate-in fade-in zoom-in-95 duration-300">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-green-500 rounded-full p-3">
-              <CheckCircle2 className="w-8 h-8 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-green-900">
-                ✅ Modul 2 dokončen!
+      {/* CTA - Dokončit Modul 2 - JEN když lekce NENÍ dokončená */}
+      {!isLessonCompleted && (
+        <>
+          {!isCompleted ? (
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-center shadow-2xl mt-6 animate-in fade-in duration-500">
+              <h3 className="mb-3 text-white">
+                🎉 Gratuluji! Viděli jste úspěšné modely
               </h3>
-              <p className="text-sm text-green-700">
-                Skvělá práce! Nyní začněte s Modulem 3 - Value Proposition Canvas.
+              <p className="text-green-100 mb-6">
+                Inspirovali jste se? Můžete se kdykoliv vrátit a prohlédnout si modely znovu.
               </p>
-            </div>
-          </div>
-          
-          <div className="flex gap-3">
-            {onNavigateNext && (
               <Button
-                onClick={onNavigateNext}
+                onClick={() => {
+                  setIsCompleted(true);
+                  onComplete?.();
+                }}
                 size="lg"
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="bg-white text-green-700 hover:bg-green-50 font-bold text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
               >
-                Pokračovat na Modul 3 →
+                Dokončit Modul 2 🎉
               </Button>
-            )}
-            <Button
-              onClick={() => setIsCompleted(false)}
-              variant="outline"
-              size="lg"
-            >
-              🔄 Prohlédnout znovu
-            </Button>
-          </div>
-        </div>
+            </div>
+          ) : (
+            <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-6 animate-in fade-in zoom-in-95 duration-300">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-green-500 rounded-full p-3">
+                  <CheckCircle2 className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-green-900">
+                    ✅ Modul 2 dokončen!
+                  </h3>
+                  <p className="text-sm text-green-700">
+                    Skvělá práce! Nyní začněte s Modulem 3 - Hodnotová nabídka.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                {onNavigateNext && (
+                  <Button
+                    onClick={onNavigateNext}
+                    size="lg"
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                  >
+                    Pokračovat na Modul 3 →
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setIsCompleted(false)}
+                  variant="outline"
+                  size="lg"
+                >
+                  🔄 Prohlédnout znovu
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

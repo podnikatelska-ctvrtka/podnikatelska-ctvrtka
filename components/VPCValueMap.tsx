@@ -149,16 +149,155 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
     loadVPC();
   }, [userId, selectedSegment, selectedValue]);
   
-  // Auto-save
+  // 🗑️ CLEANUP ORPHANED VALUES: Smaž hodnoty bez matching segmentu
+  const cleanupOrphanedValues = async () => {
+    if (!userId) return;
+    
+    try {
+      // Načti segments a values
+      const { data: segData } = await supabase
+        .from('user_canvas_data')
+        .select('content')
+        .eq('user_id', userId)
+        .eq('section_key', 'segments')
+        .maybeSingle();
+      
+      const { data: valData } = await supabase
+        .from('user_canvas_data')
+        .select('content')
+        .eq('user_id', userId)
+        .eq('section_key', 'value')
+        .maybeSingle();
+      
+      if (!segData?.content || !valData?.content) return;
+      
+      const segmentColors = segData.content.map((s: any) => s.color);
+      const allValues = valData.content;
+      
+      // Najdi orphaned values (barva neodpovídá žádnému segmentu)
+      const orphanedValues = allValues.filter((v: any) => !segmentColors.includes(v.color));
+      
+      if (orphanedValues.length > 0) {
+        console.log('🗑️ [Desktop ValueMap] Mazání orphaned VALUES:', orphanedValues);
+        
+        // Odstraň orphaned values z content
+        const cleanedValues = allValues.filter((v: any) => segmentColors.includes(v.color));
+        
+        const { error } = await supabase
+          .from('user_canvas_data')
+          .update({ content: cleanedValues })
+          .eq('user_id', userId)
+          .eq('section_key', 'value');
+        
+        if (error) {
+          console.error('❌ Error cleaning orphaned values:', error);
+        } else {
+          console.log('✅ Orphaned VALUES smazány z user_canvas_data!');
+          
+          // 🗑️ BONUS: Smaž i jejich VPC záznamy
+          for (const orphaned of orphanedValues) {
+            await supabase
+              .from('value_proposition_canvas')
+              .delete()
+              .eq('user_id', userId)
+              .eq('selected_value', orphaned.text);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('❌ Error during value cleanup:', err);
+    }
+  };
+  
+  // 🗑️ INITIAL CLEANUP: Smaž orphaned values při načtení
+  useEffect(() => {
+    if (!userId) return;
+    cleanupOrphanedValues();
+  }, [userId]);
+  
+  // 🎨 REAL-TIME COLOR UPDATE: Sleduj změny barev segmentů/hodnot
   useEffect(() => {
     if (!userId || !selectedSegment) return;
+    
+    const updateColor = async () => {
+      try {
+        // Priorita: Barva HODNOTY (pokud je vybraná)
+        if (selectedValue) {
+          const { data: valuesData } = await supabase
+            .from('user_canvas_data')
+            .select('content')
+            .eq('user_id', userId)
+            .eq('section_key', 'value')
+            .maybeSingle();
+          
+          if (valuesData?.content) {
+            const value = valuesData.content.find((v: any) => v.text === selectedValue);
+            if (value && value.color) {
+              console.log('🎨 [Desktop ValueMap] Aktualizuji barvu hodnoty:', value.color);
+              setValueColor(value.color);
+              return;
+            }
+          }
+        }
+        
+        // Fallback: Barva SEGMENTU
+        const { data: segmentData } = await supabase
+          .from('user_canvas_data')
+          .select('content')
+          .eq('user_id', userId)
+          .eq('section_key', 'segments')
+          .maybeSingle();
+        
+        if (segmentData?.content) {
+          const segment = segmentData.content.find((s: any) => s.text === selectedSegment);
+          if (segment && segment.color) {
+            console.log('🎨 [Desktop ValueMap] Aktualizuji barvu segmentu:', segment.color);
+            setValueColor(segment.color);
+          }
+        }
+      } catch (err) {
+        console.error('❌ Error updating color:', err);
+      }
+    };
+    
+    // Initial update
+    updateColor();
+    
+    // Subscribe to changes in user_canvas_data
+    const channel = supabase
+      .channel('value-map-colors')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_canvas_data',
+          filter: `user_id=eq.${userId}`
+        },
+        (payload) => {
+          console.log('🔄 [Desktop ValueMap] Segments/Values změněny, aktualizuji barvu...');
+          updateColor();
+          cleanupOrphanedValues(); // Smaž orphaned hodnoty!
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, selectedSegment, selectedValue]);
+  
+  // Auto-save (when data changes)
+  useEffect(() => {
+    if (!userId || !selectedSegment) return;
+    if (products.length === 0 && painRelievers.length === 0 && gainCreators.length === 0) return; // Don't save empty data
     
     const saveTimeout = setTimeout(async () => {
       await saveVPC();
     }, 1000);
     
     return () => clearTimeout(saveTimeout);
-  }, [products, painRelievers, gainCreators]);
+  }, [products, painRelievers, gainCreators]); // Only trigger on data changes
   
   const saveVPC = async () => {
     if (!userId || !selectedSegment || isSaving) return;
@@ -170,9 +309,13 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
         user_id: userId,
         segment_name: selectedSegment,
         selected_value: selectedValue || null,
+        jobs: [],
+        pains: [],
+        gains: [],
         products,
         pain_relievers: painRelievers,
-        gain_creators: gainCreators
+        gain_creators: gainCreators,
+        updated_at: new Date().toISOString()
       };
       
       if (vpcId) {
@@ -281,10 +424,14 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
             />
             <Button
               size="sm"
-              onClick={() => {
+              onClick={async () => {
                 if (newProduct.trim()) {
-                  setProducts([...products, newProduct.trim()]);
+                  const newProducts = [...products, newProduct.trim()];
+                  setProducts(newProducts);
                   setNewProduct("");
+                  
+                  // ✅ Immediate save
+                  setTimeout(() => saveVPC(), 100);
                 }
               }}
               style={{
@@ -347,10 +494,14 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
             />
             <Button
               size="sm"
-              onClick={() => {
+              onClick={async () => {
                 if (newPainReliever.trim()) {
-                  setPainRelievers([...painRelievers, newPainReliever.trim()]);
+                  const newPainRelievers = [...painRelievers, newPainReliever.trim()];
+                  setPainRelievers(newPainRelievers);
                   setNewPainReliever("");
+                  
+                  // ✅ Immediate save
+                  setTimeout(() => saveVPC(), 100);
                 }
               }}
               style={{
@@ -413,10 +564,14 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
             />
             <Button
               size="sm"
-              onClick={() => {
+              onClick={async () => {
                 if (newGainCreator.trim()) {
-                  setGainCreators([...gainCreators, newGainCreator.trim()]);
+                  const newGainCreators = [...gainCreators, newGainCreator.trim()];
+                  setGainCreators(newGainCreators);
                   setNewGainCreator("");
+                  
+                  // ✅ Immediate save
+                  setTimeout(() => saveVPC(), 100);
                 }
               }}
               style={{

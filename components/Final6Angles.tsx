@@ -116,7 +116,7 @@ Dal/a bys 90 minut a dostal/a:
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut interaktivní práce.
 Konkrétní plán.
 
@@ -228,7 +228,7 @@ Pokud ANO:
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut interaktivní práce.
 
 Výsledek:
@@ -344,7 +344,7 @@ Vědí:
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut interaktivní práce.
 Konkrétní výstup.
 
@@ -467,7 +467,7 @@ VÝSLEDKY:
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut interaktivní práce.
 
 Výsledek: První krok za 2-3 dny.
@@ -583,8 +583,8 @@ Za pouhých 90 minut.
 JAK TO FUNGUJE?
 
 1️⃣ Dokončíš Podnikatelskou Čtvrtku (90 min)
-2️⃣ Máš konkrétní Business Model Canvas
-3️⃣ Máš jasný Value Proposition
+2️⃣ Máš konkrétní Podnikatelský model
+3️⃣ Máš jasnou Hodnotovou nabídku
 4️⃣ Víš co dělat HNED ZÍTRA
 
 Průměrná doba od kurzu k první akci: 2,4 dne
@@ -593,7 +593,7 @@ Průměrná doba od kurzu k první akci: 2,4 dne
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut interaktivní práce.
 
 Investice: 4.999 Kč
@@ -732,7 +732,7 @@ Interaktivní Business Model ti ukáže:
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut interaktivní práce.
 
 Výsledek: 

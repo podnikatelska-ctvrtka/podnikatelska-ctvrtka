@@ -118,7 +118,7 @@ export function MobileSidebarContent({
                       } ${
                         isCurrentModule ? 'text-blue-900' : 'text-gray-900'
                       }`}>
-                        Modul {module.id}
+                        Modul {module.id}: {module.title}
                       </h3>
                       <p className={`text-gray-600 truncate ${isLandscape ? 'text-[10px]' : 'text-xs'}`}>
                         {moduleLessonsCompleted}/{module.lessons.length} lekcí

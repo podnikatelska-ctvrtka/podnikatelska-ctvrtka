@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { hexToColorName } from "../lib/colorUtils";
 import { BottomSheet } from "./BottomSheet";
 import { haptic } from "../lib/haptics";
+import { toast } from "sonner";
 
 interface CanvasItem {
   text: string;
@@ -51,16 +52,26 @@ export function MobileSingleSection({
 
   const handleAdd = () => {
     if (!newItem.trim()) return;
+    
     haptic('success');
     onAddItem(newItem, selectedColor, newValue);
+    
+    // 🎉 Toast notification
+    toast.success("✅ Štítek přidán!", {
+      description: newItem.length > 30 ? newItem.substring(0, 30) + "..." : newItem
+    });
+    
     setNewItem("");
     setNewValue(undefined);
     setIsAdding(false);
+    
+    // ✅ Scroll restore handled by BottomSheet component
   };
 
   const handleOpenSheet = () => {
     haptic('light');
     setIsAdding(true);
+    // ✅ Scroll freeze handled by BottomSheet component
   };
 
   const handleCloseSheet = () => {
@@ -69,6 +80,7 @@ export function MobileSingleSection({
     setEditingIndex(null);
     setNewItem("");
     setNewValue(undefined);
+    // ✅ Scroll restore handled by BottomSheet component
   };
   
   const handleEdit = (index: number) => {
@@ -82,6 +94,7 @@ export function MobileSingleSection({
     setSelectedColor(typeof item.color === 'string' ? hexToColorName(item.color as any) : item.color);
     setIsEditing(true);
     haptic('light');
+    // ✅ Scroll freeze handled by BottomSheet component
   };
   
   const handleSaveEdit = () => {
@@ -99,11 +112,18 @@ export function MobileSingleSection({
       onAddItem(newItem, selectedColor, newValue);
     }
     
+    // 🎉 Toast notification
+    toast.success("✅ Štítek upraven!", {
+      description: newItem.length > 30 ? newItem.substring(0, 30) + "..." : newItem
+    });
+    
     // Reset
     setIsEditing(false);
     setEditingIndex(null);
     setNewItem("");
     setNewValue(undefined);
+    
+    // ✅ Scroll restore handled by BottomSheet component
   };
 
   return (
@@ -142,43 +162,21 @@ export function MobileSingleSection({
               <div
                 key={index}
                 style={{ transform: `rotate(${randomRotate}deg)` }}
-                onClick={(e) => {
-                  // Detekuj double click/tap na mobile i desktop
-                  const now = Date.now();
-                  const DOUBLE_TAP_DELAY = 300;
-                  const target = e.currentTarget as any;
-                  
-                  if (now - (target.lastTap || 0) < DOUBLE_TAP_DELAY) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleEdit(index);
-                    target.lastTap = 0; // Reset po použití
-                  } else {
-                    target.lastTap = now;
-                  }
-                }}
-                className={`${colorClasses.bg} ${colorClasses.border} ${isGlobal ? 'border-dashed' : 'border-2'} p-3 rounded shadow-md text-sm group relative transition-all duration-300 ease-out cursor-pointer hover:scale-105 select-none`}
+                onClick={() => handleEdit(index)}
+                className={`${colorClasses.bg} ${colorClasses.border} ${isGlobal ? 'border-dashed' : 'border-2'} p-1.5 rounded-md shadow-md text-xs group relative transition-all cursor-pointer hover:scale-105 select-none min-w-[60px] max-w-[85px]`}
               >
                 {/* Globální ikona */}
                 {isGlobal && (
-                  <span className="absolute top-1 right-1 text-xs opacity-60">🌐</span>
+                  <span className="absolute top-0.5 right-0.5 text-[10px] opacity-60">🌐</span>
                 )}
                 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemoveItem(index);
-                  }}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                {/* ❌ DELETE BUTTON REMOVED - pouze v bottom sheetu! */}
                 
                 <div className={colorClasses.text}>
-                  <div className="font-medium pr-4">{cleanText}</div>
+                  <div className="pr-2 break-words overflow-wrap-anywhere leading-tight text-[11px]">{cleanText}</div>
                   {/* HODNOTA SE UKLÁDÁ, ALE NEZOBRAZUJE (pro výpočty v Modulu 2, Lekci 2) */}
-                  <p className="text-xs opacity-0 group-hover:opacity-60 transition-opacity mt-1">
-                    Dvojklik = editace
+                  <p className="text-[9px] opacity-0 group-hover:opacity-60 transition-opacity mt-0.5">
+                    Klikni
                   </p>
                 </div>
               </div>
@@ -187,7 +185,7 @@ export function MobileSingleSection({
         </div>
         {items.length > 0 && (
           <p className="text-xs text-gray-500 text-center mt-2">
-            💡 Tip: Dvojklikem na štítek ho můžete editovat
+            💡 Tip: Klikněte na štítek pro editaci
           </p>
         )}
       </div>
@@ -208,7 +206,7 @@ export function MobileSingleSection({
         isOpen={isAdding || isEditing}
         onClose={handleCloseSheet}
         title={isEditing ? "Upravit položku" : "Přidat položku"}
-        snapPoints={[0.7, 0.95]}
+        snapPoints={[0.85, 0.95]}
         defaultSnap={0}
       >
         <div className="space-y-4">
@@ -231,7 +229,6 @@ export function MobileSingleSection({
               }}
               placeholder="Napište text..."
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              autoFocus
             />
           </div>
           
@@ -323,6 +320,30 @@ export function MobileSingleSection({
               Zrušit
             </Button>
           </div>
+          
+          {/* Delete Button - pouze při editaci */}
+          {isEditing && editingIndex !== null && (
+            <Button
+              onClick={() => {
+                haptic('warning');
+                const deletedText = newItem;
+                onRemoveItem(editingIndex);
+                
+                // 🗑️ Toast notification
+                toast.success("🗑️ Štítek smazán", {
+                  description: deletedText.length > 30 ? deletedText.substring(0, 30) + "..." : deletedText
+                });
+                
+                handleCloseSheet();
+              }}
+              variant="destructive"
+              size="lg"
+              className="w-full h-12 bg-red-500 hover:bg-red-600 mt-3"
+            >
+              <X className="w-5 h-5 mr-2" />
+              Smazat položku
+            </Button>
+          )}
         </div>
       </BottomSheet>
 

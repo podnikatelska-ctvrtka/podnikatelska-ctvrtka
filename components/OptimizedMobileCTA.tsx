@@ -12,7 +12,7 @@ export function OptimizedMobileCTA() {
     { 
       icon: <Zap className="w-4 h-4" />, 
       text: "Získat předběžný přístup",
-      urgency: "Sleva 3.500 Kč"
+      urgency: "Sleva 3.500,- Kč"
     },
     { 
       icon: <Users className="w-4 h-4" />, 

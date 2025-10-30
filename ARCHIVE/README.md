@@ -9,16 +9,22 @@ Tato složka obsahuje všechny důležité dokumenty, emaily, reklamy a strategi
 ## 📁 CO JE V TÉTO SLOŽCE:
 
 ### **📧 EMAILY:**
-- `email-sequences/` - Všechny emailové sekvence (prelaunch, onboarding, upsell)
+- `emails/` - Všechny emailové sekvence (prelaunch, onboarding, upsell)
 
 ### **🎯 REKLAMY:**
 - `ads/` - Všechny reklamní kreativy a strategie (13 ads, angles, portfolia)
 
+### **🎓 KURZ KOMPONENTY:**
+- `course-components/` - Backup desktop verze + mobile helper komponenty
+  - `RESTORE_GUIDE.md` - Jak obnovit desktop verzi
+  - `mobile/` - Mobile optimalizované komponenty (accordion, helpers)
+  - ✅ **DŮLEŽITÉ:** Funkční desktop verze je v `/components/CourseDemoV3.tsx`
+
 ### **📊 STRATEGIE:**
-- `strategy/` - Deployment strategie, roadmapy, plány
+- `strategy/` - Deployment strategie, roadmapy, plány (TODO: vytvoř složku)
 
 ### **🔧 DOKUMENTACE:**
-- `docs/` - Důležité MD soubory s rozhodnutími a koncepty
+- `docs/` - Důležité MD soubory s rozhodnutími a koncepty (TODO: vytvoř složku)
 
 ---
 

@@ -19,40 +19,40 @@ export function HeroSection() {
 
   const tooltipData = {
     'partners': {
-      title: 'Klíčoví partneři',
-      content: 'Vybudujte si síť spolehlivých partnerů, kteří vás posunou vpřed rychleji než konkurenci!'
+      title: 'Klíčová partnerství',
+      content: 'Zjistíte, kdo vám může pomoct ušetřit čas a peníze - místo abyste vše dělali sami'
     },
     'activities': {
       title: 'Klíčové aktivity', 
-      content: 'Přesný plán akcí, který vás dovede k zisku rychleji a efektivněji než 90% podnikatelů'
+      content: 'Zjistíte, na co se zaměřit PRVNÍ - a přestaňte ztrácet čas na zbytečnosti'
     },
     'value': {
       title: 'Hodnotová nabídka',
-      content: 'Objevte svůj unikátní prodejní argument, který zákazníky přinutí říct ANO!'
+      content: 'Zjistíte, čím se lišíte od konkurence - a proč si zákazníci vyberou vás, ne je'
     },
     'relationships': {
       title: 'Vztahy se zákazníky',
-      content: 'Tajemství budování vztahů, které z jednorázových kupců udělají věrné fanoušky'
+      content: 'Zjistíte, jak udržet zákazníky - aby kupovali znovu, ne jen jednou'
     },
     'segments': {
       title: 'Zákaznické segmenty',
-      content: 'Přesně identifikujte své ideální zákazníky a nikdy už neutratíte korunu za špatný marketing'
+      content: 'Zjistíte, komu prodávat - a přestaňte mařit peníze na špatný marketing'
     },
     'resources': {
       title: 'Klíčové zdroje',
-      content: 'Zjistěte, co SKUTEČNĚ potřebujete k úspěchu a přestaňte utrácet za zbytečnosti'
+      content: 'Zjistíte, co OPRAVDU potřebujete - a přestaňte utrácet za věci, které nepotřebujete'
     },
     'channels': {
       title: 'Distribuční kanály',
-      content: 'Nejkratší a nejlevnější cesty k vašim zákazníkům - bez promarnění času a peněz'
+      content: 'Zjistíte, kde najít zákazníky - bez promrhání času a peněz na špatné kanály'
     },
     'costs': {
       title: 'Struktura nákladů',
-      content: 'Ovládněte své náklady jako profík a zvyšte zisk až o 40% během prvního roku'
+      content: 'Zjistíte, kde ztrácíte peníze - a kde můžete ušetřit až 30% nákladů'
     },
     'revenue': {
       title: 'Zdroje příjmů',
-      content: 'Objevte skryté příležitosti k výdělku, které vaši konkurenti ještě neznají!'
+      content: 'Najdete 3-5 způsobů, jak zvýšit tržby - ze stejných zákazníků a stejné práce'
     }
   };
 
@@ -138,42 +138,37 @@ export function HeroSection() {
                 </div>
               </div>
 
-              {/* Benefity */}
+              {/* Benefity - s kulatými ikonami jako ve V2 */}
               <motion.div 
                 className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, staggerChildren: 0.1 }}
               >
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-700">Čtvrtka za 90 minut</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  </div>
+                  <span className="text-gray-700 font-medium">Čtvrtka za 90 minut</span>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
-                  <Map className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                  <span className="text-gray-700">Mapa celého byznysu</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Map className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-gray-700 font-medium">Mapa celého byznysu</span>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
-                  <Users className="w-5 h-5 text-purple-500 flex-shrink-0" />
-                  <span className="text-gray-700">Profil ideálního zákazníka</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <span className="text-gray-700 font-medium">Profil ideálního zákazníka</span>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-lg h-20">
-                  <Compass className="w-5 h-5 text-indigo-500 flex-shrink-0" />
-                  <span className="text-gray-700">Víte přesně, co dělat</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                    <Compass className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <span className="text-gray-700 font-medium">Víte přesně, co dělat</span>
                 </div>
-              </motion.div>
-
-              {/* Metodologie credibility */}
-              <motion.div 
-                className="relative bg-gradient-to-r from-blue-50/60 to-indigo-50/60 backdrop-blur-sm rounded-xl p-5 border border-blue-100/50 shadow-lg"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-              >
-                <p className="text-sm text-gray-700 text-center leading-relaxed">
-                  <span className="font-semibold text-indigo-700">Podnikatelská Čtvrtka,</span><br className="hidden sm:block" />
-                  kterou používají firmy jako Google, Airbnb a Spotify
-                </p>
               </motion.div>
 
               {/* Desktop CTA tlačítko */}
@@ -190,7 +185,7 @@ export function HeroSection() {
                     className="w-full"
                     onClick={() => setIsModalOpen(true)}
                   >
-                    Chci slevu 40% (zbývá {remainingSpots} míst)
+                    Chci vědět, co dělat jako první
                   </EnhancedCTA>
                 </TouchFeedback>
                 <p className="text-xs text-gray-600 mt-2 font-medium">
@@ -325,31 +320,34 @@ export function HeroSection() {
                 </div>
               </div>
 
-              {/* Informace o Canvas */}
+              {/* Sloučený info box - Canvas + Credibility */}
               <motion.div 
-                className="text-center p-4 bg-gradient-to-r from-indigo-50/60 to-purple-50/60 backdrop-blur-sm rounded-xl border border-indigo-100/50 shadow-lg"
+                className="text-center p-5 bg-gradient-to-r from-indigo-50/60 to-purple-50/60 backdrop-blur-sm rounded-xl border border-indigo-100/50 shadow-lg space-y-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 }}
               >
                 {/* Desktop verze */}
-                <p className="text-sm text-gray-600 mb-2 hidden md:block">
-                  <span className="font-semibold text-indigo-600">Podnikatelská Čtvrtka</span>
-                  <span> – vyplníte 9 políček a máte kompletní mapu byznysu</span>
-                </p>
-                <div className="items-center justify-center gap-2 text-xs text-gray-500 hidden md:flex">
-                  <span>🎯</span>
-                  <span>Krok za krokem • 90 minut práce • Vyplněná Čtvrtka v ruce</span>
+                <div className="hidden md:block space-y-2">
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    <span className="font-semibold text-indigo-700">Podnikatelská Čtvrtka,</span>{" "}
+                    kterou používají firmy jako Google, Airbnb a Spotify
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-xs text-gray-600">
+                    <span>🎯</span>
+                    <span>Krok za krokem • 90 minut • Kompletní mapa byznysu</span>
+                  </div>
                 </div>
 
                 {/* Mobilní verze - kratší text */}
-                <p className="text-sm text-gray-600 mb-2 md:hidden">
-                  <span className="font-semibold text-indigo-600">Podnikatelská Čtvrtka</span>
-                  <span> – 9 políček k vyplnění</span>
-                </p>
-                <div className="flex items-center justify-center gap-2 text-xs text-gray-500 md:hidden">
-                  <span>🎯</span>
-                  <span>90 minut • Vyplněná Čtvrtka • Jasný plán</span>
+                <div className="md:hidden space-y-2">
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    <span className="font-semibold text-indigo-700">Podnikatelská Čtvrtka</span> – 9 políček k vyplnění
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-xs text-gray-600">
+                    <span>🎯</span>
+                    <span>90 minut • Hotovo • Jasný plán</span>
+                  </div>
                 </div>
               </motion.div>
 
@@ -364,11 +362,11 @@ export function HeroSection() {
                   onClick={() => setIsModalOpen(true)}
                   className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3.5 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group max-w-xs mx-auto w-full"
                 >
-                  Získat předběžný přístup
+                  Chci vědět, co dělat jako první
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </button>
                 <p className="text-xs text-gray-500 mt-2">
-                  Omezená možnost předobjednávky
+                  Sleva 40% vyprší za 24 hodin od registrace
                 </p>
               </motion.div>
 

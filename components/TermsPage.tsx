@@ -38,7 +38,7 @@ export default function TermsPage() {
             </p>
             <ul className="list-disc pl-6 mt-3 space-y-2">
               <li>3 moduly s video lekcemi a textovými materiály</li>
-              <li>Interaktivní nástroje (Business Model Canvas, Value Proposition Canvas)</li>
+              <li>Interaktivní nástroje (Podnikatelský model, Hodnotová nabídka)</li>
               <li>Galerie reálných business modelů (kavárna, posilovna, pizzerie...)</li>
               <li>Personalizovaný akční plán na 30 dní</li>
               <li>Lifetime přístup k obsahu kurzu</li>
@@ -86,7 +86,7 @@ export default function TermsPage() {
               <ul className="list-disc pl-6 space-y-1 text-sm mt-2">
                 <li>Nedošlo k absolvování více než 20% obsahu kurzu (max. 3 lekce z celkových 16 lekcí)</li>
                 <li>Nebyly zkopírovány business modely z galerie</li>
-                <li>Nebyly vyplněny interaktivní nástroje (Business Model Canvas, Value Proposition Canvas)</li>
+                <li>Nebyly vyplněny interaktivní nástroje (Podnikatelský model, Hodnotová nabídka)</li>
               </ul>
             </div>
             

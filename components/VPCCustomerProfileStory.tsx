@@ -107,23 +107,68 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
     
     const loadVPC = async () => {
       console.log('🔄 [VPCCustomerProfileStory] loadVPC called for segment:', selectedSegment);
+      console.log('🔄 [VPCCustomerProfileStory] userId:', userId, 'availableSegments:', availableSegments);
       
       try {
         // Načíst podle segmentu (Customer Profile nemá selected_value)
-        const { data } = await supabase
+        // ⚠️ FIX: Použij order + limit místo maybeSingle (kvůli duplicitám!)
+        const { data: allRecords, error } = await supabase
           .from('value_proposition_canvas')
           .select('*')
           .eq('user_id', userId)
           .eq('segment_name', selectedSegment)
           .is('selected_value', null)
-          .maybeSingle();
+          .order('created_at', { ascending: false }); // Nejnovější první
+        
+        console.log('📊 [VPCCustomerProfileStory] Query result:', { count: allRecords?.length, error });
+        
+        // Vezmi NEJNOVĚJŠÍ záznam
+        const data = allRecords && allRecords.length > 0 ? allRecords[0] : null;
+        
+        // 🗑️ SMAŽ DUPLICITY (pokud existují)
+        if (allRecords && allRecords.length > 1) {
+          const duplicateIds = allRecords.slice(1).map(r => r.id);
+          console.log('🗑️ [VPCCustomerProfileStory] Mazání duplicit:', duplicateIds);
+          
+          const { error: deleteError } = await supabase
+            .from('value_proposition_canvas')
+            .delete()
+            .in('id', duplicateIds);
+          
+          if (deleteError) {
+            console.error('❌ Error deleting duplicates:', deleteError);
+          } else {
+            console.log('✅ Duplicity smazány!');
+          }
+        }
         
         if (data) {
+          console.log('✅ [VPCCustomerProfileStory] Data found:', data);
           setVpcId(data.id);
           
           // ✅ PŘEKRESLI VŠECHNY ŠTÍTKY na barvu aktuálního segmentu!
-          const segmentData = availableSegments.find(s => s.text === selectedSegment);
-          const currentSegmentColor = segmentData?.color || '#3b82f6';
+          // 🎨 Načti barvu ZNOVU z DB (aby byla aktuální!)
+          const { data: segmentsData } = await supabase
+            .from('user_canvas_data')
+            .select('content')
+            .eq('user_id', userId)
+            .eq('section_key', 'segments')
+            .maybeSingle();
+          
+          let currentSegmentColor = '#3b82f6'; // default
+          if (segmentsData?.content) {
+            const segmentData = segmentsData.content.find((s: any) => s.text === selectedSegment);
+            if (segmentData) {
+              currentSegmentColor = segmentData.color.startsWith('#') ? segmentData.color : (() => {
+                const colorMap: Record<string, string> = {
+                  'blue': '#3b82f6', 'green': '#22c55e', 'yellow': '#eab308',
+                  'red': '#ef4444', 'purple': '#8b5cf6', 'pink': '#ec4899',
+                  'orange': '#f59e0b', 'white': '#d1d5db', 'gray': '#6b7280'
+                };
+                return colorMap[segmentData.color.toLowerCase()] || '#3b82f6';
+              })();
+            }
+          }
           
           console.log('🎨 [VPCCustomerProfileStory] Překreslování štítků na barvu:', currentSegmentColor, 'segment:', selectedSegment, 'availableSegments:', availableSegments.length);
           
@@ -168,6 +213,34 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
     loadVPC();
   }, [userId, selectedSegment, availableSegments]);
   
+  // 🔄 REAL-TIME COLOR SYNC: Sleduj změny barev segmentů v BMC
+  useEffect(() => {
+    if (!userId || !selectedSegment) return;
+    
+    // Subscribe to changes in user_canvas_data (segments)
+    const channel = supabase
+      .channel('desktop-customer-profile-colors')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_canvas_data',
+          filter: `user_id=eq.${userId}`
+        },
+        (payload) => {
+          console.log('🔄 [Desktop CustomerProfile] Segments změněny, reloaduji...');
+          // Reload segments to get new colors
+          loadAvailableSegments();
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, selectedSegment]);
+  
   useEffect(() => {
     if (!userId || !selectedSegment) return;
     
@@ -179,9 +252,15 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
   }, [jobs, pains, gains, selectedSegment]);
   
   const saveVPC = async () => {
-    if (!userId || !selectedSegment || isSaving) return;
+    console.log('💾 [VPCCustomerProfileStory] saveVPC called', { userId, selectedSegment, isSaving, jobsCount: jobs.length, painsCount: pains.length, gainsCount: gains.length });
+    
+    if (!userId || !selectedSegment || isSaving) {
+      console.log('❌ [VPCCustomerProfileStory] saveVPC skipped - validation failed');
+      return;
+    }
     
     if (jobs.length === 0 && pains.length === 0 && gains.length === 0) {
+      console.log('❌ [VPCCustomerProfileStory] saveVPC skipped - no data to save');
       return;
     }
     
@@ -201,14 +280,34 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
         updated_at: new Date().toISOString()
       };
       
-      if (vpcId) {
+      console.log('💾 [VPCCustomerProfileStory] Saving data:', { vpcId, vpcData });
+      
+      // 🔍 VŽDY HLEDAT existující záznam (fix pro duplicity!)
+      const { data: existing } = await supabase
+        .from('value_proposition_canvas')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('segment_name', selectedSegment)
+        .is('selected_value', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      const recordId = existing?.id || vpcId;
+      
+      if (recordId) {
+        // UPDATE existující záznam
         const { error } = await supabase
           .from('value_proposition_canvas')
           .update(vpcData)
-          .eq('id', vpcId);
+          .eq('id', recordId);
         
         if (error) throw error;
+        
+        if (!vpcId) setVpcId(recordId); // Aktualizuj state pokud nebyl
+        console.log('✅ [VPCCustomerProfileStory] Data updated successfully, id:', recordId);
       } else {
+        // INSERT nový záznam (pokud opravdu neexistuje)
         const { data, error } = await supabase
           .from('value_proposition_canvas')
           .insert([vpcData])
@@ -219,6 +318,7 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
         
         if (data) {
           setVpcId(data.id);
+          console.log('✅ [VPCCustomerProfileStory] Data inserted successfully, new vpcId:', data.id);
         }
       }
       
@@ -228,7 +328,8 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
         onAchievementUnlocked('customer-profile-complete');
       }
     } catch (err) {
-      console.error('Save error:', err);
+      console.error('❌ [VPCCustomerProfileStory] Save error:', err);
+      toast.error('Chyba při ukládání dat');
     } finally {
       setIsSaving(false);
     }
@@ -259,11 +360,15 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
     const segmentData = availableSegments.find(s => s.text === selectedSegment);
     const segmentColor = segmentData?.color || '#3b82f6';
     
-    setJobs([...jobs, { 
+    const newJobItem = { 
       text: newJob.trim(), 
       color: segmentColor
-    }]);
+    };
+    
+    console.log('✅ [JOB] Adding job:', newJobItem, 'at:', Date.now());
+    setJobs([...jobs, newJobItem]);
     setNewJob("");
+    console.log('✅ [JOB] Job added, triggering auto-save in 1s...');
   };
   
   const addPain = () => {
@@ -291,11 +396,15 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
     const segmentData = availableSegments.find(s => s.text === selectedSegment);
     const segmentColor = segmentData?.color || '#3b82f6';
     
-    setPains([...pains, { 
+    const newPainItem = { 
       text: newPain.trim(), 
       color: segmentColor
-    }]);
+    };
+    
+    console.log('✅ [PAIN] Adding pain:', newPainItem, 'at:', Date.now());
+    setPains([...pains, newPainItem]);
     setNewPain("");
+    console.log('✅ [PAIN] Pain added, triggering auto-save in 1s...');
   };
   
   const addGain = () => {
@@ -323,11 +432,15 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
     const segmentData = availableSegments.find(s => s.text === selectedSegment);
     const segmentColor = segmentData?.color || '#3b82f6';
     
-    setGains([...gains, { 
+    const newGainItem = { 
       text: newGain.trim(), 
       color: segmentColor
-    }]);
+    };
+    
+    console.log('✅ [GAIN] Adding gain:', newGainItem, 'at:', Date.now());
+    setGains([...gains, newGainItem]);
     setNewGain("");
+    console.log('✅ [GAIN] Gain added, triggering auto-save in 1s...');
   };
   
   const selectedSegmentObj = availableSegments.find(s => s.text === selectedSegment);

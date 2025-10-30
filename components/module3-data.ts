@@ -1,7 +1,7 @@
 // Modul 3 - Value Proposition Canvas
 export const MODULE_3 = {
   id: 3,
-  title: "Value Proposition Canvas",
+  title: "FIT Validátor",
   description: "Naučte se vytvořit soulad mezi hodnotou a zákazníkem",
   lessons: [
     {
@@ -14,7 +14,7 @@ export const MODULE_3 = {
         <h3>👥 Zákaznický Profil</h3>
         <p><strong>VŠECHNO začíná u ZÁKAZNÍKA!</strong> Než začnete cokoliv nabízet, musíte pochopit <strong>KOMU</strong> to nabízíte.</p>
         
-        <p><strong>📌 Nejdřív vyberte SEGMENT:</strong> Vyberte si jeden zákaznický segment z vašeho Business Model Canvas (Modul 1) a pro něj vyplníte profil:</p>
+        <p><strong>📌 Nejdřív vyberte SEGMENT:</strong> Vyberte si jeden zákaznický segment z vaší Podnikatelské Čtvrtky (Modul 1) a pro něj vyplníte profil:</p>
         
         <h4>✅ Úkoly zákazníka</h4>
         <p><strong>Proč k vám zákazník přichází? Co chce udělat?</strong></p>
@@ -64,7 +64,7 @@ export const MODULE_3 = {
         <h3>💎 Hodnotová Mapa</h3>
         <p>Nyní když znáte ZÁKAZNÍKA, můžete definovat <strong>CO NABÍZÍTE</strong> a jak to vytváří hodnotu!</p>
         
-        <p><strong>📌 Vyberte HODNOTU:</strong> Vyberte si jednu hodnotu (produkt/službu) z vašeho Business Model Canvas a pro ni vyplníte:</p>
+        <p><strong>📌 Vyberte HODNOTU:</strong> Vyberte si jednu hodnotu (produkt/službu) z vaší Podnikatelské Čtvrtky a pro ni vyplníte:</p>
         
         <h4>📦 Produkty a služby</h4>
         <p><strong>Co KONKRÉTNĚ nabízíte?</strong></p>
@@ -109,14 +109,20 @@ export const MODULE_3 = {
     },
     {
       id: 16,
-      title: "Kontrola souladu (FIT)",
+      title: "Testování fit skóre",
       canvasSection: "vpc-fit",
       videoUrl: "",
-      description: "Objevte, prioritizujte a validujte co opravdu řeší problémy vašich zákazníků",
+      description: "Zjistěte, jestli vaše řešení opravdu sedí těm nejvíc bolavým potřebám zákazníků",
       content: `
-        <h3>🎯 Kontrola souladu (FIT Validace)</h3>
-        <p><strong>Toto je NEJDŮLEŽITĚJŠÍ krok!</strong> Zjistěte, jestli vaše řešení OPRAVDU sedí zákazníkům.</p>
-        <p>Postupujte krok za krokem - instrukce najdete v každém kroku validátoru níže. 👇</p>
+        <h3>🎯 Validace Product-Market Fit</h3>
+        <p>Nyní validujeme, jestli vaše řešení OPRAVDU pokrývá nejvíc naléhavé potřeby zákazníků.</p>
+        <p><strong>Postup validace:</strong></p>
+        <ul>
+          <li><strong>Krok 1:</strong> Načtěte data z průzkumu zákazníků</li>
+          <li><strong>Krok 2:</strong> Ohodnoťte prioritu potřeb podle % zákazníků</li>
+          <li><strong>Krok 3:</strong> Propojte vaše řešení s top prioritami</li>
+        </ul>
+        <p>Postupujte podle instrukcí v jednotlivých krocích níže. 👇</p>
       `,
       tips: [
         "💎 Diamantový model = zaměřte se jen na top 3 v každé kategorii",

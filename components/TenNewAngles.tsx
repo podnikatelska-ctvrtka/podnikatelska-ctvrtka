@@ -390,7 +390,7 @@ Aby mi řekli, co jsem mohl vědět ZA 90 MINUT.
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas
+Podnikatelský model + Hodnotová nabídka
 = Všechno jasně. Hned. Za 90 minut.
 
 • Komu prodávám
@@ -526,12 +526,12 @@ OPRAVIT TO: 90 MINUT
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas:
+Podnikatelský model:
 • Správný zákaznický segment
-• Správná value proposition
+• Správná hodnotová nabídka
 • Správné pricing
 
-Value Proposition Canvas:
+Hodnotová nabídka:
 • Co skutečně řešíš
 • Co je tvá hodnota
 • Proč si vybrat tebe
@@ -678,7 +678,7 @@ PODNIKATELSKÁ ČTVRTKA
 Jasný byznys model.
 Jasný marketing plán.
 
-Business Model Canvas + Value Proposition Canvas
+Podnikatelský model + Hodnotová nabídka
 = První konkrétní nástroje v češtině.
 
 Investice: 4.999 Kč
@@ -813,7 +813,7 @@ TOHLE JE PRO TEBE, POKUD:
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut práce.
 Hotový plán.
 
@@ -973,7 +973,7 @@ PŘIPOJ SE K NIM.
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut práce.
 Hotový plán.
 
@@ -1127,7 +1127,7 @@ PO 50. ZÁKAZNÍKOVI:
 
 PODNIKATELSKÁ ČTVRTKA
 
-Business Model Canvas + Value Proposition Canvas.
+Podnikatelský model + Hodnotová nabídka.
 90 minut práce.
 Jasný plán.
 

@@ -7,30 +7,23 @@ export function OptimizedCombinedSectionV2() {
     {
       icon: <Target className="w-6 h-6" />,
       title: "Přesné zacílení na ideální zákazníky",
-      description: "Místo střílení naslepo objevíte, kdo přesně je váš ideální zákazník - jeho problémy, potřeby a kde ho najít. Přestanete mařit peníze na lidi, kteří stejně nekoupí.",
-      result: "80% úspora na marketingu",
+      description: "Místo střílení naslepo odpovíte, kdo přesně je váš ideální zákazník – jeho problémy, potřeby a kde ho najít. Přestanete mstit peníze na lidi, kteří stejně nekoupí.",
+      result: "Ušetříte 15+ hodin týdně",
       color: "blue"
     },
     {
       icon: <Users className="w-6 h-6" />,
       title: "Jedinečná pozice na trhu",
-      description: "Zjistíte, čím se odlišujete od konkurence a proč by si zákazníci měli vybrat právě vás. Ne jen cenou - ale skutečnou hodnotou, kterou nikdo jiný nenabízí.",
-      result: "O 30-50% vyšší ceny",
+      description: "Zjistíte, čím se odlišujete od konkurence a proč by si zákazníci měli vybrat právě vás. Ne jen cenou - ale skutečnou hodnotou, kterou nikdo jiný nedává.",
+      result: "30-50% vyšší ceny za stejnou práci",
       color: "purple"
     },
     {
       icon: <TrendingUp className="w-6 h-6" />,
       title: "Nové možnosti růstu a zisku",
-      description: "Odhalíte příležitosti, které jste dosud přehlíželi - nové produkty, služby nebo způsoby monetizace. Zjistíte, jak zvýšit hodnotu každého zákazníka.",
-      result: "2-3× víc příjmů ze stejné práce",
+      description: "Odhalíte příležitosti, které jste dosud přehlíželi – nové produkty, služby nebo způsoby monetizace. Zjistíte, jak zvýšit hodnotu každého zákazníka.",
+      result: "2-3 nové zdroje příjmů do měsíce",
       color: "green"
-    },
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: "Jasný rámec pro rozhodování",
-      description: "Konec váhání a pochybností. Získáte systém, který vám řekne, jaké kroky dělat jako první a jak vyhodnotit, co funguje. Marketing přestane být záhada.",
-      result: "0 pochybností o dalším kroku",
-      color: "orange"
     }
   ];
 

@@ -32,7 +32,7 @@ const SCENARIOS: Scenario[] = [
         id: 'new-segment',
         title: '🎯 Přidat nový segment',
         description: 'Cílte na další skupinu zákazníků (např. prodáváte koncovým zákazníkům? Zkuste firmy!)',
-        canvasAction: 'Přidejte NOVÝ štítek s NOVOU BARVOU do "Zákaznické segmenty"',
+        canvasAction: 'Přidejte NOVÝ štítek s NOVOU BARVOU do "Zákaznické segmenty" v Čtvrtce',
         difficulty: 'medium',
         impact: 'high'
       },
@@ -40,7 +40,7 @@ const SCENARIOS: Scenario[] = [
         id: 'new-channel',
         title: '📢 Zkusit nový kanál',
         description: 'Zjistěte kde jsou vaši zákazníci a oslovte je tam (např. používáte Facebook? Zkuste Instagram nebo TikTok!)',
-        canvasAction: 'Přidejte položku do "Kanály" (stejnou barvou jako segment)',
+        canvasAction: 'Přidejte položku do "Kanály" v Čtvrtce (stejnou barvou jako segment)',
         difficulty: 'easy',
         impact: 'medium'
       },
@@ -48,7 +48,7 @@ const SCENARIOS: Scenario[] = [
         id: 'partnership',
         title: '🤝 Najít partnera',
         description: 'Spolupracujte s někým kdo už má vaše zákazníky (affiliate, reseller)',
-        canvasAction: 'Přidejte položku do "Klíčová partnerství"',
+        canvasAction: 'Přidejte položku do "Klíčová partnerství" v Čtvrtce',
         difficulty: 'hard',
         impact: 'high'
       }
@@ -65,7 +65,7 @@ const SCENARIOS: Scenario[] = [
         id: 'price-increase',
         title: '📈 Zvýšit cenu',
         description: 'Přidejte hodnotu (lepší kvalita, rychlejší dodání, záruka) a pak zvyšte cenu o 20%. Většinou ztratíte méně než 20% zákazníků = vyšší příjem!',
-        canvasAction: 'Nejprve přidejte NOVOU hodnotu do "Hodnotová nabídka", pak upravte cenu v "Zdroje příjmů"',
+        canvasAction: 'Nejprve přidejte NOVOU hodnotu do "Hodnotová nabídka" v Čtvrtce, pak upravte cenu v "Zdroje příjmů"',
         difficulty: 'easy',
         impact: 'high'
       },
@@ -73,7 +73,7 @@ const SCENARIOS: Scenario[] = [
         id: 'premium-tier',
         title: '⭐ Přidat premium verzi',
         description: 'Vytvořte dražší variantu s extra funkcemi (např. Basic 500 Kč → Premium 1500 Kč)',
-        canvasAction: 'Přidejte NOVOU položku s NOVOU BARVOU do "Hodnotová nabídka" + "Zdroje příjmů"',
+        canvasAction: 'Přidejte NOVOU položku s NOVOU BARVOU do "Hodnotová nabídka" + "Zdroje příjmů" v Čtvrtce',
         difficulty: 'medium',
         impact: 'high'
       },
@@ -81,7 +81,7 @@ const SCENARIOS: Scenario[] = [
         id: 'upsell',
         title: '🔄 Cross-sell / Up-sell',
         description: 'Prodávejte doplňkové produkty (kavárna → dezerty, e-shop → doprava + balení, kadeřnictví → produkty na vlasy)',
-        canvasAction: 'Přidejte další položku do "Zdroje příjmů" (můžete použít stejnou barvu)',
+        canvasAction: 'Přidejte další položku do "Zdroje příjmů" v Čtvrtce (můžete použít stejnou barvu)',
         difficulty: 'medium',
         impact: 'medium'
       }
@@ -98,7 +98,7 @@ const SCENARIOS: Scenario[] = [
         id: 'cheaper-partner',
         title: '💸 Levnější dodavatel',
         description: 'Najděte alternativního partnera s nižší cenou (např. jiný software, jiný výrobce)',
-        canvasAction: 'Upravte existující položku v "Klíčová partnerství" nebo přidejte novou',
+        canvasAction: 'Upravte existující položku v "Klíčová partnerství" v Čtvrtce nebo přidejte novou',
         difficulty: 'medium',
         impact: 'medium'
       },
@@ -106,7 +106,7 @@ const SCENARIOS: Scenario[] = [
         id: 'automate',
         title: '🤖 Automatizace',
         description: 'Ušetřete čas a peníze automatizací (e-mailový automat místo ručního psaní, booking systém místo telefonů)',
-        canvasAction: 'Aktualizujte "Klíčové činnosti" - zaměřte se na automatizaci',
+        canvasAction: 'Aktualizujte "Klíčové činnosti" v Čtvrtce - zaměřte se na automatizaci',
         difficulty: 'hard',
         impact: 'high'
       },
@@ -114,7 +114,7 @@ const SCENARIOS: Scenario[] = [
         id: 'outsource',
         title: '👥 Outsourcing',
         description: 'Najděte freelancery nebo agentury pro nestandardní úkoly místo stálých zaměstnanců',
-        canvasAction: 'Přidejte položku do "Klíčová partnerství" pro outsourcing',
+        canvasAction: 'Přidejte položku do "Klíčová partnerství" v Čtvrtce pro outsourcing',
         difficulty: 'easy',
         impact: 'medium'
       }
@@ -131,23 +131,23 @@ const SCENARIOS: Scenario[] = [
         id: 'loyalty-program',
         title: '🎁 Věrnostní program',
         description: 'Odměňujte opakované nákupy (sleva po 5 nákupech, body za každý nákup)',
-        canvasAction: 'Přidejte "Věrnostní program" do "Vztahy se zákazníky"',
+        canvasAction: 'Přidejte "Věrnostní program" do "Vztahy se zákazníky" v Čtvrtce',
         difficulty: 'medium',
         impact: 'high'
       },
       {
         id: 'subscription',
-        title: '💳 Předplatné / Membership',
+        title: '💳 Předplatné',
         description: 'Vytvořte měsíční předplatné s benefity (např. káva: 10 káv za 800 Kč = sleva 20%)',
-        canvasAction: 'Přidejte "Předplatné" s NOVOU BARVOU do "Zdroje příjmů"',
+        canvasAction: 'Přidejte "Předplatné" s NOVOU BARVOU do "Zdroje příjmů" v Čtvrtce',
         difficulty: 'easy',
         impact: 'high'
       },
       {
         id: 'email-automation',
-        title: '📧 Email automation',
+        title: '📧 Email automatizace',
         description: 'Oslovte zákazníky automaticky po X dnech s nabídkou (např. po 14 dnech "vrať se a dostaneš 15% slevu")',
-        canvasAction: 'Přidejte "Email automation" do "Kanály"',
+        canvasAction: 'Přidejte "Email automatizace" do "Kanály" v Čtvrtce',
         difficulty: 'medium',
         impact: 'medium'
       }
@@ -159,9 +159,10 @@ interface Props {
   onComplete: () => void;
   onNavigateNext?: () => void;
   onAchievementUnlocked?: (achievementId: string) => void;
+  isLessonCompleted?: boolean;
 }
 
-export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocked }: Props) {
+export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocked, isLessonCompleted = false }: Props) {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [selectedSolution, setSelectedSolution] = useState<Solution | null>(null);
   const [appliedSolutions, setAppliedSolutions] = useState<Set<string>>(new Set());
@@ -228,7 +229,7 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
   return (
     <div className="space-y-4">
       {/* 🎨 NEW: Colorful Header */}
-      <div className="bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 rounded-2xl shadow-md p-6 text-center">
+      <div className="bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 rounded-2xl shadow-md p-6">
         <h3 className="mb-2 text-white">🚀 Řešení typických situací</h3>
         <p className="text-orange-50 text-sm sm:text-base">
           Vyberte váš největší problém a najděte konkrétní řešení
@@ -342,10 +343,10 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
                       </span>
                     </div>
 
-                    {/* Canvas Action - Compact */}
+                    {/* Čtvrtka Action - Compact */}
                     <div className="bg-blue-50 border-l-4 border-blue-400 p-2 rounded-lg mb-2">
                       <p className="text-blue-900 text-xs">
-                        <strong>📝 Canvas:</strong> <span className="text-blue-800">{solution.canvasAction}</span>
+                        <strong>📝 Čtvrtka:</strong> <span className="text-blue-800">{solution.canvasAction}</span>
                       </p>
                     </div>
 
@@ -370,7 +371,7 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
                       ) : (
                         <>
                           <ArrowRight className="w-4 h-4 mr-2" />
-                          Otevřít v Canvas
+                          Otevřít Čtvrtku
                         </>
                       )}
                     </Button>
@@ -382,8 +383,8 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
         </div>
       )}
 
-      {/* CTA - Complete Lesson */}
-      {!isCompleted ? (
+      {/* CTA - Complete Lesson - JEN když lekce NENÍ dokončená */}
+      {!isLessonCompleted && (
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 sm:p-8 text-center shadow-lg">
           <h3 className="mb-2 text-white text-xl sm:text-2xl">
             ✅ Hotovo! Znáte řešení typických problémů
@@ -406,7 +407,10 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
             <span className="sm:hidden">Dokončit a pokračovat →</span>
           </Button>
         </div>
-      ) : (
+      )}
+
+      {/* Completion Screen - JEN když user právě dokončil (ne když se vrací) */}
+      {isCompleted && !isLessonCompleted && (
         <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
           <div className="flex items-start gap-3 sm:gap-4 mb-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3">
@@ -417,7 +421,7 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
                 ✅ Lekce dokončena!
               </h4>
               <p className="text-green-50 text-sm sm:text-base">
-                Skvělá práce! Vybrali jste řešení a můžete ho aplikovat v Canvas (Modul 1).
+                Skvělá práce! Vybrali jste řešení a můžete ho aplikovat v Čtvrtce (Modul 1).
               </p>
             </div>
           </div>
@@ -444,6 +448,7 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
           </div>
         </div>
       )}
+
     </div>
   );
 }

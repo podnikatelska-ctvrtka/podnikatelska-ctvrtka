@@ -26,7 +26,7 @@ const EXAMPLES = [
       },
       {
         id: "cafe-b",
-        versionLabel: "Quick Coffee",
+        versionLabel: "Rychlá kavárna",
         emoji: "☕",
         title: "Rychlá kavárna to-go",
         segment: "Ranní dojíždějící + Office workers",

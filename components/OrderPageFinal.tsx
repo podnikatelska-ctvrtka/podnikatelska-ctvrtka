@@ -849,7 +849,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                         </div>
                       </div>
                       <div className="bg-green-500 text-white px-4 py-2 rounded-lg text-center">
-                        <p className="text-sm font-bold">✅ Ušetříš 3.500 Kč</p>
+                        <p className="text-sm font-bold">✅ Ušetříš 3.500,- Kč</p>
                       </div>
                     </>
                   ) : (

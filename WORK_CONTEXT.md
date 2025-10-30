@@ -1,6 +1,6 @@
 # 🎯 AKTUÁLNÍ PRACOVNÍ KONTEXT
 
-**POSLEDNÍ UPDATE:** 21. ledna 2025
+**POSLEDNÍ UPDATE:** 24. ledna 2025 🎓 KURZ BACKUP VYTVOŘEN
 
 ---
 
@@ -9,10 +9,15 @@
 **⚠️ KRITICKÉ PRAVIDLO:** `/ARCHIVE/` = NIKDY NEMAZAT!
 
 ### **CO JE V ARCHIVU:**
+- `/ARCHIVE/course-components/` - 🎓 **NOVÉ!** Desktop kurz backup + mobile komponenty
+  - `RESTORE_GUIDE.md` - JAK OBNOVIT desktop verzi
+  - `QUICK_START.md` - Rychlý start pro práci s kurzem
+  - `mobile/` - Mobile helper komponenty (accordion system)
 - `/ARCHIVE/emails/` - Email sekvence (včetně placeholder pro ztracené!)
 - `/ARCHIVE/ads/` - Reklamní strategie (ULTIMATE 13 ADS atd.)
-- `/ARCHIVE/strategy/` - Deployment strategie, roadmapy
-- `/ARCHIVE/docs/` - Důležité dokumenty a rozhodnutí
+- `/ARCHIVE/minikurz/` - Dokumentace 3-denního minikurzu
+- `/ARCHIVE/strategy/` - Deployment strategie, roadmapy (TODO)
+- `/ARCHIVE/docs/` - Důležité dokumenty a rozhodnutí (TODO)
 
 ### **PRAVIDLA:**
 1. ❌ **NIKDY NEMAZAT** soubory z `/ARCHIVE/`
@@ -26,8 +31,8 @@
 
 ## ✅ CO SE PRÁVĚ TEĎ DĚLÁ
 
-### **DESKTOP CANVAS LAYOUT - DOKONČENO ✅**
-- **Soubor:** `/components/CourseDemoV3.tsx`, `/components/BusinessModelCanvasSimple.tsx`, `/components/CanvasValidator.tsx`
+### **DESKTOP CANVAS LAYOUT - DOKONČENO ✅ + BACKUP VYTVOŘEN ✅**
+- **Soubor:** `/components/CourseDemoV3.tsx` (2790 řádků) - **FUNKČNÍ VERZE!**
 - **Úkol:** Optimalizace Business Model Canvas pro desktop view
 - **Status:** 
   - ✅ Canvas width: `max-w-[1600px]` POUZE pro Lekce 16 - HOTOVO (2025-01-20)
@@ -36,10 +41,14 @@
   - ✅ Canvas grid: `min-w-[1200px]` + padding v cvičení - HOTOVO
   - ✅ Canvas preview: `scale(0.75)` ve validátorech - HOTOVO
   - ✅ Žádný horizontal scrollbar! - HOTOVO (2025-01-20)
+  - 🎓 **BACKUP VYTVOŘEN!** - HOTOVO (2025-01-24)
+    - ✅ `/ARCHIVE/course-components/RESTORE_GUIDE.md`
+    - ✅ `/ARCHIVE/course-components/QUICK_START.md`
+    - ✅ `/ARCHIVE/course-components/mobile/` - Mobile helper komponenty připraveny
 - **Další kroky:**
-  1. ❄️ **FREEZE DESKTOP LAYOUT** - už nesahat!
-  2. Vytvořit zálohu (Git commit nebo export)
-  3. Pak začít mobilní canvas (ODDĚLENĚ!)
+  1. ✅ ~~Vytvořit zálohu~~ - **HOTOVO! (2025-01-24)**
+  2. 🔄 Testovat `MobileModule1Canvas.tsx` helper component
+  3. 🔄 Implementovat mobile accordion view (bez ničení desktop verze!)
 
 ---
 

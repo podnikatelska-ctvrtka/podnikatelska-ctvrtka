@@ -33,6 +33,7 @@ import GDPRPage from "./components/GDPRPage";
 import ThankYouPage from "./components/ThankYouPage";
 import EmailPreview from "./components/EmailPreview";
 import WebhookTester from "./components/WebhookTester";
+import UnsubscribePage from "./pages/UnsubscribePage";
 
 import { Analytics } from "./components/Analytics";
 import { CriticalCSS } from "./components/CriticalCSS";
@@ -95,6 +96,7 @@ export default function App() {
   const [showUltimate10Ads, setShowUltimate10Ads] = useState(false);
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [showWebhookTester, setShowWebhookTester] = useState(false);
+  const [showUnsubscribe, setShowUnsubscribe] = useState(false);
 
   
   // 📱 PWA AUTO-REDIRECT: Pokud user otevře PWA z desktopu a má uložený token
@@ -168,8 +170,32 @@ export default function App() {
       const isTestMode = urlParams.get('test') === 'true';
       setOrderPageTestMode(isTestMode);
       
-      if (hash.startsWith('#test-webhook') || path === '/test-webhook') {
+      if (hash.startsWith('#odhlasit-odber') || path === '/odhlasit-odber') {
+        setShowUnsubscribe(true);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#test-webhook') || path === '/test-webhook') {
         setShowWebhookTester(true);
+        setShowUnsubscribe(false);
         setShowEmailPreview(false);
         setShowUltimate10Ads(false);
         setShowFinal6Angles(false);
@@ -519,6 +545,17 @@ export default function App() {
       <>
         <CriticalCSS />
         <WebhookTester />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Unsubscribe Page if URL has #odhlasit-odber
+  if (showUnsubscribe) {
+    return (
+      <>
+        <CriticalCSS />
+        <UnsubscribePage />
         <Toaster position="top-right" />
       </>
     );

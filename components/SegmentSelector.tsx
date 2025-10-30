@@ -69,9 +69,9 @@ export function SegmentSelector({ userId, selectedSegment, onSelectSegment }: Pr
   if (segments.length === 0) {
     return (
       <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-6 mb-6">
-        <h3 className="font-bold text-amber-900 mb-2">⚠️ Nejdřív vyplňte Business Model Canvas!</h3>
+        <h3 className="font-bold text-amber-900 mb-2">⚠️ Nejdřív vyplňte Podnikatelský model!</h3>
         <p className="text-sm text-amber-800 mb-4">
-          Pro Value Proposition Canvas potřebujete mít alespoň 1 zákaznický segment v Business Model Canvas.
+          Pro Hodnotovou nabídku potřebujete mít alespoň 1 zákaznický segment v Podnikatelské Čtvrtce.
         </p>
         <Button
           onClick={() => window.location.hash = '#course-v3'}
@@ -90,7 +90,7 @@ export function SegmentSelector({ userId, selectedSegment, onSelectSegment }: Pr
         <Users className="w-6 h-6 text-blue-600" />
         <div>
           <h3 className="font-bold text-blue-900">Vyberte zákaznický segment</h3>
-          <p className="text-sm text-blue-700">Pro který segment chcete vytvořit Value Proposition?</p>
+          <p className="text-sm text-blue-700">Pro který segment chcete vytvořit Hodnotovou nabídku?</p>
         </div>
       </div>
       

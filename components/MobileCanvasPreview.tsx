@@ -98,7 +98,8 @@ export function MobileCanvasPreview({ sections, defaultOpen = false }: Props) {
                             style={{ transform: `rotate(${randomRotate}deg)` }}
                           >
                             <div className={colorClasses.text}>{item.text}</div>
-                            {item.value !== undefined && (
+                            {/* Zobraz VALUE POUZE pro revenue/costs sekce (mají valueLabel) */}
+                            {section.valueLabel && item.value !== undefined && (
                               <div className={`${colorClasses.text} font-bold mt-1 text-xs`}>
                                 {item.value.toLocaleString('cs-CZ')} {section.valueLabel?.includes('Kč') ? 'Kč' : ''}
                               </div>

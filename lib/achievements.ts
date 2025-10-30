@@ -372,6 +372,9 @@ export async function scanAndUnlockMissedAchievements(
           .upsert({
             user_id: userId,
             achievement_type: achievement.id,
+            title: achievement.title,
+            description: achievement.description,
+            icon: achievement.emoji,
             earned_at: new Date().toISOString()
           }, {
             onConflict: 'user_id,achievement_type',
@@ -492,11 +495,22 @@ export async function unlockAchievement(userId: string, achievementId: string): 
     
     // 🔥 SYNC TO SUPABASE
     const { supabase } = await import('./supabase');
+    
+    // Get achievement details
+    const achievement = getAchievement(achievementId);
+    if (!achievement) {
+      console.error(`❌ Achievement ${achievementId} not found in ACHIEVEMENTS array`);
+      return false;
+    }
+    
     const { error } = await supabase
       .from('user_achievements')
       .insert({
         user_id: userId,
-        achievement_type: achievementId
+        achievement_type: achievementId,
+        title: achievement.title,
+        description: achievement.description,
+        icon: achievement.emoji
       });
     
     if (error) {

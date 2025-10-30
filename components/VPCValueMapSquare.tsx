@@ -261,10 +261,9 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   console.log(`  [${idx}] STRING:`, item);
                   return { text: item, color: currentValueColor };
                 } else {
-                  // Objekt s textem (už jsme odfiltrovali ty bez textu)
-                  const itemColor = item.color || currentValueColor;
-                  console.log(`  [${idx}] OBJECT:`, item.text, '→ color:', itemColor);
-                  return { text: item.text, color: normalizeColor(itemColor) };
+                  // ✅ VŽDY použij AKTUÁLNÍ barvu hodnoty (ne starou uloženou)
+                  console.log(`  [${idx}] OBJECT:`, item.text, '→ FORCE color:', currentValueColor);
+                  return { text: item.text, color: normalizeColor(currentValueColor!) };
                 }
               });
           };
@@ -1037,7 +1036,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
             <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center shadow-2xl">
               <div className="text-4xl sm:text-6xl mb-3 sm:mb-4">🎉</div>
               <h2 className="mb-2 text-white text-lg sm:text-2xl font-bold">Skvělá práce!</h2>
-              <p className="text-white text-base sm:text-lg opacity-90">Value Proposition Canvas je kompletní</p>
+              <p className="text-white text-base sm:text-lg opacity-90">Hodnotová nabídka je kompletní</p>
             </div>
             
             {/* Shrnutí hodnoty */}

@@ -41,34 +41,42 @@ export function BottomSheet({
   // Zamkni scroll při otevřeném sheetu + preserve scroll position
   useEffect(() => {
     if (isOpen) {
-      // ULOŽIT aktuální scroll pozici
-      scrollPositionRef.current = window.scrollY;
+      // ✅ OKAMŽITĚ uložit a zmrazit - BEFORE cokoliv jiného!
+      const currentScroll = window.scrollY;
+      scrollPositionRef.current = currentScroll;
       
+      // Prevent jakékoliv scrollování (včetně browser auto-scroll)
       document.body.style.overflow = 'hidden';
-      // iOS Safari fix
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.top = `-${currentScroll}px`;
       document.body.style.width = '100%';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
     } else {
-      // OBNOVIT scroll pozici
+      // OBNOVIT scroll pozici (instant restore)
       const scrollY = scrollPositionRef.current;
       
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
       
-      // Restore scroll po malém delay (aby se DOM stihl vrátit)
-      setTimeout(() => {
-        window.scrollTo(0, scrollY);
-      }, 0);
+      // ✅ INSTANT restore - FORCE instant behavior (no animation!)
+      if (scrollY !== undefined) {
+        window.scrollTo({ top: scrollY, behavior: 'instant' as ScrollBehavior });
+      }
     }
 
     return () => {
+      // Cleanup při unmount
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
     };
   }, [isOpen]);
 

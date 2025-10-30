@@ -35,6 +35,7 @@ interface Props {
   onSegmentChange?: (segment: string) => void;
   onValueChange?: (value: string) => void;
   onNavigateToLesson?: (lessonId: number) => void;
+  onNavigateToTool?: (tool: string) => void; // 🎯 Navigace na nástroje (action-plan)
   onComplete?: (fitScore: number) => void; // ✅ Callback pro dokončení lekce
   isLessonCompleted?: boolean; // ✅ Je lekce 16 již dokončená?
   onAchievementUnlocked?: (achievementId: string) => void; // 🎉 Achievement callback
@@ -270,10 +271,10 @@ function PriorityItemWithScore({
       : 'border-green-400'
     : 'border-gray-200';
   
-  // Text barva podle typu
-  const textColor = color === 'yellow' ? 'text-yellow-900' 
-                  : color === 'red' ? 'text-red-900' 
-                  : 'text-green-900';
+  // Text barva podle typu (pro procenta)
+  const textColor = color === 'yellow' ? 'text-yellow-700' 
+                  : color === 'red' ? 'text-red-700' 
+                  : 'text-green-700';
   
   // Hvězdičky podle % (5 hvězdiček)
   const stars = Math.round((percentage / 100) * 5);
@@ -324,11 +325,7 @@ function PriorityItemWithScore({
           {/* Automatické % a hvězdičky */}
           {count > 0 && (
             <>
-              <span className={`text-sm font-bold ${
-                percentage >= 70 ? 'text-green-600' : 
-                percentage >= 40 ? 'text-blue-600' : 
-                'text-gray-600'
-              }`}>
+              <span className={`text-sm font-bold ${textColor}`}>
                 = {percentage}%
               </span>
               <div className="flex items-center gap-0.5">
@@ -349,9 +346,9 @@ function PriorityItemWithScore({
             <div
               style={{ width: `${percentage}%` }}
               className={`h-full transition-all duration-500 ${
-                percentage >= 70 ? 'bg-green-500' : 
-                percentage >= 40 ? 'bg-blue-500' : 
-                'bg-gray-400'
+                color === 'yellow' ? 'bg-yellow-500' : 
+                color === 'red' ? 'bg-red-500' : 
+                'bg-green-500'
               }`}
             />
           </div>
@@ -399,7 +396,7 @@ function getGuideForSegment(segmentName: string) {
   };
 }
 
-export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onValueChange, onNavigateToLesson, onComplete, isLessonCompleted, onAchievementUnlocked }: Props) {
+export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onValueChange, onNavigateToLesson, onNavigateToTool, onComplete, isLessonCompleted, onAchievementUnlocked }: Props) {
   // Step state: 1 = Discovery, 2 = Prioritization, 3 = Validation
   const [currentStep, setCurrentStep] = useState(1);
   
@@ -736,8 +733,12 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           productsCount: valueMap?.products?.length || 0
         });
         
+        console.log('📦 Customer Profile RAW DATA:', customerProfile);
+        
         // 💾 Načti FIT validation progress (pokud existuje)
         const fitProgress = customerProfile?.fit_validation_data;
+        
+        console.log('📊 FIT Progress data:', fitProgress);
         
         // Convert arrays to VPCItem format
         let jobsData: VPCItem[];
@@ -1479,7 +1480,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
       const valueToUse = localSelectedValue;
       
       if (!segmentToUse || !valueToUse) {
-        toast.error('⚠️ Vyberte segment a hodnotu!');
+        toast.error('��️ Vyberte segment a hodnotu!');
         return false;
       }
       
@@ -1849,6 +1850,32 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   const currentSegmentData = availableSegments.find(s => s.text === (selectedSegment || localSelectedSegment));
   const isBilySegment = currentSegmentData?.color === '#d1d5db' || currentSegmentData?.color?.toLowerCase() === 'white';
 
+  // Step Indicator Component - VYLEPŠENÝ DESIGN podle mobile verze
+  const StepIndicator = ({ number, title, isActive, isComplete }: { number: number; title: string; isActive: boolean; isComplete: boolean }) => {
+    if (isLessonCompleted) {
+      isComplete = false;
+    }
+    
+    return (
+      <div className="flex flex-col items-center gap-1 sm:gap-2">
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold transition-all shadow-md ${
+          isComplete ? 'bg-green-500 text-white ring-2 sm:ring-4 ring-green-100' : 
+          isActive ? 'bg-blue-600 text-white ring-2 sm:ring-4 ring-blue-100 scale-110' : 
+          'bg-gray-200 text-gray-500'
+        }`}>
+          {isComplete ? (
+            <CheckCircle className="w-4 h-4 sm:w-6 sm:h-6" />
+          ) : (
+            <span className="text-sm sm:text-base">{number}</span>
+          )}
+        </div>
+        <span className={`text-[10px] sm:text-xs font-medium text-center leading-tight ${isActive ? 'text-blue-700' : 'text-gray-600'}`}>
+          {title}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Segment/Value Selector */}
@@ -1937,47 +1964,49 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         </div>
       )}
       
-      {/* 🎯 GLOBAL STICKY BAR - Responzivní */}
-      <div className="sticky top-0 z-50 bg-white border-b-2 border-gray-200 shadow-md -mx-2 sm:-mx-6 px-2 sm:px-6 py-2 sm:py-3 mb-4 sm:mb-6">
-        {/* Progress Steps - kompaktní, skryté na malých mobilech */}
-        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-          <StepIndicator 
-            number={1} 
-            title="Průzkum" 
-            isActive={currentStep === 1}
-            isComplete={currentStep > 1}
-          />
-          <div className="w-6 sm:w-12 h-0.5 bg-gray-300" />
-          <StepIndicator 
-            number={2} 
-            title="Prioritizace" 
-            isActive={currentStep === 2}
-            isComplete={currentStep > 2}
-          />
-          <div className="w-6 sm:w-12 h-0.5 bg-gray-300" />
-          <StepIndicator 
-            number={3} 
-            title="FIT Score" 
-            isActive={currentStep === 3}
-            isComplete={false}
-          />
-        </div>
-        
-        {/* Segment & Value selectors - stack na mobilu */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="text-gray-600 font-medium">Segment:</span>
-            <div className="text-gray-900 font-semibold truncate max-w-[150px] sm:max-w-none">{localSelectedSegment || selectedSegment}</div>
+      {/* 🎯 GLOBAL STICKY BAR - VYLEPŠENÝ DESIGN */}
+      <div className="sticky top-0 z-50 bg-gradient-to-b from-white to-gray-50 border-b-2 border-gray-200 shadow-lg py-4 sm:py-5 mb-4 sm:mb-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          {/* Progress Steps - MODERNĚJŠÍ DESIGN */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4">
+            <StepIndicator 
+              number={1} 
+              title="Průzkum" 
+              isActive={currentStep === 1}
+              isComplete={currentStep > 1}
+            />
+            <div className={`flex-1 max-w-[60px] sm:max-w-[80px] h-1 rounded-full transition-all ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+            <StepIndicator 
+              number={2} 
+              title="Prioritizace" 
+              isActive={currentStep === 2}
+              isComplete={currentStep > 2}
+            />
+            <div className={`flex-1 max-w-[60px] sm:max-w-[80px] h-1 rounded-full transition-all ${currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+            <StepIndicator 
+              number={3} 
+              title="FIT Score" 
+              isActive={currentStep === 3}
+              isComplete={false}
+            />
           </div>
-          {localSelectedValue && (
-            <>
-              <span className="text-gray-400 hidden sm:inline">→</span>
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="text-gray-600 font-medium">Hodnota:</span>
-                <div className="text-gray-900 font-semibold truncate max-w-[150px] sm:max-w-none">{localSelectedValue}</div>
-              </div>
-            </>
-          )}
+        
+          {/* Segment & Value selectors - PĚKNĚJŠÍ BOXÍKY */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm">
+            <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5">
+              <span className="text-blue-700 font-medium">Segment:</span>
+              <div className="text-blue-900 font-bold truncate max-w-[150px] sm:max-w-none">{localSelectedSegment || selectedSegment}</div>
+            </div>
+            {localSelectedValue && (
+              <>
+                <span className="text-gray-400 hidden sm:inline">→</span>
+                <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5">
+                  <span className="text-green-700 font-medium">Hodnota:</span>
+                  <div className="text-green-900 font-bold truncate max-w-[150px] sm:max-w-none">{localSelectedValue}</div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -2035,7 +2064,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 <div className="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-300">
                   <h4 className="mb-3 text-yellow-900 flex items-center gap-2">
                     <Target className="w-5 h-5" />
-                    Cíle/Důvody (Jobs)
+                    Cíle/Důvody
                   </h4>
                   <div className="space-y-3 mb-4">
                     <p className="font-bold text-yellow-800">Otázky k položení:</p>
@@ -2059,7 +2088,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 <div className="bg-red-50 p-6 rounded-xl border-2 border-red-300">
                   <h4 className="mb-3 text-red-900 flex items-center gap-2">
                     <AlertCircle className="w-5 h-5" />
-                    Obavy/Problémy (Pains)
+                    Obavy/Problémy
                   </h4>
                   <div className="space-y-3 mb-4">
                     <p className="font-bold text-red-800">Otázky k položení:</p>
@@ -2083,7 +2112,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 <div className="bg-green-50 p-6 rounded-xl border-2 border-green-300">
                   <h4 className="mb-3 text-green-900 flex items-center gap-2">
                     <Star className="w-5 h-5" />
-                    Očekávání/Touhy (Gains)
+                    Očekávání/Touhy
                   </h4>
                   <div className="space-y-3 mb-4">
                     <p className="font-bold text-green-800">Otázky k položení:</p>
@@ -2111,7 +2140,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex items-center gap-2 text-yellow-900">
                       <Target className="w-5 h-5" />
-                      <span className="font-bold">Cíle/Důvody (Jobs)</span>
+                      <span className="font-bold">Cíle/Důvody</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-4 pb-4">
@@ -2139,7 +2168,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex items-center gap-2 text-red-900">
                       <AlertCircle className="w-5 h-5" />
-                      <span className="font-bold">Obavy/Problémy (Pains)</span>
+                      <span className="font-bold">Obavy/Problémy</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-4 pb-4">
@@ -2167,7 +2196,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex items-center gap-2 text-green-900">
                       <Sparkles className="w-5 h-5" />
-                      <span className="font-bold">Touhy/Přínosy (Gains)</span>
+                      <span className="font-bold">Očekávání/Touhy</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-4 pb-4">
@@ -2431,7 +2460,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold text-gray-900 flex items-center gap-2">
                       <Target className="w-5 h-5 text-yellow-600" />
-                      Cíle (Jobs)
+                      Cíle
                     </h3>
                     <div className="text-xs text-gray-500 text-right">
                       <div className="flex items-center gap-1 justify-end">
@@ -2473,7 +2502,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold text-gray-900 flex items-center gap-2">
                       <AlertCircle className="w-5 h-5 text-red-600" />
-                      Obavy (Pains)
+                      Obavy
                     </h3>
                     <div className="text-xs text-gray-500 text-right">
                       <div className="flex items-center gap-1 justify-end">
@@ -2515,7 +2544,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold text-gray-900 flex items-center gap-2">
                       <Star className="w-5 h-5 text-green-600" />
-                      Očekávání (Gains)
+                      Očekávání
                     </h3>
                     <div className="text-xs text-gray-500 text-right">
                       <div className="flex items-center gap-1 justify-end">
@@ -2567,7 +2596,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     <div className="flex items-center justify-between w-full pr-3">
                       <div className="flex items-center gap-2">
                         <Target className="w-5 h-5 text-yellow-600" />
-                        <span className="font-bold text-yellow-900">Cíle (Jobs)</span>
+                        <span className="font-bold text-yellow-900">Cíle</span>
                       </div>
                       <span className="text-xs text-yellow-700 bg-yellow-200 px-2 py-1 rounded">
                         {jobs.length} položek
@@ -2611,7 +2640,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     <div className="flex items-center justify-between w-full pr-3">
                       <div className="flex items-center gap-2">
                         <AlertCircle className="w-5 h-5 text-red-600" />
-                        <span className="font-bold text-red-900">Obavy (Pains)</span>
+                        <span className="font-bold text-red-900">Obavy</span>
                       </div>
                       <span className="text-xs text-red-700 bg-red-200 px-2 py-1 rounded">
                         {pains.length} položek
@@ -2655,7 +2684,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     <div className="flex items-center justify-between w-full pr-3">
                       <div className="flex items-center gap-2">
                         <Star className="w-5 h-5 text-green-600" />
-                        <span className="font-bold text-green-900">Očekávání (Gains)</span>
+                        <span className="font-bold text-green-900">Očekávání</span>
                       </div>
                       <span className="text-xs text-green-700 bg-green-200 px-2 py-1 rounded">
                         {gains.length} položek
@@ -2855,7 +2884,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 return null;
               })()}
               
-              {/* ❌ ODSTRANĚNO - pasé protože můžou editovat na Kroku 2 přímo */}
+              {/* ��� ODSTRANĚNO - pasé protože můžou editovat na Kroku 2 přímo */}
               
               {/* Varování pokud chybí Value Map data */}
               {(products.length === 0 || painRelievers.length === 0 || gainCreators.length === 0) && (
@@ -2980,7 +3009,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 <div className="flex-1 w-full">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                     <Target className={`w-5 h-5 sm:w-6 sm:h-6 ${hasFit ? 'text-green-600' : 'text-orange-600'} flex-shrink-0`} />
-                    <h2 className="text-lg sm:text-2xl font-bold text-gray-900">🎯 FIT Validace</h2>
+                    <h2 className="text-lg sm:text-2xl font-bold text-gray-900">��� FIT Validace</h2>
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6">
                     <div key={`fit-score-${fitScore}`} className="flex items-baseline gap-2">
@@ -3558,7 +3587,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                               const isLinked = Object.values(painRelieverMappings).some(arr => arr.includes(pain.id));
                               return !isLinked;
                             }).map((pain, i) => (
-                              <li key={i}>{pain.text} ({pain.percentage}% lidí) → chybí Pain Reliever</li>
+                              <li key={i}>{pain.text} ({pain.percentage}% lidí) → chybí řešení</li>
                             ))}
                           </ul>
                         </div>
@@ -3571,7 +3600,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                               const isLinked = Object.values(gainCreatorMappings).some(arr => arr.includes(gain.id));
                               return !isLinked;
                             }).map((gain, i) => (
-                              <li key={i}>{gain.text} ({gain.percentage}% lidí) → chybí Gain Creator</li>
+                              <li key={i}>{gain.text} ({gain.percentage}% lidí) → chybí způsob jak to dodat</li>
                             ))}
                           </ul>
                         </div>
@@ -3642,12 +3671,17 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   </Button>
                 )}
                 
-                {/* Když je lekce dokončená, ukaž jen info */}
-                {isLessonCompleted && (
-                  <div className="bg-green-50 border-2 border-green-300 rounded-lg px-6 py-3 flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="text-green-800 font-medium">Lekce dokončena ✅</span>
-                  </div>
+                {/* Když je lekce dokončená, ukaž tlačítko na Akční plán */}
+                {isLessonCompleted && onNavigateToTool && (
+                  <Button
+                    size="lg"
+                    onClick={() => onNavigateToTool('action-plan')}
+                    className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 w-full sm:w-auto"
+                  >
+                    <Target className="w-5 h-5" />
+                    Pokračovat na Akční plán
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
                 )}
               </div>
               
@@ -3660,37 +3694,6 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// Step Indicator Component
-function StepIndicator({ 
-  number, 
-  title, 
-  isActive,
-  isComplete 
-}: { 
-  number: number; 
-  title: string; 
-  isActive: boolean; 
-  isComplete: boolean;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <div 
-        className={`
-          w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg
-          ${isActive ? 'bg-blue-500 text-white ring-4 ring-blue-200' : ''}
-          ${isComplete ? 'bg-green-500 text-white' : ''}
-          ${!isActive && !isComplete ? 'bg-gray-200 text-gray-500' : ''}
-        `}
-      >
-        {isComplete ? <CheckCircle className="w-6 h-6" /> : number}
-      </div>
-      <p className={`text-sm font-medium ${isActive ? 'text-blue-600' : 'text-gray-600'}`}>
-        {title}
-      </p>
     </div>
   );
 }

@@ -269,7 +269,7 @@ export function TimelineTabs() {
               </div>
               
               <h4 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                Freelance zóna za 3.500 Kč investice
+                Freelance zóna za 3.500,- Kč investice
               </h4>
               
               <p className="text-gray-700 text-base md:text-lg leading-relaxed">

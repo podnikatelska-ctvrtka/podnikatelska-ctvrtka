@@ -509,12 +509,13 @@ interface Props {
   onComplete: () => void;
   onNavigateNext?: () => void;
   onAchievementUnlocked?: (achievementId: string) => void;
+  isLessonCompleted?: boolean;
 }
 
 // DEMO DATA ODSTRANĚNA - BYLY NEBEZPEČNÉ!
 // Přepisovala uživatelova data v kurzu bez varování.
 
-export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievementUnlocked }: Props) {
+export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievementUnlocked, isLessonCompleted = false }: Props) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [canvasData, setCanvasData] = useState<any>({});
   const [results, setResults] = useState<any[]>([]);
@@ -684,7 +685,7 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
               <div className="hidden md:block p-6 bg-gradient-to-br from-gray-50 to-blue-50">
                 <div className="mb-4 text-center">
                   <h5 className="text-sm font-bold text-gray-700 mb-1">
-                    📊 Váš Business Model Canvas
+                    📊 Vaše Podnikatelská Čtvrtka
                   </h5>
                   <p className="text-xs text-gray-600">
                     Toto budeme validovat podle osvědčených pravidel
@@ -797,8 +798,8 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
               ))}
             </div>
 
-            {/* Action Buttons */}
-            {!isCompleted ? (
+            {/* Action Buttons - Vždy zobrazit "Zkontrolovat znovu", dokončení jen když není hotovo */}
+            {!isCompleted && (
               <div className="flex gap-3 pt-4">
                 <Button
                   onClick={() => {
@@ -812,18 +813,23 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                 >
                   🔄 Zkontrolovat znovu
                 </Button>
-                <Button
-                  onClick={() => {
-                    setIsCompleted(true);
-                    onComplete();
-                  }}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 gap-2"
-                >
-                  {errorCount > 0 ? '⚠️ Pokračovat i přesto' : '✅ Hotovo - Dokončit lekci'}
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
+                {!isLessonCompleted && (
+                  <Button
+                    onClick={() => {
+                      setIsCompleted(true);
+                      onComplete();
+                    }}
+                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 gap-2"
+                  >
+                    {errorCount > 0 ? '⚠️ Pokračovat i přesto' : '✅ Hotovo - Dokončit lekci'}
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
-            ) : (
+            )}
+
+            {/* Completion Screen - JEN když user právě dokončil (ne když se vrací) */}
+            {isCompleted && !isLessonCompleted && (
               <div
                 className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-4 transition-all duration-300 ease-out"
               >

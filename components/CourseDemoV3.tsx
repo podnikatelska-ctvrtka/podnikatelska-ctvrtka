@@ -39,6 +39,31 @@ import { celebrateModuleComplete, celebrateLessonComplete } from "../lib/confett
 import { getAchievement, unlockAchievement, loadUnlockedAchievements, loadUnlockedAchievementsFromDB, ACHIEVEMENTS } from "../lib/achievements";
 import type { Achievement } from "../lib/achievements";
 import { useOrientation } from "../lib/useOrientation";
+import { MobileCourseModule1 } from "./mobile-course/MobileCourseModule1";
+import { MobileCourseModule2 } from "./mobile-course/MobileCourseModule2";
+import { MobileCourseModule3 } from "./mobile-course/MobileCourseModule3";
+import { MobileCourseDashboard } from "./mobile-course/MobileCourseDashboard";
+import { MobileCourseSidebar } from "./mobile-course/MobileCourseSidebar";
+import { MobileTargetCalculatorTool } from "./mobile-course/MobileTargetCalculatorTool";
+import { MobileSegmentSizeTool } from "./mobile-course/MobileSegmentSizeTool";
+import { MobileBusinessActionPlan } from "./mobile-course/MobileBusinessActionPlan";
+
+// 📱 MOBILE DETECTION HOOK
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  return isMobile;
+}
 
 // Verify token
 async function verifyToken(token: string) {
@@ -51,7 +76,7 @@ async function verifyToken(token: string) {
 const MODULE_1 = {
   id: 1,
   title: "Základy byznys modelu",
-  description: "Naučte se všech 9 stavebních bloků Business Model Canvas",
+  description: "Naučte se všech 9 stavebních bloků byznys modelu",
   lessons: [
     {
       id: 1,
@@ -101,7 +126,7 @@ const MODULE_1 = {
         <p class="text-sm text-gray-600 ml-4">✅ Dobře: "Profesionálky 30-50 let které spěchají do práce a potřebují rychlé řešení"</p>
         
         <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
-          <p class="text-purple-900"><strong>💡 TIP:</strong> Začněte s <strong>1-2 segmenty</strong> a zaměřte se na ty co vám vydělávají (nebo budou vydělávat) nejvíc peněz. Lepší je dokonale obsloužit 2 segmenty než špatně 10!</p>
+          <p class="text-purple-900"><strong>💡 TIP:</strong> Začněte s <strong>1-2 segmenty</strong> a zaměřte se na ty co vám vyd����lávají (nebo budou vydělávat) nejvíc peněz. Lepší je dokonale obsloužit 2 segmenty než špatně 10!</p>
         </div>
         
         <h4>Proč je to důležité?</h4>
@@ -351,7 +376,7 @@ const MODULE_1 = {
           <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
           <ul class="text-sm text-gray-700 ml-4 mt-2">
             <li><strong>Hypotéza:</strong> Co by je mohlo motivovat k návratu?</li>
-            <li>Příklad: "Myslím že rodiny se vrátí pokud budou spokojené s kvalitou a rychlostí"</li>
+            <li>Příklad: "Myslím že rodiny se vrátí pokud budou spokojené s kvalitou a rychlost��"</li>
             <li><strong>Podívejte se na konkurence</strong> - proč zákazníci odcházejí?</li>
           </ul>
         </div>
@@ -894,7 +919,7 @@ const MODULE_1 = {
           <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
           <ul class="text-sm text-gray-700 ml-4 mt-2">
             <li><strong>Odhady:</strong> Co budete muset platit minimálně?</li>
-            <li>Googlujte průměrné ceny, ptejte se dodavatelů na ceníky</li>
+            <li>Googlujte průměrné ceny, ptejte se dodavatelů na cen��ky</li>
             <li>Příklad: "Odhad: Pronájem 20k + Suroviny 10k = 30 000 Kč/měsíc"</li>
           </ul>
         </div>
@@ -902,7 +927,7 @@ const MODULE_1 = {
         <p class="mt-3"><strong>KROK 3: Rozdělte na GLOBÁLNÍ vs. SPECIFICKÉ</strong></p>
         
         <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
-          <p><strong>🌐 GLOBÁLNÍ náklady</strong> (pro celý byznys):</p>
+          <p><strong>���� GLOBÁLNÍ náklady</strong> (pro celý byznys):</p>
           <ul class="text-sm text-gray-700 ml-4 mt-1">
             <li>Nájem, mzdy, suroviny, energie (sdílené pro všechny segmenty)</li>
             <li>Příklad: "Nájem 25k, Mzdy 40k, Suroviny 15k"</li>
@@ -919,7 +944,7 @@ const MODULE_1 = {
         
         <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
           <p class="text-purple-900"><strong>💡 TIP</strong></p>
-          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Použijte reálná čísla z posledního měsíce! Sečtěte VŠECHNY výdaje.</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Použijte reálná čísla z posledního měs��ce! Sečtěte VŠECHNY výdaje.</p>
           <p class="text-sm text-gray-700 mt-2"><strong>Začínám:</strong> Googlujte průměrné ceny, ptejte se dodavatelů na ceníky. Později upravíte podle reality.</p>
         </div>
         
@@ -964,20 +989,20 @@ const MODULE_1 = {
   ]
 };
 
-// 📗 MODUL 2: Vylepšení modelu (4 lekce)
+// 📗 MODUL 2: Vylepšení modelu (4 lekce) - PRO DESKTOP
 const MODULE_2 = {
   id: 2,
   title: "Vylepšení byznys modelu",
-  description: "Naučte se vylepšit a optimalizovat váš Business Model Canvas",
+  description: "Naučte se vylepšit a optimalizovat váš byznys model",
   lessons: [
     {
       id: 10,
       title: "Pravidla dobrého modelu",
-      canvasSection: undefined, // Celkový přehled
+      canvasSection: undefined,
       videoUrl: "",
       description: "Zkontrolujte si, že váš model splňuje všechna pravidla",
       content: `
-        <h3>Pravidla dobrého Business Model Canvas</h3>
+        <h3>Pravidla dobré Podnikatelské Čtvrtky</h3>
         <p>Každý úspěšný byznys model má společné charakteristiky. Pojďme si zkontrolovat váš model!</p>
         <h4>✅ Checklist:</h4>
         <ul>
@@ -1002,88 +1027,53 @@ const MODULE_2 = {
       description: "Vychází vám to finančně?",
       content: `
         <h3>💰 Finanční analýza vašeho modelu</h3>
-        <p>Teď když máte hotový Canvas, pojďme se podívat <strong>jestli vám to vychází finančně</strong>.</p>
+        <p>Máte vyplněné příjmy a náklady v modelu. Teď zjistíte <strong>jestli vám to vychází finančně</strong>.</p>
         
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-400 rounded-xl p-4 my-4">
-          <p class="text-blue-900 flex items-start gap-2">
-            <span class="text-2xl">💡</span>
-            <span><strong>TOGGLE: Vyberte svůj přístup</strong></span>
-          </p>
-          <p class="text-sm text-gray-700 mt-3">🚀 <strong>Začínám</strong> = 3 SCÉNÁŘE (pesimistický, realistický, optimistický)</p>
-          <p class="text-sm text-gray-700 mt-2">💰 <strong>Už podnikám</strong> = REÁLNÁ DATA z posledního měsíce</p>
+        <h4>🎯 DVA PŘÍSTUPY</h4>
+        
+        <div class="bg-blue-50 border-2 border-blue-400 rounded-xl p-4 my-4">
+          <p class="text-blue-900"><strong>🚀 ZAČÍNÁM - nemám data</strong></p>
+          <p class="text-sm text-gray-700 mt-2">Připravte se na <strong>3 scénáře</strong> - nikdy nevíte kolik zákazníků získáte!</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2 space-y-1 no-bullet">
+            <li><strong>😰 Pesimistický:</strong> Získáte 25% plánovaných zákazníků</li>
+            <li><strong>🎯 Realistický:</strong> Získáte 50% plánovaných zákazníků</li>
+            <li><strong>🚀 Optimistický:</strong> Získáte 100% plánovaných zákazníků</li>
+          </ul>
+          <p class="text-sm text-gray-600 mt-3">💡 Komponenta vypočítá <strong>aktuální stav</strong> z vašeho Canvas. Pro scénáře si představte různé počty zákazníků a klikněte přepočítat!</p>
         </div>
         
-        <h4>🚀 PRO ZAČÍNAJÍCÍ: 3 SCÉNÁŘE</h4>
-        <p>Když začínáte, <strong>NIKDY nevíte kolik zákazníků opravdu získáte!</strong> Proto je důležité připravit se na 3 možné varianty:</p>
-        
-        <div class="bg-red-50 border-2 border-red-300 rounded-xl p-4 my-4">
-          <p class="text-red-900"><strong>😰 PESIMISTICKÝ SCÉNÁŘ</strong> (25% plánu)</p>
-          <ul class="text-sm text-gray-700 ml-4 mt-2">
-            <li>Co když získáte jen <strong>čtvrtinu zákazníků</strong> než jste plánovali?</li>
-            <li>Budete v <strong>ZTRÁTĚ?</strong> O kolik?</li>
-            <li>Jak dlouho to vydržíte? Máte rezervy?</li>
+        <div class="bg-green-50 border-2 border-green-400 rounded-xl p-4 my-4">
+          <p class="text-green-900"><strong>💰 UŽ PODNIKÁM - mám reálná data</strong></p>
+          <p class="text-sm text-gray-700 mt-2">Použijte reálná čísla z posledního měsíce!</p>
+          <ul class="text-sm text-gray-700 ml-4 mt-2 space-y-1 no-bullet">
+            <li>✅ Zadejte příjmy + náklady do modelu (Lekce 4 + 9)</li>
+            <li>✅ Nástroj vám ukáže aktuální zisk/ztrátu</li>
+            <li>�� Analyzujte TOP zdroje příjmů</li>
           </ul>
         </div>
         
-        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 my-4">
-          <p class="text-yellow-900"><strong>🎯 REALISTICKÝ SCÉNÁŘ</strong> (50% plánu)</p>
-          <ul class="text-sm text-gray-700 ml-4 mt-2">
-            <li>Získáte <strong>polovinu</strong> plánovaných zákazníků</li>
-            <li>Jste v <strong>ZISKU nebo ZTRÁTĚ?</strong></li>
-            <li>Kolik vám to vydělává měsíčně?</li>
-          </ul>
-        </div>
-        
-        <div class="bg-green-50 border-2 border-green-300 rounded-xl p-4 my-4">
-          <p class="text-green-900"><strong>🚀 OPTIMISTICKÝ SCÉNÁŘ</strong> (100% plánu)</p>
-          <ul class="text-sm text-gray-700 ml-4 mt-2">
-            <li>Získáte <strong>všechny plánované zákazníky</strong></li>
-            <li>Kolik vám to <strong>VYDĚLÁVÁ?</strong></li>
-            <li>Je to dost aby to stálo za to?</li>
-          </ul>
-        </div>
-        
-        <p class="mt-3"><strong>PROČ 3 SCÉNÁŘE?</strong></p>
-        <p class="text-sm text-gray-600">Realita je <strong>VŽDY MEZI</strong> optimistickým a pesimistickým scénářem. Když budete připravení na nejhorší, příjemně vás překvapí když to dopadne lépe!</p>
-        
-        <h4>💰 PRO TY CO UŽ PODNIKAJÍ: REÁLNÁ DATA</h4>
-        <p>Když už podnikáte, máte <strong>REÁLNÁ ČÍSLA</strong> z posledního měsíce:</p>
-        
-        <p class="mt-3"><strong>KROK 1: Celková bilance</strong></p>
-        <ul class="text-sm text-gray-600 ml-4 mt-1">
-          <li>💰 <strong>Celkové příjmy</strong> - kolik jste vydělali za měsíc?</li>
-          <li>💸 <strong>Celkové náklady</strong> - kolik jste utratili za měsíc?</li>
-          <li>📊 <strong>ZISK/ZTRÁTA</strong> = příjmy - náklady</li>
-        </ul>
-        
-        <p class="mt-3"><strong>KROK 2: Breakdown po segmentech</strong></p>
-        <p class="text-sm text-gray-600 ml-4">Který segment vám <strong>VYDĚLÁVÁ nejvíc?</strong></p>
-        <ul class="text-sm text-gray-600 ml-4 mt-1">
-          <li>🔵 <strong>Segment A:</strong> 45k příjmy - 20k náklady = <strong>25k zisk</strong></li>
-          <li>🟢 <strong>Segment B:</strong> 30k příjmy - 25k náklady = <strong>5k zisk</strong></li>
-        </ul>
-        
-        <p class="mt-3"><strong>KROK 3: Akční kroky</strong></p>
-        <ul class="text-sm text-gray-600 ml-4 mt-1">
-          <li>📈 <strong>Co škálovat?</strong> Který segment má nejvyšší ziskovost?</li>
-          <li>💸 <strong>Kde ušetřit?</strong> Které náklady jsou zbytečně vysoké?</li>
-          <li>❌ <strong>Co ukončit?</strong> Který segment je ve ztrátě?</li>
+        <h4>📊 CO KOMPONENTA UKÁŽE</h4>
+        <ul class="text-sm text-gray-600 no-bullet">
+          <li>✅ Aktuální zisk/ztráta z vašeho modelu</li>
+          <li>✅ TOP příjmové zdroje (řazeno od největšího)</li>
+          <li>✅ Break-even analýza (kolik zákazníků potřebujete)</li>
+          <li>✅ Roční projekce zisku</li>
         </ul>
         
         <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
           <p class="text-purple-900 flex items-start gap-2">
             <span class="text-2xl">🎯</span>
-            <span><strong>CÍL</strong></span>
+            <span><strong>JAK NA TO</strong></span>
           </p>
-          <p class="text-sm text-gray-700 mt-3"><strong>Začínám:</strong> Připravte se na všechny 3 scénáře. Mějte rezervy pro pesimistický případ!</p>
-          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Analyzujte reálná data a zaměřte se na ziskové segmenty!</p>
+          <p class="text-sm text-gray-700 mt-3"><strong>Začínám:</strong> Připravte si 3 scénáře manuálně (pesimistický, realistický, optimistický). Mějte rezervy!</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Zadejte reálná čísla do Canvas a analyzujte TOP zdroje příjmů. Škálujte co funguje!</p>
         </div>
       `,
       tips: [
-        "🚀 Začínající: Nikdy nevíte kolik zákazníků získáte - připravte se na 3 scénáře!",
-        "💰 Už podnikám: Použijte reálná čísla z posledního měsíce",
-        "📊 Zisk = Příjmy - Náklady (jednoduché!)",
-        "🎯 Zaměřte se na ziskové segmenty a škálujte je"
+        "🚀 Začínající: Komponenta ukáže aktuální stav. Pro scénáře si představte různé počty zákazníků!",
+        "💰 Už podnikám: Zadejte reálná čísla z posledního měsíce do Canvas",
+        "📊 Analyzujte TOP příjmové zdroje - jaký segment vydělává nejvíc?",
+        "🎯 Break-even = kolik zákazníků potřebujete aby jste nevydělávali ani neprodělávali"
       ]
     },
     {
@@ -1091,8 +1081,37 @@ const MODULE_2 = {
       title: "Řešení situací",
       canvasSection: undefined,
       videoUrl: "",
-      description: "Jak řešit typické problémy pomocí Canvas",
-      content: "",
+      description: "Jak řešit typické problémy",
+      content: `
+        <h3>🚨 Řešení běžných situací</h3>
+        <p>Máte problém s byznysem? <strong>Podnikatelská Čtvrtka vám ukáže řešení!</strong> Každá situace má své místo v modelu.</p>
+        
+        <h4>🎯 Jak to funguje?</h4>
+        <p>Vyberte si situaci z nabídky níže a Canvas vám ukáže:</p>
+        <ul>
+          <li>✅ <strong>Co upravit</strong> - které sekce modelu potřebujete změnit</li>
+          <li>✅ <strong>Jak na to</strong> - konkrétní kroky řešení</li>
+          <li>✅ <strong>Příklady</strong> - jak to řeší ostatní byznesy</li>
+        </ul>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">🎯</span>
+            <span><strong>JAK POSTUPOVAT</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3">1. Vyberte situaci která vás trápí</p>
+          <p class="text-sm text-gray-700 mt-1">2. Přečtěte si doporučení</p>
+          <p class="text-sm text-gray-700 mt-1">3. Vraťte se na příslušnou lekci a upravte model</p>
+          <p class="text-sm text-gray-700 mt-1">4. Můžete kombinovat více řešení najednou!</p>
+        </div>
+        
+        <h4>Proč je to důležité?</h4>
+        <ul>
+          <li>✅ <strong>Rychlá diagnostika</strong> - okamžitě víte kde hledat řešení</li>
+          <li>✅ <strong>Konkrétní kroky</strong> - víte přesně co udělat</li>
+          <li>✅ <strong>Ověřené postupy</strong> - inspirujte se příklady z praxe</li>
+        </ul>
+      `,
       tips: [
         "Každý problém má řešení v Canvas - stačí vědět kde hledat",
         "Začněte se snadnými řešeními s vysokým dopadem",
@@ -1104,8 +1123,46 @@ const MODULE_2 = {
       title: "Příklady úspěšných modelů",
       canvasSection: undefined,
       videoUrl: "",
-      description: "Jak může vypadat Business Model v různých odvětvích",
-      content: "",
+      description: "Jak může vypadat podnikatelský model v různých odvětvích",
+      content: `
+        <h3>🏆 Galerie úspěšných byznys modelů</h3>
+        <p>Pojďme se podívat na <strong>reálné příklady</strong> vyplněné Podnikatelské Čtvrtky z různých odvětví!</p>
+        
+        <h4>🎯 Co uvidíte?</h4>
+        <p>Pro každý byznys uvidíte:</p>
+        <ul>
+          <li>✅ <strong>Kompletní model</strong> - všech 9 sekcí vyplněných</li>
+          <li>✅ <strong>Barevné propojení</strong> - jak souvisí segmenty, hodnoty a příjmy</li>
+          <li>✅ <strong>Reálná čísla</strong> - skutečné ceny a náklady</li>
+          <li>✅ <strong>Klíčové poznatky</strong> - co dělá tento model úspěšný</li>
+        </ul>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-400 rounded-xl p-4 my-4">
+          <p class="text-purple-900 flex items-start gap-2">
+            <span class="text-2xl">💡</span>
+            <span><strong>JAK VYUŽÍT PŘÍKLADY</strong></span>
+          </p>
+          <p class="text-sm text-gray-700 mt-3"><strong>1. Inspirujte se strukturou:</strong> Kolik segmentů mají? Jak je barevně propojují?</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>2. Přizpůsobte si to:</strong> Vezměte nápady a upravte je pro vaše podnikání</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>3. Kombinujte:</strong> Můžete vzít nápady z více příkladů najednou!</p>
+          <p class="text-sm text-yellow-800 mt-3 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            <strong>⚠️ POZOR:</strong> Nekopírujte slepě! Každý byznys je unikátní. Použijte příklady jako inspiraci, ne šablonu.
+          </p>
+        </div>
+        
+        <h4>Proč je to užitečné?</h4>
+        <ul>
+          <li>✅ <strong>Vidíte co funguje</strong> - ověřené modely z praxe</li>
+          <li>✅ <strong>Rychlejší start</strong> - inspirace místo vymýšlení od nuly</li>
+          <li>✅ <strong>Pochopíte souvislosti</strong> - jak se propojují sekce modelu</li>
+        </ul>
+      `,
+      tips: [
+        "📱 Swipujte mezi reálnými příklady businessů",
+        "🔍 Použijte FILTR pro zobrazení konkrétní kategorie",
+        "🔑 KLÍČOVÉ insight = co je nejdůležitější v daném businessu",
+        "💡 PROČ TO FUNGUJE = poučení které si můžete vzít pro svůj byznys"
+      ]
     }
   ]
 };
@@ -1132,6 +1189,10 @@ export function CourseDemoV3() {
   const [selectedVPCSegment, setSelectedVPCSegment] = useState<string | null>(null); // VPC segment selection
   const [selectedVPCValue, setSelectedVPCValue] = useState<string | null>(null); // VPC value selection
   
+  // 🎨 VPC DATA STORAGE (Module 3)
+  const [vpcCustomerData, setVpcCustomerData] = useState<any>({});
+  const [vpcValueData, setVpcValueData] = useState<any>({});
+  
   // 🎉 ACHIEVEMENTS & GAMIFICATION
   const [visibleAchievements, setVisibleAchievements] = useState<Achievement[]>([]); // 🎨 VERTICAL STACK - všechny achievementy najednou!
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(new Set());
@@ -1143,18 +1204,13 @@ export function CourseDemoV3() {
   // 📱 MOBILE DETECTION - Používáme POUZE šířku okna pro layout (ne touch detection!)
   // Touch detection je důležitá pro GESTA (swipe), ale ne pro LAYOUT!
   // ⚠️ DŮLEŽITÉ: 768px = Tailwind md: breakpoint = desktop layout začíná od 768px+
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  const isMobile = useIsMobile();
   const orientation = useOrientation();
   
-  // Listen for window resize to update isMobile
+  // 🐛 DEBUG: Log mobile detection
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    console.log('📱 MOBILE DETECTION:', { isMobile, width: window.innerWidth, threshold: 768 });
+  }, [isMobile]);
 
   // 💾 PERSIST VPC SELECTIONS - Load from localStorage
   useEffect(() => {
@@ -1192,6 +1248,19 @@ export function CourseDemoV3() {
   const isLastLesson = safeLessonIndex === currentModule.lessons.length - 1;
   const moduleCompleted = completedLessons.size === currentModule.lessons.length;
   const totalLessons = allModules.reduce((sum, m) => sum + m.lessons.length, 0);
+  
+  // 📱 MOBILE: Convert Set<number> to Set<string> for mobile components
+  const completedLessonsStrings = new Set(
+    Array.from(completedLessons).map(id => {
+      // Find which module this lesson belongs to
+      for (const module of allModules) {
+        if (module.lessons.some(l => l.id === id)) {
+          return `${module.id}-${id}`;
+        }
+      }
+      return `1-${id}`; // Fallback to module 1
+    })
+  );
 
   // 🔥 SWIPE NAVIGATION - Pomocné funkce
   const canGoPreviousLesson = currentModuleNumber > 1 || currentLessonIndex > 0;
@@ -1675,7 +1744,7 @@ export function CourseDemoV3() {
       
       // ✅ Kontrola: Jsme na Lekci 11 (Finanční analýza)?
       if (currentLesson.id === 11) {
-        console.log('💰 User navigated to Lesson 11 (Finanční analýza) - checking profit data...');
+        console.log('💰 User navigated to Lesson 11 (Finanční anal��za) - checking profit data...');
         
         try {
           // Načti finanční data z Supabase
@@ -1794,6 +1863,68 @@ export function CourseDemoV3() {
     }
   };
   
+  // 📱 MOBILE CANVAS UPDATE HANDLER
+  const handleMobileCanvasUpdate = async (sectionKey: string, items: any[]) => {
+    // Update canvas sections
+    setCanvasSections(prev => {
+      const newSections = [...prev];
+      const sectionIndex = newSections.findIndex(s => s.id === sectionKey);
+      
+      if (sectionIndex >= 0) {
+        newSections[sectionIndex] = { ...newSections[sectionIndex], items };
+      } else {
+        newSections.push({ id: sectionKey, items });
+      }
+      
+      return newSections;
+    });
+    
+    // Save to Supabase if authenticated
+    if (userData?.id) {
+      try {
+        const { error } = await supabase
+          .from('user_canvas_data')
+          .upsert({
+            user_id: userData.id,
+            section_key: sectionKey,
+            content: items,
+            updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'user_id,section_key'
+          });
+        
+        if (error) throw error;
+        console.log('✅ Mobile canvas updated:', sectionKey);
+      } catch (error) {
+        console.error('❌ Failed to save mobile canvas:', error);
+      }
+    }
+  };
+  
+  // 🎨 VPC UPDATE HANDLER (Module 3)
+  const handleVPCUpdate = (section: 'customer' | 'value', data: any) => {
+    if (section === 'customer') {
+      setVpcCustomerData(data);
+    } else {
+      setVpcValueData(data);
+    }
+    
+    // TODO: Save to Supabase
+    console.log('VPC Update:', section, data);
+  };
+  
+  // 📝 MOBILE LESSON COMPLETE HANDLER
+  const handleMobileLessonComplete = async (lessonId: number) => {
+    const newCompleted = new Set(completedLessons);
+    newCompleted.add(lessonId);
+    setCompletedLessons(newCompleted);
+    
+    // Save to Supabase
+    if (userData?.id) {
+      await saveLessonProgress(userData.id, lessonId);
+    }
+  };
+
   const handleShowDashboard = async () => {
     // Reload progress from Supabase
     if (userData?.id) {
@@ -1943,8 +2074,8 @@ export function CourseDemoV3() {
     );
   }
 
-  // Show Tool - když je vybraný nástroj
-  if (showTool && isAuthenticated && userData) {
+  // Show Tool - když je vybraný nástroj (POUZE DESKTOP)
+  if (showTool && isAuthenticated && userData && !isMobile) {
     return (
       <div className="min-h-screen bg-gray-50 flex">
         {/* Sidebar */}
@@ -1994,8 +2125,8 @@ export function CourseDemoV3() {
     );
   }
 
-  // Show Main Dashboard (with sidebar) - pouze když je user autentizovaný A modules jsou načtené
-  if (showMainDashboard && isAuthenticated && userData && allModules.length > 0) {
+  // Show Main Dashboard (with sidebar) - pouze když je user autentizovaný A modules jsou načtené A není mobil
+  if (showMainDashboard && isAuthenticated && userData && allModules.length > 0 && !isMobile) {
     return (
       <>
         <SimpleDashboard
@@ -2042,8 +2173,274 @@ export function CourseDemoV3() {
   // 📏 WIDE LAYOUT: POUZE pro interaktivní cvičení (Modul 1, lekce 1-9)
   const requiresWideLayout = isInteractiveExercise;
 
+  // 📱 MOBILE VIEW - Dashboard, Sidebar & Module Components
+  if (isMobile) {
+    console.log('🎯 RENDERING MOBILE VERSION!', { currentModuleNumber, showMainDashboard, showTool });
+    
+    // Helper funkce pro canvas update z mobile komponent
+    const handleMobileCanvasUpdate = (section: string, items: any[]) => {
+      // Update canvasSections state
+      setCanvasSections(prev => {
+        const newSections = [...prev];
+        const sectionIndex = newSections.findIndex(s => s.id === section);
+        if (sectionIndex >= 0) {
+          newSections[sectionIndex] = { ...newSections[sectionIndex], items };
+        }
+        return newSections;
+      });
+      
+      // Save to Supabase if user is authenticated
+      if (userData?.id) {
+        supabase
+          .from('user_canvas_data')
+          .upsert({
+            user_id: userData.id,
+            section_key: section,
+            content: items
+          }, {
+            onConflict: 'user_id,section_key'
+          })
+          .then(({ error }) => {
+            if (error) {
+              console.error('Canvas save error:', error);
+              toast.error('⚠️ Nepodařilo se uložit změny');
+            }
+          });
+      }
+    };
+    
+    const handleMobileLessonComplete = async (lessonId: number) => {
+      const newCompleted = new Set(completedLessons);
+      newCompleted.add(lessonId);
+      setCompletedLessons(newCompleted);
+      
+      // Save to database
+      if (userData?.id) {
+        await saveLessonProgress(userData.id, lessonId);
+      }
+      
+      // Achievements are checked automatically via handleCheckAchievements
+    };
+    
+    // Convert completedLessons to string format for mobile components
+    const completedLessonsStrings = new Set(
+      Array.from(completedLessons).map(id => {
+        // Find which module this lesson belongs to
+        for (const module of allModules) {
+          const lesson = module.lessons.find(l => l.id === id);
+          if (lesson) {
+            return `${module.id}-${id}`;
+          }
+        }
+        return '';
+      }).filter(Boolean)
+    );
+    
+    return (
+      <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+        <Toaster position="top-right" />
+        <AutosaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
+        
+        {/* ACHIEVEMENT NOTIFICATIONS */}
+        {visibleAchievements.map((achievement, index) => (
+          <AchievementNotification
+            key={achievement.id}
+            achievement={achievement}
+            index={index}
+            onClose={() => {
+              setVisibleAchievements(prev => prev.filter(a => a.id !== achievement.id));
+            }}
+          />
+        ))}
+        
+        {/* MOBILE SIDEBAR */}
+        <MobileCourseSidebar
+          isOpen={showMobileSidebar}
+          onClose={() => setShowMobileSidebar(false)}
+          modules={allModules}
+          currentModuleId={currentModuleNumber}
+          currentLessonIndex={currentLessonIndex}
+          completedLessons={completedLessonsStrings}
+          onSelectLesson={(moduleId, lessonIndex) => {
+            setCurrentModuleNumber(moduleId);
+            setCurrentLessonIndex(lessonIndex);
+            setShowMainDashboard(false);
+            setShowTool(null); // 🔧 VYNULUJ NÁSTROJ při přechodu na lekci
+            setShowMobileSidebar(false);
+          }}
+          onShowDashboard={() => {
+            setShowMainDashboard(true);
+            setShowTool(null); // 🔧 VYNULUJ NÁSTROJ při zobrazení dashboardu
+            setShowMobileSidebar(false);
+          }}
+          showingDashboard={showMainDashboard}
+          totalLessons={totalLessons}
+          completedCount={completedLessons.size}
+          onSelectTool={(toolId) => {
+            setShowTool(toolId);
+            setShowMainDashboard(false);
+            setShowMobileSidebar(false);
+          }}
+          currentTool={showTool}
+        />
+        
+        {/* MOBILE DASHBOARD */}
+        {showMainDashboard && (
+          <MobileCourseDashboard
+            userId={userData?.id || 'guest'}
+            modules={allModules}
+            completedLessons={completedLessonsStrings}
+            currentModuleId={currentModuleNumber}
+            currentLessonIndex={currentLessonIndex}
+            onContinue={() => {
+              setShowMainDashboard(false);
+              setShowTool(null); // 🔧 VYNULUJ NÁSTROJ při pokračování
+            }}
+            onSelectModule={(moduleId) => {
+              setCurrentModuleNumber(moduleId);
+              setCurrentLessonIndex(0);
+              setShowMainDashboard(false);
+              setShowTool(null); // 🔧 VYNULUJ NÁSTROJ při výběru modulu
+            }}
+            unlockedAchievements={unlockedAchievements}
+            onOpenSidebar={() => setShowMobileSidebar(true)}
+          />
+        )}
+        
+        {/* MOBILE MODULE VIEW */}
+        {!showMainDashboard && !showTool && currentModuleNumber === 1 && (
+          <MobileCourseModule1
+            moduleData={MODULE_1}
+            canvasData={{
+              segments: canvasSections.find(s => s.id === 'segments')?.items || [],
+              value: canvasSections.find(s => s.id === 'value')?.items || [],
+              channels: canvasSections.find(s => s.id === 'channels')?.items || [],
+              relationships: canvasSections.find(s => s.id === 'relationships')?.items || [],
+              revenue: canvasSections.find(s => s.id === 'revenue')?.items || [],
+              partners: canvasSections.find(s => s.id === 'partners')?.items || [],
+              activities: canvasSections.find(s => s.id === 'activities')?.items || [],
+              resources: canvasSections.find(s => s.id === 'resources')?.items || [],
+              costs: canvasSections.find(s => s.id === 'costs')?.items || [],
+            }}
+            onCanvasUpdate={handleMobileCanvasUpdate}
+            completedLessons={completedLessonsStrings}
+            onLessonComplete={handleMobileLessonComplete}
+            currentLessonIndex={currentLessonIndex}
+            onLessonChange={(index) => setCurrentLessonIndex(index)}
+            onOpenSidebar={() => setShowMobileSidebar(true)}
+            onOpenDashboard={() => {
+              setShowMainDashboard(true);
+              setShowTool(null); // 🔧 VYNULUJ NÁSTROJ
+            }}
+            totalLessons={totalLessons}
+          />
+        )}
+        
+        {/* MODULE 2: OPTIMALIZACE BMC */}
+        {!showMainDashboard && !showTool && currentModuleNumber === 2 && (
+          <MobileCourseModule2
+            userId={userData?.id || "guest"}
+            moduleData={MODULE_2}
+            canvasData={{
+              segments: canvasSections.find(s => s.id === 'segments')?.items || [],
+              value: canvasSections.find(s => s.id === 'value')?.items || [],
+              channels: canvasSections.find(s => s.id === 'channels')?.items || [],
+              relationships: canvasSections.find(s => s.id === 'relationships')?.items || [],
+              revenue: canvasSections.find(s => s.id === 'revenue')?.items || [],
+              partners: canvasSections.find(s => s.id === 'partners')?.items || [],
+              activities: canvasSections.find(s => s.id === 'activities')?.items || [],
+              resources: canvasSections.find(s => s.id === 'resources')?.items || [],
+              costs: canvasSections.find(s => s.id === 'costs')?.items || [],
+            }}
+            onCanvasUpdate={handleMobileCanvasUpdate}
+            completedLessons={completedLessonsStrings}
+            onLessonComplete={handleMobileLessonComplete}
+            currentLessonIndex={currentLessonIndex}
+            onLessonChange={(index) => setCurrentLessonIndex(index)}
+            onOpenSidebar={() => setShowMobileSidebar(true)}
+            onOpenDashboard={() => {
+              setShowMainDashboard(true);
+              setShowTool(null); // 🔧 VYNULUJ NÁSTROJ
+            }}
+            totalLessons={totalLessons}
+          />
+        )}
+        
+        {/* MODULE 3: VPC + FIT */}
+        {!showMainDashboard && !showTool && currentModuleNumber === 3 && (
+          <MobileCourseModule3
+            moduleData={MODULE_3}
+            vpcData={{
+              customer: vpcCustomerData,
+              value: vpcValueData,
+            }}
+            onVPCUpdate={handleVPCUpdate}
+            completedLessons={completedLessonsStrings}
+            onLessonComplete={handleMobileLessonComplete}
+            currentLessonIndex={currentLessonIndex}
+            onLessonChange={(index) => setCurrentLessonIndex(index)}
+            onOpenSidebar={() => setShowMobileSidebar(true)}
+            onOpenDashboard={() => {
+              setShowMainDashboard(true);
+              setShowTool(null); // 🔧 VYNULUJ NÁSTROJ
+            }}
+            availableSegments={canvasSections.find(s => s.id === 'segments')?.items || []}
+            availableValues={canvasSections.find(s => s.id === 'value')?.items || []}
+            selectedSegment={selectedVPCSegment || undefined}
+            onSelectSegment={(seg) => {
+              setSelectedVPCSegment(seg);
+            }}
+            selectedValue={selectedVPCValue || undefined}
+            onSelectValue={(val) => {
+              setSelectedVPCValue(val);
+            }}
+            totalLessons={totalLessons}
+            userData={userData}
+            onNavigateToTool={(toolId) => {
+              setShowTool(toolId);
+              setShowMainDashboard(false);
+            }}
+          />
+        )}
+        
+        {/* MOBILE TOOLS - Direct render without extra wrapper */}
+        {!showMainDashboard && showTool === 'action-plan' && userData && (
+          <MobileBusinessActionPlan
+            userId={userData.id}
+            onOpenSidebar={() => setShowMobileSidebar(true)}
+            onNavigateToLesson={(lessonId) => {
+              allModules.forEach((module) => {
+                const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
+                if (lessonIdx !== -1) {
+                  setCurrentModuleNumber(module.id);
+                  setCurrentLessonIndex(lessonIdx);
+                  setShowTool(null);
+                  setShowMainDashboard(false);
+                }
+              });
+            }}
+            onAchievementUnlocked={triggerAchievement}
+          />
+        )}
+        
+        {!showMainDashboard && showTool === 'target-calculator' && (
+          <MobileTargetCalculatorTool
+            onOpenSidebar={() => setShowMobileSidebar(true)}
+          />
+        )}
+        
+        {!showMainDashboard && showTool === 'segment-size' && (
+          <MobileSegmentSizeTool
+            onOpenSidebar={() => setShowMobileSidebar(true)}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // 🖥️ DESKTOP VIEW - Současný kód zůstává
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden">
       {/* 🖥️ DESKTOP SIDEBAR - ALWAYS VISIBLE (except during exercise) */}
       {shouldShowDesktopSidebar && (
         <div className="w-80 flex-shrink-0">
@@ -2160,72 +2557,184 @@ export function CourseDemoV3() {
 
               {/* Text Content - Rich or Plain */}
               <div className="w-full">
-                {/* MODUL 2 - Lekce 3: Problem Solver - VŽDY VIDITELNÝ! */}
-                {currentLesson.id === 12 && userData?.id && (
-                  <ProblemSolver
-                    userId={userData.id}
-                    onComplete={async () => {
-                      const newCompleted = new Set(completedLessons);
-                      newCompleted.add(currentLesson.id);
-                      setCompletedLessons(newCompleted);
-                      
-                      if (userData?.id) {
-                        await saveLessonProgress(userData.id, currentLesson.id);
-                      }
-                    }}
-                    onNavigateNext={() => handleNextLesson()}
-                  />
-                )}
-                
-                {/* MODUL 2 - Lekce 4: Galerie Business Modelů */}
-                {currentLesson.id === 13 && currentModuleNumber === 2 && (
-                  <BusinessModelGallery
-                    onComplete={async () => {
-                      const newCompleted = new Set(completedLessons);
-                      newCompleted.add(currentLesson.id);
-                      setCompletedLessons(newCompleted);
-                      
-                      if (userData?.id) {
-                        await saveLessonProgress(userData.id, currentLesson.id);
-                      }
-                    }}
-                    onNavigateNext={() => handleNextLesson()}
-                  />
-                )}
-                
-                {currentLesson.id === 14 ? (
-                  <VPCCustomerProfileStory
-                      userId={userData?.id || "guest"}
-                      selectedSegment={selectedVPCSegment}
-                      onSelectSegment={(newSegment) => {
-                        setSelectedVPCSegment(newSegment);
-                        setSelectedVPCValue(null);
-                      }}
-                      onAchievementUnlocked={triggerAchievement}
+                {/* MODUL 2 - Lekce 1: Canvas Validator */}
+                {currentLesson.id === 10 && userData?.id && (
+                  <>
+                    {/* Text content before tool */}
+                    {currentLesson.content && (
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                        <div
+                          className="prose"
+                          style={{ maxWidth: 'none' }}
+                          dangerouslySetInnerHTML={{ __html: currentLesson.content }}
+                        />
+                      </div>
+                    )}
+                    <CanvasValidator
+                      userId={userData.id}
                       onComplete={async () => {
-                        const newCompleted = new Set([...completedLessons, currentLesson.id]);
+                        const newCompleted = new Set(completedLessons);
+                        newCompleted.add(currentLesson.id);
                         setCompletedLessons(newCompleted);
                         
                         if (userData?.id) {
                           await saveLessonProgress(userData.id, currentLesson.id);
                         }
-                        
-                        triggerAchievement('customer-profile-complete');
-                        
-                        setTimeout(() => {
-                          setCurrentLessonIndex(prev => prev + 1);
-                        }, 1000);
                       }}
+                      onNavigateNext={() => handleNextLesson()}
+                      isLessonCompleted={completedLessons.has(currentLesson.id)}
                     />
-                ) : currentLesson.id === 15 ? (
-                  <VPCValueMapSquare
-                      userId={userData?.id || "guest"}
-                      selectedSegment={selectedVPCSegment || "Můj segment"}
-                      selectedValue={selectedVPCValue}
-                      onSelectValue={setSelectedVPCValue}
-                      onAchievementUnlocked={triggerAchievement}
+                  </>
+                )}
+                
+                {/* MODUL 2 - Lekce 2: Profit Calculator */}
+                {currentLesson.id === 11 && userData?.id && (
+                  <>
+                    {/* Text content before tool */}
+                    {currentLesson.content && (
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                        <div
+                          className="prose"
+                          style={{ maxWidth: 'none' }}
+                          dangerouslySetInnerHTML={{ __html: currentLesson.content }}
+                        />
+                      </div>
+                    )}
+                    <ProfitCalculator
+                      userId={userData.id}
                       onComplete={async () => {
-                        console.log('🎯 Lekce 15 onComplete called!', { userId: userData?.id, lessonId: currentLesson.id });
+                        const newCompleted = new Set(completedLessons);
+                        newCompleted.add(currentLesson.id);
+                        setCompletedLessons(newCompleted);
+                        
+                        if (userData?.id) {
+                          await saveLessonProgress(userData.id, currentLesson.id);
+                        }
+                      }}
+                      onNavigateNext={() => handleNextLesson()}
+                      isLessonCompleted={completedLessons.has(currentLesson.id)}
+                    />
+                  </>
+                )}
+                
+                {/* MODUL 2 - Lekce 3: Problem Solver - VŽDY VIDITELNÝ! */}
+                {currentLesson.id === 12 && userData?.id && (
+                  <>
+                    {/* Text content before tool */}
+                    {currentLesson.content && (
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                        <div
+                          className="prose"
+                          style={{ maxWidth: 'none' }}
+                          dangerouslySetInnerHTML={{ __html: currentLesson.content }}
+                        />
+                      </div>
+                    )}
+                    <ProblemSolver
+                      userId={userData.id}
+                      onComplete={async () => {
+                        const newCompleted = new Set(completedLessons);
+                        newCompleted.add(currentLesson.id);
+                        setCompletedLessons(newCompleted);
+                        
+                        if (userData?.id) {
+                          await saveLessonProgress(userData.id, currentLesson.id);
+                        }
+                      }}
+                      onNavigateNext={() => handleNextLesson()}
+                      isLessonCompleted={completedLessons.has(currentLesson.id)}
+                    />
+                  </>
+                )}
+                
+                {/* MODUL 2 - Lekce 4: Galerie podnikatelských modelů */}
+                {currentLesson.id === 13 && currentModuleNumber === 2 && (
+                  <>
+                    {/* Text content before tool */}
+                    {currentLesson.content && (
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                        <div
+                          className="prose"
+                          style={{ maxWidth: 'none' }}
+                          dangerouslySetInnerHTML={{ __html: currentLesson.content }}
+                        />
+                      </div>
+                    )}
+                    <BusinessModelGallery
+                      onComplete={async () => {
+                        const newCompleted = new Set(completedLessons);
+                        newCompleted.add(currentLesson.id);
+                        setCompletedLessons(newCompleted);
+                        
+                        if (userData?.id) {
+                          await saveLessonProgress(userData.id, currentLesson.id);
+                        }
+                      }}
+                      onNavigateNext={() => handleNextLesson()}
+                      isLessonCompleted={completedLessons.has(currentLesson.id)}
+                    />
+                  </>
+                )}
+                
+                {/* MODUL 3 - Lekce 1: Customer Profile */}
+                {currentLesson.id === 14 && (
+                  <>
+                    {/* Text content before tool */}
+                    {currentLesson.content && (
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                        <div
+                          className="prose"
+                          style={{ maxWidth: 'none' }}
+                          dangerouslySetInnerHTML={{ __html: currentLesson.content }}
+                        />
+                      </div>
+                    )}
+                    <VPCCustomerProfileStory
+                        userId={userData?.id || "guest"}
+                        selectedSegment={selectedVPCSegment}
+                        onSelectSegment={(newSegment) => {
+                          setSelectedVPCSegment(newSegment);
+                          setSelectedVPCValue(null);
+                        }}
+                        onAchievementUnlocked={triggerAchievement}
+                        onComplete={async () => {
+                          const newCompleted = new Set([...completedLessons, currentLesson.id]);
+                          setCompletedLessons(newCompleted);
+                          
+                          if (userData?.id) {
+                            await saveLessonProgress(userData.id, currentLesson.id);
+                          }
+                          
+                          triggerAchievement('customer-profile-complete');
+                          
+                          setTimeout(() => {
+                            setCurrentLessonIndex(prev => prev + 1);
+                          }, 1000);
+                        }}
+                      />
+                  </>
+                )}
+                
+                {currentLesson.id === 15 && (
+                  <>
+                    {/* Text content before tool */}
+                    {currentLesson.content && (
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                        <div
+                          className="prose"
+                          style={{ maxWidth: 'none' }}
+                          dangerouslySetInnerHTML={{ __html: currentLesson.content }}
+                        />
+                      </div>
+                    )}
+                    <VPCValueMapSquare
+                        userId={userData?.id || "guest"}
+                        selectedSegment={selectedVPCSegment || "Můj segment"}
+                        selectedValue={selectedVPCValue}
+                        onSelectValue={setSelectedVPCValue}
+                        onAchievementUnlocked={triggerAchievement}
+                        onComplete={async () => {
+                          console.log('🎯 Lekce 15 onComplete called!', { userId: userData?.id, lessonId: currentLesson.id });
                         
                         // 🎉 Achievement za hodnotovou mapu
                         triggerAchievement('value-map-complete');
@@ -2252,7 +2761,10 @@ export function CourseDemoV3() {
                         }, 1000); // 1s delay pro toast message
                       }}
                     />
-                ) : currentLesson.id === 16 ? (
+                  </>
+                )}
+                
+                {currentLesson.id === 16 && (
                   <FitValidatorV2 
                         key={`fit-validator-${currentLessonIndex}-${selectedVPCSegment}`}
                         userId={userData?.id || "guest"} 
@@ -2267,6 +2779,14 @@ export function CourseDemoV3() {
                           if (lessonIndex !== -1) {
                             // Přepni na danou lekci v Modulu 3
                             handleLessonChange(MODULE_3.lessons[lessonIndex]);
+                          }
+                        }}
+                        onNavigateToTool={(tool) => {
+                          // Navigate to tools (action-plan)
+                          if (tool === 'action-plan') {
+                            setShowMainDashboard(false);
+                            setShowActionPlan(true);
+                            setShowTool(null);
                           }
                         }}
                         onComplete={async (fitScore) => {
@@ -2315,26 +2835,27 @@ export function CourseDemoV3() {
                           }
                         }}
                       />
-                ) : (
-                  ![10, 11, 12, 13, 14, 15, 16].includes(currentLesson.id) && (
-                    currentLesson.examples || currentLesson.tips || currentLesson.showDemo ? (
-                      <LessonContentRenderer
-                        content={currentLesson.content}
-                        examples={currentLesson.examples}
-                        tips={currentLesson.tips}
-                        showDemo={currentLesson.showDemo}
-                        hideTips={currentModuleNumber === 1}
+                )}
+                
+                {/* Ostatní lekce (Modul 1) */}
+                {![10, 11, 12, 13, 14, 15, 16].includes(currentLesson.id) && (
+                  currentLesson.examples || currentLesson.tips || currentLesson.showDemo ? (
+                    <LessonContentRenderer
+                      content={currentLesson.content}
+                      examples={currentLesson.examples}
+                      tips={currentLesson.tips}
+                      showDemo={currentLesson.showDemo}
+                      hideTips={currentModuleNumber === 1}
+                    />
+                  ) : currentLesson.content ? (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all">
+                      <div
+                        className="prose"
+                        style={{ maxWidth: 'none' }}
+                        dangerouslySetInnerHTML={{ __html: currentLesson.content }}
                       />
-                    ) : currentLesson.content ? (
-                      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all">
-                        <div
-                          className="prose"
-                          style={{ maxWidth: 'none' }}
-                          dangerouslySetInnerHTML={{ __html: currentLesson.content }}
-                        />
-                      </div>
-                    ) : null
-                  )
+                    </div>
+                  ) : null
                 )}
               </div>
 
@@ -2548,62 +3069,10 @@ export function CourseDemoV3() {
                 </>
               )}
               
-              {/* CTA - Modul 2 (Interaktivní lekce) */}
+              {/* CTA - Modul 2 (Interaktivní lekce) - PRÁZDNÉ (lekce 10-13 jsou výše) */}
               {!showCanvas && currentModuleNumber === 2 && (
                 <div className="transition-all">
-                  {/* Lekce 1: Canvas Validator - VŽDY VIDITELNÝ! */}
-                  {currentLesson.id === 10 && userData?.id && (
-                    <CanvasValidator
-                      userId={userData.id}
-                      onComplete={async () => {
-                        const newCompleted = new Set(completedLessons);
-                        newCompleted.add(currentLesson.id);
-                        setCompletedLessons(newCompleted);
-                        
-                        if (userData?.id) {
-                          await saveLessonProgress(userData.id, currentLesson.id);
-                        }
-                      }}
-                      onNavigateNext={() => handleNextLesson()}
-                      onAchievementUnlocked={triggerAchievement}
-                    />
-                  )}
-                  
-                  {/* Lekce 2: Profit Calculator - VŽDY VIDITELNÁ! */}
-                  {currentLesson.id === 11 && userData?.id && (
-                    <ProfitCalculator
-                      key={`profit-calc-${currentLessonIndex}`}
-                      userId={userData.id}
-                      onAchievementUnlocked={triggerAchievement}
-                      onComplete={async () => {
-                        console.log('✅ Lekce 11 dokončena - ukládám progress');
-                        
-                        // ✅ Stejná logika jako handleLessonComplete
-                        const newCompleted = new Set(completedLessons);
-                        newCompleted.add(currentLesson.id);
-                        setCompletedLessons(newCompleted);
-                        
-                        if (userData?.id) {
-                          const success = await saveLessonProgress(userData.id, currentLesson.id);
-                          console.log('💾 saveLessonProgress result:', success);
-                          
-                          if (!success) {
-                            toast.error('⚠️ Nepodařilo se uložit progress.');
-                          }
-                        }
-                        
-                        // 🔄 Refresh action plan
-                        setActionPlanRefreshTrigger(prev => prev + 1);
-                        
-                        // ✅ Lekce dokončena! (ŽÁDNÝ toast - banner to zobrazí)
-                        console.log('✅ Lekce 11 označena jako dokončená');
-                      }}
-                      onNavigateNext={() => {
-                        console.log('➡️ Navigating to next lesson');
-                        handleNextLesson();
-                      }}
-                    />
-                  )}
+                  {/* ✅ Lekce 10-13 jsou renderované výše (řádky 2499-2616) s textovým obsahem */}
                 </div>
               )}
               

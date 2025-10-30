@@ -127,7 +127,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                     </div>
                     <div className="text-xs text-indigo-600 mb-2">(bez DPH)</div>
                     <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold">
-                      💰 Ušetříte: 3.333 Kč (sleva 40%)
+                      💰 Ušetříte: 3.500,- Kč (sleva 40%)
                     </div>
                   </div>
                 </motion.div>

@@ -111,7 +111,8 @@ export async function handler(event, context) {
     // 🎯 DETECT EARLY BIRD BY PRICE
     // 4.999 Kč = Early Bird (průkopník, dostane hlavní + mini kurz)
     // 8.499 Kč = Full Price (normální, dostane jen hlavní kurz)
-    const isEarlyBird = amount === 4999 || amount === 6049; // 4.999 bez DPH nebo 6.049 s DPH
+    // ⚠️ TESTOVACÍ REŽIM: 1 Kč nebo 1.21 Kč = také Early Bird (pro testování)
+    const isEarlyBird = amount === 4999 || amount === 6049 || amount === 1 || amount === 1.21; // TESTING: včetně 1 Kč!
     
     if (!email) {
       throw new Error('No email in invoice.customer');
@@ -162,7 +163,7 @@ export async function handler(event, context) {
     // 📧 SEND EMAIL - ROZDÍLNÉ TEMPLATY
     // ──────────────────────────────────────────
     const mainCourseUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${encodeURIComponent(accessToken)}`;
-    const miniCourseUrl = `https://podnikatelskactvrtka.cz/minikurz`;
+    const miniCourseUrl = `https://podnikatelskactvrtka.cz/minikurz?token=MINICOURSE2025`;
     
     // 🎯 TEMPLATE A: PRŮKOPNÍK (s minikurzem)
     const earlyBirdEmailHtml = `
@@ -276,6 +277,37 @@ export async function handler(event, context) {
     );
     
     console.log('✅ Email sent!');
+    
+    // ──────────────────────────────────────────
+    // 🏷️ ADD TAG TO SMARTEMAILING
+    // ──────────────────────────────────────────
+    console.log('🏷️ Adding "purchased" tag to SmartEmailing...');
+    
+    try {
+      const seApiKey = process.env.SMARTEMAILING_API_KEY;
+      if (seApiKey) {
+        const seAuthString = Buffer.from(`${seApiKey}:x`).toString('base64');
+        
+        await fetch('https://app.smartemailing.cz/api/v3/contacts', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Basic ${seAuthString}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            emailaddress: email,
+            tags: ['purchased']
+          })
+        });
+        
+        console.log('✅ Tag "purchased" added to SmartEmailing');
+      } else {
+        console.log('⚠️ SmartEmailing API key not found - skipping tag');
+      }
+    } catch (seError) {
+      console.error('⚠️ SmartEmailing tag failed (non-critical):', seError.message);
+      // Don't fail the webhook if SE tagging fails
+    }
     
     // ──────────────────────────────────────────
     // ✅ SUCCESS

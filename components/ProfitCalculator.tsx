@@ -10,9 +10,10 @@ interface Props {
   onComplete: () => void;
   onNavigateNext?: () => void;
   onAchievementUnlocked?: (achievementId: string) => void;
+  isLessonCompleted?: boolean;
 }
 
-export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchievementUnlocked }: Props) {
+export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchievementUnlocked, isLessonCompleted = false }: Props) {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalCosts, setTotalCosts] = useState(0);
   const [currentCustomers, setCurrentCustomers] = useState(0);
@@ -259,8 +260,11 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
   return (
     <div className="space-y-4">
       {/* 🎨 Colorful Header with gradient */}
-      <div className="bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl shadow-md p-6 text-center">
+      <div className="bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl shadow-md p-6">
         <h2 className="mb-2 text-white">💰 Finanční Analýza</h2>
+        <p className="text-blue-50 text-sm mb-3">
+          Vypočtěte váš zisk a finanční zdraví
+        </p>
         <p className="text-blue-50 text-sm sm:text-base">
           Máte <strong className="text-white">{totalRevenue.toLocaleString('cs-CZ')} Kč</strong> příjmů 
           a <strong className="text-white">{totalCosts.toLocaleString('cs-CZ')} Kč</strong> nákladů měsíčně
@@ -273,7 +277,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
           {totalRevenue === 0 && totalCosts === 0 && (
             <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
               <p className="text-yellow-900 text-sm">
-                ⚠️ <strong>Prázdný Canvas:</strong> Nejprve vyplňte Business Model Canvas v Modulu 1, Lekce 4.
+                ⚠️ <strong>Prázdný Canvas:</strong> Nejprve vyplňte Podnikatelský model v Modulu 1, Lekce 4.
               </p>
             </div>
           )}
@@ -769,10 +773,13 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
               <Collapsible>
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                   <CollapsibleTrigger asChild>
-                    <button className="w-full flex items-center justify-between group hover:bg-gray-50 -m-6 p-6 rounded-2xl transition-colors">
+                    <button className="w-full flex items-center justify-between group">
                       <div className="flex items-center gap-2">
                         <Users className="w-5 h-5 text-purple-600" />
-                        <span className="font-bold text-gray-900 text-lg">📊 Analýza zákaznických segmentů</span>
+                        <div className="text-left">
+                          <span className="font-semibold text-gray-900">📊 Analýza zákaznických segmentů</span>
+                          <p className="text-xs text-gray-500">Který segment přináší lepší příjmy?</p>
+                        </div>
                       </div>
                       <ChevronDown className="w-5 h-5 text-gray-400 transition-transform group-data-[state=open]:rotate-180" />
                     </button>
@@ -782,8 +789,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-100">
                       {/* LEFT: Ranking podle hodnoty */}
                       <div>
-                        <h5 className="font-bold text-gray-900 mb-1 text-lg">🏆 Ranking podle hodnoty</h5>
-                        <p className="text-sm text-gray-500 mb-4">Který segment přináší lepší příjmy?</p>
+                        <h5 className="font-bold text-gray-900 mb-4">🏆 Ranking podle hodnoty</h5>
                         
                         <div className="space-y-2">
                           {(() => {
@@ -865,8 +871,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                       
                       {/* RIGHT: Strategické doporučení */}
                       <div>
-                        <h5 className="font-bold text-gray-900 mb-1 text-lg">💡 Strategické doporučení</h5>
-                        <p className="text-sm text-gray-500 mb-4">Zaměřte se na TOP segment</p>
+                        <h5 className="font-bold text-gray-900 mb-4">💡 Strategické doporučení</h5>
                         
                         {segmentAnalysis.length > 0 && (() => {
                           const topSegment = segmentAnalysis[0];
@@ -927,7 +932,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
       )}
 
       {/* CTA - Complete Lesson */}
-      {!isCompleted && (totalRevenue > 0 || totalCosts > 0) && (
+      {!isLessonCompleted && (totalRevenue > 0 || totalCosts > 0) && (
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 sm:p-8 text-center shadow-lg">
           <h3 className="mb-2 text-white text-xl sm:text-2xl">
             ✅ Skvělá práce!
@@ -948,8 +953,8 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
         </div>
       )}
 
-      {/* Completion Screen */}
-      {isCompleted && (
+      {/* Completion Screen - JEN když user právě dokončil (ne když se vrací) */}
+      {isCompleted && !isLessonCompleted && (
         <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
           <div className="flex items-start gap-4 mb-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
@@ -987,6 +992,8 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
           </div>
         </div>
       )}
+
+
     </div>
   );
 }

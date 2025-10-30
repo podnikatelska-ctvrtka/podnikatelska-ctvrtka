@@ -34,7 +34,7 @@ const STICKY_COLORS = {
   gray: { bg: 'bg-gray-100', border: 'border-gray-400', text: 'text-gray-700' }, // Backward compatibility
 };
 
-// Business Model Canvas struktura - NOVÁ EKONOMICKÁ LOGIKA
+// Podnikatelský model - NOVÁ EKONOMICKÁ LOGIKA
 const INITIAL_CANVAS: CanvasSection[] = [
   { id: "partners", title: "Klíčová partnerství", items: [], gridArea: "partners" },
   { id: "activities", title: "Klíčové aktivity", items: [], gridArea: "activities" },
@@ -276,7 +276,7 @@ export function BusinessModelCanvasV2({ userId, highlightSection, onAchievementU
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              🎨 Business Model Canvas
+              🎨 Podnikatelská Čtvrtka
             </h2>
             <p className="text-gray-600">
               Vyplňte si svůj byznys model + automatická kalkulace ziskovosti
@@ -539,7 +539,7 @@ export function BusinessModelCanvasV2({ userId, highlightSection, onAchievementU
             <div className="bg-white rounded-lg p-4 border-2 border-green-200">
               <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="w-4 h-4 text-green-600" />
-                <span className="text-sm text-gray-600 font-semibold">Příjmy (měsíčně)</span>
+                <span className="text-sm text-gray-600 font-semibold">Příjmy (měsí��ně)</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-gray-500">CELKEM:</span>

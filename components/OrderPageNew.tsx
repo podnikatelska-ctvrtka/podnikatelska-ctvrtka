@@ -214,7 +214,7 @@ export default function OrderPage({ expired = false }: OrderPageProps) {
           
           <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm mb-2">
             <Zap className="w-4 h-4" />
-            <span>Úspora 3.500 Kč (40%)</span>
+            <span>Úspora 3.500,- Kč (40%)</span>
           </div>
           
           <p className="text-xs text-gray-500 mt-3">

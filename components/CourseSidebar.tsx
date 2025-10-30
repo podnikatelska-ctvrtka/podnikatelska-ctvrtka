@@ -135,7 +135,7 @@ export function CourseSidebar({
                         <h3 className={`text-sm font-bold ${
                           isCurrentModule ? 'text-blue-900' : 'text-gray-900'
                         }`}>
-                          Modul {module.id}
+                          Modul {module.id}: {module.title}
                         </h3>
                         <p className="text-xs text-gray-600 truncate">
                           {moduleLessonsCompleted}/{module.lessons.length} lekcí
