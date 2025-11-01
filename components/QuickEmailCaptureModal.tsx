@@ -89,7 +89,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-6">
+      <DialogContent className="sm:max-w-[500px] p-6 max-h-[90vh] overflow-y-auto">
         <AnimatePresence mode="wait">
           {step === 1 ? (
             <motion.div

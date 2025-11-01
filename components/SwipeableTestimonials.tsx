@@ -43,14 +43,14 @@ export function SwipeableTestimonials() {
       gradient: "from-purple-500 to-purple-700"
     },
     {
-      name: "Lukáš Svoboda",
+      name: "Lukáš Kořínek",
       business: "Pizzeria Ristorante, Brno",
       businessType: "🍕 Pizzeria",
       doubt: "Bál jsem se konkurence – ve městě už byly 3 pizzerie s cenou 150 Kč. Jak mám uspět?",
       text: "Myslel jsem, že musím jít ještě levněji. Čtvrtka mi ukázala, že můžu jít na kvalitu - domací těsto, čerstvé suroviny z trhu, garantovaný rozvoz do 30 minut. Zákazníci oceňují rychlost a chuť, ne nejnižší cenu.",
       insight: "Zjistil jsem, že nemusím bojovat cenou, ale můžu vytvořit jinou hodnotu",
       result: "Po 2 měsících: prodávám pizzu za 180 Kč a mám 3x více objednávek než konkurence",
-      initials: "LS",
+      initials: "LK",
       icon: Pizza,
       gradient: "from-orange-500 to-orange-700"
     }

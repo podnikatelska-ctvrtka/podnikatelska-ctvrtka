@@ -2,8 +2,9 @@
 // 8 COLD ADS + 5 WARM ADS (různé úhly pohledu)
 // Vybrané nejlepší reklamy z celého projektu + nové warm varianty
 
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Flame, Snowflake } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Flame, Snowflake, Download } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AdData {
   id: string;
@@ -1711,15 +1712,68 @@ Investice: 4.999 Kč
 
 export default function Ultimate13Ads() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showOnlyTop3, setShowOnlyTop3] = useState(false);
+  const adRef = useRef<HTMLDivElement>(null);
 
-  const currentAd = ultimate13Ads[currentIndex];
+  // TOP 3 IDs (Varianta C - AGGRESSIVE)
+  const top3Ids = ['daily-loss', 'truth-blue', 'before-after'];
+  
+  // Filtruj reklamy podle filtru
+  const displayedAds = showOnlyTop3 
+    ? ultimate13Ads.filter(ad => top3Ids.includes(ad.id))
+    : ultimate13Ads;
+
+  const currentAd = displayedAds[currentIndex];
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? ultimate13Ads.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? displayedAds.length - 1 : prev - 1));
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev === ultimate13Ads.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev === displayedAds.length - 1 ? 0 : prev + 1));
+  };
+
+  const exportAsImage = async () => {
+    if (!adRef.current) return;
+
+    try {
+      toast.loading('Exportuji reklamu...', { id: 'export' });
+
+      // Dynamicky importuj html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      
+      // Vyrenderuj element jako canvas
+      const canvas = await html2canvas(adRef.current, {
+        width: 1080,
+        height: 1350,
+        scale: 2, // Pro vyšší kvalitu
+        backgroundColor: null,
+        logging: false,
+      });
+
+      // Převeď na blob
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          toast.error('Export selhal', { id: 'export' });
+          return;
+        }
+
+        // Vytvoř download link
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const fileName = `${currentAd.id}_1080x1350.png`;
+        link.download = fileName;
+        link.href = url;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+        
+        toast.success(`✅ Export hotový: ${fileName}`, { id: 'export' });
+      }, 'image/png');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Export selhal. Zkus screenshot ručně.', { id: 'export' });
+    }
   };
 
   return (
@@ -1733,6 +1787,38 @@ export default function Ultimate13Ads() {
           <p className="text-2xl text-gray-400 mb-6">
             8 Cold Ads + 5 Warm Ads • Finální portfolio pro launch
           </p>
+          
+          {/* TOP 3 Filter Toggle */}
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <button
+              onClick={() => {
+                setShowOnlyTop3(false);
+                setCurrentIndex(0);
+              }}
+              className={`px-6 py-3 rounded-xl font-bold transition-all ${
+                !showOnlyTop3
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              Všech 13 reklam
+            </button>
+            <button
+              onClick={() => {
+                setShowOnlyTop3(true);
+                setCurrentIndex(0);
+                toast.success('🔥 Zobrazuji TOP 3 (Varianta C - AGGRESSIVE)');
+              }}
+              className={`px-6 py-3 rounded-xl font-bold transition-all ${
+                showOnlyTop3
+                  ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg scale-105'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              🔥 TOP 3 (Start zde!)
+            </button>
+          </div>
+
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="bg-blue-500/20 border-2 border-blue-400 rounded-xl px-6 py-3 flex items-center gap-2">
               <Snowflake className="w-5 h-5 text-blue-400" />
@@ -1784,7 +1870,7 @@ export default function Ultimate13Ads() {
 
         {/* Progress indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          {ultimate13Ads.map((ad, index) => (
+          {displayedAds.map((ad, index) => (
             <button
               key={ad.id}
               onClick={() => setCurrentIndex(index)}
@@ -1802,6 +1888,7 @@ export default function Ultimate13Ads() {
         {/* Ad preview */}
         <div className="flex justify-center mb-8">
           <div
+            ref={adRef}
             className="rounded-2xl overflow-hidden shadow-2xl"
             style={{
               background: currentAd.background,
@@ -1813,8 +1900,19 @@ export default function Ultimate13Ads() {
           </div>
         </div>
 
+        {/* Export button */}
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={exportAsImage}
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-3 shadow-xl transition-all hover:scale-105"
+          >
+            <Download className="w-6 h-6" />
+            Exportovat jako PNG (1080×1350)
+          </button>
+        </div>
+
         {/* Ad info panel */}
-        <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-6 border border-blue-500/20 max-w-4xl mx-auto">
+        <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-6 border border-blue-500/20 max-w-4xl mx-auto mb-8">
           <div className="grid grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-gray-400 mb-2">💡 Psychologický trigger:</p>
@@ -1823,6 +1921,87 @@ export default function Ultimate13Ads() {
             <div>
               <p className="text-sm text-gray-400 mb-2">💰 Doporučený budget:</p>
               <p className="font-bold text-green-300">{currentAd.budget}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* FB Ad Copy Panel */}
+        <div className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 rounded-xl p-8 border border-gray-700/50 max-w-4xl mx-auto">
+          <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+            📝 Facebook Ad Copy
+            <span className="text-sm font-normal text-gray-400">(klikni pro zkopírování)</span>
+          </h3>
+          
+          <div className="space-y-6">
+            {/* Primary Text */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-bold text-gray-300 uppercase tracking-wide">Primary Text:</p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(currentAd.copy.primary);
+                    toast.success('✅ Primary text zkopírován!');
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                >
+                  📋 Kopírovat
+                </button>
+              </div>
+              <pre className="bg-black/50 text-gray-300 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap font-mono border border-gray-700">
+{currentAd.copy.primary}
+              </pre>
+            </div>
+
+            {/* Headline */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-bold text-gray-300 uppercase tracking-wide">Headline:</p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(currentAd.copy.headline);
+                    toast.success('✅ Headline zkopírován!');
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                >
+                  📋 Kopírovat
+                </button>
+              </div>
+              <p className="bg-black/50 text-white p-4 rounded-lg font-bold text-lg border border-gray-700">
+                {currentAd.copy.headline}
+              </p>
+            </div>
+
+            {/* CTA */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-bold text-gray-300 uppercase tracking-wide">CTA Button:</p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(currentAd.copy.cta);
+                    toast.success('✅ CTA zkopírován!');
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                >
+                  📋 Kopírovat
+                </button>
+              </div>
+              <p className="bg-black/50 text-white p-4 rounded-lg font-bold border border-gray-700">
+                {currentAd.copy.cta}
+              </p>
+            </div>
+
+            {/* All in one */}
+            <div className="pt-4 border-t border-gray-700">
+              <button
+                onClick={() => {
+                  const fullCopy = `PRIMARY TEXT:\n${currentAd.copy.primary}\n\nHEADLINE:\n${currentAd.copy.headline}\n\nCTA:\n${currentAd.copy.cta}`;
+                  navigator.clipboard.writeText(fullCopy);
+                  toast.success('✅ Celý copy zkopírován!');
+                }}
+                className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-lg"
+              >
+                📋 Zkopírovat celý copy najednou
+              </button>
             </div>
           </div>
         </div>

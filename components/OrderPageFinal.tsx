@@ -20,43 +20,6 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
   // 🎯 A/B TEST: Detekce varianty z URL (?variant=a nebo ?variant=b)
   const [forceVariant, setForceVariant] = useState<'a' | 'b' | null>(null);
 
-  // 🎯 AUTO-SCROLL: Když uživatel klikne v iframe, scrollne nahoru k platební bráně
-  useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout;
-    let lastScrollTime = 0;
-    
-    const handleWindowBlur = () => {
-      const now = Date.now();
-      // Prevence duplicitních scrollů (max 1x za 3 sekundy)
-      if (now - lastScrollTime < 3000) return;
-      
-      // Zkontroluj jestli byl focus v iframe
-      const activeElement = document.activeElement;
-      if (activeElement?.tagName === 'IFRAME') {
-        lastScrollTime = now;
-        
-        // Po 1.5 sekundě scrollne nahoru k platební bráně
-        scrollTimeout = setTimeout(() => {
-          const checkoutSection = document.getElementById('checkout-section');
-          if (checkoutSection) {
-            checkoutSection.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'start' 
-            });
-          }
-        }, 1500);
-      }
-    };
-
-    // Poslouchej window blur (= uživatel klikl do iframe)
-    window.addEventListener('blur', handleWindowBlur);
-
-    return () => {
-      window.removeEventListener('blur', handleWindowBlur);
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-    };
-  }, []);
-
   useEffect(() => {
     // Detekce A/B varianty z URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -189,10 +152,11 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
     if (fromHero) {
       setHeroCTAClicked(true);
     }
-    const checkoutSection = document.getElementById('checkout-section');
-    if (checkoutSection) {
-      checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // 🔇 REMOVED: Scroll úplně odstraněn - otravný při vyplňování polí
+    // const checkoutSection = document.getElementById('checkout-section');
+    // if (checkoutSection) {
+    //   checkoutSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+    // }
   };
 
   const formatTime = (seconds: number) => {
