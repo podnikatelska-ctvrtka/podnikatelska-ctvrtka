@@ -44,11 +44,12 @@ export function TouchFeedback({
       onTouchStart={handleTouch}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      style={{ willChange: 'transform' }}
     >
       {children}
       
-      {/* Touch ripples */}
-      {touches.map((touch) => (
+      {/* Touch ripples - only on buttons/CTAs, not on scroll containers */}
+      {touches.length > 0 && touches.map((touch) => (
         <motion.div
           key={touch.id}
           className="absolute pointer-events-none rounded-full"
@@ -56,6 +57,7 @@ export function TouchFeedback({
             left: touch.x,
             top: touch.y,
             backgroundColor: glowColor,
+            willChange: 'transform, opacity'
           }}
           initial={{ scale: 0, opacity: 0.8 }}
           animate={{ scale: 4, opacity: 0 }}

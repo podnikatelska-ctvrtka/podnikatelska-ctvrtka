@@ -1,5 +1,5 @@
 import { CheckCircle, Map, Users, Compass, ChevronDown, X } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useState, useEffect } from "react";
 import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
@@ -11,6 +11,20 @@ export function HeroSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileTooltip, setMobileTooltip] = useState<string | null>(null);
   const [remainingSpots, setRemainingSpots] = useState(50);
+  
+  // 🚀 PERFORMANCE: Detect if user prefers reduced motion
+  const prefersReducedMotion = useReducedMotion();
+  
+  // Simplified animation config for better mobile performance
+  const animationConfig = prefersReducedMotion ? {
+    initial: { opacity: 1 },
+    animate: { opacity: 1 },
+    transition: { duration: 0 }
+  } : {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.4 }
+  };
   
   // Update spots on mount
   useEffect(() => {
@@ -82,23 +96,13 @@ export function HeroSection() {
             {/* Levá strana - Hero obsah */}
             <motion.div 
               className="relative space-y-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              {...animationConfig}
             >
 
               {/* Badge - transformace podniku */}
               <motion.div 
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg border border-indigo-300/50"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ 
-                  opacity: 1, 
-                  scale: 1
-                }}
-                transition={{ 
-                  delay: 0.2,
-                  duration: 0.5
-                }}
+                {...animationConfig}
               >
                 <span className="text-lg">✨</span>
                 <span className="font-semibold">Od chaosu ke struktuře za 90 minut</span>
@@ -106,44 +110,32 @@ export function HeroSection() {
 
               {/* Hlavní nadpis */}
               <div className="space-y-4">
-                <motion.h1 
+                <h1 
                   className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
                 >
                   <span className="text-indigo-600 font-black">Jeden list papíru</span> změní váš byznys
-                </motion.h1>
+                </h1>
                 
                 <div className="space-y-3">
-                  <motion.p 
+                  <p 
                     className="text-xl text-gray-600 leading-relaxed"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4 }}
                   >
                     Za 90 minut vyplníte Čtvrtku krok za krokem a <strong>víte přesně, co dělat dál.</strong>
-                  </motion.p>
+                  </p>
                   
-                  <motion.p 
+                  <p 
                     className="text-lg text-gray-600 leading-relaxed"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.45 }}
                   >
                     <span className="text-indigo-600 font-medium">Pro každého podnikatele – od e-shopů po freelancery a služby.</span>
                     <br className="hidden sm:block" />
                     Žádná teorie – vyplňujete přímo v kurzu a odcházíte s konkrétním výsledkem.
-                  </motion.p>
+                  </p>
                 </div>
               </div>
 
               {/* Benefity - s kulatými ikonami jako ve V2 */}
-              <motion.div 
+              <div 
                 className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, staggerChildren: 0.1 }}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
@@ -169,14 +161,11 @@ export function HeroSection() {
                   </div>
                   <span className="text-gray-700 font-medium">Víte přesně, co dělat</span>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Desktop CTA tlačítko */}
-              <motion.div 
+              <div 
                 className="text-center mt-8 hidden md:block"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
               >
                 <TouchFeedback className="max-w-sm mx-auto">
                   <EnhancedCTA 
@@ -191,16 +180,13 @@ export function HeroSection() {
                 <p className="text-xs text-gray-600 mt-2 font-medium">
                   ⏰ Sleva platí 24 hodin od registrace
                 </p>
-              </motion.div>
+              </div>
 
             </motion.div>
 
             {/* Pravá strana - Interactive Canvas */}
-            <motion.div 
+            <div 
               className="relative min-h-[600px]"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
             >
               {/* Moderní interaktivní čtvrtka */}
               <div className="text-center mb-8">
@@ -370,7 +356,7 @@ export function HeroSection() {
                 </p>
               </motion.div>
 
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

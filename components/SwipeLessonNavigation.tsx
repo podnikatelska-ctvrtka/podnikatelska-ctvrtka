@@ -78,14 +78,16 @@ export function SwipeLessonNavigation({
 
   return (
     <div className="relative overflow-hidden">
-      {/* Swipe Indicators */}
+      {/* Swipe Indicators - OPTIMIZED for low-end devices */}
       <AnimatePresence>
         {isDragging && direction === 'right' && canSwipeRight && (
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 0.7, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
             className="absolute left-4 top-1/2 -translate-y-1/2 z-50 pointer-events-none"
+            style={{ willChange: 'opacity, transform' }}
           >
             <div className="bg-blue-600 text-white rounded-full p-4 shadow-xl">
               <ChevronLeft className="w-8 h-8" />
@@ -98,7 +100,9 @@ export function SwipeLessonNavigation({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 0.7, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
             className="absolute right-4 top-1/2 -translate-y-1/2 z-50 pointer-events-none"
+            style={{ willChange: 'opacity, transform' }}
           >
             <div className="bg-blue-600 text-white rounded-full p-4 shadow-xl">
               <ChevronRight className="w-8 h-8" />
@@ -107,18 +111,25 @@ export function SwipeLessonNavigation({
         )}
       </AnimatePresence>
 
-      {/* Swipeable Content */}
+      {/* Swipeable Content - OPTIMIZED drag performance */}
       <motion.div
         drag={swipeEnabled ? 'x' : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={{
-          left: canSwipeLeft ? 0.2 : 0,
-          right: canSwipeRight ? 0.2 : 0,
+          left: canSwipeLeft ? 0.1 : 0,
+          right: canSwipeRight ? 0.1 : 0,
+        }}
+        dragTransition={{ 
+          power: 0.3, 
+          timeConstant: 200,
+          bounceStiffness: 300,
+          bounceDamping: 20
         }}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         className={isDragging && swipeEnabled ? 'cursor-grabbing' : ''}
+        style={{ willChange: isDragging ? 'transform' : 'auto' }}
       >
         {children}
       </motion.div>

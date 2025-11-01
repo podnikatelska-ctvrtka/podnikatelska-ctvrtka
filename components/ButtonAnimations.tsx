@@ -56,7 +56,8 @@ export function AnimatedButton({
       `}
       whileHover={disabled ? {} : { scale: 1.02 }}
       whileTap={disabled ? {} : { scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      style={{ willChange: 'transform' }}
     >
       {children}
     </motion.button>

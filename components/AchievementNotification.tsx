@@ -43,8 +43,8 @@ export function AchievementNotification({ achievement, onClose, index = 0 }: Ach
           className="fixed right-4 z-50 max-w-sm transition-all duration-500 ease-out"
         >
           <div className={`bg-gradient-to-r ${bgGradient} text-white rounded-xl shadow-2xl overflow-hidden`}>
-            {/* Glow efekt */}
-            <div className="absolute inset-0 bg-white/10 animate-pulse" />
+            {/* Glow efekt - DISABLED for performance on low-end devices */}
+            {/* <div className="absolute inset-0 bg-white/10 animate-pulse" /> */}
             
             {/* Content */}
             <div className="relative p-5">

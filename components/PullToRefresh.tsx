@@ -99,16 +99,18 @@ export function PullToRefresh({
 
   return (
     <div ref={containerRef} className="relative min-h-screen">
-      {/* Refresh Indicator */}
+      {/* Refresh Indicator - OPTIMIZED for low-end devices */}
       <AnimatePresence>
         {showRefreshIndicator && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
             className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none"
             style={{
               transform: `translateY(${Math.min(pullDistance, maxPull)}px)`,
+              willChange: pullDistance > 0 ? 'transform' : 'auto'
             }}
           >
             <div className="bg-white shadow-lg rounded-full p-3 mt-4 flex items-center gap-2">
@@ -117,10 +119,11 @@ export function PullToRefresh({
                   rotate: isRefreshing ? 360 : pullProgress * 180,
                 }}
                 transition={{
-                  duration: isRefreshing ? 1 : 0,
+                  duration: isRefreshing ? 0.8 : 0.2,
                   repeat: isRefreshing ? Infinity : 0,
                   ease: isRefreshing ? 'linear' : 'easeOut',
                 }}
+                style={{ willChange: isRefreshing ? 'transform' : 'auto' }}
               >
                 <RefreshCw
                   className={`w-5 h-5 ${

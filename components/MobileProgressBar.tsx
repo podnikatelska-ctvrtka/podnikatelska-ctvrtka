@@ -61,7 +61,7 @@ export function MobileProgressBar() {
       >
         <div className="flex items-center justify-between px-3 py-2.5">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse flex-shrink-0"></div>
+            <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
             <span className="text-xs font-semibold text-gray-700 truncate">
               {sections[currentSection]?.label || '🎯 Úvod'}
             </span>

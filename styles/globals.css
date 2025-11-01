@@ -75,6 +75,21 @@ input[type="number"].no-spinner {
     overflow-x: hidden;
   }
   
+  /* 📱 MOBILE: Reduce motion on low-end devices */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  
   body {
     font-family: 'Inter', sans-serif;
     background-color: var(--background);
@@ -89,23 +104,56 @@ input[type="number"].no-spinner {
     overflow-wrap: anywhere;
   }
   
-  /* Optimalizace pro smooth scrolling */
+  /* 🚀 MOBILE SCROLL OPTIMIZATIONS */
   * {
     -webkit-tap-highlight-color: transparent;
+    /* Improve scroll performance */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Hardware acceleration only for elements that animate */
+  [class*="motion-"],
+  [class*="animate-"],
+  button,
+  a {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
   
   /* GPU acceleration pro animations */
   [class*="motion-"] {
     will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
-  /* Smooth hover transitions */
-  button, a {
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  /* 📱 MOBILE: Simplify animations on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    /* Disable complex animations on mobile */
+    [class*="motion-"],
+    [data-framer-motion],
+    [data-motion] {
+      animation-duration: 0.2s !important;
+      transition-duration: 0.2s !important;
+    }
   }
   
-  button:active, a:active {
-    transform: scale(0.98);
+  /* Smooth hover transitions - only on desktop */
+  @media (hover: hover) {
+    button, a {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    button:hover, a:hover {
+      transform: translateY(-1px);
+    }
+  }
+  
+  /* Touch feedback - mobile only */
+  @media (hover: none) {
+    button:active, a:active {
+      transform: scale(0.98);
+    }
   }
   
   /* Focus visible pro accessibility */
@@ -261,4 +309,15 @@ input[type="number"].no-spinner {
   /* 📱 LANDSCAPE MODE - VYŘAZENO Z LEKCÍ */
   /* Lekce zůstávají v portrait mobile view i v landscape režimu */
   /* Landscape optimalizace jsou pouze pro Dashboard canvas preview */
+  
+  /* 🚀 PERFORMANCE: Content visibility for off-screen sections */
+  section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+  
+  /* 🚀 PERFORMANCE: Optimize image rendering */
+  img {
+    content-visibility: auto;
+  }
 }
