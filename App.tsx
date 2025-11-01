@@ -51,7 +51,7 @@ import * as Sentry from "@sentry/react";
 export default function App() {
   // 🚀 READY TO DEPLOY - Fresh version with all ads and improvements!
   // Toggle between modes: early-access / prelaunch / normal-sale  
-  const saleMode = "early-access"; // "early-access" | "prelaunch" | "normal-sale"
+  const saleMode = "prelaunch"; // "early-access" | "prelaunch" | "normal-sale" - ✅ AGGRESSIVE FLIP!
   
   // 🔐 AUTH STATE: Check if user is logged in
   const [isAuthenticated, setIsAuthenticated] = useState(false);
