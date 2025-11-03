@@ -173,11 +173,11 @@ export async function handler(event, context) {
     const mainCourseUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${encodeURIComponent(accessToken)}`;
     const miniCourseUrl = `https://podnikatelskactvrtka.cz/minikurz?token=MINICOURSE2025`;
     
-    // 🧾 FAKTURA URL - 3 fallbacky!
+    // 🧾 FAKTURA URL - SPRÁVNÝ FORMÁT!
     // 1) PDF URL z FAPI API response (nejlepší - přímý download)
-    // 2) Invoice detail page (FAPI app - view online)
-    // 3) Fallback message (pokud FAPI nic neposkytne)
-    const invoiceUrl = invoicePdfUrl || `https://app.fapi.cz/invoices/${invoiceId}`;
+    // 2) Invoice detail page (VERIFIED from real invoice!)
+    //    Format: https://web.fapi.cz/invoice/detail/208948245?projectId=all
+    const invoiceUrl = invoicePdfUrl || `https://web.fapi.cz/invoice/detail/${invoiceId}?projectId=all`;
     const hasInvoiceUrl = !!invoicePdfUrl;
     
     console.log('🧾 Invoice URL pro email:', invoiceUrl);
