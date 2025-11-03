@@ -38,11 +38,10 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
     if (error) {
       setPaymentError(error);
       
-      // Track error in Sentry
-      trackError(new Error(`Payment error: ${error}`), {
-        context: 'OrderPage - Payment Failed',
-        errorType: error
-      });
+      // ✅ Track jako event (ne jako error!) - failed payment je normální business flow
+      trackCourseEvent.paymentFailedRedirect(error);
+      
+      console.log('⚠️ Payment failed detected:', error);
       
       // Scroll to checkout after showing error
       setTimeout(() => {

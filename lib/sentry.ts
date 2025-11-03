@@ -68,6 +68,22 @@ export const trackCourseEvent = {
       data: { userId },
     });
   },
+
+  /**
+   * Payment failed redirect - business event (ne error!)
+   */
+  paymentFailedRedirect: (errorType: string) => {
+    Sentry.addBreadcrumb({
+      category: 'ecommerce',
+      message: 'Payment failed redirect',
+      level: 'warning',
+      data: { 
+        errorType,
+        timestamp: new Date().toISOString(),
+        context: 'OrderPage - Payment Failed URL'
+      },
+    });
+  },
 };
 
 /**
