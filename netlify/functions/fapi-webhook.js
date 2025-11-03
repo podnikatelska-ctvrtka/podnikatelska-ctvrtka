@@ -167,6 +167,7 @@ export async function handler(event, context) {
     // ──────────────────────────────────────────
     const mainCourseUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${encodeURIComponent(accessToken)}`;
     const miniCourseUrl = `https://podnikatelskactvrtka.cz/minikurz?token=MINICOURSE2025`;
+    const invoiceUrl = `https://app.fapi.cz/invoice/${invoiceId}`;
     
     // 🎯 TEMPLATE A: PRŮKOPNÍK (s minikurzem)
     const earlyBirdEmailHtml = `
@@ -224,6 +225,16 @@ export async function handler(event, context) {
               
               <p style="color: #666; font-size: 14px;">💡 <strong>Tip:</strong> Uložte si tento email - odkazy fungují natrvalo a můžete se kdykoliv vrátit!</p>
               
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #f0f9ff; border-radius: 8px; margin: 20px 0; border: 1px solid #bae6fd;">
+                <tr>
+                  <td style="padding: 15px;">
+                    <p style="margin: 0 0 10px 0; font-weight: 600; color: #0369a1;">📄 Faktura</p>
+                    <p style="margin: 0 0 10px 0; font-size: 14px; color: #0c4a6e;">Vaše faktura je připravena ke stažení:</p>
+                    <a href="${invoiceUrl}" style="display: inline-block; background: #0ea5e9; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-size: 14px;">Stáhnout fakturu (PDF)</a>
+                  </td>
+                </tr>
+              </table>
+              
               <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
               
               <p style="color: #999; font-size: 13px; margin-bottom: 0;">Pokud máte jakékoliv dotazy, neváhejte odpovědět na tento email.<br>Přejeme hodně úspěchů! 💪</p>
@@ -271,6 +282,16 @@ export async function handler(event, context) {
               </table>
               
               <p style="color: #666; font-size: 14px;">💡 <strong>Tip:</strong> Uložte si tento email - odkaz funguje natrvalo a můžete se kdykoliv vrátit ke kurzu!</p>
+              
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #f0f9ff; border-radius: 8px; margin: 20px 0; border: 1px solid #bae6fd;">
+                <tr>
+                  <td style="padding: 15px;">
+                    <p style="margin: 0 0 10px 0; font-weight: 600; color: #0369a1;">📄 Faktura</p>
+                    <p style="margin: 0 0 10px 0; font-size: 14px; color: #0c4a6e;">Vaše faktura je připravena ke stažení:</p>
+                    <a href="${invoiceUrl}" style="display: inline-block; background: #0ea5e9; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-size: 14px;">Stáhnout fakturu (PDF)</a>
+                  </td>
+                </tr>
+              </table>
               
               <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
               

@@ -105,6 +105,44 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
     return () => clearInterval(timer);
   }, [testMode]);
 
+  // 🎯 FAPI MESSAGE LISTENER - poslouchá na success platbu a přesměruje na /dekuji
+  useEffect(() => {
+    const handleFapiMessage = (event: MessageEvent) => {
+      // Security: Ověř že zpráva přichází z FAPI
+      if (event.origin !== 'https://form.fapi.cz') return;
+      
+      console.log('📧 FAPI Message received:', event.data);
+      
+      // FAPI posílá různé eventy - hledáme success
+      if (event.data && typeof event.data === 'object') {
+        const { type, status, data } = event.data;
+        
+        // Success scenarios - různé varianty FAPI zpráv
+        if (
+          type === 'purchase_complete' || 
+          type === 'payment_success' ||
+          status === 'success' ||
+          status === 'paid' ||
+          (data && data.status === 'success')
+        ) {
+          console.log('✅ FAPI: Platba úspěšná! Redirecting...');
+          
+          // Redirect na thank you page
+          // Token přijde z webhooku - tady jen základní success
+          window.location.href = '/dekuji';
+        }
+      }
+    };
+    
+    // Přidat listener
+    window.addEventListener('message', handleFapiMessage);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('message', handleFapiMessage);
+    };
+  }, []);
+
   // Scroll observer for sticky CTA - show when hero is out of view, hide at checkout
   useEffect(() => {
     const heroSection = document.getElementById('hero-section');
@@ -998,6 +1036,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation allow-top-navigation-by-user-activation allow-payment"
                       allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Varianta A (4.999 Kč)"
@@ -1013,6 +1052,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation allow-top-navigation-by-user-activation allow-payment"
                       allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Varianta B (8.499 Kč)"
@@ -1031,6 +1071,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation allow-top-navigation-by-user-activation allow-payment"
                       allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Early Bird (4.999 Kč)"
@@ -1046,6 +1087,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       width="100%" 
                       height="1400" 
                       frameBorder="0"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation allow-top-navigation-by-user-activation allow-payment"
                       allow="payment"
                       style={{ border: 'none', minHeight: '1400px' }}
                       title="Objednávkový formulář - Plná cena (8.499 Kč)"

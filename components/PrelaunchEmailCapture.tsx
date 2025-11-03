@@ -323,7 +323,7 @@ export function PrelaunchEmailCapture() {
                     <Mail className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div>
                       <strong className="block">Zkontrolujte email</strong>
-                      <span className="text-sm text-blue-600">Potvrzení čekací listiny (i spam!)</span>
+                      <span className="text-sm text-blue-600">Potvrzení čekací listiny (i spam/hromadné!)</span>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">
@@ -369,7 +369,7 @@ export function PrelaunchEmailCapture() {
             </h2>
             <p className="text-lg text-gray-600 mb-6">
               <strong className="text-green-600">Gratulujeme!</strong> Právě jste se stali <strong>PRŮKOPNÍKEM</strong>.<br/>
-              Email dorazí <strong className="text-orange-600">do 5 minut</strong> (zkontrolujte i spam!).
+              Email dorazí <strong className="text-orange-600">do 5 minut</strong> — zkontrolujte i <strong>spam/hromadné</strong>!
             </p>
             
             {/* Urgency Box - ZJEDNODUŠENÝ */}
@@ -381,7 +381,7 @@ export function PrelaunchEmailCapture() {
                   <span className="flex-shrink-0 w-6 h-6 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
                   <div>
                     <strong className="block">Zkontrolujte email</strong>
-                    <span className="text-sm text-orange-600">(i spam složku!)</span>
+                    <span className="text-sm text-orange-600">(i spam/hromadné složku!)</span>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
