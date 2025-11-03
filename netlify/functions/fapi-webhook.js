@@ -108,6 +108,11 @@ export async function handler(event, context) {
     const name = invoice.customer?.name || invoice.customer?.first_name || 'Zákazník';
     const amount = parseFloat(invoice.total || 0);
     
+    // 🧾 Extract invoice PDF URL from FAPI response
+    // FAPI poskytuje různé formáty URL pro faktury:
+    const invoicePdfUrl = invoice.pdf_url || invoice.invoice_url || invoice.pdf || null;
+    console.log('📄 Invoice PDF URL from FAPI:', invoicePdfUrl);
+    
     // 🎯 DETECT EARLY BIRD BY PRICE
     // 4.999 Kč = Early Bird (průkopník, dostane hlavní + mini kurz)
     // 8.499 Kč = Full Price (normální, dostane jen hlavní kurz)
@@ -167,7 +172,16 @@ export async function handler(event, context) {
     // ──────────────────────────────────────────
     const mainCourseUrl = `https://podnikatelskactvrtka.cz/course-v3?token=${encodeURIComponent(accessToken)}`;
     const miniCourseUrl = `https://podnikatelskactvrtka.cz/minikurz?token=MINICOURSE2025`;
-    const invoiceUrl = `https://app.fapi.cz/invoice/${invoiceId}`;
+    
+    // 🧾 FAKTURA URL - 3 fallbacky!
+    // 1) PDF URL z FAPI API response (nejlepší - přímý download)
+    // 2) Invoice detail page (FAPI app - view online)
+    // 3) Fallback message (pokud FAPI nic neposkytne)
+    const invoiceUrl = invoicePdfUrl || `https://app.fapi.cz/invoices/${invoiceId}`;
+    const hasInvoiceUrl = !!invoicePdfUrl;
+    
+    console.log('🧾 Invoice URL pro email:', invoiceUrl);
+    console.log('🧾 Has direct PDF:', hasInvoiceUrl);
     
     // 🎯 TEMPLATE A: PRŮKOPNÍK (s minikurzem)
     const earlyBirdEmailHtml = `

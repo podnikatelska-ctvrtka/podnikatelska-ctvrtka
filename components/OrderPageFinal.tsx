@@ -108,37 +108,104 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
   // 🎯 FAPI MESSAGE LISTENER - poslouchá na success platbu a přesměruje na /dekuji
   useEffect(() => {
     const handleFapiMessage = (event: MessageEvent) => {
-      // Security: Ověř že zpráva přichází z FAPI
-      if (event.origin !== 'https://form.fapi.cz') return;
+      // 🐛 DEBUG MODE - LOGUJ VŠECHNY ZPRÁVY (i non-FAPI)
+      console.log('╔════════════════════════════════════════╗');
+      console.log('║  📬 POST MESSAGE RECEIVED              ║');
+      console.log('╚════════════════════════════════════════╝');
+      console.log('🌍 Origin:', event.origin);
+      console.log('📦 Data:', event.data);
+      console.log('📝 Data type:', typeof event.data);
+      if (event.data && typeof event.data === 'object') {
+        console.log('🔍 Data keys:', Object.keys(event.data));
+        console.log('🔍 Data stringified:', JSON.stringify(event.data, null, 2));
+      }
+      console.log('════════════════════════════════════════');
       
-      console.log('📧 FAPI Message received:', event.data);
+      // Security check - ale po debug logu!
+      // ROZŠÍŘENO: Přijímej zprávy z form.fapi.cz I app.fapi.cz I fapi.cz
+      const allowedOrigins = [
+        'https://form.fapi.cz',
+        'https://app.fapi.cz', 
+        'https://fapi.cz',
+        'https://gopay.cz',
+        'https://gate.gopay.cz'
+      ];
+      
+      const isAllowedOrigin = allowedOrigins.some(origin => event.origin.includes(origin));
+      
+      if (!isAllowedOrigin) {
+        console.log('⚠️ Message from non-FAPI origin, skipping...');
+        return;
+      }
+      
+      console.log('✅ Message from allowed origin!');
       
       // FAPI posílá různé eventy - hledáme success
+      // ROZŠÍŘENÁ DETEKCE - více variant
       if (event.data && typeof event.data === 'object') {
-        const { type, status, data } = event.data;
+        const { type, status, data, event: eventName, action } = event.data;
         
-        // Success scenarios - různé varianty FAPI zpráv
-        if (
+        console.log('🔎 Checking for success conditions...');
+        console.log('  - type:', type);
+        console.log('  - status:', status);
+        console.log('  - eventName:', eventName);
+        console.log('  - action:', action);
+        console.log('  - data:', data);
+        
+        // Success scenarios - VŠECHNY možné varianty
+        const isSuccess = (
+          // Typy
           type === 'purchase_complete' || 
           type === 'payment_success' ||
+          type === 'order_complete' ||
+          type === 'payment_complete' ||
+          type === 'gopay_success' ||
+          type === 'fapi_success' ||
+          // Status
           status === 'success' ||
           status === 'paid' ||
-          (data && data.status === 'success')
-        ) {
-          console.log('✅ FAPI: Platba úspěšná! Redirecting...');
+          status === 'completed' ||
+          status === 'PAID' ||
+          // Event name
+          eventName === 'purchase_complete' ||
+          eventName === 'payment_success' ||
+          // Action
+          action === 'success' ||
+          action === 'redirect' ||
+          // Data nested
+          (data && data.status === 'success') ||
+          (data && data.status === 'paid') ||
+          (data && data.status === 'PAID') ||
+          // String obsahuje "success"
+          (typeof event.data === 'string' && event.data.toLowerCase().includes('success')) ||
+          (typeof event.data === 'string' && event.data.toLowerCase().includes('paid'))
+        );
+        
+        if (isSuccess) {
+          console.log('╔════════════════════════════════════════╗');
+          console.log('║  🎉 SUCCESS DETECTED!                  ║');
+          console.log('╚════════════════════════════════════════╝');
+          console.log('🚀 Redirecting to /dekuji in 1 second...');
           
-          // Redirect na thank you page
-          // Token přijde z webhooku - tady jen základní success
-          window.location.href = '/dekuji';
+          // Malý delay aby se viděl log
+          setTimeout(() => {
+            window.location.href = '/dekuji';
+          }, 1000);
+        } else {
+          console.log('❌ No success condition matched');
         }
+      } else {
+        console.log('❌ Data is not an object or is empty');
       }
     };
     
     // Přidat listener
+    console.log('🎧 FAPI message listener registered!');
     window.addEventListener('message', handleFapiMessage);
     
     // Cleanup
     return () => {
+      console.log('🔇 FAPI message listener removed');
       window.removeEventListener('message', handleFapiMessage);
     };
   }, []);
