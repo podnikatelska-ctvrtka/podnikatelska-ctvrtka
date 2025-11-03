@@ -19,13 +19,38 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
   
   // 🎯 A/B TEST: Detekce varianty z URL (?variant=a nebo ?variant=b)
   const [forceVariant, setForceVariant] = useState<'a' | 'b' | null>(null);
+  
+  // ⚠️ ERROR HANDLING: Detekce payment error z URL
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Detekce A/B varianty z URL
+    // Detekce A/B varianty a error stavu z URL
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // A/B variant
     const variant = urlParams.get('variant');
     if (variant === 'a' || variant === 'b') {
       setForceVariant(variant);
+    }
+    
+    // Payment error
+    const error = urlParams.get('error');
+    if (error) {
+      setPaymentError(error);
+      
+      // Track error in Sentry
+      trackError(new Error(`Payment error: ${error}`), {
+        context: 'OrderPage - Payment Failed',
+        errorType: error
+      });
+      
+      // Scroll to checkout after showing error
+      setTimeout(() => {
+        const checkoutSection = document.getElementById('checkout-section');
+        if (checkoutSection) {
+          checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 1000);
     }
   }, []);
 
@@ -118,17 +143,23 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
       if (event.data && typeof event.data === 'object') {
         console.log('🔍 Data keys:', Object.keys(event.data));
         console.log('🔍 Data stringified:', JSON.stringify(event.data, null, 2));
+      } else if (typeof event.data === 'string') {
+        console.log('📝 String length:', event.data.length);
+        console.log('📝 String content:', `"${event.data}"`);
+        console.log('📝 String lowercase:', event.data.toLowerCase());
       }
       console.log('════════════════════════════════════════');
       
       // Security check - ale po debug logu!
-      // ROZŠÍŘENO: Přijímej zprávy z form.fapi.cz I app.fapi.cz I fapi.cz
+      // ROZŠÍŘENO: Přijímej zprávy z form.fapi.cz I app.fapi.cz I fapi.cz I app.cink.cz (GoPay brána!)
       const allowedOrigins = [
         'https://form.fapi.cz',
         'https://app.fapi.cz', 
         'https://fapi.cz',
         'https://gopay.cz',
-        'https://gate.gopay.cz'
+        'https://gate.gopay.cz',
+        'https://app.cink.cz',    // ✅ GoPay platební brána (FAPI používá CINK)
+        'https://www.iframe.cz'   // ✅ FAPI iframe wrapper
       ];
       
       // 🧪 TEST MODE: Přijmi zprávy i z vlastní domény (pro testování v konzoli)
@@ -150,11 +181,15 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
       }
       
       // FAPI posílá různé eventy - hledáme success
-      // ROZŠÍŘENÁ DETEKCE - více variant
+      // ROZŠÍŘENÁ DETEKCE - více variant (object i string!)
+      
+      let isSuccess = false;
+      
       if (event.data && typeof event.data === 'object') {
+        // ✅ OBJECT DATA (FAPI standard format)
         const { type, status, data, event: eventName, action } = event.data;
         
-        console.log('🔎 Checking for success conditions...');
+        console.log('🔎 Checking for success conditions (OBJECT)...');
         console.log('  - type:', type);
         console.log('  - status:', status);
         console.log('  - eventName:', eventName);
@@ -162,7 +197,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
         console.log('  - data:', data);
         
         // Success scenarios - VŠECHNY možné varianty
-        const isSuccess = (
+        isSuccess = (
           // Typy
           type === 'purchase_complete' || 
           type === 'payment_success' ||
@@ -184,27 +219,42 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
           // Data nested
           (data && data.status === 'success') ||
           (data && data.status === 'paid') ||
-          (data && data.status === 'PAID') ||
-          // String obsahuje "success"
-          (typeof event.data === 'string' && event.data.toLowerCase().includes('success')) ||
-          (typeof event.data === 'string' && event.data.toLowerCase().includes('paid'))
+          (data && data.status === 'PAID')
         );
         
-        if (isSuccess) {
-          console.log('╔════════════════════════════════════════╗');
-          console.log('║  🎉 SUCCESS DETECTED!                  ║');
-          console.log('╚════════════════════════════════════════╝');
-          console.log('🚀 Redirecting to /dekuji in 1 second...');
-          
-          // Malý delay aby se viděl log
-          setTimeout(() => {
-            window.location.href = '/dekuji';
-          }, 1000);
-        } else {
-          console.log('❌ No success condition matched');
-        }
+      } else if (typeof event.data === 'string') {
+        // ✅ STRING DATA (GoPay/CINK může posílat jako string!)
+        console.log('🔎 Checking for success conditions (STRING)...');
+        console.log('  - Raw string:', event.data);
+        
+        const dataLower = event.data.toLowerCase();
+        isSuccess = (
+          dataLower.includes('success') ||
+          dataLower.includes('paid') ||
+          dataLower.includes('complete') ||
+          dataLower.includes('purchase') ||
+          dataLower === 'ok' ||
+          dataLower === 'done'
+        );
+        
+        console.log('  - Contains success keywords?', isSuccess);
       } else {
-        console.log('❌ Data is not an object or is empty');
+        console.log('❌ Data is empty or unknown type');
+      }
+      
+      // ✅ REDIRECT ON SUCCESS
+      if (isSuccess) {
+        console.log('╔════════════════════════════════════════╗');
+        console.log('║  🎉 SUCCESS DETECTED!                  ║');
+        console.log('╚════════════════════════════════════════╝');
+        console.log('🚀 Redirecting to /dekuji in 1 second...');
+        
+        // Malý delay aby se viděl log
+        setTimeout(() => {
+          window.location.href = '/dekuji';
+        }, 1000);
+      } else {
+        console.log('❌ No success condition matched');
       }
     };
     
@@ -212,10 +262,62 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
     console.log('🎧 FAPI message listener registered!');
     window.addEventListener('message', handleFapiMessage);
     
+    // 🧪 DEBUG MODE: Přidej globální funkce pro testování (dostupné v konzoli)
+    if (typeof window !== 'undefined') {
+      (window as any).testPaymentSuccess = () => {
+        console.log('🧪 SIMULATING: Payment SUCCESS');
+        window.postMessage({ type: 'payment_success', status: 'paid' }, window.location.origin);
+      };
+      
+      (window as any).testPaymentFailed = () => {
+        console.log('🧪 SIMULATING: Payment FAILED');
+        window.postMessage({ type: 'payment_failed', status: 'failed' }, window.location.origin);
+      };
+      
+      (window as any).testPaymentCancelled = () => {
+        console.log('🧪 SIMULATING: Payment CANCELLED');
+        window.postMessage({ type: 'payment_cancelled', status: 'cancelled' }, window.location.origin);
+      };
+      
+      (window as any).testGoPayString = () => {
+        console.log('🧪 SIMULATING: GoPay string message (from app.cink.cz)');
+        const event = new MessageEvent('message', {
+          data: 'success',
+          origin: 'https://app.cink.cz'
+        });
+        window.dispatchEvent(event);
+      };
+      
+      console.log('');
+      console.log('╔════════════════════════════════════════╗');
+      console.log('║  🧪 DEBUG MODE ACTIVATED               ║');
+      console.log('╚════════════════════════════════════════╝');
+      console.log('');
+      console.log('📝 Test functions available:');
+      console.log('  → testPaymentSuccess()   - Simulate successful payment');
+      console.log('  → testPaymentFailed()    - Simulate failed payment');
+      console.log('  → testPaymentCancelled() - Simulate cancelled payment');
+      console.log('  → testGoPayString()      - Simulate GoPay success (string)');
+      console.log('');
+      console.log('💡 Quick tests:');
+      console.log('  ✅ testPaymentSuccess()   → redirect to /dekuji');
+      console.log('  ✅ testGoPayString()      → redirect to /dekuji');
+      console.log('  ⚠️  Test failed URL:      → /objednavka?error=payment_failed');
+      console.log('');
+      console.log('📖 Full guide: See /FAPI_PAYMENT_SIMULATION_GUIDE.md');
+      console.log('');
+    }
+    
     // Cleanup
     return () => {
       console.log('🔇 FAPI message listener removed');
       window.removeEventListener('message', handleFapiMessage);
+      if (typeof window !== 'undefined') {
+        delete (window as any).testPaymentSuccess;
+        delete (window as any).testPaymentFailed;
+        delete (window as any).testPaymentCancelled;
+        delete (window as any).testGoPayString;
+      }
     };
   }, []);
 
@@ -315,8 +417,44 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
 
   return (
     <div className="min-h-screen bg-white">
+      {/* ⚠️ PAYMENT ERROR BANNER - Zobrazí se když platba failne */}
+      <AnimatePresence>
+        {paymentError && (
+          <motion.div
+            initial={{ opacity: 0, y: -100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -100 }}
+            className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-2xl"
+          >
+            <div className="max-w-4xl mx-auto px-4 py-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="w-6 h-6 flex-shrink-0" />
+                  <div>
+                    <p className="font-bold text-lg">Platba se nezdařila</p>
+                    <p className="text-sm text-white/90">
+                      {paymentError === 'payment_failed' && 'Něco se pokazilo při zpracování platby.'}
+                      {paymentError === 'payment_cancelled' && 'Platba byla zrušena.'}
+                      {!['payment_failed', 'payment_cancelled'].includes(paymentError) && 'Došlo k neočekávané chybě.'}
+                      {' '}Zkus to prosím znovu níže.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setPaymentError(null)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                  aria-label="Zavřít upozornění"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Hero - úderný! */}
-      <div id="hero-section" className="bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white py-16 md:py-20 relative overflow-hidden">
+      <div id="hero-section" className="bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white py-16 md:py-20 relative overflow-hidden" style={{ marginTop: paymentError ? '80px' : '0' }}>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
 
         <div className="max-w-5xl mx-auto px-4 relative z-10">
