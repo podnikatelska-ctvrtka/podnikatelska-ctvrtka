@@ -131,14 +131,23 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
         'https://gate.gopay.cz'
       ];
       
+      // 🧪 TEST MODE: Přijmi zprávy i z vlastní domény (pro testování v konzoli)
+      const isTestMode = event.origin.includes('podnikatelskactvrtka.cz') || 
+                         event.origin.includes('localhost') ||
+                         event.origin.includes('127.0.0.1');
+      
       const isAllowedOrigin = allowedOrigins.some(origin => event.origin.includes(origin));
       
-      if (!isAllowedOrigin) {
+      if (!isAllowedOrigin && !isTestMode) {
         console.log('⚠️ Message from non-FAPI origin, skipping...');
         return;
       }
       
-      console.log('✅ Message from allowed origin!');
+      if (isTestMode) {
+        console.log('🧪 TEST MODE - Message from same origin (allowed for testing)');
+      } else {
+        console.log('✅ Message from allowed FAPI origin!');
+      }
       
       // FAPI posílá různé eventy - hledáme success
       // ROZŠÍŘENÁ DETEKCE - více variant
