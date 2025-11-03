@@ -99,7 +99,8 @@ export function OptimizedMobileCTA() {
   }, []);
 
   const scrollToOrder = () => {
-    const orderSection = document.getElementById('order');
+    // ✅ SUPPORT PRO 2 STRÁNKY: Landing page (#order) nebo Order page (#checkout-section)
+    const orderSection = document.getElementById('order') || document.getElementById('checkout-section');
     if (orderSection) {
       // Najít email input v order sekci
       const emailInput = orderSection.querySelector('input[type="email"]');
@@ -109,14 +110,14 @@ export function OptimizedMobileCTA() {
         const scrollTop = window.pageYOffset + rect.top - (window.innerHeight * 0.3);
         
         window.scrollTo({
-          top: scrollTop,
+          top: Math.max(0, scrollTop),
           behavior: 'smooth'
         });
         
-        // Po scroll fokus na input (po 500ms kvůli animaci)
+        // Po scroll fokus na input (po 600ms kvůli animaci)
         setTimeout(() => {
-          emailInput.focus();
-        }, 500);
+          (emailInput as HTMLInputElement).focus();
+        }, 600);
       } else {
         // Fallback - scroll na začátek order sekce
         orderSection.scrollIntoView({ 

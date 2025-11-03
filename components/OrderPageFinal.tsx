@@ -152,11 +152,35 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
     if (fromHero) {
       setHeroCTAClicked(true);
     }
-    // 🔇 REMOVED: Scroll úplně odstraněn - otravný při vyplňování polí
-    // const checkoutSection = document.getElementById('checkout-section');
-    // if (checkoutSection) {
-    //   checkoutSection.scrollIntoView({ behavior: 'auto', block: 'start' });
-    // }
+    
+    // ✅ SCROLL K FORMULÁŘI
+    const checkoutSection = document.getElementById('checkout-section');
+    if (checkoutSection) {
+      // Najít první input v checkout sekci
+      const firstInput = checkoutSection.querySelector('input[type="email"]') as HTMLInputElement;
+      
+      if (firstInput) {
+        // Scroll na input s offsetem pro lepší UX
+        const rect = firstInput.getBoundingClientRect();
+        const scrollTop = window.pageYOffset + rect.top - (window.innerHeight * 0.25);
+        
+        window.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+        
+        // Po scroll fokus na input (po 600ms kvůli animaci)
+        setTimeout(() => {
+          firstInput.focus();
+        }, 600);
+      } else {
+        // Fallback - scroll na začátek checkout sekce
+        checkoutSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }
   };
 
   const formatTime = (seconds: number) => {
