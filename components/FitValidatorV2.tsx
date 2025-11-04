@@ -730,6 +730,30 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           // Nech valueMap = null aby se zobrazil prázdný stát
           if (!valueMap) {
             console.warn('⚠️ Value Map pro hodnotu', localSelectedValue, 'neexistuje!');
+            
+            // 🗑️ SMAŽ STARÁ FIT MAPPINGS Z DB protože už nejsou validní!
+            console.log('🗑️ Mažu stará FIT mappings pro hodnotu:', localSelectedValue);
+            
+            // Najdi Customer Profile záznam
+            if (customerProfile) {
+              // Vymaž fit_validation_data
+              supabase
+                .from('value_proposition_canvas')
+                .update({ 
+                  fit_validation_data: null,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('user_id', userId)
+                .eq('segment_name', localSelectedSegment)
+                .is('selected_value', null)
+                .then(({ error }) => {
+                  if (error) {
+                    console.error('Error clearing FIT mappings:', error);
+                  } else {
+                    console.log('✅ Stará FIT mappings vymazána z DB');
+                  }
+                });
+            }
           }
         } else {
           // Pokud není vybraná hodnota, použij první dostupnou (fallback)
@@ -752,7 +776,13 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         console.log('📦 Customer Profile RAW DATA:', customerProfile);
         
         // 💾 Načti FIT validation progress (pokud existuje)
-        const fitProgress = customerProfile?.fit_validation_data;
+        let fitProgress = customerProfile?.fit_validation_data;
+        
+        // ✅ KONTROLA: Pokud NENÍ Value Map pro aktuální hodnotu, IGNORUJ stará FIT mappings!
+        if (!valueMap && localSelectedValue) {
+          console.warn('⚠️ Value Map neexistuje → ignoruji stará FIT mappings');
+          fitProgress = null; // Ignoruj stará data!
+        }
         
         console.log('📊 FIT Progress data:', fitProgress);
         
@@ -1142,12 +1172,12 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     loadAvailableOptions();
   }, [userId]);
   
-  // ✅ DŮLEŽITÉ: Reload VPC dat když se změní segment NEBO při prvním mount!
+  // ✅ DŮLEŽITÉ: Reload VPC dat když se změní segment NEBO hodnota NEBO při prvním mount!
   useEffect(() => {
     if (userId && localSelectedSegment) {
       loadVPC();
     }
-  }, [localSelectedSegment, userId]); // ✅ Přidán userId pro reload při prvním mount
+  }, [localSelectedSegment, localSelectedValue, userId]); // ✅ Přidán localSelectedValue pro reload při změně hodnoty!
   
   // 🔄 Přepočítat % když se změní celkový počet respondentů
   useEffect(() => {
