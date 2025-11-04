@@ -662,7 +662,74 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   ))}
                 </div>
                 
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center gap-4">
+                  {/* 🗑️ Reset tlačítko - smaže data pro aktuální hodnotu */}
+                  {vpcId && selectedValue && (
+                    <button
+                      onClick={async () => {
+                        if (!window.confirm(`Opravdu chcete smazat všechna data pro hodnotu "${selectedValue}"?\n\nTato akce je nevratná!`)) {
+                          return;
+                        }
+                        
+                        try {
+                          // 1️⃣ Vymaž FIT mappings z Customer Profile (pokud existují)
+                          const { data: customerProfile } = await supabase
+                            .from('value_proposition_canvas')
+                            .select('id, fit_validation_data')
+                            .eq('user_id', userId)
+                            .eq('segment_name', selectedSegment)
+                            .is('selected_value', null)
+                            .maybeSingle();
+                          
+                          if (customerProfile && customerProfile.fit_validation_data) {
+                            const cleanProgressData = {
+                              ...customerProfile.fit_validation_data,
+                              painRelieverMappings: {},
+                              gainCreatorMappings: {},
+                              productMappings: {},
+                              selectedValueUsed: null,
+                              lastSaved: new Date().toISOString()
+                            };
+                            
+                            await supabase
+                              .from('value_proposition_canvas')
+                              .update({ fit_validation_data: cleanProgressData })
+                              .eq('id', customerProfile.id);
+                            
+                            console.log('✅ FIT mappings vymazány z Customer Profile');
+                          }
+                          
+                          // 2️⃣ Vymaž Value Map záznam z DB
+                          const { error } = await supabase
+                            .from('value_proposition_canvas')
+                            .delete()
+                            .eq('id', vpcId);
+                          
+                          if (error) throw error;
+                          
+                          // 3️⃣ Reset lokálního stavu
+                          setVpcId(null);
+                          setProducts([]);
+                          setPainRelievers([]);
+                          setGainCreators([]);
+                          setJobs([]);
+                          setPains([]);
+                          setGains([]);
+                          setCurrentStep(1);
+                          
+                          toast.success(`✅ Data pro hodnotu "${selectedValue}" byla vymazána včetně FIT propojení`);
+                        } catch (error) {
+                          console.error('Error deleting value map:', error);
+                          toast.error('Chyba při mazání dat');
+                        }
+                      }}
+                      className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm flex items-center gap-2 border border-red-200 transition-all"
+                    >
+                      <X className="w-4 h-4" />
+                      Smazat data pro tuto hodnotu
+                    </button>
+                  )}
+                  
                   <button
                     onClick={() => {
                       if (selectedValue) {

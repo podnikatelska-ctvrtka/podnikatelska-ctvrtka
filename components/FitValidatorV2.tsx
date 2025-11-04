@@ -827,6 +827,33 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               setGainCreatorMappings({});
               setProductMappings({});
               
+              // ✅ OKAMŽITĚ ULOŽ PRÁZDNÉ MAPPINGS DO DB!
+              // (aby se neobjevily staré mappings když se uživatel vrátí)
+              const segmentToUse = localSelectedSegment || selectedSegment || '';
+              const cleanProgressData = {
+                ...fitProgress,
+                selectedValueUsed: currentValue, // ✅ Ulož novou hodnotu
+                painRelieverMappings: {},
+                gainCreatorMappings: {},
+                productMappings: {},
+                lastSaved: new Date().toISOString()
+              };
+              
+              // Ulož do DB (async, neblokující)
+              supabase
+                .from('value_proposition_canvas')
+                .update({ fit_validation_data: cleanProgressData })
+                .eq('user_id', userId)
+                .eq('segment_name', segmentToUse)
+                .is('selected_value', null)
+                .then(({ error }) => {
+                  if (error) {
+                    console.error('❌ Chyba při mazání starých mappings:', error);
+                  } else {
+                    console.log('✅ Stará mappings vymazána z DB');
+                  }
+                });
+              
               // Toast notifikace
               toast.info('🔄 Změna hodnoty detekována - FIT propojení byla resetována');
               
@@ -857,6 +884,52 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 setPainRelieverMappings({});
                 setGainCreatorMappings({});
                 setProductMappings({});
+                
+                // ✅ OKAMŽITĚ ULOŽ PRÁZDNÉ MAPPINGS DO DB!
+                const segmentToUse = localSelectedSegment || selectedSegment || '';
+                const cleanProgressData = {
+                  ...fitProgress,
+                  jobs: jobsData.map(j => ({ 
+                    id: j.id,
+                    text: j.text, 
+                    count: j.count || 0, 
+                    percentage: j.percentage || 0, 
+                    priority: j.priority || 0 
+                  })),
+                  pains: painsData.map(p => ({ 
+                    id: p.id,
+                    text: p.text, 
+                    count: p.count || 0, 
+                    percentage: p.percentage || 0, 
+                    priority: p.priority || 0 
+                  })),
+                  gains: gainsData.map(g => ({ 
+                    id: g.id,
+                    text: g.text, 
+                    count: g.count || 0, 
+                    percentage: g.percentage || 0, 
+                    priority: g.priority || 0 
+                  })),
+                  painRelieverMappings: {},
+                  gainCreatorMappings: {},
+                  productMappings: {},
+                  lastSaved: new Date().toISOString()
+                };
+                
+                // Ulož do DB (async, neblokující)
+                supabase
+                  .from('value_proposition_canvas')
+                  .update({ fit_validation_data: cleanProgressData })
+                  .eq('user_id', userId)
+                  .eq('segment_name', segmentToUse)
+                  .is('selected_value', null)
+                  .then(({ error }) => {
+                    if (error) {
+                      console.error('❌ Chyba při mazání starých mappings:', error);
+                    } else {
+                      console.log('✅ Stará mappings vymazána z DB (změna Customer Profile)');
+                    }
+                  });
                 
                 // Toast notifikace
                 toast.info('🔄 Detekována změna v Customer Profile - FIT propojení byla resetována');
