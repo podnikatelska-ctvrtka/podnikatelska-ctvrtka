@@ -1,4 +1,4 @@
-import { Trophy, BookOpen, ArrowRight, CheckCircle, Menu, X, Lock, Award, Star, Target, RefreshCw } from "lucide-react";
+import { Trophy, BookOpen, ArrowRight, CheckCircle, Menu, X, Lock, Award, Star, Target, RefreshCw, HelpCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { BusinessModelCanvasSimple } from "./BusinessModelCanvasSimple";
 import { CourseSidebar } from "./CourseSidebar";
@@ -34,6 +34,7 @@ interface SimpleDashboardProps {
   unlockedAchievements?: Set<string>;
   onSelectTool?: (toolId: string) => void;
   currentTool?: string | null;
+  onShowWelcomeModal?: () => void;
 }
 
 export function SimpleDashboard({
@@ -49,12 +50,21 @@ export function SimpleDashboard({
   onCheckAchievements,
   unlockedAchievements: unlockedAchievementsProp,
   onSelectTool,
-  currentTool = null
+  currentTool = null,
+  onShowWelcomeModal
 }: SimpleDashboardProps) {
   // 📱 LAYOUT DETECTION - Používáme POUZE šířku okna (ne touch detection!)
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
   const orientation = useOrientation();
   const isLandscape = orientation === 'landscape';
+  
+  // 🔍 DEBUG: Log help button rendering conditions
+  console.log('🔍 SimpleDashboard render:', {
+    isMobile,
+    hasOnShowWelcomeModal: !!onShowWelcomeModal,
+    willRenderHelpButton: !isMobile && !!onShowWelcomeModal,
+    windowWidth: typeof window !== 'undefined' ? window.innerWidth : 'N/A'
+  });
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [canvasSections, setCanvasSections] = useState<any[]>([]);
@@ -290,6 +300,7 @@ export function SimpleDashboard({
   }, []); // Only on mount
 
   return (
+    <>
     <div className="fixed inset-0 bg-gray-50 overflow-y-auto z-10">
       {/* 📡 Offline Indicator */}
       <OfflineIndicator showToast={true} persistent={false} />
@@ -628,5 +639,23 @@ export function SimpleDashboard({
       </div>
       </PullToRefresh>
     </div>
+    
+    {/* 💡 HELP BUTTON - Desktop only (fixed bottom-right) - MIMO main div! */}
+    {!isMobile && onShowWelcomeModal && (
+      <button
+        onClick={() => {
+          console.log('🔵 SimpleDashboard Help button clicked!');
+          onShowWelcomeModal();
+        }}
+        className="fixed bottom-6 right-6 z-[9999] w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
+        aria-label="Nápověda"
+      >
+        <HelpCircle className="w-6 h-6" />
+        <span className="absolute right-full mr-3 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          Potřebujete pomoc?
+        </span>
+      </button>
+    )}
+    </>
   );
 }

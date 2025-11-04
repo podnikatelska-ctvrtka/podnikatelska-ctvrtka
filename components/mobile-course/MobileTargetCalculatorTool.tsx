@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { Calculator, TrendingUp, Users, DollarSign, Target, AlertCircle, RefreshCw, ShoppingCart, X, Menu } from "lucide-react";
+import { Calculator, TrendingUp, Users, DollarSign, Target, AlertCircle, RefreshCw, ShoppingCart, X, Menu, HelpCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { haptic } from "../../lib/haptics";
 
 interface MobileTargetCalculatorToolProps {
   onOpenSidebar?: () => void;
+  onShowWelcomeModal?: () => void;
 }
 
 type BusinessType = "one-time" | "recurring";
 
-export function MobileTargetCalculatorTool({ onOpenSidebar }: MobileTargetCalculatorToolProps) {
+export function MobileTargetCalculatorTool({ onOpenSidebar, onShowWelcomeModal }: MobileTargetCalculatorToolProps) {
   const [businessType, setBusinessType] = useState<BusinessType>("one-time");
   const [goal, setGoal] = useState<string>("");
   const [price, setPrice] = useState<string>("");
@@ -97,6 +98,18 @@ export function MobileTargetCalculatorTool({ onOpenSidebar }: MobileTargetCalcul
               Kolik zákazníků potřebuji?
             </p>
           </div>
+          {onShowWelcomeModal && (
+            <button
+              onClick={() => {
+                haptic('light');
+                onShowWelcomeModal();
+              }}
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95"
+              aria-label="Nápověda"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 

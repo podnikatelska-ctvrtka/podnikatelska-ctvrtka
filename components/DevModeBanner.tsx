@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Code, LogIn, LogOut, User, Zap, X } from 'lucide-react';
+import { Code, LogIn, LogOut, User, Zap, X, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { isDev, DEV_TOKEN_CONFIG, quickLoginWithToken, quickLogout } from '../lib/devToken';
 import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 
 /**
  * ✅ SIMPLE DEV BANNER - Stejný flow jako produkce!
@@ -68,6 +69,12 @@ export function DevModeBanner() {
     console.log('🚪 Logout...');
     quickLogout();
   };
+  
+  const handleResetWelcome = () => {
+    localStorage.removeItem('course_welcome_seen');
+    toast.success('👋 Welcome modal resetován! Obnovte stránku.');
+    console.log('👋 Welcome modal resetován!');
+  };
 
   return (
     <AnimatePresence>
@@ -131,6 +138,15 @@ export function DevModeBanner() {
               >
                 <Code className="w-4 h-4" />
                 Clear Console
+              </button>
+              
+              <button
+                onClick={handleResetWelcome}
+                className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                title="Reset welcome modal (obnovte stránku)"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Reset Welcome
               </button>
             </div>
 

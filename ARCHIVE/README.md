@@ -4,27 +4,34 @@
 
 Tato složka obsahuje všechny důležité dokumenty, emaily, reklamy a strategii které **NESMÍ být smazány** při cleanup nebo optimalizaci.
 
+**Last cleanup:** November 3, 2025 ✅
+
 ---
 
 ## 📁 CO JE V TÉTO SLOŽCE:
 
 ### **📧 EMAILY:**
-- `emails/` - Všechny emailové sekvence (prelaunch, onboarding, upsell)
+- `emails/` - Staré emailové sekvence (prelaunch, onboarding, upsell)
+  - ✅ **AKTUÁLNÍ:** `/EMAIL_SEQUENCE_AGGRESSIVE_24H.md` (v rootu)
 
 ### **🎯 REKLAMY:**
-- `ads/` - Všechny reklamní kreativy a strategie (13 ads, angles, portfolia)
+- `ads/` - Staré reklamní strategie  
+  - ✅ **AKTUÁLNÍ:** `/docs/marketing/` složka
 
 ### **🎓 KURZ KOMPONENTY:**
 - `course-components/` - Backup desktop verze + mobile helper komponenty
   - `RESTORE_GUIDE.md` - Jak obnovit desktop verzi
   - `mobile/` - Mobile optimalizované komponenty (accordion, helpers)
-  - ✅ **DŮLEŽITÉ:** Funkční desktop verze je v `/components/CourseDemoV3.tsx`
+  - ✅ **AKTUÁLNÍ:** `/components/CourseDemoV3.tsx` (desktop) a `/components/mobile-course/` (mobile)
 
-### **📊 STRATEGIE:**
-- `strategy/` - Deployment strategie, roadmapy, plány (TODO: vytvoř složku)
+### **🐛 DEBUGGING:**
+- `debugging/achievements/` - Achievement development (✅ **HOTOVO**)
+- `debugging/mobile/` - Mobile development (✅ **HOTOVO**)
+- `debugging/order-page/` - Order page fixes (✅ **HOTOVO**)
+- `debugging/sql-fixes/` - SQL debugging queries (✅ **HOTOVO**)
 
-### **🔧 DOKUMENTACE:**
-- `docs/` - Důležité MD soubory s rozhodnutími a koncepty (TODO: vytvoř složku)
+### **📚 MINIKURZ:**
+- `minikurz/` - Mini kurz dokumentace a strategie
 
 ---
 

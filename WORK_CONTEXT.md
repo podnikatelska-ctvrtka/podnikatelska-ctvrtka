@@ -1,6 +1,64 @@
 # 🎯 AKTUÁLNÍ PRACOVNÍ KONTEXT
 
-**POSLEDNÍ UPDATE:** 24. ledna 2025 🎓 KURZ BACKUP VYTVOŘEN
+**POSLEDNÍ UPDATE:** 3. listopadu 2025 📁 DOKUMENTACE UKLIDNĚNA
+
+---
+
+## 🎉 STATUS: READY FOR TESTING!
+
+Všechno je **HOTOVO** a připraveno na full flow test (zítra):
+- ✅ Desktop verze kompletní
+- ✅ Mobile verze kompletní  
+- ✅ Timery (scarcity + urgency) funkční
+- ✅ FAPI platby nastaveny
+- ✅ SmartEmailing sekvence ready
+- ✅ Achievement systém works
+- ✅ Help tlačítko všude
+- ✅ Dokumentace uklidněna
+
+---
+
+## 📁 NOVÁ STRUKTURA DOKUMENTACE
+
+**Změna:** 3. listopadu 2025 - Veškerá hotová dokumentace přesunuta do `/ARCHIVE/debugging/`
+
+### **AKTUÁLNÍ DOKUMENTY** (root `/`):
+- `WORK_CONTEXT.md` - Tento soubor (poznámky k projektu)
+- `TODO_PO_TESTOVANI.md` - Checklist na zítra
+- `SUPABASE_SCHEMA.sql` - DB schema
+
+### **REKLAMY** (`/docs/marketing/` + root):
+- `AKTUALNI_REKLAMY_PREHLED.md` ⭐
+- `ULTIMATE_13_ADS_DEPLOYMENT_STRATEGY.md`
+- `TOP_3_ADS_BRUTAL_COPY.md`
+- `QUICK_START_FB_ADS.md`
+- `EXPORT_REKLAM_NAVOD.md`
+- `SOCIAL_MEDIA_CONTENT_PLAN.md`
+
+### **SETUP** (root `/`):
+- **Email:** `EMAIL_SEQUENCE_AGGRESSIVE_24H.md`, `SMARTEMAILING_*.md`
+- **Platby:** `FAPI_*.md` (všechny FAPI dokumenty)
+- **Auth:** `SIMPLE_TOKEN_AUTH.md`, `TOKEN_ACCESS_*.md`, `RLS_*.md`
+- **Timery:** `TWO_TIMER_SYSTEMS_EXPLAINED.md`
+- **Monitoring:** `SENTRY_*.md`
+
+### **ARCHIV** (`/ARCHIVE/`):
+- `debugging/achievements/` - Achievement development (✅ hotovo)
+- `debugging/mobile/` - Mobile development (✅ hotovo)
+- `debugging/order-page/` - Order page fixes (✅ hotovo)
+- `debugging/sql-fixes/` - SQL queries (✅ hotovo)
+- `course-components/` - Desktop backup + mobile helpers
+- `emails/` - Staré email sekvence
+- `ads/` - Staré ad strategie
+- `minikurz/` - Minikurz docs
+
+### **INDEXY:**
+- `/README.md` - Hlavní README projektu
+- `/DOCS_INDEX.md` - ⭐ **KOMPLETNÍ PŘEHLED** všech dokumentů
+- `/docs/README.md` - Docs overview
+- `/docs/marketing/README.md` - Marketing docs
+- `/docs/setup/README.md` - Setup docs
+- `/ARCHIVE/README.md` - Archiv README
 
 ---
 
@@ -8,24 +66,11 @@
 
 **⚠️ KRITICKÉ PRAVIDLO:** `/ARCHIVE/` = NIKDY NEMAZAT!
 
-### **CO JE V ARCHIVU:**
-- `/ARCHIVE/course-components/` - 🎓 **NOVÉ!** Desktop kurz backup + mobile komponenty
-  - `RESTORE_GUIDE.md` - JAK OBNOVIT desktop verzi
-  - `QUICK_START.md` - Rychlý start pro práci s kurzem
-  - `mobile/` - Mobile helper komponenty (accordion system)
-- `/ARCHIVE/emails/` - Email sekvence (včetně placeholder pro ztracené!)
-- `/ARCHIVE/ads/` - Reklamní strategie (ULTIMATE 13 ADS atd.)
-- `/ARCHIVE/minikurz/` - Dokumentace 3-denního minikurzu
-- `/ARCHIVE/strategy/` - Deployment strategie, roadmapy (TODO)
-- `/ARCHIVE/docs/` - Důležité dokumenty a rozhodnutí (TODO)
-
 ### **PRAVIDLA:**
 1. ❌ **NIKDY NEMAZAT** soubory z `/ARCHIVE/`
 2. ❌ **NIKDY NEPŘEPISOVAT** existující soubory v archivu
-3. ✅ **POUZE PŘIDÁVAT** nové verze s datem (např. `file_v2_2025-01-22.md`)
-4. ✅ **AKTUALIZOVAT** `/ARCHIVE/INDEX.md` při přidání nových souborů
-
-**Důvod:** Při cleanup byla ztracena původní email sekvence - to se už nesmí stát!
+3. ✅ **POUZE PŘIDÁVAT** nové verze s datem
+4. ✅ **AKTUALIZOVAT** `/ARCHIVE/README.md` při změnách
 
 ---
 

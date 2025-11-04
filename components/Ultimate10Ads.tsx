@@ -135,7 +135,7 @@ PO:
 ✅ Rozumím, jak oslovit zákazníky
 ✅ Vidím nové možnosti růstu
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━��━━━━━━━━━━━━━
 
 CO SE STALO?
 
@@ -501,7 +501,7 @@ VÝSLEDEK: Nejasný
 VÝSLEDEK: Hotový plán
 
 ⚡ První 50 • Sleva 40%`,
-      headline: 'Modrá nebo červená?',
+      headline: 'Modrá nebo červen��?',
       cta: 'Beru červenou'
     }
   },
@@ -721,7 +721,7 @@ BEZ JASNÉ STRATEGIE:
 ⏰ Nevyčíslitelná ztráta/den:
 → Čas běží • Příležitosti mizí • Stojíš na místě
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━���━━━━━━━━━━━━━━━━
 
 💡 CO KDYBY...
 
@@ -1119,7 +1119,7 @@ TY POŘÁD:
 ❓ Neví�� jak marketingovat
 ❓ Nevíš kde jsou peníze
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━���━━━━━━━━
 
 PŘIPOJ SE K NIM.
 
@@ -1244,7 +1244,7 @@ CO ZTRATÍŠ, KDYŽ POČKÁŠ:
 🎯 Průkopnickou cenu
 → První 50 platí nejméně. Navždy.
 
-⏰ Další týden marně
+⏰ Dal��í týden marně
 → Místo jasna stále chaos. Další ztráty.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1733,47 +1733,12 @@ export default function Ultimate13Ads() {
     setCurrentIndex((prev) => (prev === displayedAds.length - 1 ? 0 : prev + 1));
   };
 
-  const exportAsImage = async () => {
-    if (!adRef.current) return;
-
-    try {
-      toast.loading('Exportuji reklamu...', { id: 'export' });
-
-      // Dynamicky importuj html2canvas
-      const html2canvas = (await import('html2canvas')).default;
-      
-      // Vyrenderuj element jako canvas
-      const canvas = await html2canvas(adRef.current, {
-        width: 1080,
-        height: 1350,
-        scale: 2, // Pro vyšší kvalitu
-        backgroundColor: null,
-        logging: false,
-      });
-
-      // Převeď na blob
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          toast.error('Export selhal', { id: 'export' });
-          return;
-        }
-
-        // Vytvoř download link
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        const fileName = `${currentAd.id}_1080x1350.png`;
-        link.download = fileName;
-        link.href = url;
-        link.click();
-        
-        URL.revokeObjectURL(url);
-        
-        toast.success(`✅ Export hotový: ${fileName}`, { id: 'export' });
-      }, 'image/png');
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Export selhal. Zkus screenshot ručně.', { id: 'export' });
-    }
+  const exportAsImage = () => {
+    // Jednoduchý návod na screenshot místo html2canvas
+    toast.info('📸 Exportuj ručně:', {
+      description: 'Windows: Win+Shift+S | Mac: Cmd+Shift+4',
+      duration: 5000
+    });
   };
 
   return (
@@ -1900,15 +1865,19 @@ export default function Ultimate13Ads() {
           </div>
         </div>
 
-        {/* Export button */}
-        <div className="flex justify-center mb-8">
+        {/* Screenshot guide */}
+        <div className="flex flex-col items-center gap-3 mb-8">
           <button
             onClick={exportAsImage}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-3 shadow-xl transition-all hover:scale-105"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-3 shadow-xl transition-all hover:scale-105"
           >
             <Download className="w-6 h-6" />
-            Exportovat jako PNG (1080×1350)
+            📸 Jak exportovat (návod)
           </button>
+          <p className="text-gray-400 text-sm text-center max-w-md">
+            Klikni na tlačítko pro zobrazení návodu na screenshot<br/>
+            nebo použij F12 → DevTools → Screenshot
+          </p>
         </div>
 
         {/* Ad info panel */}

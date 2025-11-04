@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { BookOpen, ArrowLeft, Trophy, Lock, CheckCircle2, Play, Menu, X } from "lucide-react";
+import { BookOpen, ArrowLeft, Trophy, Lock, CheckCircle2, Play, Menu, X, HelpCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Toaster } from "./ui/sonner";
@@ -47,6 +47,7 @@ import { MobileCourseSidebar } from "./mobile-course/MobileCourseSidebar";
 import { MobileTargetCalculatorTool } from "./mobile-course/MobileTargetCalculatorTool";
 import { MobileSegmentSizeTool } from "./mobile-course/MobileSegmentSizeTool";
 import { MobileBusinessActionPlan } from "./mobile-course/MobileBusinessActionPlan";
+import { WelcomeModal } from "./WelcomeModal";
 
 // 📱 MOBILE DETECTION HOOK
 function useIsMobile() {
@@ -54,7 +55,9 @@ function useIsMobile() {
   
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+      const mobile = window.innerWidth < 768; // Tailwind md breakpoint
+      console.log('📱 Mobile check:', { width: window.innerWidth, isMobile: mobile });
+      setIsMobile(mobile);
     };
     
     checkMobile();
@@ -1201,6 +1204,20 @@ export function CourseDemoV3() {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | undefined>();
   
+  // 👋 WELCOME MODAL
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [welcomeMode, setWelcomeMode] = useState<"welcome" | "support">("welcome");
+  
+  // Inicializace Welcome Modal - zobraz pokud není v localStorage
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem('course_welcome_seen');
+    if (!hasSeenWelcome) {
+      setShowWelcomeModal(true);
+      setWelcomeMode("welcome");
+      console.log('👋 Welcome Modal → První návštěva, zobrazuji welcome message');
+    }
+  }, []);
+  
   // 📱 MOBILE DETECTION - Používáme POUZE šířku okna pro layout (ne touch detection!)
   // Touch detection je důležitá pro GESTA (swipe), ale ne pro LAYOUT!
   // ⚠️ DŮLEŽITÉ: 768px = Tailwind md: breakpoint = desktop layout začíná od 768px+
@@ -1338,6 +1355,14 @@ export function CourseDemoV3() {
         // Load progress for dev user
         const progress = await loadCourseProgress(devUser.id);
         setCompletedLessons(progress);
+        
+        // 👋 Check if first time visit
+        const hasSeenWelcome = localStorage.getItem('course_welcome_seen');
+        if (!hasSeenWelcome) {
+          setShowWelcomeModal(true);
+          setWelcomeMode("welcome");
+        }
+        
         return;
       }
       
@@ -1360,6 +1385,13 @@ export function CourseDemoV3() {
         // 🎯 Load achievements from SUPABASE (ne localStorage!)
         const achievements = await loadUnlockedAchievementsFromDB(user.id);
         setUnlockedAchievements(achievements);
+        
+        // 👋 Check if first time visit
+        const hasSeenWelcome = localStorage.getItem('course_welcome_seen');
+        if (!hasSeenWelcome) {
+          setShowWelcomeModal(true);
+          setWelcomeMode("welcome");
+        }
         
         return;
       }
@@ -1386,6 +1418,13 @@ export function CourseDemoV3() {
           // 🎯 Load achievements from SUPABASE (ne localStorage!)
           const achievements = await loadUnlockedAchievementsFromDB(user.id);
           setUnlockedAchievements(achievements);
+          
+          // 👋 Check if first time visit
+          const hasSeenWelcome = localStorage.getItem('course_welcome_seen');
+          if (!hasSeenWelcome) {
+            setShowWelcomeModal(true);
+            setWelcomeMode("welcome");
+          }
           
           return;
         }
@@ -1995,6 +2034,25 @@ export function CourseDemoV3() {
     setShowCanvas(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+  
+  // 👋 WELCOME MODAL HANDLERS
+  const handleWelcomeStart = () => {
+    localStorage.setItem('course_welcome_seen', 'true');
+    setShowWelcomeModal(false);
+    handleContinueFromMainDashboard(); // Start first lesson
+  };
+  
+  const handleWelcomeClose = () => {
+    localStorage.setItem('course_welcome_seen', 'true');
+    setShowWelcomeModal(false);
+    // Stay on dashboard
+  };
+  
+  const handleOpenHelp = () => {
+    setWelcomeMode("support"); // Help tlačítko = support formulář
+    setShowWelcomeModal(true);
+    console.log('🎫 Support Modal → Otevřeno help tlačítkem');
+  };
 
   if (isVerifying) {
     return (
@@ -2077,51 +2135,72 @@ export function CourseDemoV3() {
   // Show Tool - když je vybraný nástroj (POUZE DESKTOP)
   if (showTool && isAuthenticated && userData && !isMobile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex">
-        {/* Sidebar */}
-        <div className="w-80 flex-shrink-0">
-          <CourseSidebar
-            modules={allModules}
-            currentModuleId={safeModuleNumber}
-            currentLessonIndex={safeLessonIndex}
-            completedLessons={completedLessons}
-            onSelectLesson={handleSelectLesson}
-            onShowDashboard={handleShowDashboard}
-            showingDashboard={false}
-            onSelectTool={handleSelectTool}
-            currentTool={showTool}
-          />
-        </div>
-
-        {/* Tool Content */}
-        <div className="flex-1">
-          {showTool === 'action-plan' && userData && (
-            <BusinessActionPlan
-              userId={userData.id}
-              onBack={() => {
-                setShowTool(null);
-                setShowMainDashboard(true);
-              }}
-              onNavigateToLesson={(lessonId) => {
-                // Find the lesson and navigate to it
-                allModules.forEach((module) => {
-                  const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
-                  if (lessonIdx !== -1) {
-                    setCurrentModuleNumber(module.id);
-                    setCurrentLessonIndex(lessonIdx);
-                    setShowTool(null);
-                    setShowMainDashboard(false);
-                  }
-                });
-              }}
-              refreshTrigger={actionPlanRefreshTrigger}
-              onAchievementUnlocked={triggerAchievement}
+      <>
+        <div className="min-h-screen bg-gray-50 flex">
+          {/* Sidebar */}
+          <div className="w-80 flex-shrink-0">
+            <CourseSidebar
+              modules={allModules}
+              currentModuleId={safeModuleNumber}
+              currentLessonIndex={safeLessonIndex}
+              completedLessons={completedLessons}
+              onSelectLesson={handleSelectLesson}
+              onShowDashboard={handleShowDashboard}
+              showingDashboard={false}
+              onSelectTool={handleSelectTool}
+              currentTool={showTool}
             />
-          )}
-          {showTool === 'target-calculator' && <TargetCalculatorTool />}
-          {showTool === 'segment-size' && <SegmentSizeTool />}
+          </div>
+
+          {/* Tool Content */}
+          <div className="flex-1">
+            {showTool === 'action-plan' && userData && (
+              <BusinessActionPlan
+                userId={userData.id}
+                onBack={() => {
+                  setShowTool(null);
+                  setShowMainDashboard(true);
+                }}
+                onNavigateToLesson={(lessonId) => {
+                  // Find the lesson and navigate to it
+                  allModules.forEach((module) => {
+                    const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
+                    if (lessonIdx !== -1) {
+                      setCurrentModuleNumber(module.id);
+                      setCurrentLessonIndex(lessonIdx);
+                      setShowTool(null);
+                      setShowMainDashboard(false);
+                    }
+                  });
+                }}
+                refreshTrigger={actionPlanRefreshTrigger}
+                onAchievementUnlocked={triggerAchievement}
+              />
+            )}
+            {showTool === 'target-calculator' && <TargetCalculatorTool />}
+            {showTool === 'segment-size' && <SegmentSizeTool />}
+          </div>
         </div>
-      </div>
+        
+        {/* 👋 WELCOME MODAL (Support Ticket) */}
+        <WelcomeModal 
+          isOpen={showWelcomeModal}
+          onClose={handleWelcomeClose}
+          mode={welcomeMode}
+        />
+        
+        {/* 💡 HELP BUTTON - Desktop (fixed bottom-right) */}
+        <button
+          onClick={handleOpenHelp}
+          className="fixed bottom-6 right-6 z-[9999] w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
+          aria-label="Nápověda"
+        >
+          <HelpCircle className="w-6 h-6" />
+          <span className="absolute right-full mr-3 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Potřebujete pomoc?
+          </span>
+        </button>
+      </>
     );
   }
 
@@ -2149,7 +2228,17 @@ export function CourseDemoV3() {
           unlockedAchievements={unlockedAchievements}
           onSelectTool={handleSelectTool}
           currentTool={showTool}
+          onShowWelcomeModal={handleOpenHelp}
         />
+        
+        {/* 💡 WELCOME/SUPPORT MODAL */}
+        {showWelcomeModal && (
+          <WelcomeModal
+            isOpen={showWelcomeModal}
+            onClose={handleWelcomeClose}
+            mode={welcomeMode}
+          />
+        )}
       </>
     );
   }
@@ -2241,6 +2330,14 @@ export function CourseDemoV3() {
         <Toaster position="top-right" />
         <AutosaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
         
+        {/* 👋 WELCOME MODAL */}
+        <WelcomeModal
+          isOpen={showWelcomeModal}
+          onStart={handleWelcomeStart}
+          onClose={handleWelcomeClose}
+          mode={welcomeMode}
+        />
+        
         {/* ACHIEVEMENT NOTIFICATIONS */}
         {visibleAchievements.map((achievement, index) => (
           <AchievementNotification
@@ -2304,6 +2401,7 @@ export function CourseDemoV3() {
             }}
             unlockedAchievements={unlockedAchievements}
             onOpenSidebar={() => setShowMobileSidebar(true)}
+            onShowWelcomeModal={handleOpenHelp}
           />
         )}
         
@@ -2332,6 +2430,7 @@ export function CourseDemoV3() {
               setShowMainDashboard(true);
               setShowTool(null); // 🔧 VYNULUJ NÁSTROJ
             }}
+            onShowWelcomeModal={handleOpenHelp}
             totalLessons={totalLessons}
           />
         )}
@@ -2362,6 +2461,7 @@ export function CourseDemoV3() {
               setShowMainDashboard(true);
               setShowTool(null); // 🔧 VYNULUJ NÁSTROJ
             }}
+            onShowWelcomeModal={handleOpenHelp}
             totalLessons={totalLessons}
           />
         )}
@@ -2394,6 +2494,7 @@ export function CourseDemoV3() {
             onSelectValue={(val) => {
               setSelectedVPCValue(val);
             }}
+            onShowWelcomeModal={handleOpenHelp}
             totalLessons={totalLessons}
             userData={userData}
             onNavigateToTool={(toolId) => {
@@ -2420,18 +2521,21 @@ export function CourseDemoV3() {
               });
             }}
             onAchievementUnlocked={triggerAchievement}
+            onShowWelcomeModal={handleOpenHelp}
           />
         )}
         
         {!showMainDashboard && showTool === 'target-calculator' && (
           <MobileTargetCalculatorTool
             onOpenSidebar={() => setShowMobileSidebar(true)}
+            onShowWelcomeModal={handleOpenHelp}
           />
         )}
         
         {!showMainDashboard && showTool === 'segment-size' && (
           <MobileSegmentSizeTool
             onOpenSidebar={() => setShowMobileSidebar(true)}
+            onShowWelcomeModal={handleOpenHelp}
           />
         )}
       </div>
@@ -2441,6 +2545,13 @@ export function CourseDemoV3() {
   // 🖥️ DESKTOP VIEW - Současný kód zůstává
   return (
     <div className="min-h-screen bg-gray-50 flex overflow-x-hidden">
+      {/* 👋 WELCOME MODAL (Support Ticket) */}
+      <WelcomeModal
+        isOpen={showWelcomeModal}
+        onClose={handleWelcomeClose}
+        mode={welcomeMode}
+      />
+      
       {/* 🖥️ DESKTOP SIDEBAR - ALWAYS VISIBLE (except during exercise) */}
       {shouldShowDesktopSidebar && (
         <div className="w-80 flex-shrink-0">
@@ -2478,13 +2589,15 @@ export function CourseDemoV3() {
                   </div>
                 </div>
                 
-                {/* Progress Info */}
-                <div className="text-right">
-                  <div className="text-sm font-semibold text-blue-600">
-                    {Math.round((completedLessons.size / Math.max(1, totalLessons)) * 100)}%
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {completedLessons.size}/{totalLessons}
+                <div className="flex items-center gap-4">
+                  {/* Progress Info */}
+                  <div className="text-right">
+                    <div className="text-sm font-semibold text-blue-600">
+                      {Math.round((completedLessons.size / Math.max(1, totalLessons)) * 100)}%
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {completedLessons.size}/{totalLessons}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -3252,6 +3365,25 @@ export function CourseDemoV3() {
             }}
           />
         ))}
+        
+        {/* 👋 WELCOME MODAL (Support Ticket) */}
+        <WelcomeModal 
+          isOpen={showWelcomeModal}
+          onClose={handleWelcomeClose}
+          mode={welcomeMode}
+        />
+        
+        {/* 💡 HELP BUTTON - Desktop (fixed bottom-right) */}
+        <button
+          onClick={handleOpenHelp}
+          className="fixed bottom-6 right-6 z-[9999] w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
+          aria-label="Nápověda"
+        >
+          <HelpCircle className="w-6 h-6" />
+          <span className="absolute right-full mr-3 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Potřebujete pomoc?
+          </span>
+        </button>
       </div>
     </div>
   );

@@ -15,6 +15,14 @@ export const isDev = (typeof window !== 'undefined' &&
    window.location.hostname === '127.0.0.1' ||
    window.location.port === '5173'));
 
+// Debug log (pouze v dev mode)
+if (typeof window !== 'undefined' && isDev) {
+  console.log('🛠️ DEV MODE:', {
+    hostname: window.location.hostname,
+    port: window.location.port
+  });
+}
+
 /**
  * ✅ REÁLNÝ TEST USER CONFIG
  * 

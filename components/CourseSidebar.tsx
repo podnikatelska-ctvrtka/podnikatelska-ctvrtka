@@ -101,7 +101,11 @@ export function CourseSidebar({
 
         {/* Tools Section */}
         {onSelectTool && (
-          <ToolsSection onSelectTool={onSelectTool} currentTool={currentTool} />
+          <ToolsSection 
+            onSelectTool={onSelectTool} 
+            currentTool={currentTool}
+            progressPercent={progressPercent}
+          />
         )}
 
         {/* Modules & Lessons - Scrollable */}

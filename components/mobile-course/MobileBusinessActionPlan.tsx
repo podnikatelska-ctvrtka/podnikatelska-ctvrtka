@@ -12,7 +12,8 @@ import {
   ChevronUp,
   Zap,
   Menu,
-  Package
+  Package,
+  HelpCircle
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { supabase } from "../../lib/supabase";
@@ -24,6 +25,7 @@ interface MobileBusinessActionPlanProps {
   onNavigateToLesson?: (lessonId: number) => void;
   onAchievementUnlocked?: (achievementId: string) => void;
   onOpenSidebar?: () => void;
+  onShowWelcomeModal?: () => void;
 }
 
 interface ActionItem {
@@ -70,7 +72,8 @@ export function MobileBusinessActionPlan({
   userId, 
   onNavigateToLesson,
   onAchievementUnlocked,
-  onOpenSidebar
+  onOpenSidebar,
+  onShowWelcomeModal
 }: MobileBusinessActionPlanProps) {
   const [loading, setLoading] = useState(true);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
@@ -505,6 +508,18 @@ export function MobileBusinessActionPlan({
               Vaše konkrétní další kroky
             </p>
           </div>
+          {onShowWelcomeModal && (
+            <button
+              onClick={() => {
+                haptic('light');
+                onShowWelcomeModal();
+              }}
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95"
+              aria-label="Nápověda"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 

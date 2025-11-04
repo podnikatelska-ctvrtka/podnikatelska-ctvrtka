@@ -1,11 +1,12 @@
-import { ExternalLink, TrendingUp, BarChart3, Globe, AlertCircle, CheckCircle, Menu } from "lucide-react";
+import { ExternalLink, TrendingUp, BarChart3, Globe, AlertCircle, CheckCircle, Menu, HelpCircle } from "lucide-react";
 import { haptic } from "../../lib/haptics";
 
 interface MobileSegmentSizeToolProps {
   onOpenSidebar?: () => void;
+  onShowWelcomeModal?: () => void;
 }
 
-export function MobileSegmentSizeTool({ onOpenSidebar }: MobileSegmentSizeToolProps) {
+export function MobileSegmentSizeTool({ onOpenSidebar, onShowWelcomeModal }: MobileSegmentSizeToolProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white overflow-x-hidden">
       {/* Header with Menu Button */}
@@ -31,6 +32,18 @@ export function MobileSegmentSizeTool({ onOpenSidebar }: MobileSegmentSizeToolPr
               Jak zjistit kolik lidí je v segmentu?
             </p>
           </div>
+          {onShowWelcomeModal && (
+            <button
+              onClick={() => {
+                haptic('light');
+                onShowWelcomeModal();
+              }}
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95"
+              aria-label="Nápověda"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 

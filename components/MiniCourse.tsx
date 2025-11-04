@@ -1034,22 +1034,43 @@ export function MiniCourse() {
     // Validace - zkontroluj jestli jsou vyplněné důležité fieldy
     const requiredFields = currentLesson.action.steps
       .filter(step => step.input)
-      .map(step => `day${currentLesson.day}-${step.input}`);
+      .map(step => ({
+        key: `day${currentLesson.day}-${step.input}`,
+        title: step.title,
+        stepNumber: step.step
+      }));
     
     const emptyFields = requiredFields.filter(field => {
-      const value = formData[field] || '';
-      const defaultValue = currentLesson.action.steps.find(s => `day${currentLesson.day}-${s.input}` === field)?.defaultValue || '';
+      const value = formData[field.key] || '';
+      const defaultValue = currentLesson.action.steps.find(s => `day${currentLesson.day}-${s.input}` === field.key)?.defaultValue || '';
       
       // Pokud je hodnota prázdná nebo stejná jako default (= nevyplněno)
       return !value.trim() || value.trim() === defaultValue.trim();
     });
     
     if (emptyFields.length > 0) {
-      setValidationError('Vyplňte prosím všechny kroky před dokončením dne!');
+      // Vytvoř seznam chybějících kroků
+      const missingList = emptyFields
+        .map(field => `Krok ${field.stepNumber}: ${field.title}`)
+        .join('\n• ');
+      
+      setValidationError(`Před dokončením doplňte:\n\n• ${missingList}`);
+      
       toast.error('Ještě ne!', {
-        description: 'Vyplňte prosím všechny kroky před dokončením dne'
+        description: `Chybí ${emptyFields.length} ${emptyFields.length === 1 ? 'krok' : emptyFields.length <= 4 ? 'kroky' : 'kroků'}`
       });
-      setTimeout(() => setValidationError(null), 3000);
+      
+      // Scroll k prvnímu chybějícímu poli
+      setTimeout(() => {
+        const firstEmptyField = document.querySelector(`textarea[value=""]`) || 
+                                document.querySelector('textarea');
+        if (firstEmptyField) {
+          firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (firstEmptyField as HTMLTextAreaElement).focus();
+        }
+      }, 100);
+      
+      setTimeout(() => setValidationError(null), 8000);
       return;
     }
     
@@ -1273,7 +1294,76 @@ export function MiniCourse() {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="flex justify-center mt-3 md:mt-4 gap-2 md:gap-2">
+          {/* MOBILE: Vertikální cards s ikonami */}
+          <div className="md:hidden mt-4 space-y-2">
+            {lessons.map((lesson) => {
+              const Icon = lesson.icon;
+              const isCompleted = completedDays.has(lesson.day);
+              const isCurrent = lesson.day === currentDay;
+              const isLocked = lesson.day > currentDay && !completedDays.has(lesson.day - 1);
+              
+              return (
+                <button
+                  key={lesson.day}
+                  onClick={() => {
+                    if (!isLocked) {
+                      setCurrentDay(lesson.day);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  disabled={isLocked}
+                  className={`w-full p-4 rounded-xl transition-all text-left ${
+                    isCompleted
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
+                      : isCurrent
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg ring-4 ring-indigo-200'
+                      : !isLocked
+                      ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-indigo-300 hover:shadow-md'
+                      : 'bg-gray-50 text-gray-400 border-2 border-gray-100 cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-lg ${
+                      isCompleted 
+                        ? 'bg-white/20' 
+                        : isCurrent 
+                        ? 'bg-white/20' 
+                        : !isLocked
+                        ? 'bg-gray-100'
+                        : 'bg-gray-100'
+                    }`}>
+                      {isCompleted ? (
+                        <CheckCircle className="w-6 h-6" />
+                      ) : (
+                        <Icon className="w-6 h-6" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className={`text-xs font-bold mb-0.5 ${
+                        isCompleted || isCurrent ? 'opacity-80' : 'text-gray-500'
+                      }`}>
+                        DEN {lesson.day}
+                      </div>
+                      <div className="font-bold text-sm leading-tight">
+                        {lesson.title}
+                      </div>
+                    </div>
+                    {isCurrent && !isCompleted && (
+                      <div className="px-2 py-1 bg-white/20 rounded text-xs font-bold">
+                        Právě zde
+                      </div>
+                    )}
+                    {isCompleted && (
+                      <CheckCircle className="w-5 h-5 opacity-80" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* DESKTOP: Horizontální tlačítka */}
+          <div className="hidden md:flex justify-center mt-4 gap-2">
             {lessons.map((lesson) => (
               <button
                 key={lesson.day}
@@ -1283,7 +1373,7 @@ export function MiniCourse() {
                   }
                 }}
                 disabled={lesson.day > currentDay && !completedDays.has(lesson.day - 1)}
-                className={`flex-1 max-w-[120px] px-3 md:px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl text-xs md:text-sm font-bold transition-all ${
+                className={`flex-1 max-w-[120px] px-4 py-3 rounded-xl text-sm font-bold transition-all ${
                   completedDays.has(lesson.day)
                     ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md'
                     : lesson.day === currentDay
@@ -1294,8 +1384,8 @@ export function MiniCourse() {
                 }`}
               >
                 {completedDays.has(lesson.day) ? (
-                  <div className="flex items-center justify-center gap-1.5 md:gap-2">
-                    <CheckCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
                     <span>Den {lesson.day}</span>
                   </div>
                 ) : (
@@ -1324,41 +1414,41 @@ export function MiniCourse() {
             </div>
 
             {/* Problem + Solution */}
-            <div className="p-5 md:p-8 space-y-4 md:space-y-6">
-              <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="p-4 md:p-8 space-y-3 md:space-y-6">
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 md:p-6 rounded-r-lg md:rounded-r-xl">
+                <div className="flex items-start gap-2.5 md:gap-3">
+                  <AlertCircle className="w-5 h-5 md:w-6 md:h-6 text-red-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-red-900 mb-1">PROBLÉM:</h3>
-                    <p className="text-red-800 text-sm">{currentLesson.problem}</p>
+                    <h3 className="text-red-900 mb-1 md:mb-2 text-sm md:text-base font-bold">PROBLÉM:</h3>
+                    <p className="text-red-800 text-xs md:text-sm leading-relaxed">{currentLesson.problem}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div className="bg-green-50 border-l-4 border-green-500 p-4 md:p-6 rounded-r-lg md:rounded-r-xl">
+                <div className="flex items-start gap-2.5 md:gap-3">
+                  <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-green-900 mb-1">ŘEŠENÍ:</h3>
-                    <p className="text-green-800 text-sm">{currentLesson.solution}</p>
+                    <h3 className="text-green-900 mb-1 md:mb-2 text-sm md:text-base font-bold">ŘEŠENÍ:</h3>
+                    <p className="text-green-800 text-xs md:text-sm leading-relaxed">{currentLesson.solution}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
-                <div className="flex items-start gap-3">
-                  <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 md:p-6 rounded-r-lg md:rounded-r-xl">
+                <div className="flex items-start gap-2.5 md:gap-3">
+                  <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-blue-900 mb-1">PROČ TO FUNGUJE:</h3>
-                    <p className="text-blue-800 text-sm">{currentLesson.why}</p>
+                    <h3 className="text-blue-900 mb-1 md:mb-2 text-sm md:text-base font-bold">PROČ TO FUNGUJE:</h3>
+                    <p className="text-blue-800 text-xs md:text-sm leading-relaxed">{currentLesson.why}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Action Steps */}
-            <div className="p-8 pt-0">
-              <h3 className="text-gray-900 mb-6">{currentLesson.action.title}</h3>
+            <div className="p-4 md:p-8 pt-0">
+              <h3 className="text-gray-900 mb-4 md:mb-6 text-base md:text-xl">{currentLesson.action.title}</h3>
               
               {currentLesson.action.steps.map((step, index) => {
                 const fieldKey = step.input ? `day${currentLesson.day}-${step.input}` : null;
@@ -1371,14 +1461,14 @@ export function MiniCourse() {
                 const inputStepNumber = inputStepIndex >= 0 ? inputStepIndex + 1 : null;
 
                 return (
-                  <div key={index} className="mb-8 last:mb-0">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  <div key={index} className="mb-6 md:mb-8 last:mb-0">
+                    <div className="flex items-start gap-3 md:gap-4 mb-3 md:mb-4">
+                      <div className="flex-shrink-0 w-7 h-7 md:w-8 md:h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-xs md:text-sm font-bold">
                         {step.step}
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="text-gray-900">{step.title}</h4>
+                        <div className="flex items-start md:items-center gap-2 mb-1 flex-col md:flex-row">
+                          <h4 className="text-gray-900 text-sm md:text-base font-bold leading-tight">{step.title}</h4>
                           {/* Zobraz progress jen u akčního plánu (Den 1 Step 2) */}
                           {currentLesson.day === 1 && step.input === 'plan-zpetna-vazba' && (
                             <span className="text-xs text-indigo-600 font-semibold bg-indigo-50 px-2 py-1 rounded">
@@ -1392,18 +1482,18 @@ export function MiniCourse() {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600">{step.description}</p>
+                        <p className="text-xs md:text-sm text-gray-600 leading-relaxed">{step.description}</p>
                       </div>
                     </div>
 
                     {/* Template */}
                     {step.template && (
-                      <div className="ml-12 mb-4">
-                        <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 relative">
+                      <div className="ml-0 md:ml-12 mb-3 md:mb-4">
+                        <div className="bg-gray-50 border-2 border-gray-200 rounded-lg md:rounded-xl p-4 md:p-6 relative">
                           {step.templateType === 'copy' && (
                             <button
                               onClick={() => copyTemplate(step.template!, `step-${step.step}`)}
-                              className="absolute top-4 right-4 p-2 bg-white border-2 border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition-all"
+                              className="absolute top-3 right-3 md:top-4 md:right-4 p-2 md:p-2.5 bg-white border-2 border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition-all shadow-sm active:scale-95"
                             >
                               {copiedTemplate === `step-${step.step}` ? (
                                 <Check className="w-4 h-4 text-green-600" />
@@ -1412,7 +1502,7 @@ export function MiniCourse() {
                               )}
                             </button>
                           )}
-                          <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans pr-12">
+                          <pre className="text-xs md:text-sm text-gray-700 whitespace-pre-wrap font-sans pr-10 md:pr-12 leading-relaxed">
                             {step.template}
                           </pre>
                           
@@ -1537,14 +1627,17 @@ export function MiniCourse() {
 
                     {/* Input Field */}
                     {step.input && (
-                      <div className="ml-12 md:ml-12 ml-0">
+                      <div className="ml-0 md:ml-12">
                         <textarea
                           value={formData[fieldKey!] || ''}
                           onChange={(e) => updateFormData(fieldKey!, e.target.value)}
                           placeholder={step.placeholder}
                           rows={8}
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all resize-none text-sm md:text-sm text-base touch-manipulation"
-                          style={{ WebkitTextSizeAdjust: '100%' }}
+                          className="w-full px-4 py-3 md:px-4 md:py-3 px-3 py-2.5 border-2 border-gray-200 rounded-lg md:rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 transition-all resize-none text-base md:text-sm touch-manipulation shadow-sm"
+                          style={{ 
+                            WebkitTextSizeAdjust: '100%',
+                            fontSize: '16px' // Prevents zoom on iOS
+                          }}
                         />
                         
                         {/* Hint o ochraně struktury */}
@@ -1659,14 +1752,14 @@ export function MiniCourse() {
 
           {/* Bonus Tips - NAHORU (praktické tipy před gratulací) */}
           {currentLesson.bonus && (
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-8 mb-8">
-              <h3 className="text-gray-900 mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-600" />
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl md:rounded-2xl p-5 md:p-8 mb-6 md:mb-8">
+              <h3 className="text-gray-900 mb-3 md:mb-4 flex items-center gap-2 text-base md:text-lg">
+                <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
                 {currentLesson.bonus.title}
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2.5 md:space-y-3">
                 {currentLesson.bonus.items.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-sm text-gray-700">
+                  <li key={index} className="flex items-start gap-2.5 md:gap-3 text-xs md:text-sm text-gray-700 leading-relaxed">
                     <span className="text-amber-600 font-bold flex-shrink-0 mt-0.5">•</span>
                     <span>{item}</span>
                   </li>
@@ -1704,10 +1797,13 @@ export function MiniCourse() {
 
           {/* Validation Error */}
           {validationError && (
-            <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-8">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-                <p className="text-sm text-red-800 font-semibold">{validationError}</p>
+            <div className="bg-red-50 border-2 border-red-300 rounded-xl p-5 mb-8 animate-shake">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-red-900 font-bold mb-2">Ještě nejste hotovi!</p>
+                  <p className="text-sm text-red-800 whitespace-pre-line">{validationError}</p>
+                </div>
               </div>
             </div>
           )}
@@ -1733,14 +1829,18 @@ export function MiniCourse() {
           )}
 
           {/* Navigation */}
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-3 md:gap-4">
             {currentDay > 1 && (
               <button
-                onClick={() => setCurrentDay(prev => Math.max(1, prev - 1))}
-                className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-all"
+                onClick={() => {
+                  setCurrentDay(prev => Math.max(1, prev - 1));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-white border-2 border-gray-200 rounded-lg md:rounded-xl hover:bg-gray-50 transition-all text-sm md:text-base"
               >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Předchozí</span>
+                <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden md:inline">Předchozí</span>
+                <span className="md:hidden">Zpět</span>
               </button>
             )}
             {currentDay === 1 && <div></div>}
@@ -1748,27 +1848,28 @@ export function MiniCourse() {
             {!isLastDay && !isDayCompleted && (
               <button
                 onClick={completeDay}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-bold"
+                className="flex items-center justify-center gap-2 px-6 md:px-8 py-2.5 md:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg md:rounded-xl hover:shadow-lg transition-all font-bold text-sm md:text-base active:scale-95"
               >
                 <span>Dokončit den {currentDay}</span>
-                <CheckCircle className="w-5 h-5" />
+                <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             )}
             
             {!isLastDay && isDayCompleted && (
-              <div className="flex items-center gap-3 px-6 py-3 bg-green-100 border-2 border-green-300 rounded-xl text-green-800 font-bold">
-                <CheckCircle className="w-5 h-5" />
-                <span>Den {currentDay} dokončen!</span>
+              <div className="flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2.5 md:py-3 bg-green-100 border-2 border-green-300 rounded-lg md:rounded-xl text-green-800 font-bold text-sm md:text-base">
+                <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden md:inline">Den {currentDay} dokončen!</span>
+                <span className="md:hidden">Hotovo!</span>
               </div>
             )}
             
             {isLastDay && !isDayCompleted && (
               <button
                 onClick={completeDay}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:shadow-lg transition-all font-bold"
+                className="flex items-center justify-center gap-2 px-6 md:px-8 py-2.5 md:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg md:rounded-xl hover:shadow-lg transition-all font-bold text-sm md:text-base active:scale-95"
               >
                 <span>Dokončit kurz</span>
-                <CheckCircle className="w-5 h-5" />
+                <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             )}
           </div>
