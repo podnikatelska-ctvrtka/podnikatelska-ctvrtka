@@ -745,7 +745,7 @@ const MODULE_1 = {
         <ul class="no-bullet">
           <li>✅ <strong>Víte CO DĚLAT</strong> - konkrétní marketingové činnosti, které vás posunou dopředu</li>
           <li>✅ <strong>Zaměříte se na to podstatné</strong> - marketing = 90% byznysu!</li>
-          <li>✅ <strong>Plánujete růst</strong> - co budete muset dělat víc, když poroste poptávka?</li>
+          <li>�� <strong>Plánujete růst</strong> - co budete muset dělat víc, když poroste poptávka?</li>
         </ul>
         
         <h4>🎨 DŮLEŽITÉ - Logika barev!</h4>
@@ -3235,7 +3235,7 @@ export function CourseDemoV3() {
                       </Button>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Trophy className="w-4 h-4 text-yellow-500" />
-                        <span>Úprava Canvas</span>
+                        <span>Úprava čtvrtky</span>
                       </div>
                     </div>
                   </div>

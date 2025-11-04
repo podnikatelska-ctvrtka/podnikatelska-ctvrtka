@@ -116,6 +116,22 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
   useEffect(() => {
     loadSegmentsAndValues();
     loadCustomerProfile();
+    
+    // ✅ RESET hodnoty když se změní segment (pokud hodnota nepatří k novému segmentu)
+    if (selectedValue && selectedSegment) {
+      const valueObj = availableValues.find(v => v.text === selectedValue);
+      const segmentObj = availableSegments.find(s => s.text === selectedSegment);
+      
+      // Pokud hodnota má jinou barvu než segment, vymaž ji
+      if (valueObj && segmentObj && valueObj.color !== segmentObj.color && valueObj.color !== '#d1d5db') {
+        console.log('🔄 Segment changed - clearing incompatible value:', selectedValue);
+        onSelectValue('');
+        setCurrentStep(0);
+        setProducts([]);
+        setPainRelievers([]);
+        setGainCreators([]);
+      }
+    }
   }, [userId, selectedSegment]);
   
   // ✅ Load Customer Profile data pro context hints
@@ -574,7 +590,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="text-lg sm:text-2xl font-bold text-blue-900">Vyberte hodnotu</h2>
-                <p className="text-sm sm:text-base text-blue-700">Pro ka��dou HODNOTU máte samostatnou mapu.</p>
+                <p className="text-sm sm:text-base text-blue-700">Pro každou HODNOTU máte samostatnou mapu.</p>
                 {selectedSegmentObj && (
                   <div className="mt-2 flex items-center gap-2">
                     <div

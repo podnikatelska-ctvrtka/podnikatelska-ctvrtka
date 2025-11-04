@@ -7,6 +7,24 @@ if (!supabase) {
   console.error('🚨 CRITICAL: supabase is undefined in VPCCustomerProfileCircle!');
 }
 
+// Helper pro normalizaci barev
+function normalizeColor(color: string): string {
+  const colorMap: Record<string, string> = {
+    'blue': '#3b82f6',
+    'green': '#22c55e',
+    'yellow': '#eab308',
+    'red': '#ef4444',
+    'purple': '#8b5cf6',
+    'pink': '#ec4899',
+    'orange': '#f59e0b',
+    'white': '#d1d5db',
+    'gray': '#6b7280'
+  };
+  
+  if (color.startsWith('#')) return color;
+  return colorMap[color.toLowerCase()] || '#3b82f6';
+}
+
 interface SegmentOption {
   text: string;
   color: string;
@@ -66,14 +84,19 @@ export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegm
       }
       
       if (data && data.content && data.content.length > 0) {
-        setAvailableSegments(data.content);
+        // ✅ NORMALIZUJ BARVY při načítání segmentů!
+        const normalizedSegments = data.content.map((s: SegmentOption) => ({
+          text: s.text,
+          color: normalizeColor(s.color)
+        }));
+        setAvailableSegments(normalizedSegments);
         
         if (!selectedSegment) {
           // 🔄 AUTO-SELECT: Zkus načíst z localStorage, jinak první segment
           const savedSegment = localStorage.getItem('vpc_selected_segment');
-          const segmentToSelect = savedSegment && data.content.some((s: SegmentOption) => s.text === savedSegment)
+          const segmentToSelect = savedSegment && normalizedSegments.some((s: SegmentOption) => s.text === savedSegment)
             ? savedSegment
-            : data.content[0].text;
+            : normalizedSegments[0].text;
           
           onSelectSegment(segmentToSelect);
         }
@@ -103,7 +126,8 @@ export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegm
           setVpcId(data.id);
           
           // ✅ PŘEPIŠ barvy všech štítků na barvu aktuálního segmentu!
-          const currentSegmentColor = availableSegments.find(s => s.text === selectedSegment)?.color || '#3b82f6';
+          const segmentObj = availableSegments.find(s => s.text === selectedSegment);
+          const currentSegmentColor = normalizeColor(segmentObj?.color || '#3b82f6');
           console.log('🔄 Přepisování barev na:', currentSegmentColor, 'pro segment:', selectedSegment);
           
           const jobsWithCorrectColor = (data.jobs || []).map((job: any) => ({
@@ -117,7 +141,7 @@ export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegm
           }));
           
           const gainsWithCorrectColor = (data.gains || []).map((gain: any) => ({
-            text: typeof gain === 'string' ? gain : gain.text,
+            text: typeof pain === 'string' ? gain : gain.text,
             color: currentSegmentColor
           }));
           
