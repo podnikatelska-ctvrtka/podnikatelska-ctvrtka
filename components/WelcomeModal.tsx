@@ -14,6 +14,7 @@ export function WelcomeModal({ isOpen = true, onClose, mode = "welcome" }: Welco
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
+  const [isSuccess, setIsSuccess] = useState(false);
   
   // Form state
   const [email, setEmail] = useState("");
@@ -70,6 +71,7 @@ export function WelcomeModal({ isOpen = true, onClose, mode = "welcome" }: Welco
       const data = await response.json();
       
       if (response.ok) {
+        setIsSuccess(true);
         toast.success("✅ Zpráva odeslána! Odpovíme co nejdříve.");
         
         // Reset form
@@ -77,10 +79,11 @@ export function WelcomeModal({ isOpen = true, onClose, mode = "welcome" }: Welco
         setSubject("");
         setMessage("");
         
-        // Close modal after 1.5s
+        // Close modal after 3s
         setTimeout(() => {
+          setIsSuccess(false);
           handleClose();
-        }, 1500);
+        }, 3000);
       } else {
         throw new Error(data.error || "Chyba při odesílání");
       }
@@ -231,96 +234,114 @@ export function WelcomeModal({ isOpen = true, onClose, mode = "welcome" }: Welco
             </div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-4">
-            {/* Email */}
-            <div>
-              <label htmlFor="support-email" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Váš email
-              </label>
-              <input
-                id="support-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="vas@email.cz"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                disabled={isSubmitting}
-                required
-              />
+          {/* Form or Success Message */}
+          {isSuccess ? (
+            <div className="p-4 md:p-6 space-y-4">
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Zpráva odeslána! ✅
+                </h3>
+                <p className="text-gray-600">
+                  Odpovíme vám co nejdříve na váš email.
+                </p>
+              </div>
             </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-4">
+              {/* Email */}
+              <div>
+                <label htmlFor="support-email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Váš email
+                </label>
+                <input
+                  id="support-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="vas@email.cz"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
 
-            {/* Subject */}
-            <div>
-              <label htmlFor="support-subject" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Předmět
-              </label>
-              <input
-                id="support-subject"
-                type="text"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Např. Problém s lekcí 5"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                disabled={isSubmitting}
-                required
-              />
-            </div>
+              {/* Subject */}
+              <div>
+                <label htmlFor="support-subject" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Předmět
+                </label>
+                <input
+                  id="support-subject"
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Např. Problém s lekcí 5"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
 
-            {/* Message */}
-            <div>
-              <label htmlFor="support-message" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Váš dotaz nebo problém
-              </label>
-              <textarea
-                id="support-message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Popište váš problém nebo dotaz..."
-                rows={4}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                disabled={isSubmitting}
-                required
-              />
-            </div>
+              {/* Message */}
+              <div>
+                <label htmlFor="support-message" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Váš dotaz nebo problém
+                </label>
+                <textarea
+                  id="support-message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Popište váš problém nebo dotaz..."
+                  rows={4}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
 
-            {/* Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-gray-700">
-                💡 Odpovíme vám co nejdříve na váš email
-              </p>
-            </div>
+              {/* Info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-sm text-gray-700">
+                  💡 Odpovíme vám co nejdříve na váš email
+                </p>
+              </div>
 
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <Button
-                type="button"
-                onClick={handleClose}
-                variant="outline"
-                className="flex-1"
-                disabled={isSubmitting}
-              >
-                Zavřít
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Odesílám...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Odeslat
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button
+                  type="button"
+                  onClick={handleClose}
+                  variant="outline"
+                  className="flex-1"
+                  disabled={isSubmitting}
+                >
+                  Zavřít
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Odesílám...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Odeslat
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </>

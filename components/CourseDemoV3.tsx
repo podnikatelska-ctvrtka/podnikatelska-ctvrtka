@@ -129,7 +129,7 @@ const MODULE_1 = {
         <p class="text-sm text-gray-600 ml-4">✅ Dobře: "Profesionálky 30-50 let které spěchají do práce a potřebují rychlé řešení"</p>
         
         <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
-          <p class="text-purple-900"><strong>💡 TIP:</strong> Začněte s <strong>1-2 segmenty</strong> a zaměřte se na ty co vám vyd����lávají (nebo budou vydělávat) nejvíc peněz. Lepší je dokonale obsloužit 2 segmenty než špatně 10!</p>
+          <p class="text-purple-900"><strong>💡 TIP:</strong> Začněte s <strong>1-2 segmenty</strong> a zaměřte se na ty co vám vydělávají (nebo budou vydělávat) nejvíc peněz. Lepší je dokonale obsloužit 2 segmenty než špatně 10!</p>
         </div>
         
         <h4>Proč je to důležité?</h4>
@@ -236,7 +236,7 @@ const MODULE_1 = {
       examples: {
         good: [
           "🍕 Pizzerie (🔵 Rodiny): Rodinná pizza XXL + dětské menu zdarma",
-          "���� Autoservis (🟢 Majitelé starších aut): Servis za 1 den + náhradní vůz zdarma",
+          "🔧 Autoservis (🟢 Majitelé starších aut): Servis za 1 den + náhradní vůz zdarma",
           "👗 E-shop (🟡 Módní ženy): Nové kolekce každý týden + vrácení do 60 dní",
           "💇 Kadeřnice (🟣 Profesionálky): Večerní termíny 18-21h + střih 30 min"
         ],
@@ -356,7 +356,7 @@ const MODULE_1 = {
         <h3>❤️ Co jsou Vztahy se zákazníky?</h3>
         <p><strong>Vztahy</strong> určují jak <strong>získáváte, udržujete a motivujete</strong> zákazníky k opakovaným nákupům. Jednoduše: <strong>Jak je přimějete vrátit se ZNOVU?</strong></p>
         
-        <h4>⚡ PROČ JE TO KLÍ��OVÉ?</h4>
+        <h4>⚡ PROČ JE TO KLÍČOVÉ?</h4>
         <p><strong>Získat nového zákazníka stojí 5-10× více</strong> než udržet stávajícího! Opakovaný zákazník = <strong>základ vašeho byznysu</strong>.</p>
         
         <h4>🎯 Jak "zamknout" zákazníky (krok za krokem):</h4>
@@ -379,7 +379,7 @@ const MODULE_1 = {
           <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
           <ul class="text-sm text-gray-700 ml-4 mt-2">
             <li><strong>Hypotéza:</strong> Co by je mohlo motivovat k návratu?</li>
-            <li>Příklad: "Myslím že rodiny se vrátí pokud budou spokojené s kvalitou a rychlost��"</li>
+            <li>Příklad: "Myslím že rodiny se vrátí pokud budou spokojené s kvalitou a rychlostí"</li>
             <li><strong>Podívejte se na konkurence</strong> - proč zákazníci odcházejí?</li>
           </ul>
         </div>
@@ -922,7 +922,7 @@ const MODULE_1 = {
           <p class="text-amber-900"><strong>🚀 NEMÁM DATA</strong> (teprve začínám)</p>
           <ul class="text-sm text-gray-700 ml-4 mt-2">
             <li><strong>Odhady:</strong> Co budete muset platit minimálně?</li>
-            <li>Googlujte průměrné ceny, ptejte se dodavatelů na cen��ky</li>
+            <li>Googlujte průměrné ceny, ptejte se dodavatelů na ceníky</li>
             <li>Příklad: "Odhad: Pronájem 20k + Suroviny 10k = 30 000 Kč/měsíc"</li>
           </ul>
         </div>
@@ -930,7 +930,7 @@ const MODULE_1 = {
         <p class="mt-3"><strong>KROK 3: Rozdělte na GLOBÁLNÍ vs. SPECIFICKÉ</strong></p>
         
         <div class="bg-white border-2 border-gray-300 rounded-xl p-4 my-4">
-          <p><strong>���� GLOBÁLNÍ náklady</strong> (pro celý byznys):</p>
+          <p><strong>🌐 GLOBÁLNÍ náklady</strong> (pro celý byznys):</p>
           <ul class="text-sm text-gray-700 ml-4 mt-1">
             <li>Nájem, mzdy, suroviny, energie (sdílené pro všechny segmenty)</li>
             <li>Příklad: "Nájem 25k, Mzdy 40k, Suroviny 15k"</li>
@@ -947,7 +947,7 @@ const MODULE_1 = {
         
         <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 my-4">
           <p class="text-purple-900"><strong>💡 TIP</strong></p>
-          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Použijte reálná čísla z posledního měs��ce! Sečtěte VŠECHNY výdaje.</p>
+          <p class="text-sm text-gray-700 mt-2"><strong>Už podnikám:</strong> Použijte reálná čísla z posledního měsíce! Sečtěte VŠECHNY výdaje.</p>
           <p class="text-sm text-gray-700 mt-2"><strong>Začínám:</strong> Googlujte průměrné ceny, ptejte se dodavatelů na ceníky. Později upravíte podle reality.</p>
         </div>
         
@@ -1051,7 +1051,7 @@ const MODULE_2 = {
           <ul class="text-sm text-gray-700 ml-4 mt-2 space-y-1 no-bullet">
             <li>✅ Zadejte příjmy + náklady do modelu (Lekce 4 + 9)</li>
             <li>✅ Nástroj vám ukáže aktuální zisk/ztrátu</li>
-            <li>�� Analyzujte TOP zdroje příjmů</li>
+            <li>📊 Analyzujte TOP zdroje příjmů</li>
           </ul>
         </div>
         
