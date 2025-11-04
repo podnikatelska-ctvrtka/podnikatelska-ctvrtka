@@ -115,7 +115,11 @@ function AddItemInput({
 
   const categoryLabel = category === 'jobs' ? 'Úkol zákazníka'
                       : category === 'pains' ? 'Bolest zákazníka'
-                      : 'Zisk zákazníka';
+                      : category === 'gains' ? 'Zisk zákazníka'
+                      : category === 'products' ? 'Produkt/Služba'
+                      : category === 'painRelievers' ? 'Řešení obtíží'
+                      : category === 'gainCreators' ? 'Tvorba přínosů'
+                      : 'Přidat položku';
   
   return (
     <>
@@ -135,6 +139,7 @@ function AddItemInput({
         title={categoryLabel}
         snapPoints={[0.5, 0.85]}
         defaultSnap={0}
+        maxWidth="max-w-2xl"
       >
         <div className="space-y-4">
           {/* Instrukční text */}
@@ -143,6 +148,9 @@ function AddItemInput({
               {category === 'jobs' && '📋 Jakou práci/úkol se zákazník snaží splnit?'}
               {category === 'pains' && '😰 Co zákazníka trápí, frustruje nebo brzdí?'}
               {category === 'gains' && '🎯 Jaké výhody nebo zisky zákazník hledá?'}
+              {category === 'products' && '🎁 Co konkrétně nabízíte zákazníkovi?'}
+              {category === 'painRelievers' && '💊 Jak konkrétně řešíte problémy zákazníka?'}
+              {category === 'gainCreators' && '✨ Jak konkrétně vytváříte hodnotu pro zákazníka?'}
             </p>
           </div>
 

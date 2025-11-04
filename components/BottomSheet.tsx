@@ -9,6 +9,7 @@ interface BottomSheetProps {
   children: React.ReactNode;
   snapPoints?: number[]; // [0.5, 0.9] = 50% a 90% výšky
   defaultSnap?: number; // Index výchozího snap pointu
+  maxWidth?: string; // Pro desktop: 'max-w-lg', 'max-w-xl', 'max-w-2xl' atd.
 }
 
 export function BottomSheet({
@@ -17,7 +18,8 @@ export function BottomSheet({
   title,
   children,
   snapPoints = [0.5, 0.9],
-  defaultSnap = 0
+  defaultSnap = 0,
+  maxWidth = 'w-full' // Default plná šířka (pro prioritizační modaly)
 }: BottomSheetProps) {
   const [currentSnap, setCurrentSnap] = useState(defaultSnap);
   const [isDragging, setIsDragging] = useState(false);
@@ -122,7 +124,7 @@ export function BottomSheet({
   const dragOffset = isDragging ? Math.max(0, currentY - startY) : 0;
 
   const sheetContent = (
-    <div className="fixed inset-0 z-[9999] flex items-end">
+    <div className="fixed inset-0 z-[9999] flex items-end justify-center">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
@@ -132,7 +134,7 @@ export function BottomSheet({
       {/* Sheet */}
       <div
         ref={sheetRef}
-        className="relative w-full bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ease-out"
+        className={`relative ${maxWidth} bg-white rounded-t-3xl shadow-2xl transition-all duration-300 ease-out`}
         style={{
           height: `${currentHeight}vh`,
           transform: `translateY(${dragOffset}px)`,

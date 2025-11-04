@@ -604,13 +604,13 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   // DEMO FUNKCE ODSTRANĚNY - BYLY NEBEZPEČNÉ!
   // Přepisovaly uživatelova data bez varování.
 
-  // 🎯 3 KATEGORIE podle severity:
-  // ❌ Chyby (červené) = failed + severity='error'
+  // 🎯 3 KATEGORIE - CO SE SKUTEČNĚ ZOBRAZÍ UŽIVATELI:
+  // ❌ Chyby (červené) = !passed + severity='error'
   const errorCount = results.filter(r => !r.passed && r.severity === 'error').length;
-  // ⚠️ Varování (žluté) = severity='warning' (můžou být i passed, ale pořád varování)
+  // ⚠️ Varování (žluté) = severity='warning' (bez ohledu na passed)
   const warningCount = results.filter(r => r.severity === 'warning').length;
-  // ✅ Výborné (zelené) = passed + severity='success'
-  const successCount = results.filter(r => r.passed && r.severity === 'success').length;
+  // ✅ Výborné (zelené) = severity='success' (bez ohledu na passed, protože renderujeme všechny 'success' jako zelené)
+  const successCount = results.filter(r => r.severity === 'success').length;
 
   // Format canvas data for preview
   const canvasSectionsForPreview = [
