@@ -245,6 +245,14 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
   const profitMargin = totalRevenue > 0 ? ((profit / totalRevenue) * 100) : 0;
   const isProfitable = profit > 0;
   
+  // 🎉 ACHIEVEMENT: profitable-business (trigger pouze pokud je zisk > 0)
+  useEffect(() => {
+    if (loaded && isProfitable && totalRevenue > 0 && totalCosts > 0 && onAchievementUnlocked) {
+      console.log('📈 User is PROFITABLE! Triggering achievement...');
+      onAchievementUnlocked('profitable-business');
+    }
+  }, [loaded, isProfitable, totalRevenue, totalCosts, onAchievementUnlocked]);
+  
   // Calculate avg revenue per customer
   const calculatedAvgRevenue = currentCustomers > 0 
     ? totalRevenue / currentCustomers 
@@ -944,6 +952,12 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
             onClick={() => {
               setIsCompleted(true);
               onComplete();
+              // Auto-redirect po 1s
+              if (onNavigateNext) {
+                setTimeout(() => {
+                  onNavigateNext();
+                }, 1000);
+              }
             }}
             size="lg"
             className="bg-white text-green-700 hover:bg-green-50 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
@@ -953,8 +967,8 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
         </div>
       )}
 
-      {/* Completion Screen - JEN když user právě dokončil (ne když se vrací) */}
-      {isCompleted && !isLessonCompleted && (
+      {/* Completion Screen - Zobraz když právě dokončil */}
+      {isCompleted && (
         <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
           <div className="flex items-start gap-4 mb-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">

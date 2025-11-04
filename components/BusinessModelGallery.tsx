@@ -691,6 +691,12 @@ export function BusinessModelGallery({ onComplete, onNavigateNext, isLessonCompl
                 onClick={() => {
                   setIsCompleted(true);
                   onComplete?.();
+                  // Auto-redirect po 1s
+                  if (onNavigateNext) {
+                    setTimeout(() => {
+                      onNavigateNext();
+                    }, 1000);
+                  }
                 }}
                 size="lg"
                 className="bg-white text-green-700 hover:bg-green-50 font-bold text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all hover:scale-105"

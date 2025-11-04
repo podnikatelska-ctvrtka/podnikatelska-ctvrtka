@@ -605,8 +605,10 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   // Přepisovaly uživatelova data bez varování.
 
   const errorCount = results.filter(r => !r.passed && r.severity === 'error').length;
-  const warningCount = results.filter(r => !r.passed && r.severity === 'warning').length;
-  const passedCount = results.filter(r => r.passed).length;
+  // ⚠️ FIX: Warnings mohou být i passed (např. "1 doporučení pro vylepšení")
+  const warningCount = results.filter(r => r.severity === 'warning').length;
+  // ✅ Success = passed + severity === 'success' (ne warning/error)
+  const passedCount = results.filter(r => r.passed && r.severity === 'success').length;
 
   // Format canvas data for preview
   const canvasSectionsForPreview = [
@@ -762,27 +764,27 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                 <div
                   key={result.id}
                   className={`border-2 rounded-lg p-4 transition-all duration-300 ease-out ${
-                    result.passed
-                      ? 'bg-green-50 border-green-300'
-                      : result.severity === 'error'
+                    result.severity === 'error' && !result.passed
                       ? 'bg-red-50 border-red-300'
-                      : 'bg-yellow-50 border-yellow-300'
+                      : result.severity === 'warning'
+                      ? 'bg-yellow-50 border-yellow-300'
+                      : 'bg-green-50 border-green-300'
                   }`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-start gap-3">
-                    {result.passed ? (
-                      <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    ) : result.severity === 'error' ? (
+                    {result.severity === 'error' && !result.passed ? (
                       <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                    ) : (
+                    ) : result.severity === 'warning' ? (
                       <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     )}
                     
                     <div className="flex-1">
                       <h4 className="font-bold mb-1">{result.title}</h4>
                       <p className={`mb-2 ${
-                        result.passed ? 'text-green-700' : result.severity === 'error' ? 'text-red-700' : 'text-yellow-700'
+                        result.severity === 'error' && !result.passed ? 'text-red-700' : result.severity === 'warning' ? 'text-yellow-700' : 'text-green-700'
                       }`}>
                         {result.message}
                       </p>
@@ -798,8 +800,8 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
               ))}
             </div>
 
-            {/* Action Buttons - Vždy zobrazit "Zkontrolovat znovu", dokončení jen když není hotovo */}
-            {!isCompleted && (
+            {/* Action Buttons */}
+            {!isCompleted && !isLessonCompleted && (
               <div className="flex gap-3 pt-4">
                 <Button
                   onClick={() => {
@@ -813,23 +815,27 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                 >
                   🔄 Zkontrolovat znovu
                 </Button>
-                {!isLessonCompleted && (
-                  <Button
-                    onClick={() => {
-                      setIsCompleted(true);
-                      onComplete();
-                    }}
-                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 gap-2"
-                  >
-                    {errorCount > 0 ? '⚠️ Pokračovat i přesto' : '✅ Hotovo - Dokončit lekci'}
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                )}
+                <Button
+                  onClick={() => {
+                    setIsCompleted(true);
+                    onComplete();
+                    // Auto-redirect po 1s
+                    if (onNavigateNext) {
+                      setTimeout(() => {
+                        onNavigateNext();
+                      }, 1000);
+                    }
+                  }}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 gap-2"
+                >
+                  {errorCount > 0 ? '⚠️ Pokračovat i přesto' : '✅ Hotovo - Dokončit lekci'}
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
               </div>
             )}
 
-            {/* Completion Screen - JEN když user právě dokončil (ne když se vrací) */}
-            {isCompleted && !isLessonCompleted && (
+            {/* Completion Screen - Zobraz když právě dokončil */}
+            {isCompleted && (
               <div
                 className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-4 transition-all duration-300 ease-out"
               >
@@ -842,7 +848,7 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                       ✅ Lekce dokončena!
                     </h3>
                     <p className="text-green-700">
-                      Skvělá práce! Můžete pokračovat na další lekci.
+                      Skvělá práce! Váš model je validovaný.
                     </p>
                   </div>
                 </div>
@@ -866,6 +872,23 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                     🔄 Zkusit znovu
                   </Button>
                 </div>
+              </div>
+            )}
+            
+            {/* Pokud je lekce už dokončená (user se vrátil) - ukaž jen Zkontrolovat znovu */}
+            {!isCompleted && isLessonCompleted && (
+              <div className="pt-4">
+                <Button
+                  onClick={() => {
+                    setShowResults(false);
+                    setResults([]);
+                    localStorage.removeItem(`canvas_validator_${userId}`);
+                  }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  🔄 Zkontrolovat znovu
+                </Button>
               </div>
             )}
 

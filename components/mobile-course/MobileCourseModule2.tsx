@@ -162,6 +162,7 @@ export function MobileCourseModule2({
               userId={userId}
               onComplete={handleComplete}
               onNavigateNext={handleNext}
+              onAchievementUnlocked={onAchievementUnlocked}
               isLessonCompleted={isCompleted}
             />
           </div>

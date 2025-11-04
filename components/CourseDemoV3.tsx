@@ -380,7 +380,7 @@ const MODULE_1 = {
           <ul class="text-sm text-gray-700 ml-4 mt-2">
             <li><strong>Hypotéza:</strong> Co by je mohlo motivovat k návratu?</li>
             <li>Příklad: "Myslím že rodiny se vrátí pokud budou spokojené s kvalitou a rychlostí"</li>
-            <li><strong>Podívejte se na konkurence</strong> - proč zákazníci odcházejí?</li>
+            <li><strong>Podívejte se na konkurenci</strong> - proč zákazníci odcházejí?</li>
           </ul>
         </div>
         
@@ -960,7 +960,7 @@ const MODULE_1 = {
         
         <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
         <p><strong>🌐 VĚTŠINOU GLOBÁLNÍ!</strong> Nájem, mzdy, suroviny = pro celý byznys.</p>
-        <p><strong>🎨 Specifické náklady = barva segmentu!</strong></p>
+        <p><strong>���� Specifické náklady = barva segmentu!</strong></p>
         <ul class="no-bullet">
           <li><strong>🌐 Globální:</strong> Nájem 25k, Mzdy 40k, Suroviny 15k</li>
           <li><strong>🔵 Modrý segment</strong> (Rodiny) → <strong>🔵 modrý náklad</strong> (Instagram reklama 2 000 Kč)</li>
@@ -1042,7 +1042,7 @@ const MODULE_2 = {
             <li><strong>🎯 Realistický:</strong> Získáte 50% plánovaných zákazníků</li>
             <li><strong>🚀 Optimistický:</strong> Získáte 100% plánovaných zákazníků</li>
           </ul>
-          <p class="text-sm text-gray-600 mt-3">💡 Komponenta vypočítá <strong>aktuální stav</strong> z vašeho Canvas. Pro scénáře si představte různé počty zákazníků a klikněte přepočítat!</p>
+          <p class="text-sm text-gray-600 mt-3">💡 Komponenta vypočítá <strong>aktuální stav</strong> z vašeho Canvas. Pro scénáře si představte různé počty zákazn��ků a klikněte přepočítat!</p>
         </div>
         
         <div class="bg-green-50 border-2 border-green-400 rounded-xl p-4 my-4">
@@ -1074,7 +1074,7 @@ const MODULE_2 = {
       `,
       tips: [
         "🚀 Začínající: Komponenta ukáže aktuální stav. Pro scénáře si představte různé počty zákazníků!",
-        "💰 Už podnikám: Zadejte reálná čísla z posledního měsíce do Canvas",
+        "💰 Už podnikám: Zadejte reálná čísla z posledního měsíce do vašeho modelu",
         "📊 Analyzujte TOP příjmové zdroje - jaký segment vydělává nejvíc?",
         "🎯 Break-even = kolik zákazníků potřebujete aby jste nevydělávali ani neprodělávali"
       ]
@@ -1678,14 +1678,9 @@ export function CourseDemoV3() {
           triggerAchievement('profit-calculated');
         }
         
-        // profitable-business FALLBACK
-        if (!unlockedAchievements.has('profitable-business')) {
-          const totalRevenue = revenue?.content?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0;
-          const totalCosts = costs?.content?.reduce((sum: number, item: any) => sum + (item.value || 0), 0) || 0;
-          if (totalRevenue > 0 && totalCosts > 0 && totalRevenue > totalCosts) {
-            triggerAchievement('profitable-business');
-          }
-        }
+        // ❌ profitable-business FALLBACK ODSTRANĚN!
+        // Achievement se nyní odemyká POUZE v ProfitCalculator.tsx,
+        // kde uživatel VIDÍ kompletní finanční analýzu (příjmy - náklady = zisk)
       }
       
       // ✅ RELOAD achievements from DB (po fallbacku)
