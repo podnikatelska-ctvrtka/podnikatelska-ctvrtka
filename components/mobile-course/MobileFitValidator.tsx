@@ -202,6 +202,10 @@ export function MobileFitValidator({
           percentage: g.percentage || 0, 
           priority: g.priority || 0 
         })),
+        // ✅ Ulož i Value Map data pro detekci změn
+        products: products.map(p => ({ text: p.text, color: p.color })),
+        painRelievers: painRelievers.map(pr => ({ text: pr.text, color: pr.color })),
+        gainCreators: gainCreators.map(gc => ({ text: gc.text, color: gc.color })),
         painRelieverMappings,
         gainCreatorMappings,
         productMappings
@@ -377,38 +381,74 @@ export function MobileFitValidator({
             
             console.log('🔄 [Mobile] ID Migration:', { oldToNewJobIds, oldToNewPainIds, oldToNewGainIds });
             
-            // 🔄 Migruj mappings s novými ID
-            if (savedProgress.painRelieverMappings) {
-              const migratedMappings: Record<string, string[]> = {};
-              Object.entries(savedProgress.painRelieverMappings).forEach(([reliever, oldPainIds]) => {
-                migratedMappings[reliever] = (oldPainIds as string[])
-                  .map(oldId => oldToNewPainIds[oldId] || oldId)
-                  .filter(id => uniquePains.some((p, i) => `pain-${i}` === id));
-              });
-              setPainRelieverMappings(migratedMappings);
-              console.log('✅ [Mobile] Pain reliever mappings migrated:', migratedMappings);
-            }
+            // ✅ DETEKCE ZMĚN v Customer Profile nebo Value Map
+            const jobsChanged = savedProgress.jobs && 
+              JSON.stringify(savedProgress.jobs.map((j: any) => j.text).sort()) !== 
+              JSON.stringify(uniqueJobs.map((j: any) => typeof j === 'string' ? j : j.text).sort());
             
-            if (savedProgress.gainCreatorMappings) {
-              const migratedMappings: Record<string, string[]> = {};
-              Object.entries(savedProgress.gainCreatorMappings).forEach(([creator, oldGainIds]) => {
-                migratedMappings[creator] = (oldGainIds as string[])
-                  .map(oldId => oldToNewGainIds[oldId] || oldId)
-                  .filter(id => uniqueGains.some((g, i) => `gain-${i}` === id));
-              });
-              setGainCreatorMappings(migratedMappings);
-              console.log('✅ [Mobile] Gain creator mappings migrated:', migratedMappings);
-            }
+            const painsChanged = savedProgress.pains && 
+              JSON.stringify(savedProgress.pains.map((p: any) => p.text).sort()) !== 
+              JSON.stringify(uniquePains.map((p: any) => typeof p === 'string' ? p : p.text).sort());
             
-            if (savedProgress.productMappings) {
-              const migratedMappings: Record<string, string[]> = {};
-              Object.entries(savedProgress.productMappings).forEach(([product, oldJobIds]) => {
-                migratedMappings[product] = (oldJobIds as string[])
-                  .map(oldId => oldToNewJobIds[oldId] || oldId)
-                  .filter(id => uniqueJobs.some((j, i) => `job-${i}` === id));
+            const gainsChanged = savedProgress.gains && 
+              JSON.stringify(savedProgress.gains.map((g: any) => g.text).sort()) !== 
+              JSON.stringify(uniqueGains.map((g: any) => typeof g === 'string' ? g : g.text).sort());
+            
+            // Detekce změn v Value Map (produkty, řešení, přínosy)
+            const productsChanged = uniqueProducts.length !== (savedProgress.products?.length || 0);
+            const painRelieversChanged = uniquePainRelievers.length !== (savedProgress.painRelievers?.length || 0);
+            const gainCreatorsChanged = uniqueGainCreators.length !== (savedProgress.gainCreators?.length || 0);
+            
+            if (jobsChanged || painsChanged || gainsChanged || productsChanged || painRelieversChanged || gainCreatorsChanged) {
+              console.log('🔄 [Mobile] DETEKOVÁNA ZMĚNA v datech!', {
+                jobsChanged,
+                painsChanged,
+                gainsChanged,
+                productsChanged,
+                painRelieversChanged,
+                gainCreatorsChanged
               });
-              setProductMappings(migratedMappings);
-              console.log('✅ [Mobile] Product mappings migrated:', migratedMappings);
+              
+              // Vymaž mappings - jsou neplatné!
+              setPainRelieverMappings({});
+              setGainCreatorMappings({});
+              setProductMappings({});
+              
+              toast.info('🔄 Detekována změna v datech - FIT propojení byla resetována');
+            } else {
+              // 🔄 Migruj mappings s novými ID (žádná změna dat)
+              if (savedProgress.painRelieverMappings) {
+                const migratedMappings: Record<string, string[]> = {};
+                Object.entries(savedProgress.painRelieverMappings).forEach(([reliever, oldPainIds]) => {
+                  migratedMappings[reliever] = (oldPainIds as string[])
+                    .map(oldId => oldToNewPainIds[oldId] || oldId)
+                    .filter(id => uniquePains.some((p, i) => `pain-${i}` === id));
+                });
+                setPainRelieverMappings(migratedMappings);
+                console.log('✅ [Mobile] Pain reliever mappings migrated:', migratedMappings);
+              }
+              
+              if (savedProgress.gainCreatorMappings) {
+                const migratedMappings: Record<string, string[]> = {};
+                Object.entries(savedProgress.gainCreatorMappings).forEach(([creator, oldGainIds]) => {
+                  migratedMappings[creator] = (oldGainIds as string[])
+                    .map(oldId => oldToNewGainIds[oldId] || oldId)
+                    .filter(id => uniqueGains.some((g, i) => `gain-${i}` === id));
+                });
+                setGainCreatorMappings(migratedMappings);
+                console.log('✅ [Mobile] Gain creator mappings migrated:', migratedMappings);
+              }
+              
+              if (savedProgress.productMappings) {
+                const migratedMappings: Record<string, string[]> = {};
+                Object.entries(savedProgress.productMappings).forEach(([product, oldJobIds]) => {
+                  migratedMappings[product] = (oldJobIds as string[])
+                    .map(oldId => oldToNewJobIds[oldId] || oldId)
+                    .filter(id => uniqueJobs.some((j, i) => `job-${i}` === id));
+                });
+                setProductMappings(migratedMappings);
+                console.log('✅ [Mobile] Product mappings migrated:', migratedMappings);
+              }
             }
             
             // Restore priority data

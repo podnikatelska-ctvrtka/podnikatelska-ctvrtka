@@ -116,22 +116,6 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
   useEffect(() => {
     loadSegmentsAndValues();
     loadCustomerProfile();
-    
-    // ✅ RESET hodnoty když se změní segment (pokud hodnota nepatří k novému segmentu)
-    if (selectedValue && selectedSegment) {
-      const valueObj = availableValues.find(v => v.text === selectedValue);
-      const segmentObj = availableSegments.find(s => s.text === selectedSegment);
-      
-      // Pokud hodnota má jinou barvu než segment, vymaž ji
-      if (valueObj && segmentObj && valueObj.color !== segmentObj.color && valueObj.color !== '#d1d5db') {
-        console.log('🔄 Segment changed - clearing incompatible value:', selectedValue);
-        onSelectValue('');
-        setCurrentStep(0);
-        setProducts([]);
-        setPainRelievers([]);
-        setGainCreators([]);
-      }
-    }
   }, [userId, selectedSegment]);
   
   // ✅ Load Customer Profile data pro context hints
@@ -478,6 +462,26 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
     return v.color === selectedSegmentObj.color;
   });
   
+  // ✅ AUTOMATICKY VYRESETUJ hodnotu když nepatří k aktuálnímu segmentu!
+  useEffect(() => {
+    if (!selectedValue || !selectedSegmentObj || availableValues.length === 0) return;
+    
+    // Zjisti, jestli aktuální hodnota je v seznamu povolených hodnot pro tento segment
+    const isValueInFilteredList = filteredValues.some(v => v.text === selectedValue);
+    
+    if (!isValueInFilteredList) {
+      console.log('🔄 Auto-reset: Hodnota', selectedValue, 'nepatří k segmentu', selectedSegment);
+      onSelectValue('');
+      setCurrentStep(0);
+      setProducts([]);
+      setPainRelievers([]);
+      setGainCreators([]);
+      toast.info(`✨ Změnil se segment → Vyberte hodnotu pro "${selectedSegment}"`, {
+        duration: 4000
+      });
+    }
+  }, [selectedSegment, filteredValues, selectedValue]);
+  
   const canContinueStep1 = products.length > 0;
   const canContinueStep2 = gainCreators.length > 0;
   const canContinueStep3 = painRelievers.length > 0;
@@ -606,12 +610,20 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
             </div>
             
             {filteredValues.length === 0 ? (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-                <p className="text-yellow-800 mb-2">💡 Žádné hodnoty pro segment "{selectedSegment}"</p>
-                <p className="text-sm text-yellow-700">Přidejte hodnoty se stejnou barvou jako segment v Modulu 1</p>
-                <p className="text-xs text-gray-600 mt-2">
-                  Barva segmentu: <span className="inline-block w-3 h-3 rounded-full align-middle" style={{ backgroundColor: selectedSegmentObj?.color }}></span>
+              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 text-center">
+                <div className="text-4xl mb-3">🎯</div>
+                <p className="text-yellow-900 mb-2 font-bold">Žádné hodnoty pro tento segment</p>
+                <p className="text-sm text-yellow-800 mb-3">
+                  Segment <strong>{selectedSegment}</strong> nemá žádné hodnoty se stejnou barvou
                 </p>
+                <div className="bg-white rounded-lg p-3 text-left text-xs text-gray-700">
+                  <p className="mb-1">💡 <strong>Co to znamená?</strong></p>
+                  <p>V Modulu 1 přidejte hodnoty, které mají barvu segmentu:</p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: selectedSegmentObj?.color }}></span>
+                    <span className="font-medium">{selectedSegment}</span>
+                  </div>
+                </div>
               </div>
             ) : (
               <>

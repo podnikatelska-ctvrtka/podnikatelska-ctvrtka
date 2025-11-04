@@ -813,38 +813,57 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           // ✅ DŮLEŽITÉ: Mappings jsou vždy pro konkrétní segment, takže když loadujeme jiný segment, nesmíme je načíst!
           // Načteme je jen pokud je currentStep >= 3 (FIT Validator)
           if (fitProgress.currentStep >= 3) {
-            // ✅ AUTOMATICKÁ DETEKCE ZMĚN v Customer Profile!
-            // Pokud se změnily Jobs/Pains/Gains, VYMAŽ mappings (jsou neplatné!)
-            const oldJobTexts = (fitProgress.jobs || []).map((j: any) => j.text).sort();
-            const newJobTexts = jobsData.map(j => j.text).sort();
-            const jobsChanged = JSON.stringify(oldJobTexts) !== JSON.stringify(newJobTexts);
+            // ✅ DETEKCE ZMĚNY HODNOTY - když se změní hodnota, products/painRelievers/gainCreators jsou jiné!
+            const valueChanged = currentValue !== lastLoadedValue;
             
-            const oldPainTexts = (fitProgress.pains || []).map((p: any) => p.text).sort();
-            const newPainTexts = painsData.map(p => p.text).sort();
-            const painsChanged = JSON.stringify(oldPainTexts) !== JSON.stringify(newPainTexts);
-            
-            const oldGainTexts = (fitProgress.gains || []).map((g: any) => g.text).sort();
-            const newGainTexts = gainsData.map(g => g.text).sort();
-            const gainsChanged = JSON.stringify(oldGainTexts) !== JSON.stringify(newGainTexts);
-            
-            if (jobsChanged || painsChanged || gainsChanged) {
-              console.log('🔄 DETEKOVÁNA ZMĚNA v Customer Profile!', {
-                jobsChanged: jobsChanged ? `${oldJobTexts.length} → ${newJobTexts.length}` : false,
-                painsChanged: painsChanged ? `${oldPainTexts.length} → ${newPainTexts.length}` : false,
-                gainsChanged: gainsChanged ? `${oldGainTexts.length} → ${newGainTexts.length}` : false
+            if (valueChanged && currentValue && lastLoadedValue) {
+              console.log('🔄 DETEKOVÁNA ZMĚNA HODNOTY!', {
+                old: lastLoadedValue,
+                new: currentValue
               });
               
-              // Vymaž mappings (jsou neplatné!)
+              // Vymaž mappings (jsou neplatné - nové produkty/řešení/přínosy!)
               setPainRelieverMappings({});
               setGainCreatorMappings({});
               setProductMappings({});
               
               // Toast notifikace
-              toast.info('🔄 Detekována změna v Customer Profile - FIT propojení byla resetována');
+              toast.info('🔄 Změna hodnoty detekována - FIT propojení byla resetována');
               
-              // Neskladuj mappings - přeskoč načítání!
-              // ALE: Zachovej prioritizaci (jobs, pains, gains s %)!
+              // Přeskoč načítání mappings - jsou neplatné!
             } else {
+              // ✅ AUTOMATICKÁ DETEKCE ZMĚN v Customer Profile!
+              // Pokud se změnily Jobs/Pains/Gains, VYMAŽ mappings (jsou neplatné!)
+              const oldJobTexts = (fitProgress.jobs || []).map((j: any) => j.text).sort();
+              const newJobTexts = jobsData.map(j => j.text).sort();
+              const jobsChanged = JSON.stringify(oldJobTexts) !== JSON.stringify(newJobTexts);
+              
+              const oldPainTexts = (fitProgress.pains || []).map((p: any) => p.text).sort();
+              const newPainTexts = painsData.map(p => p.text).sort();
+              const painsChanged = JSON.stringify(oldPainTexts) !== JSON.stringify(newPainTexts);
+              
+              const oldGainTexts = (fitProgress.gains || []).map((g: any) => g.text).sort();
+              const newGainTexts = gainsData.map(g => g.text).sort();
+              const gainsChanged = JSON.stringify(oldGainTexts) !== JSON.stringify(newGainTexts);
+              
+              if (jobsChanged || painsChanged || gainsChanged) {
+                console.log('🔄 DETEKOVÁNA ZMĚNA v Customer Profile!', {
+                  jobsChanged: jobsChanged ? `${oldJobTexts.length} → ${newJobTexts.length}` : false,
+                  painsChanged: painsChanged ? `${oldPainTexts.length} → ${newPainTexts.length}` : false,
+                  gainsChanged: gainsChanged ? `${oldGainTexts.length} → ${newGainTexts.length}` : false
+                });
+                
+                // Vymaž mappings (jsou neplatné!)
+                setPainRelieverMappings({});
+                setGainCreatorMappings({});
+                setProductMappings({});
+                
+                // Toast notifikace
+                toast.info('🔄 Detekována změna v Customer Profile - FIT propojení byla resetována');
+                
+                // Neskladuj mappings - přeskoč načítání!
+                // ALE: Zachovej prioritizaci (jobs, pains, gains s %)!
+              } else {
               // Žádná změna → normálně načti mappings
               // ⚠️ DŮLEŽITÉ: Stará mappings používají stará ID (job-0, job-1...)
               // Musíme je přegenerovat aby matchovala NOVÁ ID založená na textu!
@@ -915,6 +934,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 });
                 setProductMappings(migratedMappings);
               }
+            }
             }
           } else {
             setPainRelieverMappings({});
