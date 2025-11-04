@@ -584,7 +584,19 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
             });
             
             if (potentialRevenue > 0 || fitScore > 0) {
-              if (fitScore >= 60) {
+              if (fitScore === 100) {
+                const newProduct = {
+                  name: `${valueName} (${vm.segment_name})`,
+                  status: 'good',
+                  reason: `FIT ${fitScore}% · Potenciál ${potentialRevenue.toLocaleString()} Kč/měsíc`,
+                  action: '🏆 PERFEKTNÍ! Pokrýváte všechny potřeby. Škálujte prodej!',
+                  _originalIndex: originalIndex, // PŮVODNÍ index z valueMapData
+                  _fitScore: fitScore,
+                  _revenue: potentialRevenue
+                } as any;
+                console.log(`  ➕ PUSHING to productAnalysis (100% FIT):`, newProduct);
+                productAnalysis.push(newProduct);
+              } else if (fitScore >= 60) {
                 const newProduct = {
                   name: `${valueName} (${vm.segment_name})`,
                   status: 'good',

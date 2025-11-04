@@ -13,11 +13,15 @@ export function AchievementNotification({ achievement, onClose, index = 0 }: Ach
 
   useEffect(() => {
     if (achievement) {
-      setIsVisible(true);
+      // 🎬 Staggered delay: každý další achievement má delay +300ms
+      const delay = index * 300;
+      setTimeout(() => {
+        setIsVisible(true);
+      }, delay);
       // ⚠️ Auto-close je nyní kontrolovaný z parenta (CourseDemoV3)
       // Ale necháme slide-out animaci před onClose
     }
-  }, [achievement]);
+  }, [achievement, index]);
 
   if (!achievement) return null;
 
@@ -25,7 +29,7 @@ export function AchievementNotification({ achievement, onClose, index = 0 }: Ach
     module: 'from-blue-500 to-indigo-600',
     canvas: 'from-green-500 to-emerald-600',
     vpc: 'from-purple-500 to-pink-600',
-    special: 'from-yellow-400 to-orange-500'
+    special: 'from-amber-500 to-orange-600'
   }[achievement.category];
 
   // 📐 Vypočti top pozici pro vertical stacking (každý achievement zabírá cca 140px + 12px gap)

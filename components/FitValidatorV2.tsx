@@ -2733,7 +2733,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     onClick={() => onNavigateToLesson && onNavigateToLesson(15)}
                     className="text-blue-600 hover:text-blue-700 underline font-semibold"
                   >
-                    přejděte do Lekce 2 (Hodnotová mapa)
+                    přejděte do Lekce 15 (Hodnotová mapa)
                   </button> pro detailnější editaci.
                 </p>
               </div>
@@ -2906,7 +2906,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                           className="gap-2 border-amber-300 hover:bg-amber-100 self-start"
                         >
                           <ArrowRight className="w-4 h-4" />
-                          Přejít do Lekce 2
+                          Přejít do Lekce 15 (Hodnotová mapa)
                         </Button>
                       )}
                     </div>
@@ -3009,7 +3009,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 <div className="flex-1 w-full">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                     <Target className={`w-5 h-5 sm:w-6 sm:h-6 ${hasFit ? 'text-green-600' : 'text-orange-600'} flex-shrink-0`} />
-                    <h2 className="text-lg sm:text-2xl font-bold text-gray-900">��� FIT Validace</h2>
+                    <h2 className="text-lg sm:text-2xl font-bold text-gray-900">🎯 FIT Validace</h2>
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6">
                     <div key={`fit-score-${fitScore}`} className="flex items-baseline gap-2">
@@ -3436,7 +3436,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-6 text-center">
                       <p className="text-amber-900 font-bold mb-2">⚠️ Chybí řešení!</p>
                       <p className="text-sm text-amber-800">
-                        Vraťte se do Lekce 2 a vyplňte vaši Hodnotovou mapu.
+                        Vraťte se do Lekce 15 (Hodnotová mapa) a vyplňte vaše řešení.
                       </p>
                     </div>
                   )}

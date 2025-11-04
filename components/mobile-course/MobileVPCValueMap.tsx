@@ -604,7 +604,7 @@ export function MobileVPCValueMap({
   ];
   
   return (
-    <div className="space-y-4 pb-8">
+    <div className="space-y-4 pb-8 max-w-2xl mx-auto">
       {/* PROGRESS STEPPER */}
       <div className="bg-white rounded-xl p-3 shadow-sm">
         <div className="flex items-center justify-between relative">
