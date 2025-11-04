@@ -74,9 +74,10 @@ export function SimpleDashboard({
   // 🔄 SYNC prop to state when parent updates
   useEffect(() => {
     if (unlockedAchievementsProp) {
+      console.log('🔄 SimpleDashboard: Syncing achievements from prop:', unlockedAchievementsProp.size);
       setUnlockedAchievements(unlockedAchievementsProp);
     }
-  }, [unlockedAchievementsProp]);
+  }, [unlockedAchievementsProp, unlockedAchievementsProp?.size]); // Track size changes!
   
   // Listen for window resize to update isMobile
   useEffect(() => {

@@ -91,6 +91,9 @@ interface Props {
   
   /** Callback pro navigaci na nástroj */
   onNavigateToTool?: (toolId: string) => void;
+  
+  /** Callback pro odemknutí achievementu */
+  onAchievementUnlocked?: (achievementId: string) => void;
 }
 
 export function MobileCourseModule3({
@@ -113,6 +116,7 @@ export function MobileCourseModule3({
   totalLessons = 16, // Default: 9 + 4 + 3 lekce
   userData = null,
   onNavigateToTool,
+  onAchievementUnlocked,
 }: Props) {
   // Current lesson
   const lesson = moduleData.lessons[currentLessonIndex];
@@ -169,9 +173,7 @@ export function MobileCourseModule3({
               }
             }, 1000);
           }}
-          onAchievementUnlocked={(achievementId) => {
-            console.log('🎉 Achievement unlocked:', achievementId);
-          }}
+          onAchievementUnlocked={onAchievementUnlocked}
         />
       );
     }
@@ -199,9 +201,7 @@ export function MobileCourseModule3({
               }
             }, 1000);
           }}
-          onAchievementUnlocked={(achievementId) => {
-            console.log('🎉 Achievement unlocked:', achievementId);
-          }}
+          onAchievementUnlocked={onAchievementUnlocked}
         />
       );
     }
@@ -218,9 +218,7 @@ export function MobileCourseModule3({
             }
             console.log('FIT validation complete with score:', fitScore);
           }}
-          onAchievementUnlocked={(achievementId) => {
-            console.log('🎉 Achievement unlocked:', achievementId);
-          }}
+          onAchievementUnlocked={onAchievementUnlocked}
           onNavigateToTool={onNavigateToTool}
         />
       );

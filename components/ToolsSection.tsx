@@ -1,5 +1,5 @@
 import { Calculator, TrendingUp, ChevronDown, ChevronUp, Target } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LucideIcon } from "lucide-react";
 
 interface Tool {
@@ -17,7 +17,16 @@ interface ToolsSectionProps {
 }
 
 export function ToolsSection({ onSelectTool, currentTool, progressPercent = 0 }: ToolsSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(true); // 🔥 Defaultně rozbalené!
+  // 💾 PERSISTENCE: Load initial state from localStorage
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem('tools_section_expanded');
+    return saved !== null ? saved === 'true' : true; // Default: true
+  });
+
+  // 💾 PERSISTENCE: Save to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('tools_section_expanded', String(isExpanded));
+  }, [isExpanded]);
 
   const tools: Tool[] = [
     {

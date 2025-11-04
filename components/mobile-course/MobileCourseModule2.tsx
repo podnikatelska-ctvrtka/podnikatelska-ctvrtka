@@ -86,6 +86,9 @@ interface Props {
   
   /** Celkový počet lekcí ve všech modulech (pro progress bar) */
   totalLessons?: number;
+  
+  /** Callback pro odemknutí achievementu */
+  onAchievementUnlocked?: (achievementId: string) => void;
 }
 
 export function MobileCourseModule2({
@@ -101,6 +104,7 @@ export function MobileCourseModule2({
   onOpenDashboard,
   onShowWelcomeModal,
   totalLessons = 16,
+  onAchievementUnlocked,
 }: Props) {
   // Current lesson
   const lesson = moduleData.lessons[currentLessonIndex];
@@ -175,6 +179,7 @@ export function MobileCourseModule2({
               onComplete={handleComplete}
               onNavigateNext={handleNext}
               isLessonCompleted={isCompleted}
+              onAchievementUnlocked={onAchievementUnlocked}
             />
           </div>
         </div>

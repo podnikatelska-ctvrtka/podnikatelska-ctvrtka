@@ -281,7 +281,7 @@ export function BusinessModelCanvasSimple({ userId, highlightSection, hideTips =
               id={`canvas-section-${section.id}`}
               data-canvas-section={section.id}
               className={`bg-white border-2 rounded-lg p-3 flex flex-col transition-all overflow-visible ${
-                highlightSection === section.id 
+                highlightSection === section.id && section.items.length > 0
                   ? 'border-green-500 ring-2 ring-green-300' 
                   : 'border-gray-300'
               }`}

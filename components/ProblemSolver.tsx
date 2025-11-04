@@ -173,10 +173,8 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
     setAppliedSolutions(prev => new Set([...prev, solution.id]));
     setSelectedSolution(solution);
     
-    // 🏆 Trigger achievement
-    if (onAchievementUnlocked) {
-      onAchievementUnlocked('solution-applied');
-    }
+    // ❌ REMOVED: 'solution-applied' achievement doesn't exist in ACHIEVEMENTS list
+    // 🏆 Achievement se triggerne při dokončení lekce, ne při kliknutí na řešení
   };
 
   const handleOpenCanvas = (solution: Solution) => {

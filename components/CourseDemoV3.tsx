@@ -1238,6 +1238,20 @@ export function CourseDemoV3() {
     if (savedValue) setSelectedVPCValue(savedValue);
   }, []);
 
+  // 🚫 ZAMKNI SCROLL NA BODY když je Canvas otevřený (oprava double scrollbar)
+  useEffect(() => {
+    if (showCanvas) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    // Cleanup
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showCanvas]);
+
   // 💾 PERSIST VPC SELECTIONS - Save to localStorage when changed
   useEffect(() => {
     if (selectedVPCSegment) {
@@ -1640,11 +1654,11 @@ export function CourseDemoV3() {
           allSections.includes(s.section_key) && s.content?.length > 0
         );
         
-        const hasLesson1Complete = completedLessons.has(1);
+        const hasLesson10Complete = completedLessons.has(10); // Lekce 10 = Canvas Validator
         const hasLesson11Complete = completedLessons.has(11);
         
-        // validator-used FALLBACK
-        if (!unlockedAchievements.has('validator-used') && (filledSections.length >= 6 || hasLesson1Complete)) {
+        // validator-used FALLBACK - POUZE pokud user dokončil lekci 10 (Canvas Validator)
+        if (!unlockedAchievements.has('validator-used') && hasLesson10Complete) {
           triggerAchievement('validator-used');
         }
         
@@ -2432,6 +2446,7 @@ export function CourseDemoV3() {
             }}
             onShowWelcomeModal={handleOpenHelp}
             totalLessons={totalLessons}
+            onAchievementUnlocked={triggerAchievement}
           />
         )}
         
@@ -2463,6 +2478,7 @@ export function CourseDemoV3() {
             }}
             onShowWelcomeModal={handleOpenHelp}
             totalLessons={totalLessons}
+            onAchievementUnlocked={triggerAchievement}
           />
         )}
         
@@ -2501,6 +2517,7 @@ export function CourseDemoV3() {
               setShowTool(toolId);
               setShowMainDashboard(false);
             }}
+            onAchievementUnlocked={triggerAchievement}
           />
         )}
         
@@ -2685,6 +2702,7 @@ export function CourseDemoV3() {
                     )}
                     <CanvasValidator
                       userId={userData.id}
+                      onAchievementUnlocked={triggerAchievement}
                       onComplete={async () => {
                         const newCompleted = new Set(completedLessons);
                         newCompleted.add(currentLesson.id);
@@ -2745,6 +2763,7 @@ export function CourseDemoV3() {
                     )}
                     <ProblemSolver
                       userId={userData.id}
+                      onAchievementUnlocked={triggerAchievement}
                       onComplete={async () => {
                         const newCompleted = new Set(completedLessons);
                         newCompleted.add(currentLesson.id);
@@ -3224,7 +3243,7 @@ export function CourseDemoV3() {
                       <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-5">
                         <p className="text-blue-900 font-bold text-lg flex items-center gap-2">
                           <span className="text-2xl">👇</span>
-                          <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na položku pro úpravu textu</span>
+                          <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na štítek pro editaci</span>
                         </p>
                       </div>
 
@@ -3262,6 +3281,7 @@ export function CourseDemoV3() {
                   highlightSection={highlightedSectionId}
                   hideTips={true}
                   allowedSection={currentLesson.canvasSection}
+                  onAchievementUnlocked={triggerAchievement}
                   onItemAdded={(sectionId) => {
                     if (highlightedSectionId && sectionId === highlightedSectionId) {
                       handleItemAdded();

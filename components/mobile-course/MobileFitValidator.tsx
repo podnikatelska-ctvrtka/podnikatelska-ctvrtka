@@ -152,6 +152,25 @@ export function MobileFitValidator({
     };
   }, [jobs, pains, gains, productMappings, painRelieverMappings, gainCreatorMappings]);
   
+  // 🏆 TRIGGER FIT SCORE ACHIEVEMENTS (stejný jako desktop FitValidatorV2)
+  useEffect(() => {
+    if (fitScoreData.fitScore > 0 && !isLoading && onAchievementUnlocked) {
+      // ✅ Použij samostatné IF bloky aby se spustily VŠECHNY dosažené levely!
+      if (fitScoreData.fitScore >= 70) {
+        console.log('🎯 [Mobile] FIT Score 70%+ reached! Triggering achievement...');
+        onAchievementUnlocked('fit-70-percent');
+      }
+      if (fitScoreData.fitScore >= 80) {
+        console.log('🎯 [Mobile] FIT Score 80%+ reached! Triggering achievement...');
+        onAchievementUnlocked('product-fit-master');
+      }
+      if (fitScoreData.fitScore >= 90) {
+        console.log('🎯 [Mobile] FIT Score 90%+ reached! Triggering achievement...');
+        onAchievementUnlocked('fit-90-percent');
+      }
+    }
+  }, [fitScoreData.fitScore, isLoading, onAchievementUnlocked]);
+  
   // 💾 SAVE FIT PROGRESS (stejný jako desktop)
   const saveFitProgress = async () => {
     if (!userId || !selectedSegment) return;
@@ -942,7 +961,7 @@ export function MobileFitValidator({
                 onClick={() => {
                   haptic('success');
                   if (onComplete) onComplete(fitScoreData.fitScore);
-                  if (onAchievementUnlocked) onAchievementUnlocked('fit-validated');
+                  // ❌ REMOVED: 'fit-validated' achievement doesn't exist - FIT achievements se triggerují podle score (70%, 80%, 90%)
                   toast.success(`✅ FIT Score: ${fitScoreData.fitScore}%`);
                 }}
                 className="flex-1 flex items-center gap-2 justify-center bg-green-600 hover:bg-green-700"

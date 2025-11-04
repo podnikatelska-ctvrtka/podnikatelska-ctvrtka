@@ -192,7 +192,7 @@ export function CourseModuleWithTour({
           <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-5">
             <p className="text-blue-900 font-bold text-lg flex items-center gap-2">
               <span className="text-2xl">👇</span>
-              <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na položku pro úpravu textu</span>
+              <span>Vyplňte zvýrazněnou sekci. <strong>Tip:</strong> Klikněte 2x na štítek pro editaci</span>
             </p>
           </div>
           
