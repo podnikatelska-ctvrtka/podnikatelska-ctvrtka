@@ -14,13 +14,13 @@ Support ticket systém umožňuje zákazníkům odeslat dotaz nebo problém př�
 
 ### 2. Netlify Function (Backend)
 - **Cesta**: `/netlify/functions/send-support-ticket.js`
-- **Funkce**: Odešle email přes SMTP na kurz@podnikatelskactvrtka.cz
+- **Funkce**: Odešle email přes **SMTP (Seznam.cz)** na kurz@podnikatelskactvrtka.cz
 
 ## 🔧 Nastavení SMTP
 
-Pro odeslání emailů potřebuješ nastavit environment variables v Netlify:
+Potřebuješ nastavit environment variables v Netlify Dashboard:
 
-### 📧 Seznam.cz (Tvoje aktuální volba)
+### 📧 Seznam.cz SMTP (Doporučeno)
 
 ```bash
 SMTP_HOST=smtp.seznam.cz
@@ -29,46 +29,17 @@ SMTP_USER=tvuj-email@seznam.cz
 SMTP_PASS=tvoje-heslo
 ```
 
+**Nastavení:**
+1. Jdi do Netlify Dashboard → **Site Settings → Environment Variables**
+2. Přidej všechny 4 proměnné
+3. Redeploy site
+
 **Důležité pro Seznam.cz:**
 - Port **465** používá SSL (doporučeno)
 - Alternativně můžeš použít port **587** s TLS
 - Použij svoje běžné přihlašovací heslo k emailu
 - Seznam.cz vyžaduje autentizaci
-
-### Gmail App Password
-
-Pokud používáš Gmail:
-
-```bash
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=vas-email@gmail.com
-SMTP_PASS=vase-app-password
-```
-
-1. Jdi na https://myaccount.google.com/security
-2. Zapni 2-Step Verification
-3. Jdi na App Passwords: https://myaccount.google.com/apppasswords
-4. Vytvoř nové App Password pro "Mail" → zkopíruj heslo
-5. Použij tento App Password jako `SMTP_PASS`
-
-### Ostatní poskytovatele
-
-**SendGrid** (doporučeno pro production):
-```bash
-SMTP_HOST=smtp.sendgrid.net
-SMTP_PORT=587
-SMTP_USER=apikey
-SMTP_PASS=your-sendgrid-api-key
-```
-
-**Mailgun**:
-```bash
-SMTP_HOST=smtp.mailgun.org
-SMTP_PORT=587
-SMTP_USER=postmaster@your-domain.mailgun.org
-SMTP_PASS=your-mailgun-password
-```
+- Musíš používat email **@seznam.cz** (ne @email.cz)
 
 ## 📧 Email Format
 
@@ -112,9 +83,13 @@ netlify dev
 ## 🐛 Troubleshooting
 
 ### Email se neposílá
-1. ✅ Zkontroluj environment variables v Netlify Dashboard
+1. ✅ Zkontroluj environment variables v Netlify Dashboard:
+   - `SMTP_HOST`
+   - `SMTP_PORT`
+   - `SMTP_USER`
+   - `SMTP_PASS`
 2. ✅ Zkontroluj Netlify Function logs: Netlify Dashboard → Functions → Logs
-3. ✅ Zkus test SMTP kredenciálů:
+3. ✅ Zkus test:
    ```bash
    # Pošli testovací email
    curl -X POST https://your-site.netlify.app/.netlify/functions/send-support-ticket \
@@ -122,15 +97,26 @@ netlify dev
      -d '{"email":"test@test.cz","subject":"Test","message":"Test zpráva"}'
    ```
 
-### Error: Invalid login
+### Error: Invalid login / Authentication failed
 - ❌ Špatné SMTP credentials
-- ✅ Použij Gmail App Password (ne běžné heslo)
-- ✅ Zkontroluj SMTP_HOST a SMTP_PORT
+- ✅ Zkontroluj že SMTP_USER a SMTP_PASS jsou správné
+- ✅ Pro Seznam.cz: použij běžné heslo (ne app password)
+- ✅ Zkontroluj že Seznam.cz SMTP je povolený v nastavení účtu
+
+### Error: Connection timeout / ECONNREFUSED
+- ❌ Špatný SMTP_HOST nebo SMTP_PORT
+- ✅ Pro Seznam.cz: `smtp.seznam.cz` (ne email.seznam.cz)
+- ✅ Zkus změnit port: 465 → 587 nebo naopak
+
+### Error: Module not found: nodemailer
+- ❌ Netlify ještě nenainstaloval nodemailer
+- ✅ Počkej 1-2 minuty po deployi
+- ✅ Nebo trigger nový deploy: Deploys → Trigger Deploy
 
 ### Email končí ve SPAMu
-- ✅ Používej verified domain (SendGrid/Mailgun)
-- ✅ Nastav SPF a DKIM records
+- ✅ Seznam.cz má dobrou reputaci
 - ✅ V Gmail: přidej odesílatele do kontaktů
+- ✅ Zkontroluj že from email je tvůj Seznam.cz email
 
 ## 📝 Code Flow
 
@@ -151,7 +137,7 @@ netlify dev
 └─────────────────────────────────────────────────────┘
                          ↓
 ┌─────────────────────────────────────────────────────┐
-│ 4. Netlify function → nodemailer SMTP               │
+│ 4. Netlify function → SMTP (Seznam.cz)              │
 │    → Email odeslán na kurz@podnikatelskactvrtka.cz │
 └─────────────────────────────────────────────────────┘
                          ↓
@@ -179,35 +165,26 @@ netlify dev
 - ✅ Po zavření se už nezobrazuje automaticky
 - ✅ Lze otevřít manuálně přes help tlačítko
 
-## 🔄 Upgrade na Supabase Edge Function (Optional)
+## 📝 Další SMTP poskytovatelé
 
-Pokud chceš upgrade na Supabase Edge Function místo Netlify:
+### Gmail (Vyžaduje App Password)
+```bash
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=vas-email@gmail.com
+SMTP_PASS=app-password
+```
 
-```typescript
-// supabase/functions/send-support-ticket/index.ts
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+**Jak získat Gmail App Password:**
+1. https://myaccount.google.com/security
+2. Zapni 2-Step Verification
+3. https://myaccount.google.com/apppasswords
+4. Vytvoř App Password pro "Mail"
 
-serve(async (req) => {
-  const { email, subject, message } = await req.json()
-  
-  // Použij Supabase Email nebo Resend
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      from: 'kurz@podnikatelskactvrtka.cz',
-      to: 'kurz@podnikatelskactvrtka.cz',
-      reply_to: email,
-      subject: `[Support Ticket] ${subject}`,
-      html: `<p>Od: ${email}</p><p>${message}</p>`
-    })
-  })
-  
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { 'Content-Type': 'application/json' }
-  })
-})
+### Outlook/Hotmail
+```bash
+SMTP_HOST=smtp-mail.outlook.com
+SMTP_PORT=587
+SMTP_USER=vas-email@outlook.com
+SMTP_PASS=vase-heslo
 ```
