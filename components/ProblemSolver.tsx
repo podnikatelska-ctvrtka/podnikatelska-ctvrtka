@@ -395,9 +395,8 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
           </p>
           <Button
             onClick={() => {
-              setIsCompleted(true);
               onComplete();
-              // Auto-redirect po 1s
+              // Auto-redirect po 1s bez druhého completion screenu
               if (onNavigateNext) {
                 setTimeout(() => {
                   onNavigateNext();
@@ -410,46 +409,6 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
             <span className="hidden sm:inline">Dokončit lekci a pokračovat →</span>
             <span className="sm:hidden">Dokončit a pokračovat →</span>
           </Button>
-        </div>
-      )}
-
-      {/* Completion Screen - Zobraz když právě dokončil */}
-      {isCompleted && (
-        <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
-          <div className="flex items-start gap-3 sm:gap-4 mb-6">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3">
-              <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-xl sm:text-2xl font-bold mb-2">
-                ✅ Lekce dokončena!
-              </h4>
-              <p className="text-green-50 text-sm sm:text-base">
-                Skvělá práce! Vybrali jste řešení a můžete ho aplikovat v Čtvrtce (Modul 1).
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col-reverse sm:flex-row gap-3">
-            <Button
-              onClick={() => setIsCompleted(false)}
-              variant="outline"
-              size="lg"
-              className="flex-1 bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
-            >
-              🔄 Zkusit znovu
-            </Button>
-            {onNavigateNext && (
-              <Button
-                onClick={onNavigateNext}
-                size="lg"
-                className="flex-1 bg-white text-green-600 hover:bg-green-50"
-              >
-                <span className="hidden sm:inline">Pokračovat na další lekci →</span>
-                <span className="sm:hidden">Další →</span>
-              </Button>
-            )}
-          </div>
         </div>
       )}
 

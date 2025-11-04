@@ -1042,14 +1042,14 @@ const MODULE_2 = {
             <li><strong>🎯 Realistický:</strong> Získáte 50% plánovaných zákazníků</li>
             <li><strong>🚀 Optimistický:</strong> Získáte 100% plánovaných zákazníků</li>
           </ul>
-          <p class="text-sm text-gray-600 mt-3">💡 Komponenta vypočítá <strong>aktuální stav</strong> z vašeho Canvas. Pro scénáře si představte různé počty zákazn��ků a klikněte přepočítat!</p>
+          <p class="text-sm text-gray-600 mt-3">💡 Komponenta vypočítá <strong>aktuální stav</strong> z vašeho modelu. Pro scénáře si představte různé počty zákazníků a klikněte přepočítat!</p>
         </div>
         
         <div class="bg-green-50 border-2 border-green-400 rounded-xl p-4 my-4">
           <p class="text-green-900"><strong>💰 UŽ PODNIKÁM - mám reálná data</strong></p>
           <p class="text-sm text-gray-700 mt-2">Použijte reálná čísla z posledního měsíce!</p>
           <ul class="text-sm text-gray-700 ml-4 mt-2 space-y-1 no-bullet">
-            <li>✅ Zadejte příjmy + náklady do modelu (Lekce 4 + 9)</li>
+            <li>✅ Zadejte příjmy + náklady do Canvas (Lekce 4 + 9)</li>
             <li>✅ Nástroj vám ukáže aktuální zisk/ztrátu</li>
             <li>📊 Analyzujte TOP zdroje příjmů</li>
           </ul>

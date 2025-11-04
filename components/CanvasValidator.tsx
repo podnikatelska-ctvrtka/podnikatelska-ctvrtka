@@ -149,7 +149,7 @@ const VALIDATION_RULES: ValidationRule[] = [
         message: `✅ Všechny volitelné sekce vyplněné!`
       };
     },
-    severity: 'warning'
+    severity: 'success'
   },
   {
     id: 'value-numbers',
@@ -213,7 +213,7 @@ const VALIDATION_RULES: ValidationRule[] = [
       
       return { passed: true, message: '💡 Přidejte kanály jak oslovíte zákazníky' };
     },
-    severity: 'warning'
+    severity: 'success'
   },
   {
     id: 'color-cross-validation',
@@ -604,11 +604,13 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   // DEMO FUNKCE ODSTRANĚNY - BYLY NEBEZPEČNÉ!
   // Přepisovaly uživatelova data bez varování.
 
+  // 🎯 3 KATEGORIE podle severity:
+  // ❌ Chyby (červené) = failed + severity='error'
   const errorCount = results.filter(r => !r.passed && r.severity === 'error').length;
-  // ⚠️ FIX: Warnings mohou být i passed (např. "1 doporučení pro vylepšení")
+  // ⚠️ Varování (žluté) = severity='warning' (můžou být i passed, ale pořád varování)
   const warningCount = results.filter(r => r.severity === 'warning').length;
-  // ✅ Success = passed + severity === 'success' (ne warning/error)
-  const passedCount = results.filter(r => r.passed && r.severity === 'success').length;
+  // ✅ Výborné (zelené) = passed + severity='success'
+  const successCount = results.filter(r => r.passed && r.severity === 'success').length;
 
   // Format canvas data for preview
   const canvasSectionsForPreview = [
@@ -745,16 +747,16 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
             {/* Summary */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-green-50 border-2 border-green-300 p-4 rounded-lg text-center">
-                <div className="text-3xl font-bold text-green-700">{passedCount}</div>
-                <div className="text-sm text-green-600">Úspěšné</div>
+                <div className="text-3xl font-bold text-green-700">{successCount}</div>
+                <div className="text-sm text-green-600">✅ Výborné</div>
               </div>
               <div className="bg-yellow-50 border-2 border-yellow-300 p-4 rounded-lg text-center">
                 <div className="text-3xl font-bold text-yellow-700">{warningCount}</div>
-                <div className="text-sm text-yellow-600">Varování</div>
+                <div className="text-sm text-yellow-600">⚠️ Varování</div>
               </div>
               <div className="bg-red-50 border-2 border-red-300 p-4 rounded-lg text-center">
                 <div className="text-3xl font-bold text-red-700">{errorCount}</div>
-                <div className="text-sm text-red-600">Chyby</div>
+                <div className="text-sm text-red-600">❌ Chyby</div>
               </div>
             </div>
 

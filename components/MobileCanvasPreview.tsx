@@ -25,6 +25,19 @@ const STICKY_COLORS = {
   gray: { bg: 'bg-gray-100', border: 'border-gray-400', text: 'text-gray-700' },
 };
 
+// Ikony pro sekce (konzistence s ReadOnlyBusinessModelCanvas)
+const SECTION_ICONS: Record<string, string> = {
+  segments: '👥',
+  value: '💎',
+  channels: '📢',
+  relationships: '❤️',
+  revenue: '💰',
+  resources: '🔑',
+  activities: '🎯',
+  partners: '🤝',
+  costs: '💸'
+};
+
 interface Props {
   sections: CanvasSection[];
   defaultOpen?: boolean; // Všechny sekce otevřené nebo jen první?
@@ -67,7 +80,7 @@ export function MobileCanvasPreview({ sections, defaultOpen = false }: Props) {
                 <h3 className={`text-sm text-left ${
                   hasItems ? 'font-bold text-gray-900' : 'text-gray-500'
                 }`}>
-                  {section.title}
+                  {SECTION_ICONS[section.id] || ''} {section.title}
                 </h3>
                 {hasItems && (
                   <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
