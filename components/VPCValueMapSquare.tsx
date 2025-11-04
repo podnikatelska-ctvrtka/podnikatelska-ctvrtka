@@ -118,6 +118,40 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
     loadCustomerProfile();
   }, [userId, selectedSegment]);
   
+  // ✅ Sleduj změnu segmentu - když se změní, zkontroluj jestli aktuální hodnota odpovídá novému segmentu
+  useEffect(() => {
+    if (!selectedSegment || !selectedValue || availableValues.length === 0 || availableSegments.length === 0) {
+      return;
+    }
+    
+    const segmentObj = availableSegments.find(s => s.text === selectedSegment);
+    const valueObj = availableValues.find(v => v.text === selectedValue);
+    
+    // Pokud hodnota NEMÁ stejnou barvu jako segment, reset!
+    if (segmentObj && valueObj && segmentObj.color !== valueObj.color) {
+      console.log('🔄 Segment se změnil, hodnota neodpovídá - hledám matching hodnotu...', {
+        segment: selectedSegment,
+        segmentColor: segmentObj.color,
+        currentValue: selectedValue,
+        currentValueColor: valueObj.color
+      });
+      
+      // Najdi hodnotu se stejnou barvou jako segment
+      const matchingValue = availableValues.find(v => v.color === segmentObj.color);
+      
+      if (matchingValue) {
+        console.log('✅ Nalezena matching hodnota:', matchingValue.text);
+        onSelectValue(matchingValue.text);
+        toast.info(`🔄 Automaticky vybrána hodnota "${matchingValue.text}" pro segment "${selectedSegment}"`);
+      } else {
+        console.warn('⚠️ Žádná hodnota neodpovídá barvě segmentu!');
+        // Reset na prázdnou
+        onSelectValue('');
+        toast.warning(`⚠️ Pro segment "${selectedSegment}" nemáte žádnou odpovídající hodnotu. Vyberte jinou hodnotu.`);
+      }
+    }
+  }, [selectedSegment, selectedValue, availableValues, availableSegments]);
+  
   // ✅ Load Customer Profile data pro context hints
   const loadCustomerProfile = async () => {
     if (!userId || !selectedSegment) return;
