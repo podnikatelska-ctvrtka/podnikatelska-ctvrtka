@@ -75,7 +75,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   // Modul 3 - Value Proposition Canvas
   {
     id: 'customer-profile-complete',
-    title: 'Profil zákazníka hotov',
+    title: 'Profil zákazníka',
     description: 'Vytvořil jsi kompletní zákaznický profil',
     emoji: '👥',
     category: 'vpc',
@@ -83,7 +83,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'value-map-complete',
-    title: 'Hodnotová mapa hotova',
+    title: 'Hodnotová mapa',
     description: 'Zmapoval jsi svou hodnotovou nabídku',
     emoji: '🗺️',
     category: 'vpc',

@@ -325,9 +325,91 @@ export function MobileFitValidator({
           if (savedProgress) {
             setTotalRespondents(savedProgress.totalRespondents || 10);
             setCurrentStep(savedProgress.currentStep || 1);
-            setPainRelieverMappings(savedProgress.painRelieverMappings || {});
-            setGainCreatorMappings(savedProgress.gainCreatorMappings || {});
-            setProductMappings(savedProgress.productMappings || {});
+            
+            // 🔄 ID MIGRATION: Desktop používá jiná ID než mobile!
+            // Desktop: `job-text-slug-0`, Mobile: `job-0`
+            // Musíme migrovat ID podle textu
+            
+            const oldToNewJobIds: Record<string, string> = {};
+            if (savedProgress.jobs) {
+              savedProgress.jobs.forEach((oldJob: any, index: number) => {
+                const oldId = oldJob.id || `job-${index}`;
+                const newItem = uniqueJobs.find((j: any) => {
+                  const jText = typeof j === 'string' ? j : j.text;
+                  return jText === oldJob.text;
+                });
+                if (newItem) {
+                  const newIndex = uniqueJobs.indexOf(newItem);
+                  oldToNewJobIds[oldId] = `job-${newIndex}`;
+                }
+              });
+            }
+            
+            const oldToNewPainIds: Record<string, string> = {};
+            if (savedProgress.pains) {
+              savedProgress.pains.forEach((oldPain: any, index: number) => {
+                const oldId = oldPain.id || `pain-${index}`;
+                const newItem = uniquePains.find((p: any) => {
+                  const pText = typeof p === 'string' ? p : p.text;
+                  return pText === oldPain.text;
+                });
+                if (newItem) {
+                  const newIndex = uniquePains.indexOf(newItem);
+                  oldToNewPainIds[oldId] = `pain-${newIndex}`;
+                }
+              });
+            }
+            
+            const oldToNewGainIds: Record<string, string> = {};
+            if (savedProgress.gains) {
+              savedProgress.gains.forEach((oldGain: any, index: number) => {
+                const oldId = oldGain.id || `gain-${index}`;
+                const newItem = uniqueGains.find((g: any) => {
+                  const gText = typeof g === 'string' ? g : g.text;
+                  return gText === oldGain.text;
+                });
+                if (newItem) {
+                  const newIndex = uniqueGains.indexOf(newItem);
+                  oldToNewGainIds[oldId] = `gain-${newIndex}`;
+                }
+              });
+            }
+            
+            console.log('🔄 [Mobile] ID Migration:', { oldToNewJobIds, oldToNewPainIds, oldToNewGainIds });
+            
+            // 🔄 Migruj mappings s novými ID
+            if (savedProgress.painRelieverMappings) {
+              const migratedMappings: Record<string, string[]> = {};
+              Object.entries(savedProgress.painRelieverMappings).forEach(([reliever, oldPainIds]) => {
+                migratedMappings[reliever] = (oldPainIds as string[])
+                  .map(oldId => oldToNewPainIds[oldId] || oldId)
+                  .filter(id => uniquePains.some((p, i) => `pain-${i}` === id));
+              });
+              setPainRelieverMappings(migratedMappings);
+              console.log('✅ [Mobile] Pain reliever mappings migrated:', migratedMappings);
+            }
+            
+            if (savedProgress.gainCreatorMappings) {
+              const migratedMappings: Record<string, string[]> = {};
+              Object.entries(savedProgress.gainCreatorMappings).forEach(([creator, oldGainIds]) => {
+                migratedMappings[creator] = (oldGainIds as string[])
+                  .map(oldId => oldToNewGainIds[oldId] || oldId)
+                  .filter(id => uniqueGains.some((g, i) => `gain-${i}` === id));
+              });
+              setGainCreatorMappings(migratedMappings);
+              console.log('✅ [Mobile] Gain creator mappings migrated:', migratedMappings);
+            }
+            
+            if (savedProgress.productMappings) {
+              const migratedMappings: Record<string, string[]> = {};
+              Object.entries(savedProgress.productMappings).forEach(([product, oldJobIds]) => {
+                migratedMappings[product] = (oldJobIds as string[])
+                  .map(oldId => oldToNewJobIds[oldId] || oldId)
+                  .filter(id => uniqueJobs.some((j, i) => `job-${i}` === id));
+              });
+              setProductMappings(migratedMappings);
+              console.log('✅ [Mobile] Product mappings migrated:', migratedMappings);
+            }
             
             // Restore priority data
             if (savedProgress.jobs) {
@@ -349,7 +431,7 @@ export function MobileFitValidator({
               }));
             }
             
-            console.log('✅ FIT progress restored:', savedProgress);
+            console.log('✅ FIT progress restored (with ID migration)');
           }
           
           console.log('✅ FIT Validator loaded data for segment:', selectedSegment);

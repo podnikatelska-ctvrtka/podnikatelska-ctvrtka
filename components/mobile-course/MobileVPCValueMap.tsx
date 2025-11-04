@@ -497,11 +497,7 @@ export function MobileVPCValueMap({
         }
       }
       
-      // 🎉 ACHIEVEMENT: Value Map Complete
-      if (products.length > 0 && painRelievers.length > 0 && gainCreators.length > 0 && onAchievementUnlocked) {
-        console.log('✅ Value Map complete! Triggering achievement...');
-        onAchievementUnlocked('value-map-complete');
-      }
+      // ⏸️ ACHIEVEMENT přesunut do onComplete callback (triggeruje se až po kliknutí "Dokončit lekci")
     } catch (err: any) {
       console.error('❌ [Mobile ValueMap] Save error:', err);
       toast.error('❌ Chyba při ukládání');

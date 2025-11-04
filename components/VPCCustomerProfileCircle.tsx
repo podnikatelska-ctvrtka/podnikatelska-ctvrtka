@@ -175,11 +175,7 @@ export function VPCCustomerProfileCircle({ userId, selectedSegment, onSelectSegm
         if (data) setVpcId(data.id);
       }
       
-      // 🎉 ACHIEVEMENT: Customer Profile Complete
-      if (jobs.length > 0 && pains.length > 0 && gains.length > 0 && onAchievementUnlocked) {
-        console.log('✅ Customer Profile complete! Triggering achievement...');
-        onAchievementUnlocked('customer-profile-complete');
-      }
+      // ⏸️ ACHIEVEMENT přesunut do onComplete callback (triggeruje se až po kliknutí "Dokončit lekci")
     } catch (err) {
       console.error('Error saving VPC:', err);
     } finally {

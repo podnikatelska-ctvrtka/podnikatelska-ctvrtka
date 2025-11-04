@@ -161,6 +161,11 @@ export function MobileCourseModule3({
             if (onSelectSegment) onSelectSegment(seg);
           }}
           onComplete={async () => {
+            // 🎉 Achievement za kompletní zákaznický profil
+            if (onAchievementUnlocked) {
+              onAchievementUnlocked('customer-profile-complete');
+            }
+            
             // Mark lesson as complete
             if (onLessonComplete) {
               onLessonComplete(14);
@@ -189,6 +194,11 @@ export function MobileCourseModule3({
             if (onSelectValue) onSelectValue(val);
           }}
           onComplete={async () => {
+            // 🎉 Achievement za kompletní hodnotovou mapu
+            if (onAchievementUnlocked) {
+              onAchievementUnlocked('value-map-complete');
+            }
+            
             // Mark lesson as complete
             if (onLessonComplete) {
               onLessonComplete(15);
