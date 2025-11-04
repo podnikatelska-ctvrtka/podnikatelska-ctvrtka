@@ -362,7 +362,7 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
   };
   
   return (
-    <div className="w-full">
+    <div className="w-full max-w-2xl mx-auto">
       <div className="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-t-xl">
         <h2 className="text-2xl font-bold mb-2">💎 Hodnotová Mapa</h2>
         <p className="text-green-100">

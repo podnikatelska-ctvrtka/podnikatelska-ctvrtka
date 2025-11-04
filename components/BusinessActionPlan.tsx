@@ -716,7 +716,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
         if (hasTopSegment) {
           actions.push({
             id: 'track-metrics',
-            text: 'Nastavte měření úspěchu',
+            text: 'Sledujte prodeje a zákaznický feedback',
             deadline: '7 dní',
             tip: `📈 Sledujte tyto metriky (Google Sheets nebo notebook):\n• Počet leadů/týden z "${topSegmentName}"\n• Konverze: lead → klient (%)\n• Průměrná hodnota zakázky (Kč)\n• Měsíční příjem (cíl: ${topSegmentRevenue.toLocaleString()} Kč)\n\nCo se měří, to se zlepšuje!`
           });

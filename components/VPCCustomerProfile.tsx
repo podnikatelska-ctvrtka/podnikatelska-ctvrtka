@@ -213,7 +213,7 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
   };
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-2xl mx-auto">
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6 rounded-t-xl">
         <h2 className="text-2xl font-bold mb-2">👥 Zákaznický Profil</h2>
         <p className="text-blue-100">
