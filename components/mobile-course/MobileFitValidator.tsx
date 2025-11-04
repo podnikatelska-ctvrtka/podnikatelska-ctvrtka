@@ -539,8 +539,113 @@ export function MobileFitValidator({
   const hasValueMapData = products.length > 0 || painRelievers.length > 0 || gainCreators.length > 0;
   const hasCustomerProfileData = jobs.length > 0 || pains.length > 0 || gains.length > 0;
   
+  // ✅ BLOKUJ pokud nemá Value Map data (bez ohledu na Customer Profile)
+  if (!hasValueMapData) {
+    return (
+      <div className="p-4 pb-20">
+        <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-400 rounded-2xl p-6 text-center">
+          <div className="text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">
+            Chybí Hodnotová mapa!
+          </h2>
+          <p className="text-gray-700 mb-6">
+            Pro validaci FIT musíte nejdříve vytvořit hodnotovou mapu v <strong>Modulu 2</strong>.
+          </p>
+          
+          <div className="bg-white rounded-xl p-4 mb-6 text-left border-2 border-red-300">
+            <h3 className="font-bold text-gray-900 mb-2 text-sm">
+              📋 Co je potřeba udělat?
+            </h3>
+            <ol className="space-y-2 text-sm text-gray-700">
+              <li className="flex gap-2">
+                <span className="font-bold text-blue-600">1.</span>
+                <span>Přejděte do <strong>Modulu 2: Hodnotová mapa</strong></span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-blue-600">2.</span>
+                <span>Vyberte hodnotu pro segment <strong className="text-blue-600">{selectedSegment}</strong></span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-blue-600">3.</span>
+                <span>Vytvořte produkty, řešení bolestí a tvůrce přínosů</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-blue-600">4.</span>
+                <span>Vraťte se sem pro FIT validaci</span>
+              </li>
+            </ol>
+          </div>
+          
+          <button
+            onClick={() => {
+              if (onNavigateToTool) {
+                onNavigateToTool('vpc-value-map');
+              } else {
+                toast.info('💡 Přejděte do Modulu 2');
+              }
+              haptic('medium');
+            }}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 mx-auto"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Přejít do Modulu 2
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Pokud nemá ani Customer Profile (edge case)
+  if (!hasCustomerProfileData) {
+    return (
+      <div className="p-4 pb-20">
+        <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-2xl p-6 text-center">
+          <div className="text-5xl mb-4">📋</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">
+            Chybí Zákaznický profil!
+          </h2>
+          <p className="text-gray-700 mb-6">
+            Pro segment <strong className="text-blue-600">{selectedSegment}</strong> nemáte vytvořený zákaznický profil.
+          </p>
+          
+          <div className="bg-white rounded-xl p-4 mb-6 text-left border-2 border-yellow-300">
+            <h3 className="font-bold text-gray-900 mb-2 text-sm">
+              📋 Co je potřeba udělat?
+            </h3>
+            <ol className="space-y-2 text-sm text-gray-700">
+              <li className="flex gap-2">
+                <span className="font-bold text-blue-600">1.</span>
+                <span>Vytvořte <strong>Zákaznický profil</strong> (Modul 1)</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-blue-600">2.</span>
+                <span>Vraťte se sem pro FIT validaci</span>
+              </li>
+            </ol>
+          </div>
+          
+          <button
+            onClick={() => {
+              if (onNavigateToTool) {
+                onNavigateToTool('vpc-customer-profile');
+              } else {
+                toast.info('💡 Přejděte do Modulu 1');
+              }
+              haptic('medium');
+            }}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 mx-auto"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Přejít do Modulu 1
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // ❌ STARÁ LOGIKA - smazána protože je redundantní
   // Pokud nemá žádná data, zobraz prázdný stát
-  if (!hasValueMapData && !hasCustomerProfileData) {
+  if (false && !hasValueMapData && !hasCustomerProfileData) {
     return (
       <div className="p-4 pb-20">
         <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-2xl p-6 text-center">

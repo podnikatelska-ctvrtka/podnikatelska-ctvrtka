@@ -1989,6 +1989,62 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   const hasValueMapData = products.length > 0 || painRelievers.length > 0 || gainCreators.length > 0;
   const hasCustomerProfileData = jobs.length > 0 || pains.length > 0 || gains.length > 0;
   
+  // ✅ BLOKUJ pokud není vybraná hodnota!
+  if (!localSelectedValue || localSelectedValue === '') {
+    return (
+      <div className="max-w-4xl mx-auto p-4 sm:p-6">
+        <div className="bg-gradient-to-br from-red-50 to-orange-50 border-3 border-red-400 rounded-2xl p-8 sm:p-12 text-center shadow-xl">
+          <div className="text-6xl sm:text-7xl mb-6">⚠️</div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+            Není vybraná hodnota!
+          </h2>
+          <p className="text-lg text-gray-700 mb-6">
+            Pro validaci FIT musíte nejdříve vybrat hodnotu v <strong>Lekci 2: Hodnotová mapa</strong>.
+          </p>
+          
+          <div className="bg-white rounded-xl p-6 mb-8 text-left max-w-2xl mx-auto border-2 border-red-300">
+            <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <Info className="w-5 h-5 text-blue-500" />
+              Co je potřeba udělat?
+            </h3>
+            <ol className="space-y-3 text-gray-700">
+              <li className="flex gap-3">
+                <span className="font-bold text-blue-600 flex-shrink-0">1.</span>
+                <span>Přejděte do <strong>Lekce 2: Hodnotová mapa</strong></span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-bold text-blue-600 flex-shrink-0">2.</span>
+                <span>V Kroku 0 vyberte hodnotu pro segment <strong className="text-blue-600">{localSelectedSegment || selectedSegment}</strong></span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-bold text-blue-600 flex-shrink-0">3.</span>
+                <span>Vyplňte produkty, řešení bolestí a tvůrce přínosů</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-bold text-blue-600 flex-shrink-0">4.</span>
+                <span>Vraťte se zpět sem pro validaci FIT</span>
+              </li>
+            </ol>
+          </div>
+          
+          <button
+            onClick={() => {
+              if (onNavigateToTool) {
+                onNavigateToTool('vpc-value-map');
+              } else {
+                toast.info('💡 Přejděte do Lekce 2: Hodnotová mapa');
+              }
+            }}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center gap-3 mx-auto"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Přejít do Lekce 2: Hodnotová mapa
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
   // Pokud nemá Value Map data, zobraz prázdný stát s návodem
   if (!hasValueMapData && hasCustomerProfileData) {
     return (
