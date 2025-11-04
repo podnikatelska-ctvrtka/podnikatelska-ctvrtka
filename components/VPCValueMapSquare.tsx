@@ -228,6 +228,46 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
   useEffect(() => {
     if (!userId || !selectedSegment || !selectedValue) return;
     
+    // ✅ KONTROLA PŘED NAČTENÍM: Odpovídá hodnota segmentu?
+    const segmentObj = availableSegments.find(s => s.text === selectedSegment);
+    const valueObj = availableValues.find(v => v.text === selectedValue);
+    
+    if (segmentObj && valueObj && segmentObj.color !== valueObj.color) {
+      console.error('❌ NEKONZISTENTNÍ STAV - hodnota neodpovídá segmentu!', {
+        segment: selectedSegment,
+        segmentColor: segmentObj.color,
+        value: selectedValue,
+        valueColor: valueObj.color
+      });
+      
+      // BLOKUJ načítání dat! Resetuj na Krok 0
+      setCurrentStep(0);
+      setProducts([]);
+      setPainRelievers([]);
+      setGainCreators([]);
+      setJobs([]);
+      setPains([]);
+      setGains([]);
+      
+      toast.error(`❌ Hodnota "${selectedValue}" neodpovídá segmentu "${selectedSegment}"!`, {
+        description: 'Vyberte prosím odpovídající hodnotu se stejnou barvou.',
+        duration: 6000
+      });
+      
+      // Zkus najít správnou hodnotu
+      const matchingValue = availableValues.find(v => v.color === segmentObj.color);
+      if (matchingValue) {
+        setTimeout(() => {
+          onSelectValue(matchingValue.text);
+          toast.success(`✅ Automaticky vybrána hodnota "${matchingValue.text}"`);
+        }, 500);
+      } else {
+        onSelectValue('');
+      }
+      
+      return; // STOP! Nedělej nic dalšího
+    }
+    
     const loadVPC = async () => {
       try {
         // DŮLEŽITÉ: Načítáme podle HODNOTY, ne jen segmentu!
@@ -537,6 +577,23 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
   
   // 🎨 Získat barevné varianty podle vybrané hodnoty
   const colorVariants = getColorVariants(selectedValueObj?.color);
+  
+  // ✅ BLOKUJ KROKY 1+ pokud hodnota neodpovídá segmentu!
+  const isValueMismatch = selectedValue && selectedSegmentObj && selectedValueObj && 
+                          selectedSegmentObj.color !== selectedValueObj.color;
+  
+  // Pokud je nekonzistence, FORCE reset na Krok 0
+  if (isValueMismatch && currentStep > 0) {
+    setTimeout(() => {
+      setCurrentStep(0);
+      setProducts([]);
+      setPainRelievers([]);
+      setGainCreators([]);
+      toast.error(`❌ Hodnota "${selectedValue}" neodpovídá segmentu "${selectedSegment}"! Vyberte správnou hodnotu.`, {
+        duration: 6000
+      });
+    }, 100);
+  }
   
   return (
     <div className="w-full space-y-6">
