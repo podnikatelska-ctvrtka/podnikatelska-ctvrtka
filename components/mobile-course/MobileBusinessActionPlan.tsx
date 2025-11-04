@@ -311,9 +311,9 @@ export function MobileBusinessActionPlan({
       if (hasTopSegment) {
         actions.push({
           id: 'track-metrics',
-          text: 'Sledujte prodeje a zákaznický feedback',
+          text: 'Sledujte prodeje a zákaznické metriky',
           deadline: '7 dní',
-          tip: `📈 Sledujte tyto metriky (Google Sheets nebo notebook):\n• Počet leadů/týden z "${topSegmentName}"\n• Konverze: lead → klient (%)\n• Průměrná hodnota zakázky (Kč)\n• Měsíční příjem (cíl: ${topSegmentRevenue.toLocaleString()} Kč)\n\nCo se měří, to se zlepšuje!`
+          tip: `📈 Sledujte tyto metriky (Google Sheets nebo notebook):\n• Nových zákazníků/týden z "${topSegmentName}"\n• Kolik % se vrací na opakovaný nákup (%)\n• Průměrná hodnota nákupu (Kč)\n• Měsíční příjem (cíl: ${topSegmentRevenue.toLocaleString()} Kč)\n\nCo se měří, to se zlepšuje!`
         });
       }
       

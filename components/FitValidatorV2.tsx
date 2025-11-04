@@ -2454,7 +2454,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
 
             {/* Prioritization Grids - DESKTOP */}
             {step2View === 'customer' && (
-            <div className="hidden md:grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="hidden md:grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
               {/* Jobs - ✅ ALWAYS SHOW! */}
               <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -2584,6 +2585,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     />
                   </div>
                 </div>
+              </div>
             </div>
             )}
 
@@ -2738,7 +2740,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                 </p>
               </div>
               
-              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+              <div className="max-w-5xl mx-auto">
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                 {/* Products - EDITOVATELNÉ */}
                 <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -2849,6 +2852,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     />
                   </div>
                 </div>
+              </div>
               </div>
             </div>
             )}

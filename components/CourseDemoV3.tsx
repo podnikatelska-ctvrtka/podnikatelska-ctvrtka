@@ -2912,6 +2912,8 @@ export function CourseDemoV3() {
                           if (lessonIndex !== -1) {
                             // Přepni na danou lekci v Modulu 3
                             handleLessonChange(MODULE_3.lessons[lessonIndex]);
+                            // 📜 Scroll nahoru
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
                           }
                         }}
                         onNavigateToTool={(tool) => {
