@@ -659,28 +659,15 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
         {currentStep === 1 && (
           <div
             key="step1"
-            className="rounded-xl sm:rounded-2xl border-2 sm:border-4 p-4 sm:p-8 animate-in fade-in slide-in-from-right-4 duration-300"
-            style={{ 
-              background: colorVariants.bg,
-              borderColor: colorVariants.border
-            }}
+            className="bg-orange-50 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-orange-300 p-4 sm:p-8 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <div 
-                className="text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl shadow-lg flex-shrink-0"
-                style={{ backgroundColor: colorVariants.icon }}
-              >
+              <div className="bg-orange-500 text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl shadow-lg flex-shrink-0">
                 📦
               </div>
               <div className="flex-1 min-w-0">
-                <h2 
-                  className="text-lg sm:text-2xl font-bold"
-                  style={{ color: colorVariants.text }}
-                >Produkty a služby</h2>
-                <p 
-                  className="text-sm sm:text-base truncate opacity-90"
-                  style={{ color: colorVariants.text }}
-                >Pro: <span className="font-bold">{selectedValue}</span> ({products.length}/8)</p>
+                <h2 className="text-orange-800 text-lg sm:text-2xl font-bold">Produkty a služby</h2>
+                <p className="text-orange-700 text-sm sm:text-base truncate">Pro: <span className="font-bold">{selectedValue}</span> ({products.length}/8)</p>
               </div>
             </div>
             
@@ -699,11 +686,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 value={newProduct}
                 onChange={(e) => setNewProduct(e.target.value)}
                 placeholder="Např.: Online kurz, 1-1 konzultace..."
-                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border-2 rounded-xl text-sm sm:text-base bg-white shadow-md focus:ring-2 focus:outline-none"
-                style={{ 
-                  borderColor: colorVariants.icon,
-                  outlineColor: colorVariants.icon + '60'
-                }}
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-orange-400 rounded-xl text-sm sm:text-base bg-white shadow-md focus:ring-2 focus:ring-orange-400 focus:outline-none"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -717,12 +700,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   console.log('🖱️ Button clicked for product');
                   addProduct();
                 }}
-                className="text-white rounded-xl px-6 py-2.5 sm:py-3 shadow-md transition-colors flex items-center justify-center gap-2 font-medium"
-                style={{ 
-                  backgroundColor: colorVariants.icon
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colorVariants.hover}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colorVariants.icon}
+                className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-6 py-2.5 sm:py-3 shadow-md transition-colors flex items-center justify-center gap-2 font-medium"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Přidat</span>
@@ -732,21 +710,15 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
             {/* Štítky - Responzivní grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 min-h-[150px] sm:min-h-[200px]">
               {products.length === 0 ? (
-                <div 
-                  className="col-span-full flex flex-col items-center justify-center h-32 sm:h-48"
-                  style={{ color: colorVariants.icon }}
-                >
+                <div className="col-span-full flex flex-col items-center justify-center text-orange-500 h-32 sm:h-48">
                   <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3 opacity-50" />
                   <p className="text-center text-sm sm:text-base px-4">Začněte přidáváním produktů a služeb</p>
                 </div>
               ) : (
                 products.map((product, idx) => {
                   const productText = typeof product === 'string' ? product : product?.text;
-                  const productColor = typeof product === 'string' 
-                    ? (selectedValueObj?.color || selectedSegmentObj?.color || '#f59e0b')
-                    : product?.color;
                   
-                  console.log('🔍 RENDERING PRODUCT:', { product, productText, productColor, type: typeof product });
+                  console.log('🔍 RENDERING PRODUCT:', { product, productText, colorVariants, type: typeof product });
                   
                   return (
                   <div
@@ -755,8 +727,8 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                     style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div
-                      className="w-full h-20 sm:h-28 rounded-lg sm:rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-2 sm:p-3"
-                      style={{ backgroundColor: normalizeColor(productColor || '#f59e0b'), color: '#ffffff' }}
+                      className="w-full h-20 sm:h-28 rounded-lg sm:rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-2 sm:p-3 text-white"
+                      style={{ backgroundColor: colorVariants.icon }}
                     >
                       <span className="text-center text-xs sm:text-sm line-clamp-4 break-words">
                         {productText || '[PRÁZDNÉ]'}
@@ -792,10 +764,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   }
                 }}
                 disabled={!canContinueStep1}
-                className="text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base"
-                style={{ 
-                  background: `linear-gradient(to right, ${colorVariants.icon}, ${colorVariants.hover})`
-                }}
+                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base"
               >
                 Pokračovat
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -808,28 +777,15 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
         {currentStep === 2 && (
           <div
             key="step2"
-            className="rounded-xl sm:rounded-2xl border-2 sm:border-4 p-4 sm:p-8 animate-in fade-in slide-in-from-right-4 duration-300"
-            style={{ 
-              background: colorVariants.bg,
-              borderColor: colorVariants.border
-            }}
+            className="bg-green-50 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-green-300 p-4 sm:p-8 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <div 
-                className="text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl shadow-lg flex-shrink-0"
-                style={{ backgroundColor: colorVariants.icon }}
-              >
+              <div className="bg-green-500 text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl shadow-lg flex-shrink-0">
                 📈
               </div>
               <div className="flex-1 min-w-0">
-                <h2 
-                  className="text-lg sm:text-2xl font-bold"
-                  style={{ color: colorVariants.text }}
-                >Tvorba přínosů</h2>
-                <p 
-                  className="text-sm sm:text-base truncate opacity-90"
-                  style={{ color: colorVariants.text }}
-                >Jak <span className="font-bold">{selectedValue}</span> vytváří hodnotu? ({gainCreators.length}/20)</p>
+                <h2 className="text-green-800 text-lg sm:text-2xl font-bold">Tvorba přínosů</h2>
+                <p className="text-green-700 text-sm sm:text-base truncate">Jak <span className="font-bold">{selectedValue}</span> vytváří hodnotu? ({gainCreators.length}/20)</p>
               </div>
             </div>
             
@@ -857,23 +813,14 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 value={newGainCreator}
                 onChange={(e) => setNewGainCreator(e.target.value)}
                 placeholder="Např.: Zvýší prodeje, ušetří čas..."
-                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border-2 rounded-xl text-sm sm:text-base bg-white shadow-md focus:ring-2 focus:outline-none"
-                style={{ 
-                  borderColor: colorVariants.icon,
-                  outlineColor: colorVariants.icon + '60'
-                }}
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-green-400 rounded-xl text-sm sm:text-base bg-white shadow-md focus:ring-2 focus:ring-green-400 focus:outline-none"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') addGainCreator();
                 }}
               />
               <button
                 onClick={addGainCreator}
-                className="text-white rounded-xl px-6 py-2.5 sm:py-3 shadow-md transition-colors flex items-center justify-center gap-2 font-medium"
-                style={{ 
-                  backgroundColor: colorVariants.icon
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colorVariants.hover}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colorVariants.icon}
+                className="bg-green-500 hover:bg-green-600 text-white rounded-xl px-6 py-2.5 sm:py-3 shadow-md transition-colors flex items-center justify-center gap-2 font-medium"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Přidat</span>
@@ -883,21 +830,15 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
             {/* Štítky - Responzivní */}
             <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 min-h-[150px] sm:min-h-[200px]">
               {gainCreators.length === 0 ? (
-                <div 
-                  className="w-full flex flex-col items-center justify-center h-32 sm:h-48"
-                  style={{ color: colorVariants.icon }}
-                >
+                <div className="w-full flex flex-col items-center justify-center text-green-500 h-32 sm:h-48">
                   <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3 opacity-50" />
                   <p className="text-center text-sm sm:text-base px-4">Popište přínosy, které vytváříte</p>
                 </div>
               ) : (
                 gainCreators.map((creator, idx) => {
                   const creatorText = typeof creator === 'string' ? creator : creator?.text;
-                  const creatorColor = typeof creator === 'string'
-                    ? (selectedValueObj?.color || selectedSegmentObj?.color || '#22c55e')
-                    : creator?.color;
                   
-                  console.log('🔍 RENDERING GAIN CREATOR:', { creator, creatorText, creatorColor, type: typeof creator });
+                  console.log('🔍 RENDERING GAIN CREATOR:', { creator, creatorText, colorVariants, type: typeof creator });
                   
                   return (
                   <div
@@ -906,8 +847,8 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                     style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div
-                      className="w-28 h-20 sm:w-32 sm:h-24 rounded-lg sm:rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-2 sm:p-3"
-                      style={{ backgroundColor: normalizeColor(creatorColor || '#22c55e'), color: '#ffffff' }}
+                      className="w-28 h-20 sm:w-32 sm:h-24 rounded-lg sm:rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-2 sm:p-3 text-white"
+                      style={{ backgroundColor: colorVariants.icon }}
                     >
                       <span className="text-center text-xs sm:text-sm line-clamp-4 break-words">
                         {creatorText || '[PRÁZDNÉ]'}
@@ -943,10 +884,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   }
                 }}
                 disabled={!canContinueStep2}
-                className="text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base"
-                style={{ 
-                  background: `linear-gradient(to right, ${colorVariants.icon}, ${colorVariants.hover})`
-                }}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base"
               >
                 Pokračovat
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -959,28 +897,15 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
         {currentStep === 3 && (
           <div
             key="step3"
-            className="rounded-xl sm:rounded-2xl border-2 sm:border-4 p-4 sm:p-8 animate-in fade-in slide-in-from-right-4 duration-300"
-            style={{ 
-              background: colorVariants.bg,
-              borderColor: colorVariants.border
-            }}
+            className="bg-purple-50 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-purple-300 p-4 sm:p-8 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <div 
-                className="text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl shadow-lg flex-shrink-0"
-                style={{ backgroundColor: colorVariants.icon }}
-              >
+              <div className="bg-purple-500 text-white rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl shadow-lg flex-shrink-0">
                 💊
               </div>
               <div className="flex-1 min-w-0">
-                <h2 
-                  className="text-lg sm:text-2xl font-bold"
-                  style={{ color: colorVariants.text }}
-                >Řešení obtíží</h2>
-                <p 
-                  className="text-sm sm:text-base truncate opacity-90"
-                  style={{ color: colorVariants.text }}
-                >Jak <span className="font-bold">{selectedValue}</span> řeší problémy? ({painRelievers.length}/20)</p>
+                <h2 className="text-purple-800 text-lg sm:text-2xl font-bold">Řešení obtíží</h2>
+                <p className="text-purple-700 text-sm sm:text-base truncate">Jak <span className="font-bold">{selectedValue}</span> řeší problémy? ({painRelievers.length}/20)</p>
               </div>
             </div>
             
@@ -1008,23 +933,14 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 value={newPainReliever}
                 onChange={(e) => setNewPainReliever(e.target.value)}
                 placeholder="Např.: Odstraní nejistotu, sníží náklady..."
-                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border-2 rounded-xl text-sm sm:text-base bg-white shadow-md focus:ring-2 focus:outline-none"
-                style={{ 
-                  borderColor: colorVariants.icon,
-                  outlineColor: colorVariants.icon + '60'
-                }}
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-purple-400 rounded-xl text-sm sm:text-base bg-white shadow-md focus:ring-2 focus:ring-purple-400 focus:outline-none"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') addPainReliever();
                 }}
               />
               <button
                 onClick={addPainReliever}
-                className="text-white rounded-xl px-6 py-2.5 sm:py-3 shadow-md transition-colors flex items-center justify-center gap-2 font-medium"
-                style={{ 
-                  backgroundColor: colorVariants.icon
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colorVariants.hover}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colorVariants.icon}
+                className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl px-6 py-2.5 sm:py-3 shadow-md transition-colors flex items-center justify-center gap-2 font-medium"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Přidat</span>
@@ -1034,21 +950,15 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
             {/* Štítky - Responzivní */}
             <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 min-h-[150px] sm:min-h-[200px]">
               {painRelievers.length === 0 ? (
-                <div 
-                  className="w-full flex flex-col items-center justify-center h-32 sm:h-48"
-                  style={{ color: colorVariants.icon }}
-                >
+                <div className="w-full flex flex-col items-center justify-center text-purple-500 h-32 sm:h-48">
                   <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3 opacity-50" />
                   <p className="text-center text-sm sm:text-base px-4">Popište řešení problémů zákazníka</p>
                 </div>
               ) : (
                 painRelievers.map((reliever, idx) => {
                   const relieverText = typeof reliever === 'string' ? reliever : reliever?.text;
-                  const relieverColor = typeof reliever === 'string'
-                    ? (selectedValueObj?.color || selectedSegmentObj?.color || '#8b5cf6')
-                    : reliever?.color;
                   
-                  console.log('🔍 RENDERING PAIN RELIEVER:', { reliever, relieverText, relieverColor, type: typeof reliever });
+                  console.log('🔍 RENDERING PAIN RELIEVER:', { reliever, relieverText, colorVariants, type: typeof reliever });
                   
                   return (
                   <div
@@ -1057,8 +967,8 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                     style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div
-                      className="w-28 h-20 sm:w-32 sm:h-24 rounded-lg sm:rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-2 sm:p-3"
-                      style={{ backgroundColor: normalizeColor(relieverColor || '#8b5cf6'), color: '#ffffff' }}
+                      className="w-28 h-20 sm:w-32 sm:h-24 rounded-lg sm:rounded-xl flex items-center justify-center font-medium shadow-lg hover:scale-105 transition-all cursor-pointer p-2 sm:p-3 text-white"
+                      style={{ backgroundColor: colorVariants.icon }}
                     >
                       <span className="text-center text-xs sm:text-sm line-clamp-4 break-words">
                         {relieverText || '[PRÁZDNÉ]'}
@@ -1094,10 +1004,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                   }
                 }}
                 disabled={!canContinueStep3}
-                className="text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base"
-                style={{ 
-                  background: `linear-gradient(to right, ${colorVariants.icon}, ${colorVariants.hover})`
-                }}
+                className="bg-gradient-to-r from-purple-500 to-violet-500 hover:from-purple-600 hover:to-violet-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base"
               >
                 Dokončit
                 <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
