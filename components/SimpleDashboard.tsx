@@ -641,14 +641,14 @@ export function SimpleDashboard({
       </PullToRefresh>
     </div>
     
-    {/* 💡 HELP BUTTON - Desktop only (fixed bottom-right) - MIMO main div! */}
+    {/* 💡 HELP BUTTON - Desktop only (fixed bottom-right, nad "Uloženo") - MIMO main div! */}
     {!isMobile && onShowWelcomeModal && (
       <button
         onClick={() => {
           console.log('🔵 SimpleDashboard Help button clicked!');
           onShowWelcomeModal();
         }}
-        className="fixed bottom-6 right-6 z-[9999] w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
+        className="fixed bottom-20 right-6 z-[9999] w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
         aria-label="Nápověda"
       >
         <HelpCircle className="w-6 h-6" />

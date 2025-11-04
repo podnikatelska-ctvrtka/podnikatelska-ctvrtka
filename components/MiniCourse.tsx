@@ -520,15 +520,15 @@ export function MiniCourse() {
     if (key === 'day2-konkurence-dobre') {
       // Pokud má nějaký obsah (není prázdné), kontroluj strukturu
       if (value.trim().length > 0) {
-        // Kontroluj strukturu - všech 5 aspektů musí být přítomno
-        const requiredAspects = ['Produkt:', 'Cena:', 'Komunikace:', 'Bonus:', 'Recenze:'];
-        const missingAspects = requiredAspects.filter(aspect => !value.includes(aspect));
+        // Kontroluj strukturu - všech 5 aspektů musí být přítomno (flexibilní názvy)
+        const requiredAspects = ['PRODUKT', 'CENA', 'KOMUNIKACE', 'RECENZE'];
+        const missingAspects = requiredAspects.filter(aspect => !value.toUpperCase().includes(aspect));
         if (missingAspects.length > 0) {
           return; // Pokusí se smazat strukturu
         }
-        // Kontroluj minimálně 10 checkmarků (2 konkurenti × 5 aspektů)
+        // Kontroluj minimálně 4 checkmarky (méně přísné - stačí vyplnit alespoň 4 aspekty)
         const matches = value.match(/✅/g);
-        if (!matches || matches.length < 10) {
+        if (!matches || matches.length < 4) {
           return;
         }
       }
@@ -538,15 +538,15 @@ export function MiniCourse() {
     if (key === 'day2-konkurence-spatne') {
       // Pokud má nějaký obsah (není prázdné), kontroluj strukturu
       if (value.trim().length > 0) {
-        // Kontroluj strukturu - všech 5 aspektů musí být přítomno
-        const requiredAspects = ['Produkt:', 'Cena:', 'Komunikace:', 'Bonus:', 'Recenze:'];
-        const missingAspects = requiredAspects.filter(aspect => !value.includes(aspect));
+        // Kontroluj strukturu - všech 5 aspektů musí být přítomno (flexibilní názvy)
+        const requiredAspects = ['PRODUKT', 'CENA', 'KOMUNIKACE', 'RECENZE'];
+        const missingAspects = requiredAspects.filter(aspect => !value.toUpperCase().includes(aspect));
         if (missingAspects.length > 0) {
           return; // Pokusí se smazat strukturu
         }
-        // Kontroluj minimálně 10 křížků (2 konkurenti × 5 aspektů)
+        // Kontroluj minimálně 4 křížky (méně přísné - stačí vyplnit alespoň 4 aspekty)
         const matches = value.match(/❌/g);
-        if (!matches || matches.length < 10) {
+        if (!matches || matches.length < 4) {
           return;
         }
       }

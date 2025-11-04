@@ -207,7 +207,7 @@ const VALIDATION_RULES: ValidationRule[] = [
         return { 
           passed: true, 
           message: `✅ Máte ${channels.length} kanálů komunikace`, 
-          tip: 'Více kanálů = stejné segmenty můžou sdílet kanály (např. Instagram pro maminky i tatínky)' 
+          tip: 'Více kanálů = stejné segmenty m��žou sdílet kanály (např. Instagram pro maminky i tatínky)' 
         };
       }
       
@@ -604,13 +604,18 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   // DEMO FUNKCE ODSTRANĚNY - BYLY NEBEZPEČNÉ!
   // Přepisovaly uživatelova data bez varování.
 
-  // 🎯 3 KATEGORIE - CO SE SKUTEČNĚ ZOBRAZÍ UŽIVATELI:
+  // 🎯 3 KATEGORIE - CO SE SKUTEČNĚ ZOBRAZÍ UŽIVATELI (podle rendering logiky na řádku 768-773):
   // ❌ Chyby (červené) = !passed + severity='error'
   const errorCount = results.filter(r => !r.passed && r.severity === 'error').length;
-  // ⚠️ Varování (žluté) = severity='warning' (bez ohledu na passed)
+  // ⚠️ Varování (žluté) = severity='warning' 
   const warningCount = results.filter(r => r.severity === 'warning').length;
-  // ✅ Výborné (zelené) = severity='success' (bez ohledu na passed, protože renderujeme všechny 'success' jako zelené)
-  const successCount = results.filter(r => r.severity === 'success').length;
+  // ✅ Výborné (zelené) = VŠECHNY které NEJSOU error nebo warning (podle rendering logiky)
+  // Logika: zobrazí se zelená pokud NENÍ (error && !passed) A NENÍ warning
+  const successCount = results.filter(r => {
+    const isError = r.severity === 'error' && !r.passed;
+    const isWarning = r.severity === 'warning';
+    return !isError && !isWarning; // Vše ostatní je zelené
+  }).length;
 
   // Format canvas data for preview
   const canvasSectionsForPreview = [

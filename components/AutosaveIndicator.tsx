@@ -21,7 +21,7 @@ export function AutosaveIndicator({ isSaving, lastSaved, show = true }: Autosave
   };
 
   return (
-    <div className="fixed bottom-24 md:bottom-28 right-4 z-50 pointer-events-none">
+    <div className="fixed bottom-6 right-6 z-40 pointer-events-none">
       <div className="bg-white shadow-lg rounded-full px-4 py-2 flex items-center gap-2 border border-gray-200 transition-all">
         {isSaving ? (
           <>

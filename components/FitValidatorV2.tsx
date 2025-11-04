@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { BottomSheet } from "./BottomSheet";
 import { haptic } from "../lib/haptics";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 interface Props {
   userId: string;
@@ -132,15 +133,12 @@ function AddItemInput({
         {placeholder}
       </button>
 
-      {/* Bottom Sheet */}
-      <BottomSheet
-        isOpen={isSheetOpen}
-        onClose={handleClose}
-        title={categoryLabel}
-        snapPoints={[0.5, 0.85]}
-        defaultSnap={0}
-        maxWidth="max-w-2xl"
-      >
+      {/* Desktop Dialog */}
+      <Dialog open={isSheetOpen} onOpenChange={(open) => !open && handleClose()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{categoryLabel}</DialogTitle>
+          </DialogHeader>
         <div className="space-y-4">
           {/* Instrukční text */}
           <div className={`p-3 ${bgColor} rounded-lg`}>
@@ -202,7 +200,8 @@ function AddItemInput({
             </Button>
           </div>
         </div>
-      </BottomSheet>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -2462,7 +2461,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
 
             {/* Prioritization Grids - DESKTOP */}
             {step2View === 'customer' && (
-            <div className="max-w-5xl mx-auto">
+            <>
               <div className="hidden md:grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
               {/* Jobs - ✅ ALWAYS SHOW! */}
               <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
@@ -2594,7 +2593,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                   </div>
                 </div>
               </div>
-            </div>
+            </>
             )}
 
             {/* MOBILE: Accordion pro Jobs/Pains/Gains */}
@@ -2739,17 +2738,24 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
             <div className="space-y-4">
               <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>💡 Tip:</strong> Přidávejte, upravujte nebo mažte položky přímo zde, nebo <button 
-                    onClick={() => onNavigateToLesson && onNavigateToLesson(15)}
-                    className="text-blue-600 hover:text-blue-700 underline font-semibold"
-                  >
-                    přejděte do Lekce 15 (Hodnotová mapa)
-                  </button> pro detailnější editaci.
+                  <strong>💡 Tip:</strong> Přidávejte, upravujte nebo mažte položky přímo zde, nebo{' '}
+                  {onNavigateToLesson && (
+                    <button 
+                      onClick={() => {
+                        console.log('🔗 Navigating to lesson 15');
+                        onNavigateToLesson(15);
+                      }}
+                      className="text-blue-600 hover:text-blue-700 underline font-semibold cursor-pointer"
+                      type="button"
+                    >
+                      přejděte do Lekce 15 (Hodnotová mapa)
+                    </button>
+                  )}
+                  {' '}pro detailnější editaci.
                 </p>
               </div>
               
-              <div className="max-w-5xl mx-auto">
-                <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                 {/* Products - EDITOVATELNÉ */}
                 <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -2860,7 +2866,6 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
                     />
                   </div>
                 </div>
-              </div>
               </div>
             </div>
             )}
