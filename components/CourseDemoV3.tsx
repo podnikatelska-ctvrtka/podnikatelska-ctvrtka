@@ -1560,6 +1560,12 @@ export function CourseDemoV3() {
         // ✅ ADD TO VISIBLE STACK (zobrazení okamžitě!)
         setVisibleAchievements(prev => [...prev, achievement]);
         
+        // 🔥 SHOW TOAST NOTIFICATION
+        toast.success(`🎉 ${achievement.title}`, {
+          description: achievement.description,
+          duration: 4000,
+        });
+        
         // Update local state
         setUnlockedAchievements(prev => new Set([...prev, achievementId]));
         
