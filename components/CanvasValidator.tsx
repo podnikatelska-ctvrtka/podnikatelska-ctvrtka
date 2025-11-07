@@ -523,6 +523,15 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   const [showResults, setShowResults] = useState(false);
   const [showCanvasPreview, setShowCanvasPreview] = useState(true);
 
+  // 🧹 CLEANUP: Remove old localStorage keys on mount
+  useEffect(() => {
+    const oldKey = `canvas_validator_${userId}`;
+    if (localStorage.getItem(oldKey)) {
+      console.log('🧹 Removing old localStorage key:', oldKey);
+      localStorage.removeItem(oldKey);
+    }
+  }, [userId]);
+
   // Load Canvas data FIRST, THEN check if we need to clear localStorage
   useEffect(() => {
     const loadData = async () => {
@@ -540,7 +549,11 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
           setCanvasData(formatted);
           
           // 🔍 Check if canvas data changed - compare with previous validation
-          const savedValidation = localStorage.getItem(`canvas_validator_${userId}`);
+          // ⚡ VERZE 2: Přidán canvas hash pro detekci změn!
+          const VALIDATOR_VERSION = 'v2';
+          const storageKey = `canvas_validator_${VALIDATOR_VERSION}_${userId}`;
+          const savedValidation = localStorage.getItem(storageKey);
+          
           if (savedValidation) {
             try {
               const parsed = JSON.parse(savedValidation);
@@ -551,7 +564,7 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
               // If canvas data is different, CLEAR old validation results
               if (parsed.canvasHash && parsed.canvasHash !== currentHash) {
                 console.log('🔄 Canvas data changed - clearing old validation results');
-                localStorage.removeItem(`canvas_validator_${userId}`);
+                localStorage.removeItem(storageKey);
                 setResults([]);
                 setShowResults(false);
               } else {
@@ -596,8 +609,10 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
       setIsValidating(false);
       
       // 💾 Save validation results to localStorage WITH canvas hash
+      const VALIDATOR_VERSION = 'v2';
+      const storageKey = `canvas_validator_${VALIDATOR_VERSION}_${userId}`;
       const canvasHash = JSON.stringify(canvasData);
-      localStorage.setItem(`canvas_validator_${userId}`, JSON.stringify({
+      localStorage.setItem(storageKey, JSON.stringify({
         results: validationResults,
         canvasHash: canvasHash,
         timestamp: new Date().toISOString()
