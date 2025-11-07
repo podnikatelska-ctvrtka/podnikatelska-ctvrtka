@@ -158,19 +158,25 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
     if (!userId || !selectedSegment) return;
     
     try {
+      // ✅ FIX: Načíst jobs/pains/gains z value_proposition_canvas kde selected_value IS NULL
+      // (to je Customer Profile - tam jsou uložené jobs/pains/gains)
       const { data } = await supabase
         .from('value_proposition_canvas')
         .select('jobs, pains, gains')
         .eq('user_id', userId)
         .eq('segment_name', selectedSegment)
+        .is('selected_value', null) // ✅ Customer Profile (NE Value Map!)
         .maybeSingle();
       
       if (data) {
+        console.log('📊 [ValueMapSquare] Načtená Customer Profile data:', data);
         setCustomerProfileData({
           jobs: data.jobs || [],
           pains: data.pains || [],
           gains: data.gains || []
         });
+      } else {
+        console.warn('⚠️ [ValueMapSquare] Customer Profile data nenalezena pro segment:', selectedSegment);
       }
     } catch (err) {
       console.error('Error loading customer profile:', err);
@@ -996,8 +1002,8 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
               customerData={customerProfileData || undefined}
             />
             
-            {/* ✅ Preview návaznosti */}
-            {customerProfileData && customerProfileData.gains.length > 0 && gainCreators.length > 0 && (
+            {/* ✅ Preview návaznosti - ZOBRAZIT VŽDY když máme Customer Profile data */}
+            {customerProfileData && customerProfileData.gains.length > 0 && (
               <CustomerConnectionPreview
                 type="gains"
                 customerItems={customerProfileData.gains}
@@ -1116,8 +1122,8 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
               customerData={customerProfileData || undefined}
             />
             
-            {/* ✅ Preview návaznosti */}
-            {customerProfileData && customerProfileData.pains.length > 0 && painRelievers.length > 0 && (
+            {/* ✅ Preview návaznosti - ZOBRAZIT VŽDY když máme Customer Profile data */}
+            {customerProfileData && customerProfileData.pains.length > 0 && (
               <CustomerConnectionPreview
                 type="pains"
                 customerItems={customerProfileData.pains}

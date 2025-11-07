@@ -75,6 +75,116 @@ export function MobileBusinessActionPlan({
   onOpenSidebar,
   onShowWelcomeModal
 }: MobileBusinessActionPlanProps) {
+  // 🖨️ PRINT STYLES - skryje sidebar a optimalizuje tisk
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @media print {
+        /* Skrýt VŠECHNO kromě main contentu */
+        body * {
+          visibility: hidden;
+        }
+        
+        /* Zobraz jen akční plán a jeho potomky */
+        .print-keep, .print-keep * {
+          visibility: visible;
+        }
+        
+        /* Skrýt elementy s no-print */
+        .no-print, .no-print * {
+          display: none !important;
+          visibility: hidden !important;
+        }
+        
+        /* Skrýt sidebar specificky */
+        aside, nav, [role="navigation"], 
+        [class*="sidebar"], [class*="Sidebar"],
+        [data-sidebar], [class*="MobileCourseSidebar"],
+        header, footer, button {
+          display: none !important;
+          visibility: hidden !important;
+        }
+        
+        /* Optimalizace pro tisk */
+        body {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: white !important;
+        }
+        
+        /* Akční plán na celou šířku */
+        .print-keep {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 1cm !important;
+        }
+        
+        /* Kompaktní layout */
+        .max-w-2xl, .max-w-4xl {
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        
+        /* Menší mezery */
+        .space-y-3, .space-y-4, .space-y-6 {
+          gap: 0.5rem !important;
+        }
+        
+        .space-y-3 > * + *, .space-y-4 > * + *, .space-y-6 > * + * {
+          margin-top: 0.5rem !important;
+        }
+        
+        /* Kompaktní padding */
+        .p-3 { padding: 0.5rem !important; }
+        .p-4 { padding: 0.5rem !important; }
+        .p-6 { padding: 0.75rem !important; }
+        .px-4 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+        .py-3, .py-4, .py-6 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+        
+        /* Menší nadpisy */
+        h1 { font-size: 1.25rem !important; margin-bottom: 0.25rem !important; }
+        h2 { font-size: 1.1rem !important; margin-bottom: 0.25rem !important; }
+        h3 { font-size: 1rem !important; margin-bottom: 0.25rem !important; }
+        h4 { font-size: 0.9rem !important; margin-bottom: 0.2rem !important; }
+        
+        /* Kompaktní text */
+        p { font-size: 0.8rem !important; line-height: 1.2 !important; margin-bottom: 0.25rem !important; }
+        li { font-size: 0.8rem !important; line-height: 1.2 !important; }
+        
+        /* Optimalizované page breaks */
+        .bg-white, .rounded-xl, .rounded-2xl {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        
+        /* Skrýt stíny */
+        * {
+          box-shadow: none !important;
+          text-shadow: none !important;
+          border-radius: 4px !important;
+        }
+        
+        /* Kompaktní grid */
+        .grid {
+          gap: 0.5rem !important;
+        }
+        
+        .min-h-screen {
+          min-height: 0 !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+  
   const [loading, setLoading] = useState(true);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
@@ -484,7 +594,7 @@ export function MobileBusinessActionPlan({
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden print-keep">
       {/* Header with Menu Button */}
       <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 sticky top-0 z-10 shadow-md">
         <div className="flex items-center gap-3">
@@ -494,7 +604,7 @@ export function MobileBusinessActionPlan({
                 haptic('light');
                 onOpenSidebar();
               }}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95"
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95 no-print"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -514,12 +624,23 @@ export function MobileBusinessActionPlan({
                 haptic('light');
                 onShowWelcomeModal();
               }}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95"
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95 no-print"
               aria-label="Nápověda"
             >
               <HelpCircle className="w-5 h-5" />
             </button>
           )}
+          {/* 🖨️ PRINT BUTTON */}
+          <button
+            onClick={() => {
+              haptic('light');
+              window.print();
+            }}
+            className="p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95 no-print"
+            aria-label="Vytisknout"
+          >
+            🖨️
+          </button>
         </div>
       </div>
 

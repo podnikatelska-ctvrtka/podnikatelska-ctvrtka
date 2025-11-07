@@ -13,7 +13,8 @@ interface ContextHintsProps {
 }
 
 export function ValueMapContextHints({ currentStep, segment, value, customerData }: ContextHintsProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  // ✅ FIX: Default FALSE - tipy budou skryté, uživatel si je zobrazí když chce
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const hints = {
     1: { // Produkty
@@ -92,7 +93,7 @@ export function ValueMapContextHints({ currentStep, segment, value, customerData
             </div>
 
             {/* Examples */}
-            <div className="mb-3 bg-white/50 rounded-lg p-3">
+            <div className="bg-white/50 rounded-lg p-3">
               <p className="text-xs font-semibold text-blue-800 mb-2">📝 Příklady:</p>
               <div className="space-y-1">
                 {currentHint.examples.map((example, idx) => (
@@ -101,28 +102,13 @@ export function ValueMapContextHints({ currentStep, segment, value, customerData
               </div>
             </div>
 
-            {/* Connection to Customer Profile */}
+            {/* ❌ ODSTRANĚNO: Connection to Customer Profile - bylo to moc informací
             {currentHint.connection && (
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <ArrowRight className="w-4 h-4 text-purple-600" />
-                  <p className="text-xs font-semibold text-purple-800">{currentHint.connection.label}</p>
-                </div>
-                <div className="space-y-1">
-                  {currentHint.connection.items.map((item, idx) => (
-                    <div key={idx} className="text-xs text-purple-700 pl-6 relative">
-                      <span className="absolute left-0">•</span>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                {currentHint.connection.hint && (
-                  <p className="text-xs text-purple-600 mt-2 font-medium italic">
-                    💡 {currentHint.connection.hint}
-                  </p>
-                )}
+                ...
               </div>
             )}
+            */}
           </div>
         </div>
       )}
@@ -152,7 +138,8 @@ export function CustomerConnectionPreview({
   customerItems: Array<{ text: string }>;
   valueItems: Array<{ text: string }>;
 }) {
-  if (customerItems.length === 0 || valueItems.length === 0) return null;
+  // ✅ FIX: Zobrazit i když valueItems jsou prázdné - systematický přístup!
+  if (customerItems.length === 0) return null;
 
   const config = {
     gains: {
@@ -199,20 +186,32 @@ export function CustomerConnectionPreview({
         <div>
           <p className="font-semibold mb-1">{valueLabel} ({valueItems.length})</p>
           <div className="space-y-1">
-            {valueItems.slice(0, 3).map((item, idx) => (
-              <div key={idx} className="bg-white/50 rounded px-2 py-1">
-                {item.text}
+            {valueItems.length === 0 ? (
+              <div className="bg-yellow-50 border border-yellow-200 rounded px-3 py-2 text-yellow-700">
+                <p className="text-xs font-medium">⚠️ Zatím žádné řešení</p>
+                <p className="text-xs mt-1 opacity-75">Přidejte způsoby, jak to naplníte/vyřešíte!</p>
               </div>
-            ))}
-            {valueItems.length > 3 && (
-              <p className="text-gray-500 italic">+{valueItems.length - 3} dalších...</p>
+            ) : (
+              <>
+                {valueItems.slice(0, 3).map((item, idx) => (
+                  <div key={idx} className="bg-white/50 rounded px-2 py-1">
+                    {item.text}
+                  </div>
+                ))}
+                {valueItems.length > 3 && (
+                  <p className="text-gray-500 italic">+{valueItems.length - 3} dalších...</p>
+                )}
+              </>
             )}
           </div>
         </div>
       </div>
       
       <p className={`text-xs ${textColor} mt-2 font-medium italic`}>
-        💡 V další lekci propojíte tyto položky v FIT validátoru!
+        {valueItems.length === 0 
+          ? '💡 Jděte systematicky - uspokojte každé očekávání/obavy zákazníka!' 
+          : '✅ Skvělé! V další lekci propojíte tyto položky v FIT validátoru!'
+        }
       </p>
     </div>
   );

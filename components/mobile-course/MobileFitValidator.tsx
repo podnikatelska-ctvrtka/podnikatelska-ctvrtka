@@ -82,6 +82,7 @@ export function MobileFitValidator({
   
   // 💾 Auto-save timer
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isLoadingDataRef = useRef(false); // ✅ FIX: Flag pro detekci načítání (aby se nespustil auto-save během load)
   
   // 📊 FIT SCORE CALCULATION (stejný jako desktop)
   const fitScoreData = useMemo(() => {
@@ -101,21 +102,40 @@ export function MobileFitValidator({
       .sort((a, b) => (b.percentage || 0) - (a.percentage || 0))
       .slice(0, 3);
     
-    // Zjisti kolik z top items má mapování
+    // ✅ FIX: Zjisti kolik z top items má mapování - ale JEN pro items které SKUTEČNĚ EXISTUJÍ!
+    // (Ignoruj "orphaned mappings" - mappings pro produkty/relievery/creators které byly smazány)
     const coveredPainIds = new Set<string>();
     const coveredGainIds = new Set<string>();
     const coveredJobIds = new Set<string>();
     
-    Object.values(painRelieverMappings).forEach(painIds => {
-      painIds.forEach(id => coveredPainIds.add(id));
+    // Vytvoř Set existujících items (pro rychlé vyhledávání)
+    const existingPainRelievers = new Set(
+      painRelievers.map(pr => typeof pr === 'string' ? pr : pr.text)
+    );
+    const existingGainCreators = new Set(
+      gainCreators.map(gc => typeof gc === 'string' ? gc : gc.text)
+    );
+    const existingProducts = new Set(
+      products.map(p => typeof p === 'string' ? p : p.text)
+    );
+    
+    // Filtruj mappings - počítej JEN mappings pro existující items!
+    Object.entries(painRelieverMappings).forEach(([reliever, painIds]) => {
+      if (existingPainRelievers.has(reliever)) {
+        painIds.forEach(id => coveredPainIds.add(id));
+      }
     });
     
-    Object.values(gainCreatorMappings).forEach(gainIds => {
-      gainIds.forEach(id => coveredGainIds.add(id));
+    Object.entries(gainCreatorMappings).forEach(([creator, gainIds]) => {
+      if (existingGainCreators.has(creator)) {
+        gainIds.forEach(id => coveredGainIds.add(id));
+      }
     });
     
-    Object.values(productMappings).forEach(jobIds => {
-      jobIds.forEach(id => coveredJobIds.add(id));
+    Object.entries(productMappings).forEach(([product, jobIds]) => {
+      if (existingProducts.has(product)) {
+        jobIds.forEach(id => coveredJobIds.add(id));
+      }
     });
     
     const coveredPainsCount = topPains.filter(p => coveredPainIds.has(p.id)).length;
@@ -152,7 +172,7 @@ export function MobileFitValidator({
       totalTopItems: topJobs.length + topPains.length + topGains.length,
       coveredCount: coveredJobsCount + coveredPainsCount + coveredGainsCount
     };
-  }, [jobs, pains, gains, productMappings, painRelieverMappings, gainCreatorMappings]);
+  }, [jobs, pains, gains, productMappings, painRelieverMappings, gainCreatorMappings, products, painRelievers, gainCreators]); // ✅ FIX: Přidány products, painRelievers, gainCreators aby se přepočítal FIT při změně Value Map!
   
   // 🏆 TRIGGER FIT SCORE ACHIEVEMENTS (stejný jako desktop FitValidatorV2)
   useEffect(() => {
@@ -178,6 +198,17 @@ export function MobileFitValidator({
     if (!userId || !selectedSegment) return;
     
     try {
+      // ✅ FIX: Vyfiltruj prázdné mappings (klíče s prázdnými arrays)
+      const cleanPainRelieverMappings = Object.fromEntries(
+        Object.entries(painRelieverMappings).filter(([_, ids]) => ids.length > 0)
+      );
+      const cleanGainCreatorMappings = Object.fromEntries(
+        Object.entries(gainCreatorMappings).filter(([_, ids]) => ids.length > 0)
+      );
+      const cleanProductMappings = Object.fromEntries(
+        Object.entries(productMappings).filter(([_, ids]) => ids.length > 0)
+      );
+      
       const progressData = {
         totalRespondents,
         currentStep,
@@ -208,9 +239,9 @@ export function MobileFitValidator({
         products: products.map(p => ({ text: p.text, color: p.color })),
         painRelievers: painRelievers.map(pr => ({ text: pr.text, color: pr.color })),
         gainCreators: gainCreators.map(gc => ({ text: gc.text, color: gc.color })),
-        painRelieverMappings,
-        gainCreatorMappings,
-        productMappings
+        painRelieverMappings: cleanPainRelieverMappings,
+        gainCreatorMappings: cleanGainCreatorMappings,
+        productMappings: cleanProductMappings
       };
       
       // Najdi záznam pro tento segment
@@ -254,7 +285,7 @@ export function MobileFitValidator({
   
   // ⏰ Auto-save on changes
   useEffect(() => {
-    if (currentStep > 1) {
+    if (currentStep > 1 && !isLoading && !isLoadingDataRef.current) { // ✅ FIX: Přeskočit auto-save během načítání dat
       debouncedSave();
     }
   }, [jobs, pains, gains, totalRespondents, productMappings, painRelieverMappings, gainCreatorMappings, currentStep]);
@@ -268,6 +299,7 @@ export function MobileFitValidator({
       }
       
       setIsLoading(true);
+      isLoadingDataRef.current = true; // ✅ FIX: Označ že načítáme data (blokuj auto-save)
       
       try {
         // Load ALL rows for this segment (může být víc value map)
@@ -421,10 +453,32 @@ export function MobileFitValidator({
               // 🔄 Migruj mappings s novými ID (žádná změna dat)
               if (savedProgress.painRelieverMappings) {
                 const migratedMappings: Record<string, string[]> = {};
+                
+                // ✅ 3-LEVEL ORPHANED MAPPINGS CLEANING:
+                // 1. Kontroluj že Pain Reliever EXISTUJE v Value Map
+                // 2. Migruj stará ID na nová
+                // 3. Kontroluj že Pain ID EXISTUJE v Customer Profile
+                
                 Object.entries(savedProgress.painRelieverMappings).forEach(([reliever, oldPainIds]) => {
-                  migratedMappings[reliever] = (oldPainIds as string[])
+                  // LEVEL 1: Existuje tento Pain Reliever v Value Map?
+                  const relieverExists = uniquePainRelievers.some(pr => 
+                    (typeof pr === 'string' ? pr : pr.text) === reliever
+                  );
+                  
+                  if (!relieverExists) {
+                    console.log(`🗑️ [Mobile] ORPHANED mapping removed: Pain Reliever "${reliever}" no longer exists`);
+                    return; // Skip - Pain Reliever byl smazán!
+                  }
+                  
+                  // LEVEL 2 & 3: Migruj ID a kontroluj existenci
+                  const validIds = (oldPainIds as string[])
                     .map(oldId => oldToNewPainIds[oldId] || oldId)
                     .filter(id => uniquePains.some((p, i) => `pain-${i}` === id));
+                  
+                  // ✅ FIX: Ulož jen pokud má alespoň 1 validní ID!
+                  if (validIds.length > 0) {
+                    migratedMappings[reliever] = validIds;
+                  }
                 });
                 setPainRelieverMappings(migratedMappings);
                 console.log('✅ [Mobile] Pain reliever mappings migrated:', migratedMappings);
@@ -432,10 +486,28 @@ export function MobileFitValidator({
               
               if (savedProgress.gainCreatorMappings) {
                 const migratedMappings: Record<string, string[]> = {};
+                
+                // ✅ 3-LEVEL ORPHANED MAPPINGS CLEANING:
                 Object.entries(savedProgress.gainCreatorMappings).forEach(([creator, oldGainIds]) => {
-                  migratedMappings[creator] = (oldGainIds as string[])
+                  // LEVEL 1: Existuje tento Gain Creator v Value Map?
+                  const creatorExists = uniqueGainCreators.some(gc => 
+                    (typeof gc === 'string' ? gc : gc.text) === creator
+                  );
+                  
+                  if (!creatorExists) {
+                    console.log(`🗑️ [Mobile] ORPHANED mapping removed: Gain Creator "${creator}" no longer exists`);
+                    return; // Skip - Gain Creator byl smazán!
+                  }
+                  
+                  // LEVEL 2 & 3: Migruj ID a kontroluj existenci
+                  const validIds = (oldGainIds as string[])
                     .map(oldId => oldToNewGainIds[oldId] || oldId)
                     .filter(id => uniqueGains.some((g, i) => `gain-${i}` === id));
+                  
+                  // ✅ FIX: Ulož jen pokud má alespoň 1 validní ID!
+                  if (validIds.length > 0) {
+                    migratedMappings[creator] = validIds;
+                  }
                 });
                 setGainCreatorMappings(migratedMappings);
                 console.log('✅ [Mobile] Gain creator mappings migrated:', migratedMappings);
@@ -443,10 +515,28 @@ export function MobileFitValidator({
               
               if (savedProgress.productMappings) {
                 const migratedMappings: Record<string, string[]> = {};
+                
+                // ✅ 3-LEVEL ORPHANED MAPPINGS CLEANING:
                 Object.entries(savedProgress.productMappings).forEach(([product, oldJobIds]) => {
-                  migratedMappings[product] = (oldJobIds as string[])
+                  // LEVEL 1: Existuje tento Product v Value Map?
+                  const productExists = uniqueProducts.some(p => 
+                    (typeof p === 'string' ? p : p.text) === product
+                  );
+                  
+                  if (!productExists) {
+                    console.log(`🗑️ [Mobile] ORPHANED mapping removed: Product "${product}" no longer exists`);
+                    return; // Skip - Product byl smazán!
+                  }
+                  
+                  // LEVEL 2 & 3: Migruj ID a kontroluj existenci
+                  const validIds = (oldJobIds as string[])
                     .map(oldId => oldToNewJobIds[oldId] || oldId)
                     .filter(id => uniqueJobs.some((j, i) => `job-${i}` === id));
+                  
+                  // ✅ FIX: Ulož jen pokud má alespoň 1 validní ID!
+                  if (validIds.length > 0) {
+                    migratedMappings[product] = validIds;
+                  }
                 });
                 setProductMappings(migratedMappings);
                 console.log('✅ [Mobile] Product mappings migrated:', migratedMappings);
@@ -483,6 +573,11 @@ export function MobileFitValidator({
         toast.error('❌ Chyba při načítání dat');
       } finally {
         setIsLoading(false);
+        setIsInitialLoad(false); // ✅ První načtení dokončeno
+        // ✅ FIX: Dej malý timeout před odblokováním auto-save (aby se state stihl aktualizovat)
+        setTimeout(() => {
+          isLoadingDataRef.current = false;
+        }, 100);
       }
     };
     
@@ -544,8 +639,8 @@ export function MobileFitValidator({
   // ✅ Zobraz čitelný název segmentu (fallback pro prázdný/undefined)
   const displaySegment = selectedSegment || 'váš segment';
   
-  // ✅ BLOKUJ pokud nemá Value Map data (bez ohledu na Customer Profile)
-  if (!hasValueMapData) {
+  // ✅ BLOKUJ pokud nemá Value Map data (ALE JEN PO INITIAL LOAD - jinak problikne!)
+  if (!isInitialLoad && !hasValueMapData) {
     return (
       <div className="p-4 pb-20">
         <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-400 rounded-2xl p-6 text-center">
@@ -600,8 +695,8 @@ export function MobileFitValidator({
     );
   }
   
-  // Pokud nemá ani Customer Profile (edge case)
-  if (!hasCustomerProfileData) {
+  // Pokud nemá ani Customer Profile (edge case) - ALE JEN PO INITIAL LOAD!
+  if (!isInitialLoad && !hasCustomerProfileData) {
     return (
       <div className="p-4 pb-20">
         <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-2xl p-6 text-center">

@@ -59,7 +59,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     relationships: [
       { text: 'Věrnostní karty', color: 'blue' },
-      { text: 'Komunitní akce', color: 'blue' }
+      { text: 'Studijní skupiny', color: 'green' }
     ],
     revenue: [
       { text: 'Káva a nápoje', color: 'global', percentage: '60%' },
@@ -87,7 +87,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Mzdy', percentage: '30%' }
     ],
     insights: {
-      crossSell: '🍰 Dezerty k ranní kávě → 10% tržeb (marže 70%!) - kdo sedí 4 hodiny, koupí si 2-3 dezerty',
+      crossSell: '🍰 Dezerty během dne → 10% tržeb (marže 70%!) - freelancer sedí 4-6 hodin, během té doby si koupí dezert k odpolední kávě nebo svačině (průměr 1,5 dezerty na osobu)',
       revenueBreakdown: 'Káva 60% + Jídlo 30% + Dezerty 10% = stabilní příjem po celý den',
       keySuccess: 'Velký prostor + WiFi = freelanceři zůstávají 4-6 hodin (průměr 3 kávy!)',
       whyItWorks: '💡 Freelanceři potřebují workspace, ale coworking je drahý (3.000-8.000 Kč/měsíc) → kavárna je levnější řešení (káva za 60 Kč + celý den internet zdarma) + sociální prostředí zdarma'
@@ -117,7 +117,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     relationships: [
       { text: 'Věrnostní karta', color: 'blue' },
-      { text: 'Mobilní objednávka', color: 'blue' }
+      { text: 'Firemní objednávky', color: 'green' }
     ],
     revenue: [
       { text: 'Káva to-go (ráno)', color: 'blue', percentage: '50%' },
@@ -144,10 +144,10 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Mzdy (3 směny)', percentage: '30%' }
     ],
     insights: {
-      crossSell: '🥖 Bagety a dezerty k ranní kávě → 10% tržeb (vysoká marže 65%) - "dáte si k tomu něco?" při platbě',
-      revenueBreakdown: 'Ráno káva 50% + Oběd 40% + Cross-sell 10% = 2 peak times denně',
+      crossSell: '🥖 Premium snack menu (káva + bageta/dezert) → hotové kombo balíčky, šetří čas zákazníkům i obsluze (vysoká marže 65%)',
+      revenueBreakdown: 'Ráno káva 50% + Oběd 40% + Cross-sell 10% = dva hlavní špičky denně (ráno + oběd)',
       keySuccess: 'Lokace na křižovatce = denně 500+ lidí projde kolem',
-      whyItWorks: '⚡ Rychlost + návyk = loajalita. Lidi si vytvoří ranní rituál (stejná kavárna, stejný čas) → když víš že budeš hotový za 2 minuty, vracíš se každé ráno. Premium lokace = platí se víc, ale obrat je 3x vyšší'
+      whyItWorks: '⚡ Rychlost + návyk = loajalita. Lidi si vytvoří ranní rituál (stejná kavárna, stejný čas) → když víš že budeš mít kávu za 2 minuty, vracíš se každé ráno. Premium lokace = platí se víc, ale obrat je 3x vyšší'
     }
   },
 
@@ -161,11 +161,11 @@ const BUSINESS_MODELS: BusinessModel[] = [
     description: 'Pizzerie s rozvozem a osobním odběrem',
     segments: [
       { text: 'Rodiny s dětmi (večeře)', color: 'blue' },
-      { text: 'Studenti v kolejích', color: 'green' }
+      { text: 'Studenti na kolejích', color: 'green' }
     ],
     value: [
       { text: 'Rozvoz do 30 min', color: 'blue' },
-      { text: '20% sleva při odběru', color: 'global' }
+      { text: '20% sleva při odběru', color: 'green' }
     ],
     channels: [
       { text: 'Facebook (rodiny)', color: 'blue' },
@@ -174,7 +174,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     relationships: [
       { text: 'Věrnostní program', color: 'blue' },
-      { text: 'SMS notifikace', color: 'global' }
+      { text: 'SMS notifikace', color: 'green' }
     ],
     revenue: [
       { text: 'Pizza (70% tržeb)', color: 'global', percentage: '70%' },
@@ -193,7 +193,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     partnerships: [
       { text: 'Dodavatel surovin', color: 'global' },
-      { text: 'Damejidlo.cz', color: 'global' }
+      { text: 'Foodora', color: 'global' }
     ],
     costs: [
       { text: 'Suroviny', percentage: '30%' },
@@ -203,7 +203,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     insights: {
       crossSell: '💰 20% sleva na odběr → 40% zákazníků si vybere odběr = úspora nákladů na rozvoz (řidič + benzín + doba) = marže +15%',
       revenueBreakdown: 'Pizza 70% + Nápoje 20% (vysoká marže!) + Přílohy 10%',
-      keySuccess: 'Rodiny objednávají večer (18-21h) = peak time s vysokými objednávkami',
+      keySuccess: 'Rodiny objednávají večer (18-21h) = nejvíce frekventovaný čas s vysokými objednávkami',
       whyItWorks: '🎯 Jeden produkt, dva segmenty s různými prioritami: (1) Rodiče → pohodlí večer (nechce se jim vařit po práci), platí plnou cenu za rozvoz. (2) Studenti → cena (chtějí ušetřit), přijdou si vyzvednout za slevu. Obě skupiny chtějí pizzu, jen z jiných důvodů'
     }
   },
@@ -222,7 +222,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     value: [
       { text: 'Limitované edice (měsíční)', color: 'blue' },
-      { text: 'Craft pivo pairing', color: 'green' }
+      { text: 'Prémiová večeře + craft pivo', color: 'green' }
     ],
     channels: [
       { text: 'Instagram (fotky jídla)', color: 'blue' },
@@ -230,7 +230,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Rezervace online', color: 'green' }
     ],
     relationships: [
-      { text: 'Exclusive previews (IG)', color: 'blue' },
+      { text: 'Exkluziviní novinky(IG)', color: 'blue' },
       { text: 'Členství (priority booking)', color: 'green' }
     ],
     revenue: [
@@ -259,10 +259,10 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Nájem (centrum)', percentage: '25%' }
     ],
     insights: {
-      crossSell: '🍺 Craft pivo pairing (doporučení konkrétního piva ke každé pizzě, jako víno k jídlu) → 25% tržeb (marže 70%!) - zákazník si koupí "zážitek", ne jen pivo',
-      revenueBreakdown: 'Pizza 60% + Pivo 25% + Dezerty 15% = vysoké AVG check',
-      keySuccess: '50% vyšší cena pizzy (350 Kč vs 230 Kč standard) = marže 65%',
-      whyItWorks: '📸 Instagram je tvůj hlavní prodejce: Fotogenická jídla + prémiový prostor = foodie to sdílejí zadarmo (virální marketing) → přivádí nové zákazníky bez placené reklamy. Foodie segment má peníze a neřeší cenu, když je to "unikátní zážitek"'
+      crossSell: '🍺 Craft pivo pairing (doporučení konkrétního piva ke každé pizze, jako víno k jídlu) → 25% tržeb (marže 70%!) - zákazník si koupí "zážitek", ne jen pivo',
+      revenueBreakdown: 'Pizza 60% + Pivo 25% + Dezerty 15% = vysoká průměrná útrata na zákazníka',
+      keySuccess: 'Originalita (craft pivo pairing k pizze!) + 50% vyšší cena (350 Kč vs 230 Kč) = marže 65% + virální Instagram obsah',
+      whyItWorks: '📸 Instagram je hlavní prodejce: Fotogenická jídla + prémiový prostor = foodie to sdílejí zadarmo (virální marketing) → přivádí nové zákazníky bez placené reklamy. Foodie segment má peníze a neřeší cenu, když je to "unikátní zážitek"'
     }
   },
 
@@ -290,7 +290,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     relationships: [
       { text: 'Osobní přístup (WhatsApp)', color: 'blue' },
-      { text: 'Měsíční check-ins', color: 'blue' }
+      { text: 'Lékařský follow-up', color: 'green' }
     ],
     revenue: [
       { text: 'Osobní tréninky (50%)', color: 'blue', percentage: '50%' },
@@ -317,7 +317,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     insights: {
       crossSell: '💊 Suplementy po tréninku → 20% tržeb (marže 60%!) - trenér ti přímo doporučí co potřebuješ = osobní přístup zvyšuje prodeje',
-      revenueBreakdown: 'PT 50% + Členství 30% + Suplementy 20% = vysoké příjmy na osobu',
+      revenueBreakdown: 'Osobní tréninky 50% + Členství 30% + Suplementy 20% = vysoké příjmy na osobu',
       keySuccess: 'Osobní trenéři = retention 85% (průměr industry je 40%)',
       whyItWorks: '⏰ Profesionálové 35-50 let mají peníze, ale NE čas: (1) Nemohou si dovolit zranění (práce = priorita) → platí za bezpečný trénink pod dohledem. (2) Nechtějí ztrácet čas hledáním cvičení online → platí za hotový plán "na míru". Čas > peníze pro tento segment'
     }
@@ -333,7 +333,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     description: 'Velké studio se skupinovými lekcemi',
     segments: [
       { text: 'Mladí lidé 20-35 let', color: 'blue' },
-      { text: 'Ženy (ráno/odpoledne)', color: 'green' }
+      { text: 'Ženy ráno/odpoledne', color: 'green' }
     ],
     value: [
       { text: 'Skupinové lekce', color: 'blue' },
@@ -345,12 +345,12 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Facebook maminky skupiny', color: 'green' }
     ],
     relationships: [
-      { text: 'Community vibe', color: 'blue' },
-      { text: 'Messenger booking', color: 'blue' }
+      { text: 'Atmosféra komunity', color: 'blue' },
+      { text: 'Rodinný přístup', color: 'green' }
     ],
     revenue: [
       { text: 'Měsíční členství', color: 'global', percentage: '70%' },
-      { text: 'Drop-in lekce', color: 'blue', percentage: '20%' },
+      { text: 'Otevřené lekce', color: 'blue', percentage: '20%' },
       { text: 'Merch a šejkry', color: 'global', percentage: '10%' }
     ],
     activities: [
@@ -375,8 +375,8 @@ const BUSINESS_MODELS: BusinessModel[] = [
     insights: {
       crossSell: '👕 Merch a šejkry → 10% tržeb (marže 70%) - komunita nosí tvoje logo = branding zdarma + pocit příslušnosti',
       revenueBreakdown: 'Členství 70% (stabilní!) + Drop-in 20% + Merch 10%',
-      keySuccess: 'Community = retention 70% (lidé přijdou kvůli přátelům)',
-      whyItWorks: '🤝 Mladí lidé 20-35 let chtějí sociální zážitek, ne jen cvičení: Přijdou na lekci, poznají kámoše, vrací se kvůli přátelům (ne kvůli fitness!). Skupinové lekce = zábava + motivace + community. Když má někdo partu ve fitku, neodchází → retention 70%'
+      keySuccess: 'Komunita = udržení 70% (lidé přijdou kvůli přátelům)',
+      whyItWorks: '🤝 Mladí lidé 20-35 let chtějí sociální zážitek, ne jen cvičení: Přijdou na lekci, poznají kámoše, vrací se kvůli přátelům (ne jen kvůli fitness!). Skupinové lekce = zábava + motivace + komunita. Když má někdo partu ve fitku, neodchází → udržitelnost 70%'
     }
   }
 ];
@@ -592,7 +592,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext, isLessonCompl
         {/* Insights Panel */}
         {showInsights && (
           <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-t-2 border-amber-200 p-4 sm:p-6">
-            <h5 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h5 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <Info className="w-5 h-5 text-amber-600" />
               💡 Proč tento model funguje?
             </h5>
@@ -672,7 +672,7 @@ export function BusinessModelGallery({ onComplete, onNavigateNext, isLessonCompl
       <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 text-center">
         <p className="text-blue-900">
           💡 <strong>Proč jsou zvýrazněné Segmenty a Hodnota?</strong><br />
-          Protože to jsou HLAVNÍ stavební bloky každého Business Modelu! Vše ostatní se odvíjí od toho KDO jsou vaši zákazníci (Segmenty) a CO jim nabízíte (Hodnota).
+          Protože to jsou HLAVNÍ stavební bloky každého Byznys modelu! Vše ostatní se odvíjí od toho KDO jsou vaši zákazníci (Segmenty) a CO jim nabízíte (Hodnota).
         </p>
       </div>
 

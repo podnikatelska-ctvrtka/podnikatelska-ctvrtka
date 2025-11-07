@@ -26,6 +26,9 @@ WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d';
 
 DELETE FROM public.user_canvas_data 
 WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d';
+
+DELETE FROM public.value_proposition_canvas 
+WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d'::text;
 ```
 
 ### Krok 2: Vymazat LocalStorage v prohlížeči
@@ -68,7 +71,8 @@ Pokud nechceš mazat localStorage ručně:
 SELECT 
   (SELECT COUNT(*) FROM public.user_achievements WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d') as "Achievementy (0)",
   (SELECT COUNT(*) FROM public.user_progress WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d') as "Progress (0)",
-  (SELECT COUNT(*) FROM public.user_canvas_data WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d') as "Canvas data (0)";
+  (SELECT COUNT(*) FROM public.user_canvas_data WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d') as "Canvas data (0)",
+  (SELECT COUNT(*) FROM public.value_proposition_canvas WHERE user_id = '2ac0d4c6-8556-4977-a74c-48b38c4e6d5d'::text) as "VPC data (0)";
 ```
 
 Všechna čísla by měla být **0**.

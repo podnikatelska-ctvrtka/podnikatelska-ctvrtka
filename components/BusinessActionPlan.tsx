@@ -70,6 +70,142 @@ interface ActionItem {
 }
 
 export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refreshTrigger, onAchievementUnlocked, onShowWelcomeModal }: BusinessActionPlanProps) {
+  // 🖨️ PRINT STYLES - skryje sidebar a optimalizuje tisk
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @media print {
+        /* Skrýt VŠECHNO kromě main contentu */
+        body * {
+          visibility: hidden;
+        }
+        
+        /* Zobraz jen akční plán a jeho potomky */
+        .print-keep, .print-keep * {
+          visibility: visible;
+        }
+        
+        /* Skrýt elementy s no-print */
+        .no-print, .no-print * {
+          display: none !important;
+          visibility: hidden !important;
+        }
+        
+        /* Skrýt sidebar specificky */
+        aside, nav, [role="navigation"], 
+        [class*="sidebar"], [class*="Sidebar"],
+        [data-sidebar], [class*="CourseSidebar"],
+        header, footer, button {
+          display: none !important;
+          visibility: hidden !important;
+        }
+        
+        /* Optimalizace pro tisk */
+        body {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: white !important;
+        }
+        
+        /* Akční plán na celou šířku */
+        .print-keep {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 1cm !important;
+        }
+        
+        /* Kompaktní layout */
+        .max-w-6xl {
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        
+        /* Menší mezery mezi sekcemi */
+        .space-y-4, .space-y-6, .space-y-8 {
+          gap: 0.5rem !important;
+        }
+        
+        .sm\\:space-y-6 > * + *, .space-y-6 > * + * {
+          margin-top: 0.5rem !important;
+        }
+        
+        /* Kompaktní padding */
+        .p-4 { padding: 0.5rem !important; }
+        .p-6 { padding: 0.75rem !important; }
+        .p-8, .sm\\:p-8 { padding: 1rem !important; }
+        
+        .px-4, .sm\\:px-6, .lg\\:px-8 {
+          padding-left: 0.5rem !important;
+          padding-right: 0.5rem !important;
+        }
+        
+        .py-6, .sm\\:py-12 {
+          padding-top: 0.5rem !important;
+          padding-bottom: 0.5rem !important;
+        }
+        
+        /* Menší nadpisy */
+        h1 { font-size: 1.25rem !important; margin-bottom: 0.25rem !important; }
+        h2 { font-size: 1.1rem !important; margin-bottom: 0.25rem !important; }
+        h3 { font-size: 1rem !important; margin-bottom: 0.25rem !important; }
+        h4 { font-size: 0.9rem !important; margin-bottom: 0.2rem !important; }
+        
+        /* Kompaktní text */
+        p { font-size: 0.8rem !important; line-height: 1.2 !important; margin-bottom: 0.25rem !important; }
+        li { font-size: 0.8rem !important; line-height: 1.2 !important; }
+        
+        /* Menší ikony a dekorace */
+        .text-5xl, .text-6xl, .text-7xl {
+          font-size: 1.5rem !important;
+          margin-bottom: 0.25rem !important;
+        }
+        
+        .w-16, .h-16, .w-20, .h-20,
+        .sm\\:w-20, .sm\\:h-20 {
+          width: 2rem !important;
+          height: 2rem !important;
+        }
+        
+        /* Optimalizované page breaks */
+        .bg-white, .rounded-xl, .rounded-2xl {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        
+        /* Skrýt stíny a zaoblené rohy pro úsporu místa */
+        * {
+          box-shadow: none !important;
+          text-shadow: none !important;
+          border-radius: 4px !important;
+        }
+        
+        /* Grid kompaktněji */
+        .grid {
+          gap: 0.5rem !important;
+        }
+        
+        /* Zobraz jen hlavní content */
+        .min-h-screen {
+          min-height: 0 !important;
+        }
+        
+        /* Skryj motion animace */
+        [style*="opacity"] {
+          opacity: 1 !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+  
   const [loading, setLoading] = useState(true);
   
   const [segments, setSegments] = useState<SegmentEconomics[]>([]);
@@ -831,17 +967,19 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
   const totalBacklog = backlogItems.jobs.length + backlogItems.pains.length + backlogItems.gains.length;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6 sm:py-12">
+    <div className="min-h-screen bg-gray-50 py-6 sm:py-12 print-keep">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
         {/* Breadcrumbs */}
         {onBack && (
-          <SimpleBreadcrumbs
-            items={[
-              { label: 'Dashboard', onClick: onBack },
-              { label: 'Nástroje' },
-              { label: 'Akční plán' }
-            ]}
-          />
+          <div className="no-print">
+            <SimpleBreadcrumbs
+              items={[
+                { label: 'Dashboard', onClick: onBack },
+                { label: 'Nástroje' },
+                { label: 'Akční plán' }
+              ]}
+            />
+          </div>
         )}
 
         {/* Header */}
@@ -861,7 +999,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           </p>
           
           {/* 🔄 REFRESH BUTTON */}
-          <div className="mt-4 flex justify-center">
+          <div className="mt-4 flex justify-center gap-4 no-print">
             <Button
               onClick={() => {
                 console.log('🔄 Manual refresh triggered');
@@ -887,6 +1025,15 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                   Obnovit data
                 </>
               )}
+            </Button>
+            
+            {/* 🖨️ PRINT BUTTON */}
+            <Button
+              onClick={() => window.print()}
+              variant="outline"
+              className="gap-2"
+            >
+              🖨️ Vytisknout
             </Button>
           </div>
         </motion.div>
@@ -1556,7 +1703,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-xl p-8 text-center text-white"
+          className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-xl p-8 text-center text-white no-print"
         >
           <div className="text-5xl mb-4">🚀</div>
           <h3 className="text-3xl font-bold mb-2">Jste připraveni!</h3>

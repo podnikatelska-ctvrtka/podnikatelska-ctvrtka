@@ -3,6 +3,7 @@ import { Plus, X, Save } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
+import { motion } from "motion/react";
 import { CustomerProfileContextHints } from "./CustomerProfileContextHints";
 import { trackCourseEvent, trackError } from "../lib/sentry";
 
@@ -146,6 +147,94 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
     return () => clearTimeout(saveTimeout);
   }, [jobs, pains, gains]); // Only trigger on data changes, NOT on userId/segment changes
   
+  // 🗑️ VYČISTI FIT VALIDATION DATA z DB když se smaže item
+  const cleanFitValidationData = async (type: 'job' | 'pain' | 'gain', deletedItemText: string) => {
+    if (!userId || !selectedSegment) return;
+    
+    try {
+      console.log(`🗑️ Cleaning FIT validation data for deleted ${type}:`, deletedItemText);
+      
+      // Najdi FIT validation row (row bez selected_value)
+      const { data: fitRow, error: fetchError } = await supabase
+        .from('value_proposition_canvas')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('segment_name', selectedSegment)
+        .is('selected_value', null)
+        .maybeSingle();
+      
+      if (fetchError || !fitRow || !fitRow.fit_validation_data) {
+        console.log('ℹ️ No FIT validation data to clean');
+        return;
+      }
+      
+      const fitData = fitRow.fit_validation_data;
+      
+      // 1. Odstraň item z jobs/pains/gains array
+      if (type === 'job' && fitData.jobs) {
+        fitData.jobs = fitData.jobs.filter((j: any) => j.text !== deletedItemText);
+      } else if (type === 'pain' && fitData.pains) {
+        fitData.pains = fitData.pains.filter((p: any) => p.text !== deletedItemText);
+      } else if (type === 'gain' && fitData.gains) {
+        fitData.gains = fitData.gains.filter((g: any) => g.text !== deletedItemText);
+      }
+      
+      // 2. Vyčisti mappings které odkazují na smazaný item
+      if (type === 'job' && fitData.productMappings) {
+        // Product mappings používají Job ID - musíme vyčistit všechny odkazy
+        Object.keys(fitData.productMappings).forEach(product => {
+          // Filtruj jen ID které ještě existují
+          fitData.productMappings[product] = fitData.productMappings[product].filter((id: string) => {
+            // ID format: 'job-0', 'job-1', ...
+            const index = parseInt(id.split('-')[1]);
+            return fitData.jobs[index]?.text !== deletedItemText;
+          });
+          
+          // Smaž prázdné mappings
+          if (fitData.productMappings[product].length === 0) {
+            delete fitData.productMappings[product];
+          }
+        });
+      } else if (type === 'pain' && fitData.painRelieverMappings) {
+        Object.keys(fitData.painRelieverMappings).forEach(reliever => {
+          fitData.painRelieverMappings[reliever] = fitData.painRelieverMappings[reliever].filter((id: string) => {
+            const index = parseInt(id.split('-')[1]);
+            return fitData.pains[index]?.text !== deletedItemText;
+          });
+          
+          if (fitData.painRelieverMappings[reliever].length === 0) {
+            delete fitData.painRelieverMappings[reliever];
+          }
+        });
+      } else if (type === 'gain' && fitData.gainCreatorMappings) {
+        Object.keys(fitData.gainCreatorMappings).forEach(creator => {
+          fitData.gainCreatorMappings[creator] = fitData.gainCreatorMappings[creator].filter((id: string) => {
+            const index = parseInt(id.split('-')[1]);
+            return fitData.gains[index]?.text !== deletedItemText;
+          });
+          
+          if (fitData.gainCreatorMappings[creator].length === 0) {
+            delete fitData.gainCreatorMappings[creator];
+          }
+        });
+      }
+      
+      // 3. Ulož zpět do DB
+      const { error: updateError } = await supabase
+        .from('value_proposition_canvas')
+        .update({ fit_validation_data: fitData })
+        .eq('id', fitRow.id);
+      
+      if (updateError) throw updateError;
+      
+      console.log('✅ FIT validation data cleaned successfully');
+      toast.success('🧹 FIT validace automaticky aktualizována');
+    } catch (err) {
+      console.error('❌ Error cleaning FIT validation data:', err);
+      // Nehlásit error uživateli - není to kritické
+    }
+  };
+  
   const saveVPC = async () => {
     if (!userId || !selectedSegment || isSaving) return;
     
@@ -249,7 +338,18 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
               >
                 <span className="flex-1 text-sm" style={{ color: getSegmentColors(segmentColor).jobs.text }}>{job}</span>
                 <button
-                  onClick={() => setJobs(jobs.filter((_, i) => i !== idx))}
+                  onClick={async () => {
+                    const deletedJob = jobs[idx];
+                    const newJobs = jobs.filter((_, i) => i !== idx);
+                    setJobs(newJobs);
+                    
+                    // ✅ OKAMŽITĚ ULOŽ + VYČISTI FIT VALIDATION DATA!
+                    setTimeout(async () => {
+                      await saveVPC();
+                      // Vyčisti FIT validation data z DB
+                      await cleanFitValidationData('job', deletedJob);
+                    }, 100);
+                  }}
                   className="text-red-500 hover:text-red-700 transition-colors"
                 >
                   <X className="w-4 h-4" />
@@ -320,7 +420,18 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
               >
                 <span className="flex-1 text-sm" style={{ color: getSegmentColors(segmentColor).pains.text }}>{pain}</span>
                 <button
-                  onClick={() => setPains(pains.filter((_, i) => i !== idx))}
+                  onClick={async () => {
+                    const deletedPain = pains[idx];
+                    const newPains = pains.filter((_, i) => i !== idx);
+                    setPains(newPains);
+                    
+                    // ✅ OKAMŽITĚ ULOŽ + VYČISTI FIT VALIDATION DATA!
+                    setTimeout(async () => {
+                      await saveVPC();
+                      // Vyčisti FIT validation data z DB
+                      await cleanFitValidationData('pain', deletedPain);
+                    }, 100);
+                  }}
                   className="text-red-500 hover:text-red-700 transition-colors"
                 >
                   <X className="w-4 h-4" />
@@ -391,7 +502,18 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
               >
                 <span className="flex-1 text-sm" style={{ color: getSegmentColors(segmentColor).gains.text }}>{gain}</span>
                 <button
-                  onClick={() => setGains(gains.filter((_, i) => i !== idx))}
+                  onClick={async () => {
+                    const deletedGain = gains[idx];
+                    const newGains = gains.filter((_, i) => i !== idx);
+                    setGains(newGains);
+                    
+                    // ✅ OKAMŽITĚ ULOŽ + VYČISTI FIT VALIDATION DATA!
+                    setTimeout(async () => {
+                      await saveVPC();
+                      // Vyčisti FIT validation data z DB
+                      await cleanFitValidationData('gain', deletedGain);
+                    }, 100);
+                  }}
                   className="text-red-500 hover:text-red-700 transition-colors"
                 >
                   <X className="w-4 h-4" />

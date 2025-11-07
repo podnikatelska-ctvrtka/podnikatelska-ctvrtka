@@ -33,6 +33,11 @@ DELETE FROM public.user_progress;
 DELETE FROM public.user_canvas_data;
 
 -- ============================================
+-- 4️⃣ VYMAZAT VŠECHNA VPC DATA
+-- ============================================
+DELETE FROM public.value_proposition_canvas;
+
+-- ============================================
 -- ✅ HOTOVO!
 -- ============================================
 -- Kurz je resetovaný! 
@@ -53,6 +58,9 @@ SELECT COUNT(*) as progress_count FROM public.user_progress;
 SELECT COUNT(*) as canvas_data_count FROM public.user_canvas_data;
 -- Mělo by vrátit: 0
 
+SELECT COUNT(*) as vpc_data_count FROM public.value_proposition_canvas;
+-- Mělo by vrátit: 0
+
 -- ============================================
 -- 💡 BONUS: RESET JEN PRO KONKRÉTNÍHO UŽIVATELE
 -- ============================================
@@ -62,3 +70,4 @@ SELECT COUNT(*) as canvas_data_count FROM public.user_canvas_data;
 -- DELETE FROM public.user_achievements WHERE user_id = 'TVOJE_USER_ID';
 -- DELETE FROM public.user_progress WHERE user_id = 'TVOJE_USER_ID';
 -- DELETE FROM public.user_canvas_data WHERE user_id = 'TVOJE_USER_ID';
+-- DELETE FROM public.value_proposition_canvas WHERE user_id = 'TVOJE_USER_ID';

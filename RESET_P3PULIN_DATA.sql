@@ -49,6 +49,10 @@ BEGIN
     DELETE FROM public.user_canvas_data 
     WHERE user_id = target_user_id;
     
+    -- Smazat VPC data
+    DELETE FROM public.value_proposition_canvas 
+    WHERE user_id = target_user_id::text;
+    
     RAISE NOTICE 'Data pro p3pulin@seznam.cz byla úspěšně smazána!';
   ELSE
     RAISE NOTICE 'Uživatel p3pulin@seznam.cz nebyl nalezen!';
@@ -63,7 +67,8 @@ SELECT
   u.email as "Email",
   (SELECT COUNT(*) FROM public.user_achievements WHERE user_id = u.id) as "Achievementy (0)",
   (SELECT COUNT(*) FROM public.user_progress WHERE user_id = u.id) as "Progress (0)",
-  (SELECT COUNT(*) FROM public.user_canvas_data WHERE user_id = u.id) as "Canvas data (0)"
+  (SELECT COUNT(*) FROM public.user_canvas_data WHERE user_id = u.id) as "Canvas data (0)",
+  (SELECT COUNT(*) FROM public.value_proposition_canvas WHERE user_id = u.id::text) as "VPC data (0)"
 FROM auth.users u
 WHERE u.email = 'p3pulin@seznam.cz';
 

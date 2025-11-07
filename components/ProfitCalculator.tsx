@@ -25,7 +25,6 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
   const [valuePropositions, setValuePropositions] = useState<Array<{name: string, color?: string}>>([]);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   // Load financial data + segments + revenue streams + value props from Canvas
   useEffect(() => {
@@ -243,7 +242,11 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
 
   const profit = totalRevenue - totalCosts;
   const profitMargin = totalRevenue > 0 ? ((profit / totalRevenue) * 100) : 0;
+  
+  // 🎯 TŘI STAVY: Zisk, Break-even, Ztráta
+  const isBreakEven = profit === 0 && totalRevenue > 0 && totalCosts > 0;
   const isProfitable = profit > 0;
+  const isLoss = profit < 0;
   
   // 🎉 ACHIEVEMENT: profitable-business (trigger pouze pokud je zisk > 0)
   useEffect(() => {
@@ -305,8 +308,12 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                 </div>
                 <div className="text-lg sm:text-2xl text-gray-300">=</div>
                 <div>
-                  <div className="text-xs text-gray-500">{isProfitable ? '💰 Zisk' : '⚠️ Ztráta'}</div>
-                  <div className={`text-xl sm:text-3xl font-bold ${isProfitable ? 'text-green-600' : 'text-orange-600'}`}>
+                  <div className="text-xs text-gray-500">
+                    {isProfitable ? '💰 Zisk' : isBreakEven ? '💚 Break-even' : '⚠️ Ztráta'}
+                  </div>
+                  <div className={`text-xl sm:text-3xl font-bold ${
+                    isProfitable ? 'text-green-600' : isBreakEven ? 'text-blue-600' : 'text-orange-600'
+                  }`}>
                     {Math.abs(profit).toLocaleString('cs-CZ')} Kč
                   </div>
                 </div>
@@ -314,17 +321,26 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
 
               {/* Status Badge */}
               <div className={`px-3 py-1.5 rounded-full w-fit mx-auto sm:mx-0 ${
-                isProfitable ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-700'
+                isProfitable 
+                  ? 'bg-green-50 text-green-700' 
+                  : isBreakEven 
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'bg-orange-50 text-orange-700'
               }`}>
                 {isProfitable ? (
                   <div className="flex items-center gap-1.5 text-sm">
                     <TrendingUp className="w-4 h-4" />
                     <span className="font-semibold">Ziskový model</span>
                   </div>
+                ) : isBreakEven ? (
+                  <div className="flex items-center gap-1.5 text-xs sm:text-sm">
+                    <Target className="w-4 h-4" />
+                    <span className="font-semibold">Vyrovnaný model</span>
+                  </div>
                 ) : (
                   <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                     <TrendingDown className="w-4 h-4" />
-                    <span className="font-semibold">Potřeba break-even</span>
+                    <span className="font-semibold">Potřeba zisku</span>
                   </div>
                 )}
               </div>
@@ -337,8 +353,20 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                     <span className="text-gray-300">•</span>
                     <span>📅 Roční: <strong className="text-gray-900">{(profit * 12).toLocaleString('cs-CZ')} Kč</strong></span>
                   </>
+                ) : isBreakEven ? (
+                  <span>
+                    💚 <strong className="text-blue-600">Jste vyrovnaní!</strong> 
+                    <span className="text-gray-500 ml-1">Zvyšte příjmy nebo snižte náklady pro zisk.</span>
+                  </span>
                 ) : (
-                  <span>⚡ Potřeba: <strong className="text-orange-600">{breakEvenCustomers - currentCustomers > 0 ? (breakEvenCustomers - currentCustomers) : 0} zákazníků</strong> nebo <strong className="text-orange-600">+{Math.abs(profit).toLocaleString('cs-CZ')} Kč</strong></span>
+                  <span>
+                    ⚡ Potřeba: <strong className="text-orange-600">
+                      {customerGap > 0 ? `${customerGap} zákazníků` : `+${Math.abs(profit).toLocaleString('cs-CZ')} Kč`}
+                    </strong>
+                    {customerGap > 0 && (
+                      <span className="text-gray-500 ml-1">nebo <strong className="text-orange-600">+{Math.abs(profit).toLocaleString('cs-CZ')} Kč</strong></span>
+                    )}
+                  </span>
                 )}
               </div>
             </div>
@@ -544,7 +572,7 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                       {segments.map((segment, index) => (
                         <div key={index} className="bg-gray-50 border border-gray-200 p-4 rounded-xl space-y-2.5">
                           <div className="font-semibold text-gray-900 flex items-center gap-2">
-                            <span>📦</span>
+                            <Users className="w-4 h-4" style={{ color: segment.color }} />
                             <span>{segment.name}</span>
                           </div>
                           
@@ -665,13 +693,19 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Profit margin:</span>
-                            <strong className={isProfitable ? 'text-green-700' : 'text-red-700'}>
+                            <strong className={
+                              isProfitable ? 'text-green-700' : isBreakEven ? 'text-blue-700' : 'text-red-700'
+                            }>
                               {profitMargin.toFixed(1)}%
                             </strong>
                           </div>
                           <div className="flex justify-between border-t border-gray-200 pt-2">
-                            <span className="text-gray-600">Měsíční zisk:</span>
-                            <strong className={isProfitable ? 'text-green-700' : 'text-red-700'}>
+                            <span className="text-gray-600">
+                              {isProfitable ? 'Měsíční zisk:' : isBreakEven ? 'Měsíční výsledek:' : 'Měsíční ztráta:'}
+                            </span>
+                            <strong className={
+                              isProfitable ? 'text-green-700' : isBreakEven ? 'text-blue-700' : 'text-red-700'
+                            }>
                               {Math.abs(profit).toLocaleString('cs-CZ')} Kč
                             </strong>
                           </div>
@@ -683,11 +717,11 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                         <div className="font-semibold text-indigo-900 mb-2 text-sm">💡 Rychlé výpočty</div>
                         <div className="space-y-1.5 text-indigo-800 text-xs">
                           <div className="flex justify-between">
-                            <span>Roční projekce:</span>
+                            <span>{isProfitable ? 'Roční zisk:' : isBreakEven ? 'Roční projekce:' : 'Roční ztráta:'}</span>
                             <strong>{(profit * 12).toLocaleString('cs-CZ')} Kč</strong>
                           </div>
                           <div className="flex justify-between">
-                            <span>Zisk na zákazníka:</span>
+                            <span>{isProfitable ? 'Zisk na zákazníka:' : isBreakEven ? 'Výsledek na zákazníka:' : 'Ztráta na zákazníka:'}</span>
                             <strong>{currentCustomers > 0 ? Math.round(profit / currentCustomers).toLocaleString('cs-CZ') : '—'} Kč</strong>
                           </div>
                           <div className="flex justify-between">
@@ -716,11 +750,15 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
                               <div key={idx} className="flex justify-between items-center">
                                 <span className="text-purple-700">{scenario.label}:</span>
                                 <div className="text-right">
-                                  <div className="font-bold text-purple-900">
+                                  <div className={`font-bold ${
+                                    newProfit > 0 ? 'text-green-700' : newProfit === 0 ? 'text-blue-700' : 'text-orange-700'
+                                  }`}>
                                     {Math.round(newProfit).toLocaleString('cs-CZ')} Kč
                                   </div>
-                                  <div className="text-xs text-green-600">
-                                    +{Math.round(increase).toLocaleString('cs-CZ')} Kč
+                                  <div className={`text-xs ${
+                                    increase > 0 ? 'text-green-600' : increase === 0 ? 'text-gray-500' : 'text-red-600'
+                                  }`}>
+                                    {increase > 0 ? '+' : ''}{Math.round(increase).toLocaleString('cs-CZ')} Kč
                                   </div>
                                 </div>
                               </div>
@@ -950,60 +988,19 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
           </p>
           <Button
             onClick={() => {
-              setIsCompleted(true);
               onComplete();
-              // Auto-redirect po 1s
+              // Auto-redirect po 500ms (rychlejší UX)
               if (onNavigateNext) {
                 setTimeout(() => {
                   onNavigateNext();
-                }, 1000);
+                }, 500);
               }
             }}
             size="lg"
             className="bg-white text-green-700 hover:bg-green-50 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
           >
-            Dokončit lekci a pokračovat →
+            ✅ Dokončit lekci a pokračovat →
           </Button>
-        </div>
-      )}
-
-      {/* Completion Screen - Zobraz když právě dokončil */}
-      {isCompleted && (
-        <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-              <CheckCircle2 className="w-8 h-8 text-white" />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-xl sm:text-2xl font-bold mb-2">
-                ✅ Lekce dokončena!
-              </h4>
-              <p className="text-green-50 text-sm sm:text-base">
-                Máte detailní finanční přehled a víte jak dosáhnout zisku
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col-reverse sm:flex-row gap-3">
-            <Button
-              onClick={() => setIsCompleted(false)}
-              variant="outline"
-              size="lg"
-              className="flex-1 bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
-            >
-              🔄 Upravit data
-            </Button>
-            {onNavigateNext && (
-              <Button
-                onClick={onNavigateNext}
-                size="lg"
-                className="flex-1 bg-white text-green-600 hover:bg-green-50"
-              >
-                <span className="hidden sm:inline">Pokračovat na další lekci →</span>
-                <span className="sm:hidden">Další →</span>
-              </Button>
-            )}
-          </div>
         </div>
       )}
 

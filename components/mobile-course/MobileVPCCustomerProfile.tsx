@@ -259,6 +259,89 @@ export function MobileVPCCustomerProfile({
     }
   };
   
+  // 🗑️ VYČISTI FIT VALIDATION DATA z DB když se smaže item
+  const cleanFitValidationData = async (type: 'job' | 'pain' | 'gain', deletedItemText: string) => {
+    if (!userId || !selectedSegment) return;
+    
+    try {
+      console.log(`🗑️ [Mobile] Cleaning FIT validation data for deleted ${type}:`, deletedItemText);
+      
+      // Najdi FIT validation row (row bez selected_value)
+      const { data: fitRow, error: fetchError } = await supabase
+        .from('value_proposition_canvas')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('segment_name', selectedSegment)
+        .is('selected_value', null)
+        .maybeSingle();
+      
+      if (fetchError || !fitRow || !fitRow.fit_validation_data) {
+        console.log('ℹ️ [Mobile] No FIT validation data to clean');
+        return;
+      }
+      
+      const fitData = fitRow.fit_validation_data;
+      
+      // 1. Odstraň item z jobs/pains/gains array
+      if (type === 'job' && fitData.jobs) {
+        fitData.jobs = fitData.jobs.filter((j: any) => j.text !== deletedItemText);
+      } else if (type === 'pain' && fitData.pains) {
+        fitData.pains = fitData.pains.filter((p: any) => p.text !== deletedItemText);
+      } else if (type === 'gain' && fitData.gains) {
+        fitData.gains = fitData.gains.filter((g: any) => g.text !== deletedItemText);
+      }
+      
+      // 2. Vyčisti mappings které odkazují na smazaný item
+      if (type === 'job' && fitData.productMappings) {
+        Object.keys(fitData.productMappings).forEach(product => {
+          fitData.productMappings[product] = fitData.productMappings[product].filter((id: string) => {
+            const index = parseInt(id.split('-')[1]);
+            return fitData.jobs[index]?.text !== deletedItemText;
+          });
+          
+          if (fitData.productMappings[product].length === 0) {
+            delete fitData.productMappings[product];
+          }
+        });
+      } else if (type === 'pain' && fitData.painRelieverMappings) {
+        Object.keys(fitData.painRelieverMappings).forEach(reliever => {
+          fitData.painRelieverMappings[reliever] = fitData.painRelieverMappings[reliever].filter((id: string) => {
+            const index = parseInt(id.split('-')[1]);
+            return fitData.pains[index]?.text !== deletedItemText;
+          });
+          
+          if (fitData.painRelieverMappings[reliever].length === 0) {
+            delete fitData.painRelieverMappings[reliever];
+          }
+        });
+      } else if (type === 'gain' && fitData.gainCreatorMappings) {
+        Object.keys(fitData.gainCreatorMappings).forEach(creator => {
+          fitData.gainCreatorMappings[creator] = fitData.gainCreatorMappings[creator].filter((id: string) => {
+            const index = parseInt(id.split('-')[1]);
+            return fitData.gains[index]?.text !== deletedItemText;
+          });
+          
+          if (fitData.gainCreatorMappings[creator].length === 0) {
+            delete fitData.gainCreatorMappings[creator];
+          }
+        });
+      }
+      
+      // 3. Ulož zpět do DB
+      const { error: updateError } = await supabase
+        .from('value_proposition_canvas')
+        .update({ fit_validation_data: fitData })
+        .eq('id', fitRow.id);
+      
+      if (updateError) throw updateError;
+      
+      console.log('✅ [Mobile] FIT validation data cleaned successfully');
+      toast.success('🧹 FIT validace aktualizována');
+    } catch (err) {
+      console.error('❌ [Mobile] Error cleaning FIT validation data:', err);
+    }
+  };
+  
   // Save VPC data
   const saveVPCData = async () => {
     console.log('💾 [Mobile VPC] saveVPC called', { 
@@ -589,10 +672,12 @@ export function MobileVPCCustomerProfile({
                     {job.text}
                   </span>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       haptic('light');
+                      const deletedJob = jobs[idx].text;
                       setJobs(jobs.filter((_, i) => i !== idx));
-                      saveVPCData();
+                      await saveVPCData();
+                      await cleanFitValidationData('job', deletedJob);
                     }}
                     className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 bg-red-500 rounded-full p-1"
                   >
@@ -673,10 +758,12 @@ export function MobileVPCCustomerProfile({
                     {pain.text}
                   </span>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       haptic('light');
+                      const deletedPain = pains[idx].text;
                       setPains(pains.filter((_, i) => i !== idx));
-                      saveVPCData();
+                      await saveVPCData();
+                      await cleanFitValidationData('pain', deletedPain);
                     }}
                     className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 bg-red-500 rounded-full p-1"
                   >
@@ -757,10 +844,12 @@ export function MobileVPCCustomerProfile({
                     {gain.text}
                   </span>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       haptic('light');
+                      const deletedGain = gains[idx].text;
                       setGains(gains.filter((_, i) => i !== idx));
-                      saveVPCData();
+                      await saveVPCData();
+                      await cleanFitValidationData('gain', deletedGain);
                     }}
                     className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 bg-red-500 rounded-full p-1"
                   >

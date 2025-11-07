@@ -460,6 +460,112 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   
   // 💾 Auto-save timer
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isLoadingDataRef = useRef(false); // ✅ FIX: Flag pro detekci načítání (aby se nespustil auto-save během load)
+  
+  // 📊 FIT SCORE CALCULATION (stejný jako Mobile) - REAL-TIME!
+  const fitScoreData = useMemo(() => {
+    // Top 3 items podle percentage
+    const topJobsCalc = jobs
+      .filter(j => (j.percentage || 0) > 0)
+      .sort((a, b) => (b.percentage || 0) - (a.percentage || 0))
+      .slice(0, 3);
+    
+    const topPainsCalc = pains
+      .filter(p => (p.percentage || 0) > 0)
+      .sort((a, b) => (b.percentage || 0) - (a.percentage || 0))
+      .slice(0, 3);
+    
+    const topGainsCalc = gains
+      .filter(g => (g.percentage || 0) > 0)
+      .sort((a, b) => (b.percentage || 0) - (a.percentage || 0))
+      .slice(0, 3);
+    
+    // ✅ FIX: Zjisti kolik z top items má mapování - ale JEN pro items které SKUTEČNĚ EXISTUJÍ!
+    // (Ignoruj "orphaned mappings" - mappings pro produkty/relievery/creators které byly smazány)
+    const coveredPainIds = new Set<string>();
+    const coveredGainIds = new Set<string>();
+    const coveredJobIds = new Set<string>();
+    
+    // Vytvoř Set existujících items (pro rychlé vyhledávání)
+    const existingPainRelievers = new Set(
+      painRelievers.map(pr => typeof pr === 'string' ? pr : pr.text)
+    );
+    const existingGainCreators = new Set(
+      gainCreators.map(gc => typeof gc === 'string' ? gc : gc.text)
+    );
+    const existingProducts = new Set(
+      products.map(p => typeof p === 'string' ? p : p.text)
+    );
+    
+    // Filtruj mappings - počítej JEN mappings pro existující items!
+    Object.entries(painRelieverMappings).forEach(([reliever, painIds]) => {
+      if (existingPainRelievers.has(reliever)) {
+        painIds.forEach(id => coveredPainIds.add(id));
+      }
+    });
+    
+    Object.entries(gainCreatorMappings).forEach(([creator, gainIds]) => {
+      if (existingGainCreators.has(creator)) {
+        gainIds.forEach(id => coveredGainIds.add(id));
+      }
+    });
+    
+    Object.entries(productMappings).forEach(([product, jobIds]) => {
+      if (existingProducts.has(product)) {
+        jobIds.forEach(id => coveredJobIds.add(id));
+      }
+    });
+    
+    const coveredPainsCount = topPainsCalc.filter(p => coveredPainIds.has(p.id)).length;
+    const coveredGainsCount = topGainsCalc.filter(g => coveredGainIds.has(g.id)).length;
+    const coveredJobsCount = topJobsCalc.filter(j => coveredJobIds.has(j.id)).length;
+    
+    // Výpočet FIT Score (Pains 40%, Gains 40%, Jobs 20%)
+    let totalWeight = 0;
+    let achievedScore = 0;
+    
+    if (topPainsCalc.length > 0) {
+      totalWeight += 40;
+      achievedScore += (coveredPainsCount / topPainsCalc.length) * 40;
+    }
+    if (topGainsCalc.length > 0) {
+      totalWeight += 40;
+      achievedScore += (coveredGainsCount / topGainsCalc.length) * 40;
+    }
+    if (topJobsCalc.length > 0) {
+      totalWeight += 20;
+      achievedScore += (coveredJobsCount / topJobsCalc.length) * 20;
+    }
+    
+    const fitScore = totalWeight > 0 ? Math.round((achievedScore / totalWeight) * 100) : 0;
+    
+    console.log('🔢 [Desktop] FIT Score calculation:', {
+      fitScore,
+      topPains: topPainsCalc.length,
+      topGains: topGainsCalc.length,
+      topJobs: topJobsCalc.length,
+      coveredPains: coveredPainsCount,
+      coveredGains: coveredGainsCount,
+      coveredJobs: coveredJobsCount,
+      painMappings: Object.keys(painRelieverMappings).length,
+      gainMappings: Object.keys(gainCreatorMappings).length,
+      productMappings: Object.keys(productMappings).length
+    });
+    
+    return {
+      fitScore,
+      topJobs: topJobsCalc,
+      topPains: topPainsCalc,
+      topGains: topGainsCalc,
+      coveredJobsCount,
+      coveredPainsCount,
+      coveredGainsCount,
+      totalTopItems: topJobsCalc.length + topPainsCalc.length + topGainsCalc.length,
+      coveredCount: coveredJobsCount + coveredPainsCount + coveredGainsCount,
+      hasFit: fitScore >= 70, // ✅ Přidáno pro kompatibilitu se starou verzí
+      hasValidData: topJobsCalc.length > 0 || topPainsCalc.length > 0 || topGainsCalc.length > 0 // ✅ Přidáno pro kompatibilitu
+    };
+  }, [jobs, pains, gains, productMappings, painRelieverMappings, gainCreatorMappings, products, painRelievers, gainCreators]); // ✅ Přidány products, painRelievers, gainCreators aby se přepočítal FIT při změně Value Map!
   
   // 💾 Save FIT Validator progress
   const saveFitProgress = async (customJobs?: VPCItem[], customPains?: VPCItem[], customGains?: VPCItem[]) => {
@@ -529,7 +635,35 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         achievedScore += (coveredJobsCount / topJobsToSave.length) * 20;
       }
       
-      const calculatedFitScore = totalWeight > 0 ? Math.round((achievedScore / totalWeight) * 100) : 0;
+      // ✅ Použij fitScore z useMemo (real-time výpočet) místo lokálního výpočtu
+      // NOTE: Lokální výpočet výše (řádek 478-618) je nyní duplikát useMemo - mělo by se sjednotit!
+      
+      // ✅ FIX: Vyfiltruj prázdné mappings (klíče s prázdnými arrays) + ORPHANED mappings (items které už neexistují)!
+      const existingPainRelieversForSave = new Set(
+        painRelievers.map(pr => typeof pr === 'string' ? pr : pr.text)
+      );
+      const existingGainCreatorsForSave = new Set(
+        gainCreators.map(gc => typeof gc === 'string' ? gc : gc.text)
+      );
+      const existingProductsForSave = new Set(
+        products.map(p => typeof p === 'string' ? p : p.text)
+      );
+      
+      const cleanPainRelieverMappings = Object.fromEntries(
+        Object.entries(painRelieverMappings).filter(([key, ids]) => 
+          ids.length > 0 && existingPainRelieversForSave.has(key) // ✅ Jen existující relievers!
+        )
+      );
+      const cleanGainCreatorMappings = Object.fromEntries(
+        Object.entries(gainCreatorMappings).filter(([key, ids]) => 
+          ids.length > 0 && existingGainCreatorsForSave.has(key) // ✅ Jen existující creators!
+        )
+      );
+      const cleanProductMappings = Object.fromEntries(
+        Object.entries(productMappings).filter(([key, ids]) => 
+          ids.length > 0 && existingProductsForSave.has(key) // ✅ Jen existující products!
+        )
+      );
       
       // Připrav data k uložení
       const progressData = {
@@ -537,7 +671,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
         hasUserSorted,
         currentStep,
         lastSaved: new Date().toISOString(),
-        fitScore: calculatedFitScore,
+        fitScore: fitScoreData.fitScore, // ✅ FIX: Použij real-time FIT score z useMemo!
         jobs: jobsToSave.map(j => ({ 
           id: j.id,
           text: j.text, 
@@ -559,9 +693,9 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
           percentage: g.percentage || 0, 
           priority: g.priority || 0 
         })),
-        painRelieverMappings,
-        gainCreatorMappings,
-        productMappings
+        painRelieverMappings: cleanPainRelieverMappings,
+        gainCreatorMappings: cleanGainCreatorMappings,
+        productMappings: cleanProductMappings
       };
       
       // Najdi záznam pro tento segment
@@ -604,7 +738,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   
   // 🔄 AUTO-SAVE když se změní mappings, jobs, pains, gains, nebo totalRespondents
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || isLoadingDataRef.current) return; // ✅ FIX: Přeskočit auto-save během načítání dat
     
     debouncedSave();
     
@@ -650,6 +784,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     if (!userId) return;
     
     setIsLoading(true);
+    isLoadingDataRef.current = true; // ✅ FIX: Označ že načítáme data (blokuj auto-save)
     
     try {
       const currentSegment = localSelectedSegment || selectedSegment;
@@ -1020,9 +1155,14 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               if (fitProgress.painRelieverMappings) {
                 const migratedMappings: Record<string, string[]> = {};
                 Object.entries(fitProgress.painRelieverMappings).forEach(([reliever, oldPainIds]) => {
-                  migratedMappings[reliever] = (oldPainIds as string[])
+                  const validIds = (oldPainIds as string[])
                     .map(oldId => oldToNewPainIds[oldId] || oldId)
                     .filter(id => painsData.some(p => p.id === id)); // Odstraň neexistující ID
+                  
+                  // ✅ FIX: Ulož jen pokud má alespoň 1 validní ID!
+                  if (validIds.length > 0) {
+                    migratedMappings[reliever] = validIds;
+                  }
                 });
                 setPainRelieverMappings(migratedMappings);
               }
@@ -1030,9 +1170,14 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               if (fitProgress.gainCreatorMappings) {
                 const migratedMappings: Record<string, string[]> = {};
                 Object.entries(fitProgress.gainCreatorMappings).forEach(([creator, oldGainIds]) => {
-                  migratedMappings[creator] = (oldGainIds as string[])
+                  const validIds = (oldGainIds as string[])
                     .map(oldId => oldToNewGainIds[oldId] || oldId)
                     .filter(id => gainsData.some(g => g.id === id));
+                  
+                  // ✅ FIX: Ulož jen pokud má alespoň 1 validní ID!
+                  if (validIds.length > 0) {
+                    migratedMappings[creator] = validIds;
+                  }
                 });
                 setGainCreatorMappings(migratedMappings);
               }
@@ -1040,9 +1185,14 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
               if (fitProgress.productMappings) {
                 const migratedMappings: Record<string, string[]> = {};
                 Object.entries(fitProgress.productMappings).forEach(([product, oldJobIds]) => {
-                  migratedMappings[product] = (oldJobIds as string[])
+                  const validIds = (oldJobIds as string[])
                     .map(oldId => oldToNewJobIds[oldId] || oldId)
                     .filter(id => jobsData.some(j => j.id === id));
+                  
+                  // ✅ FIX: Ulož jen pokud má alespoň 1 validní ID!
+                  if (validIds.length > 0) {
+                    migratedMappings[product] = validIds;
+                  }
                 });
                 setProductMappings(migratedMappings);
               }
@@ -1143,9 +1293,62 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
             });
           };
           
-          setProducts(normalizeItems(valueMap.products || [], '#f59e0b'));
-          setPainRelievers(normalizeItems(valueMap.pain_relievers || [], '#8b5cf6'));
-          setGainCreators(normalizeItems(valueMap.gain_creators || [], '#22c55e'));
+          const productsData = normalizeItems(valueMap.products || [], '#f59e0b');
+          const painRelieversData = normalizeItems(valueMap.pain_relievers || [], '#8b5cf6');
+          const gainCreatorsData = normalizeItems(valueMap.gain_creators || [], '#22c55e');
+          
+          setProducts(productsData);
+          setPainRelievers(painRelieversData);
+          setGainCreators(gainCreatorsData);
+          
+          // ✅ FIX: VYČISTI ORPHANED MAPPINGS (mappings pro items které už neexistují)!
+          // Toto se spustí HNED PO NAČTENÍ, takže když uživatel smaže item v Value Map a vrátí se,
+          // orphaned mappings se automaticky vymažou!
+          if (fitProgress && fitProgress.currentStep >= 3) {
+            const existingProductTexts = new Set(productsData.map(p => p.text));
+            const existingPainRelieverTexts = new Set(painRelieversData.map(pr => pr.text));
+            const existingGainCreatorTexts = new Set(gainCreatorsData.map(gc => gc.text));
+            
+            // Vyčisti mappings
+            setPainRelieverMappings(prev => {
+              const cleaned = Object.fromEntries(
+                Object.entries(prev).filter(([key]) => existingPainRelieverTexts.has(key))
+              );
+              if (Object.keys(cleaned).length !== Object.keys(prev).length) {
+                console.log('🧹 Cleaned orphaned painRelieverMappings:', {
+                  before: Object.keys(prev).length,
+                  after: Object.keys(cleaned).length
+                });
+              }
+              return cleaned;
+            });
+            
+            setGainCreatorMappings(prev => {
+              const cleaned = Object.fromEntries(
+                Object.entries(prev).filter(([key]) => existingGainCreatorTexts.has(key))
+              );
+              if (Object.keys(cleaned).length !== Object.keys(prev).length) {
+                console.log('🧹 Cleaned orphaned gainCreatorMappings:', {
+                  before: Object.keys(prev).length,
+                  after: Object.keys(cleaned).length
+                });
+              }
+              return cleaned;
+            });
+            
+            setProductMappings(prev => {
+              const cleaned = Object.fromEntries(
+                Object.entries(prev).filter(([key]) => existingProductTexts.has(key))
+              );
+              if (Object.keys(cleaned).length !== Object.keys(prev).length) {
+                console.log('🧹 Cleaned orphaned productMappings:', {
+                  before: Object.keys(prev).length,
+                  after: Object.keys(cleaned).length
+                });
+              }
+              return cleaned;
+            });
+          }
         } else {
           setProducts([]);
           setPainRelievers([]);
@@ -1164,6 +1367,11 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
       console.error('Error loading VPC:', err);
     } finally {
       setIsLoading(false);
+      setIsInitialLoad(false); // ✅ První načtení dokončeno
+      // ✅ FIX: Dej malý timeout před odblokováním auto-save (aby se state stihl aktualizovat)
+      setTimeout(() => {
+        isLoadingDataRef.current = false;
+      }, 100);
     }
   };
 
@@ -1835,111 +2043,7 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     return top3;
   };
 
-  // ✅ REACTIVE FIT SCORE - přepočítá se když se změní mappings!
-  const fitScoreData = useMemo(() => {
-    // Calculate top items
-    const topJobs = getTopItems(jobs);
-    const topPains = getTopItems(pains);
-    const topGains = getTopItems(gains);
-    
-    const hasValidData = topJobs.length > 0 || topPains.length > 0 || topGains.length > 0;
-    
-    // ✅ KONTROLA: Máme vůbec nějaká řešení?
-    const hasAnySolutions = painRelievers.length > 0 || gainCreators.length > 0 || products.length > 0;
-    
-    let fitScore = 0;
-    let coveredPainsCount = 0;
-    let coveredGainsCount = 0;
-    let coveredJobsCount = 0;
-    
-    if (hasValidData && hasAnySolutions) {
-      // Pains: Zjisti unique pain IDs z mappingů
-      const coveredPainIds = new Set<string>();
-      Object.values(painRelieverMappings).forEach(painIds => {
-        painIds.forEach(id => coveredPainIds.add(id));
-      });
-      coveredPainsCount = topPains.filter(p => coveredPainIds.has(p.id)).length;
-      
-      // Gains: Zjisti unique gain IDs z mappingů
-      const coveredGainIds = new Set<string>();
-      Object.values(gainCreatorMappings).forEach(gainIds => {
-        gainIds.forEach(id => coveredGainIds.add(id));
-      });
-      coveredGainsCount = topGains.filter(g => coveredGainIds.has(g.id)).length;
-      
-      // Jobs: Zjisti unique job IDs z mappingů
-      const coveredJobIds = new Set<string>();
-      Object.values(productMappings).forEach(jobIds => {
-        jobIds.forEach(id => coveredJobIds.add(id));
-      });
-      coveredJobsCount = topJobs.filter(j => coveredJobIds.has(j.id)).length;
-      
-      // Výpočet FIT Score podle % pokrytí
-      // ⚠️ DŮLEŽITÉ: Pokud kategorie NEMÁ items, tak se PŘESKOČÍ (nezapočítá se do score)
-      // Pokud má items ale NEMÁ mappings, tak se započítá jako 0%
-      let totalWeight = 0;
-      let achievedScore = 0;
-      
-      if (topPains.length > 0) {
-        totalWeight += 40;
-        achievedScore += (coveredPainsCount / topPains.length) * 40;
-      }
-      if (topGains.length > 0) {
-        totalWeight += 40;
-        achievedScore += (coveredGainsCount / topGains.length) * 40;
-      }
-      if (topJobs.length > 0) {
-        totalWeight += 20;
-        achievedScore += (coveredJobsCount / topJobs.length) * 20;
-      }
-      
-      // Normalizuj score na 100%
-      fitScore = totalWeight > 0 ? Math.round((achievedScore / totalWeight) * 100) : 0;
-      
-      console.log('🔍 FIT Score calc:', {
-        totalWeight,
-        achievedScore,
-        normalizedScore: totalWeight > 0 ? (achievedScore / totalWeight) * 100 : 0,
-        hasAnySolutions: `painRelievers: ${painRelievers.length}, gainCreators: ${gainCreators.length}, products: ${products.length}`,
-        topPains: topPains.map(p => ({ id: p.id, text: p.text.substring(0, 30) })),
-        topGains: topGains.map(g => ({ id: g.id, text: g.text.substring(0, 30) })),
-        topJobs: topJobs.map(j => ({ id: j.id, text: j.text.substring(0, 30) })),
-        painRelieverMappings,
-        gainCreatorMappings,
-        productMappings,
-        coveredPainIds: Array.from(coveredPainIds),
-        coveredGainIds: Array.from(coveredGainIds),
-        coveredJobIds: Array.from(coveredJobIds),
-        coveredPainsCount,
-        coveredGainsCount,
-        coveredJobsCount,
-        fitScore
-      });
-      
-      // 🔍 Detail mapping pro každý pain
-      topPains.forEach(pain => {
-        const isCovered = coveredPainIds.has(pain.id);
-        const coveredBy = Object.entries(painRelieverMappings)
-          .filter(([_, painIds]) => painIds.includes(pain.id))
-          .map(([reliever]) => reliever);
-        
-        console.log(`${isCovered ? '✅' : '❌'} Pain "${pain.text.substring(0, 30)}" pokryt: ${isCovered ? coveredBy.join(', ') : 'NEPOKRYT!'}`);
-      });
-    }
-    
-    return {
-      topJobs,
-      topPains,
-      topGains,
-      fitScore,
-      coveredPainsCount,
-      coveredGainsCount,
-      coveredJobsCount,
-      hasFit: fitScore >= 70,
-      hasValidData
-    };
-  }, [jobs, pains, gains, painRelieverMappings, gainCreatorMappings, productMappings]);
-  
+  // ✅ NOTE: fitScoreData je deklarován výše (řádek ~465) - STARÁ deklarace zde byla odstraněna!
   // Destructure pro použití v UI
   const { 
     topJobs, 
@@ -1993,8 +2097,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   // ✅ Zobraz čitelný název segmentu (fallback pro prázdný/undefined)
   const displaySegment = localSelectedSegment || selectedSegment || 'váš segment';
   
-  // ✅ BLOKUJ pokud není vybraná hodnota!
-  if (!localSelectedValue || localSelectedValue === '') {
+  // ✅ BLOKUJ pokud není vybraná hodnota! (ALE JEN POKUD DATA UŽ BYLA NAČTENA - jinak problikne!)
+  if (!isLoading && (!localSelectedValue || localSelectedValue === '')) {
     return (
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
         <div className="bg-gradient-to-br from-red-50 to-orange-50 border-3 border-red-400 rounded-2xl p-8 sm:p-12 text-center shadow-xl">
@@ -2049,8 +2153,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
     );
   }
   
-  // Pokud nemá Value Map data, zobraz prázdný stát s návodem
-  if (!hasValueMapData && hasCustomerProfileData) {
+  // Pokud nemá Value Map data, zobraz prázdný stát s návodem (ALE JEN POKUD DATA UŽ BYLA NAČTENA!)
+  if (!isLoading && !hasValueMapData && hasCustomerProfileData) {
     return (
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
         <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-3 border-yellow-400 rounded-2xl p-8 sm:p-12 text-center shadow-xl">

@@ -154,7 +154,7 @@ const VALIDATION_RULES: ValidationRule[] = [
   {
     id: 'value-numbers',
     title: '💰 Finanční data',
-    description: 'Příjmy a náklady musí mít č��sla',
+    description: 'Příjmy a náklady musí mít čísla',
     check: (data) => {
       const revenue = data.revenue || [];
       const costs = data.costs || [];
@@ -207,7 +207,7 @@ const VALIDATION_RULES: ValidationRule[] = [
         return { 
           passed: true, 
           message: `✅ Máte ${channels.length} kanálů komunikace`, 
-          tip: 'Více kanálů = stejné segmenty m��žou sdílet kanály (např. Instagram pro maminky i tatínky)' 
+          tip: 'Více kanálů = stejné segmenty můžou sdílet kanály (např. Instagram pro maminky i tatínky)' 
         };
       }
       
@@ -516,7 +516,6 @@ interface Props {
 // Přepisovala uživatelova data v kurzu bez varování.
 
 export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievementUnlocked, isLessonCompleted = false }: Props) {
-  const [isCompleted, setIsCompleted] = useState(false);
   const [canvasData, setCanvasData] = useState<any>({});
   const [results, setResults] = useState<any[]>([]);
   const [isValidating, setIsValidating] = useState(false);
@@ -852,77 +851,25 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                 </Button>
                 <Button
                   onClick={() => {
-                    setIsCompleted(true);
+                    // ✅ Označ dokončení
                     onComplete();
-                    // Auto-redirect po 1s
+                    
+                    // 🎉 Toast s potvrzením
+                    toast.success('✅ Lekce dokončena! Skvělá práce!', {
+                      duration: 2000,
+                    });
+                    
+                    // 🚀 Automatický redirect po 500ms (rychlejší UX)
                     if (onNavigateNext) {
                       setTimeout(() => {
                         onNavigateNext();
-                      }, 1000);
+                      }, 500);
                     }
                   }}
                   className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 gap-2"
                 >
                   {errorCount > 0 ? '⚠️ Pokračovat i přesto' : '✅ Hotovo - Dokončit lekci'}
                   <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
-
-            {/* Completion Screen - Zobraz když právě dokončil */}
-            {isCompleted && (
-              <div
-                className="bg-green-50 border-2 border-green-300 rounded-2xl p-6 mt-4 transition-all duration-300 ease-out"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-green-500 rounded-full p-3">
-                    <CheckCircle className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-green-900">
-                      ✅ Lekce dokončena!
-                    </h3>
-                    <p className="text-green-700">
-                      Skvělá práce! Váš model je validovaný.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex gap-3">
-                  {onNavigateNext && (
-                    <Button
-                      onClick={onNavigateNext}
-                      size="lg"
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-sm sm:text-base"
-                    >
-                      <span className="hidden sm:inline">Pokračovat na další lekci →</span>
-                      <span className="sm:hidden">Další →</span>
-                    </Button>
-                  )}
-                  <Button
-                    onClick={() => setIsCompleted(false)}
-                    variant="outline"
-                    size="lg"
-                  >
-                    🔄 Zkusit znovu
-                  </Button>
-                </div>
-              </div>
-            )}
-            
-            {/* Pokud je lekce už dokončená (user se vrátil) - ukaž jen Zkontrolovat znovu */}
-            {!isCompleted && isLessonCompleted && (
-              <div className="pt-4">
-                <Button
-                  onClick={() => {
-                    setShowResults(false);
-                    setResults([]);
-                    localStorage.removeItem(`canvas_validator_${userId}`);
-                  }}
-                  variant="outline"
-                  className="w-full"
-                >
-                  🔄 Zkontrolovat znovu
                 </Button>
               </div>
             )}

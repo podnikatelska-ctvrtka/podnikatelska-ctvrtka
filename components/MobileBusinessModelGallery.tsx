@@ -77,8 +77,8 @@ const BUSINESS_MODELS: BusinessModel[] = [
       { text: 'Express obědy (lunch)', color: 'green' }
     ],
     insights: {
-      crossSell: '🥖 Bagety a dezerty k ranní kávě → 10% tržeb (vysoká marže 65%) - "dáte si k tomu něco?" při platbě',
-      whyItWorks: '⚡ Rychlost + návyk = loajalita. Lidi si vytvoří ranní rituál (stejná kavárna, stejný čas) → když víš že budeš hotový za 2 minuty, vracíš se každé ráno. Premium lokace = platí se víc, ale obrat je 3x vyšší'
+      crossSell: '🥖 Premium snack menu (káva + bageta/dezert) → hotové combo balíčky, šetří čas zákazníkům i obsluze (vysoká marže 65%)',
+      whyItWorks: '⚡ Rychlost + návyk = loajalita. Lidi si vytvoří ranní rituál (stejná kavárna, stejný čas) → když víš že budeš mít kávu za 2 minuty, vracíš se každé ráno. Premium lokace = platí se víc, ale obrat je 3x vyšší'
     }
   },
 
@@ -96,7 +96,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     value: [
       { text: 'Rozvoz do 30 min', color: 'blue' },
-      { text: '20% sleva při odběru', color: 'global' }
+      { text: '20% sleva při odběru', color: 'green' }
     ],
     insights: {
       crossSell: '💰 20% sleva na odběr → 40% zákazníků si vybere odběr = úspora nákladů na rozvoz (řidič + benzín + doba) = marže +15%',
@@ -118,11 +118,11 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     value: [
       { text: 'Limitované edice (měsíční)', color: 'blue' },
-      { text: 'Craft pivo pairing', color: 'green' }
+      { text: 'Prémiová večeře + craft pivo', color: 'green' }
     ],
     insights: {
-      crossSell: '🍺 Craft pivo pairing (doporučení konkrétního piva ke každé pizzě, jako víno k jídlu) → 25% tržeb (marže 70%!) - zákazník si koupí "zážitek", ne jen pivo',
-      whyItWorks: '📸 Instagram je tvůj hlavní prodejce: Fotogenická jídla + prémiový prostor = foodie to sdílejí zadarmo (virální marketing) → přivádí nové zákazníky bez placené reklamy. Foodie segment má peníze a neřeší cenu, když je to "unikátní zážitek"'
+      crossSell: '🍺 Craft pivo pairing (doporučení konkrétního piva ke každé pizze, jako víno k jídlu) → 25% tržeb (marže 70%!) - zákazník si koupí "zážitek", ne jen pivo',
+      whyItWorks: '📸 Instagram je hlavní prodejce: Fotogenická jídla + prémiový prostor = foodie to sdílejí zadarmo (virální marketing) → přivádí nové zákazníky bez placené reklamy. Foodie segment má peníze a neřeší cenu, když je to "unikátní zážitek"'
     }
   },
 
@@ -159,7 +159,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     description: 'Velké studio se skupinovými lekcemi',
     segments: [
       { text: 'Mladí lidé 20-35 let', color: 'blue' },
-      { text: 'Ženy (ráno/odpoledne)', color: 'green' }
+      { text: 'Ženy ráno/odpoledne', color: 'green' }
     ],
     value: [
       { text: 'Skupinové lekce', color: 'blue' },
@@ -167,7 +167,7 @@ const BUSINESS_MODELS: BusinessModel[] = [
     ],
     insights: {
       crossSell: '👕 Merch a šejkry → 10% tržeb (marže 70%) - komunita nosí tvoje logo = branding zdarma + pocit příslušnosti',
-      whyItWorks: '🤝 Mladí lidé 20-35 let chtějí sociální zážitek, ne jen cvičení: Přijdou na lekci, poznají kámoše, vrací se kvůli přátelům (ne kvůli fitness!). Skupinové lekce = zábava + motivace + community. Když má někdo partu ve fitku, neodchází → retention 70%'
+      whyItWorks: '🤝 Mladí lidé 20-35 let chtějí sociální zážitek, ne jen cvičení: Přijdou na lekci, poznají kámoše, vrací se kvůli přátelům (ne jen kvůli fitness!). Skupinové lekce = zábava + motivace + komunita. Když má někdo partu ve fitku, neodchází → udržení 70%'
     }
   }
 ];

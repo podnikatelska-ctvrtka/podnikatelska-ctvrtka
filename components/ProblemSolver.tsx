@@ -174,23 +174,30 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
     setSelectedSolution(solution);
     
     // ❌ REMOVED: 'solution-applied' achievement doesn't exist in ACHIEVEMENTS list
-    // 🏆 Achievement se triggerne při dokončení lekce, ne při kliknutí na řešení
+    // 🏆 Achievement se triggerne při dokončení lekce, ne při kliknutí na řešen��
   };
 
   const handleOpenCanvas = (solution: Solution) => {
     const mapping: Record<string, { section: string, lessonId: string }> = {
-      'new-segment': { section: 'segments', lessonId: 'module1-lesson4' },
-      'new-channel': { section: 'channels', lessonId: 'module1-lesson4' },
-      'partnership': { section: 'partners', lessonId: 'module1-lesson4' },
-      'price-increase': { section: 'value', lessonId: 'module1-lesson4' },
-      'premium-tier': { section: 'value', lessonId: 'module1-lesson4' },
-      'upsell': { section: 'revenue', lessonId: 'module1-lesson4' },
-      'cheaper-partner': { section: 'partners', lessonId: 'module1-lesson4' },
-      'automate': { section: 'activities', lessonId: 'module1-lesson4' },
-      'outsource': { section: 'partners', lessonId: 'module1-lesson4' },
-      'loyalty-program': { section: 'relationships', lessonId: 'module1-lesson4' },
-      'subscription': { section: 'revenue', lessonId: 'module1-lesson4' },
-      'email-automation': { section: 'channels', lessonId: 'module1-lesson4' }
+      // 🚨 Málo zákazníků
+      'new-segment': { section: 'segments', lessonId: 'module1-lesson1' }, // Zákaznické segmenty
+      'new-channel': { section: 'channels', lessonId: 'module1-lesson3' }, // Kanály
+      'partnership': { section: 'partners', lessonId: 'module1-lesson8' }, // Klíčová partnerství
+      
+      // 💰 Nízké příjmy
+      'price-increase': { section: 'value', lessonId: 'module1-lesson2' }, // Hodnotová nabídka
+      'premium-tier': { section: 'value', lessonId: 'module1-lesson2' }, // Hodnotová nabídka (+ revenue)
+      'upsell': { section: 'revenue', lessonId: 'module1-lesson5' }, // Zdroje příjmů
+      
+      // 📉 Vysoké náklady
+      'cheaper-partner': { section: 'partners', lessonId: 'module1-lesson8' }, // Klíčová partnerství
+      'automate': { section: 'activities', lessonId: 'module1-lesson7' }, // Klíčové činnosti
+      'outsource': { section: 'partners', lessonId: 'module1-lesson8' }, // Klíčová partnerství
+      
+      // 🔄 Odcházejí zákazníci
+      'loyalty-program': { section: 'relationships', lessonId: 'module1-lesson4' }, // Vztahy se zákazníky
+      'subscription': { section: 'revenue', lessonId: 'module1-lesson5' }, // Zdroje příjmů
+      'email-automation': { section: 'channels', lessonId: 'module1-lesson3' } // Kanály
     };
 
     const map = mapping[solution.id];

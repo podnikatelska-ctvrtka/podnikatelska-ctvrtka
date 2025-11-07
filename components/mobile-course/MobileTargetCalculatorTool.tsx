@@ -407,7 +407,7 @@ export function MobileTargetCalculatorTool({ onOpenSidebar, onShowWelcomeModal }
                 <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <h4 className="text-red-900 mb-1 text-sm">
-                    ⚠️ Pozor na wishful thinking!
+                    ⚠️ Pozor na růžové brýle!
                   </h4>
                   <p className="text-xs text-gray-700">
                     <strong>Buď konzervativní!</strong> Radši počítej s POLOVINOU toho, co odhaduješ.

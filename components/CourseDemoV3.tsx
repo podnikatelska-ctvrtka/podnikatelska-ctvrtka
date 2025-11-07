@@ -1977,6 +1977,34 @@ export function CourseDemoV3() {
     if (userData?.id) {
       await saveLessonProgress(userData.id, lessonId);
     }
+    
+    // 🏆 CHECK MODULE COMPLETION ACHIEVEMENTS
+    // Module 1 = lessons 1-9
+    if (lessonId === 9) {
+      const module1Lessons = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const isModule1Complete = module1Lessons.every(l => newCompleted.has(l));
+      if (isModule1Complete && !unlockedAchievements.has('module-1-complete')) {
+        triggerAchievement('module-1-complete');
+      }
+    }
+    
+    // Module 2 = lessons 10-13
+    if (lessonId === 13) {
+      const module2Lessons = [10, 11, 12, 13];
+      const isModule2Complete = module2Lessons.every(l => newCompleted.has(l));
+      if (isModule2Complete && !unlockedAchievements.has('module-2-complete')) {
+        triggerAchievement('module-2-complete');
+      }
+    }
+    
+    // Module 3 = lessons 14-16
+    if (lessonId === 16) {
+      const module3Lessons = [14, 15, 16];
+      const isModule3Complete = module3Lessons.every(l => newCompleted.has(l));
+      if (isModule3Complete && !unlockedAchievements.has('module-3-complete')) {
+        triggerAchievement('module-3-complete');
+      }
+    }
   };
 
   const handleShowDashboard = async () => {

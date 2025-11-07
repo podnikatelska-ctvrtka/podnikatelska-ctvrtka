@@ -37,6 +37,9 @@ WHERE user_id = auth.uid();
 DELETE FROM public.user_canvas_data 
 WHERE user_id = auth.uid();
 
+DELETE FROM public.value_proposition_canvas 
+WHERE user_id = auth.uid()::text;
+
 -- ============================================
 -- 3️⃣ OVĚŘENÍ
 -- ============================================
@@ -45,7 +48,8 @@ WHERE user_id = auth.uid();
 SELECT 
   (SELECT COUNT(*) FROM public.user_achievements WHERE user_id = auth.uid()) as "Achievementy (mělo by být 0)",
   (SELECT COUNT(*) FROM public.user_progress WHERE user_id = auth.uid()) as "Progress (mělo by být 0)",
-  (SELECT COUNT(*) FROM public.user_canvas_data WHERE user_id = auth.uid()) as "Canvas data (mělo by být 0)";
+  (SELECT COUNT(*) FROM public.user_canvas_data WHERE user_id = auth.uid()) as "Canvas data (mělo by být 0)",
+  (SELECT COUNT(*) FROM public.value_proposition_canvas WHERE user_id = auth.uid()::text) as "VPC data (mělo by být 0)";
 
 -- ============================================
 -- ✅ HOTOVO!
