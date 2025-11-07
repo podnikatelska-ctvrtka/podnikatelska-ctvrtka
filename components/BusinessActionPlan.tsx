@@ -18,6 +18,7 @@ import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { supabase } from "../lib/supabase";
 import { trackCourseEvent, trackError } from "../lib/sentry";
+import { SimpleBreadcrumbs } from "./SimpleBreadcrumbs";
 
 interface BusinessActionPlanProps {
   userId: string;
@@ -25,6 +26,7 @@ interface BusinessActionPlanProps {
   onBack?: () => void;
   refreshTrigger?: number; // Pro manuální refresh z parenta
   onAchievementUnlocked?: (achievementId: string) => void; // ✅ Callback pro achievements
+  onShowWelcomeModal?: () => void; // 🆘 Help button
 }
 
 interface SegmentEconomics {
@@ -67,7 +69,7 @@ interface ActionItem {
   lessonName?: string;
 }
 
-export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refreshTrigger, onAchievementUnlocked }: BusinessActionPlanProps) {
+export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refreshTrigger, onAchievementUnlocked, onShowWelcomeModal }: BusinessActionPlanProps) {
   const [loading, setLoading] = useState(true);
   
   const [segments, setSegments] = useState<SegmentEconomics[]>([]);
@@ -773,6 +775,21 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
       
     } catch (err) {
       console.error('❌ Error loading dashboard data:', err);
+      trackError(err instanceof Error ? err : new Error('Failed to load action plan'), {
+        context: 'BusinessActionPlan.loadData',
+        userId
+      });
+      
+      // 🚨 User-friendly error toast
+      import('sonner').then(({ toast }) => {
+        toast.error('Nepodařilo se načíst akční plán', {
+          description: 'Zkuste obnovit stránku nebo dokončete více lekcí',
+          action: {
+            label: 'Obnovit',
+            onClick: () => window.location.reload()
+          }
+        });
+      });
     } finally {
       setLoading(false);
     }
@@ -780,10 +797,32 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Analyzuji váš byznys...</p>
+      <div className="min-h-screen bg-gray-50 py-6 sm:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          {/* Skeleton Header */}
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-200 rounded-full mb-4 animate-pulse" />
+            <div className="h-8 bg-gray-200 rounded-lg w-64 mx-auto mb-2 animate-pulse" />
+            <div className="h-6 bg-gray-200 rounded-lg w-96 mx-auto animate-pulse" />
+          </div>
+
+          {/* Skeleton Cards */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-xl p-6 border-2 border-gray-200 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-full" />
+                  <div className="h-4 bg-gray-200 rounded w-5/6" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center text-gray-600 mt-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-2" />
+            Analyzuji váš byznys...
+          </div>
         </div>
       </div>
     );
@@ -794,16 +833,15 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
   return (
     <div className="min-h-screen bg-gray-50 py-6 sm:py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
-        {/* Back Button */}
+        {/* Breadcrumbs */}
         {onBack && (
-          <Button
-            onClick={onBack}
-            variant="outline"
-            className="gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Zpět na Dashboard
-          </Button>
+          <SimpleBreadcrumbs
+            items={[
+              { label: 'Dashboard', onClick: onBack },
+              { label: 'Nástroje' },
+              { label: 'Akční plán' }
+            ]}
+          />
         )}
 
         {/* Header */}
@@ -1340,14 +1378,27 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           transition={{ delay: 0.5 }}
           className="bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8 border-2 border-orange-200"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="bg-orange-500 rounded-full p-3">
-              <Zap className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-orange-500 rounded-full p-3">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="mb-0 text-gray-900">✅ Váš akční plán</h2>
+                <p className="text-gray-600">Přeneste model do praxe a testujte, co funguje</p>
+              </div>
             </div>
-            <div>
-              <h2 className="mb-0 text-gray-900">✅ Váš akční plán</h2>
-              <p className="text-gray-600">Zaměřte se na TOP segment a jejich priority</p>
-            </div>
+            
+            {/* Print Button */}
+            {actionItems.length > 0 && (
+              <Button
+                onClick={() => window.print()}
+                variant="outline"
+                className="gap-2 border-orange-500 text-orange-700 hover:bg-orange-50"
+              >
+                🖨️ Vytisknout
+              </Button>
+            )}
           </div>
 
           {actionItems.length === 0 ? (
@@ -1357,7 +1408,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
             </div>
           ) : (
             <div className="space-y-3">
-              {actionItems.map((action) => {
+              {actionItems.map((action, idx) => {
               const isCompleted = completedActions.has(action.id);
               
               return (
@@ -1376,19 +1427,26 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 >
                   <div className="flex items-start gap-3">
                     <div
-                      className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                      className={`flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all font-bold text-sm ${
                         isCompleted
-                          ? 'bg-green-500 border-green-400'
-                          : 'border-orange-400 bg-white'
+                          ? 'bg-green-500 border-green-400 text-white'
+                          : 'border-orange-400 bg-gradient-to-br from-orange-50 to-orange-100 text-orange-700'
                       }`}
                     >
-                      {isCompleted && <CheckCircle2 className="w-4 h-4 text-white" />}
+                      {isCompleted ? <CheckCircle2 className="w-5 h-5 text-white" /> : `${idx + 1}`}
                     </div>
                     
                     <div className="flex-1">
-                      <p className={`font-medium text-gray-900 ${isCompleted ? 'line-through opacity-75' : ''}`}>
-                        {action.text}
-                      </p>
+                      <div className="flex items-start gap-2">
+                        <p className={`font-medium text-gray-900 flex-1 ${isCompleted ? 'line-through opacity-75' : ''}`}>
+                          {action.text}
+                        </p>
+                        {!isCompleted && idx === 0 && (
+                          <span className="flex-shrink-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                            PRIORITA #1
+                          </span>
+                        )}
+                      </div>
                       {action.deadline && (
                         <p className="text-sm text-orange-600 mt-1 font-medium">
                           📅 Deadline: {action.deadline}

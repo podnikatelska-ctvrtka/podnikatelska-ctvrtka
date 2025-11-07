@@ -595,8 +595,8 @@ export function MobileVPCValueMap({
   const steps = [
     { label: 'Hodnota', completed: !!selectedValue },
     { label: 'Produkty', completed: products.length > 0 },
-    { label: 'Řešení', completed: painRelievers.length > 0 },
-    { label: 'Přínosy', completed: gainCreators.length > 0 },
+    { label: 'Jak naplňujeme', completed: gainCreators.length > 0 },
+    { label: 'Jak řešíme', completed: painRelievers.length > 0 },
   ];
   
   return (
@@ -803,7 +803,7 @@ export function MobileVPCValueMap({
       {currentStep === 2 && (
         <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="rounded-xl p-4" style={{ backgroundColor: `${valueColor}15`, borderWidth: '2px', borderColor: valueColor }}>
-            <h3 className="mb-1" style={{ color: valueColor }}>💊 Řešení obtíží</h3>
+            <h3 className="mb-1" style={{ color: valueColor }}>💊 Jak řešíme obavy</h3>
             <p className="text-sm text-gray-600 mb-3">
               Jak ŘEŠÍTE problémy zákazníka? ({painRelievers.length}/20)
             </p>
@@ -886,7 +886,7 @@ export function MobileVPCValueMap({
       {currentStep === 3 && (
         <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="rounded-xl p-4" style={{ backgroundColor: `${valueColor}15`, borderWidth: '2px', borderColor: valueColor }}>
-            <h3 className="mb-1" style={{ color: valueColor }}>📈 Tvorba přínosů</h3>
+            <h3 className="mb-1" style={{ color: valueColor }}>📈 Jak naplňujeme očekávání</h3>
             <p className="text-sm text-gray-600 mb-3">
               Jak VYTVÁŘÍTE hodnotu? ({gainCreators.length}/20)
             </p>

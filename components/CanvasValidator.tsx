@@ -523,22 +523,7 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   const [showResults, setShowResults] = useState(false);
   const [showCanvasPreview, setShowCanvasPreview] = useState(true);
 
-  // 💾 Load previously validated state from localStorage
-  useEffect(() => {
-    const savedValidation = localStorage.getItem(`canvas_validator_${userId}`);
-    if (savedValidation) {
-      try {
-        const parsed = JSON.parse(savedValidation);
-        setResults(parsed.results || []);
-        setShowResults(true);
-        console.log('✅ Loaded previous validation from localStorage');
-      } catch (err) {
-        console.error('Failed to parse saved validation:', err);
-      }
-    }
-  }, [userId]);
-
-  // Load Canvas data
+  // Load Canvas data FIRST, THEN check if we need to clear localStorage
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -553,6 +538,32 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
             formatted[section.section_key] = section.content || [];
           });
           setCanvasData(formatted);
+          
+          // 🔍 Check if canvas data changed - compare with previous validation
+          const savedValidation = localStorage.getItem(`canvas_validator_${userId}`);
+          if (savedValidation) {
+            try {
+              const parsed = JSON.parse(savedValidation);
+              
+              // Create hash of current canvas data to compare
+              const currentHash = JSON.stringify(formatted);
+              
+              // If canvas data is different, CLEAR old validation results
+              if (parsed.canvasHash && parsed.canvasHash !== currentHash) {
+                console.log('🔄 Canvas data changed - clearing old validation results');
+                localStorage.removeItem(`canvas_validator_${userId}`);
+                setResults([]);
+                setShowResults(false);
+              } else {
+                // Canvas hasn't changed, load previous results
+                setResults(parsed.results || []);
+                setShowResults(true);
+                console.log('✅ Loaded previous validation from localStorage');
+              }
+            } catch (err) {
+              console.error('Failed to parse saved validation:', err);
+            }
+          }
         }
       } catch (err) {
         console.error('Failed to load canvas:', err);
@@ -584,12 +595,14 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
       setShowResults(true);
       setIsValidating(false);
       
-      // 💾 Save validation results to localStorage
+      // 💾 Save validation results to localStorage WITH canvas hash
+      const canvasHash = JSON.stringify(canvasData);
       localStorage.setItem(`canvas_validator_${userId}`, JSON.stringify({
         results: validationResults,
+        canvasHash: canvasHash,
         timestamp: new Date().toISOString()
       }));
-      console.log('💾 Saved validation to localStorage');
+      console.log('💾 Saved validation to localStorage with canvas hash');
       
       const errorCount = validationResults.filter(r => !r.passed && r.severity === 'error').length;
       

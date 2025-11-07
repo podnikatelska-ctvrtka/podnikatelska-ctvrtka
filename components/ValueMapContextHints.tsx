@@ -26,28 +26,28 @@ export function ValueMapContextHints({ currentStep, segment, value, customerData
         "❌ Příliš obecné: \"Produkt\", \"Služba\""
       ],
       connection: customerData?.jobs && customerData.jobs.length > 0 ? {
-        label: "🎯 Zákaznické úkoly",
+        label: "🎯 Důvod návštěvy zákazníka",
         items: customerData.jobs.slice(0, 3).map(j => j.text)
       } : null
     },
-    2: { // Přínosy (Gain Creators)
+    2: { // Jak naplňujeme očekávání (Gain Creators)
       icon: <Sparkles className="w-5 h-5" />,
-      title: "💡 Tip pro Tvorbu přínosů",
-      description: "Jak VYTVÁŘÍTE hodnotu? Každý přínos by měl odpovídat OČEKÁVÁNÍ zákazníka!",
+      title: "💡 Tip pro Jak naplňujeme očekávání",
+      description: "Jak VYTVÁŘÍTE hodnotu? Každý způsob by měl odpovídat OČEKÁVÁNÍ zákazníka!",
       examples: [
         "✅ Naplňuje očekávání: \"Community events pro networking\"",
         "✅ Překvapuje: \"Lifetime přístup ke všem materiálům\"",
         "❌ Obecné: \"Kvalita\", \"Dobrá cena\""
       ],
       connection: customerData?.gains && customerData.gains.length > 0 ? {
-        label: "😊 Očekávání zákazníka",
+        label: "✨ Očekávání zákazníka",
         items: customerData.gains.slice(0, 3).map(g => g.text),
-        hint: "Každý přínos by měl odpovídat jednomu očekávání!"
+        hint: "Každý způsob by měl odpovídat jednomu očekávání!"
       } : null
     },
-    3: { // Řešení obtíží (Pain Relievers)
+    3: { // Jak řešíme obavy (Pain Relievers)
       icon: <AlertCircle className="w-5 h-5" />,
-      title: "💡 Tip pro Řešení obtíží",
+      title: "💡 Tip pro Jak řešíme obavy",
       description: "Jak ŘEŠÍTE problémy zákazníka? Každé řešení by mělo odpovídat OBAVĚ zákazníka!",
       examples: [
         "✅ Řeší konkrétní problém: \"Stabilní WiFi 100+ Mbps\"",
@@ -55,7 +55,7 @@ export function ValueMapContextHints({ currentStep, segment, value, customerData
         "❌ Obecné: \"Pomůžeme\", \"Vyřešíme\""
       ],
       connection: customerData?.pains && customerData.pains.length > 0 ? {
-        label: "😢 Obavy zákazníka",
+        label: "😰 Obavy zákazníka",
         items: customerData.pains.slice(0, 3).map(p => p.text),
         hint: "Každé řešení by mělo odpovídat jedné obavě!"
       } : null
@@ -156,13 +156,13 @@ export function CustomerConnectionPreview({
 
   const config = {
     gains: {
-      customerLabel: "😊 Očekávání",
-      valueLabel: "📈 Přínosy",
+      customerLabel: "✨ Očekávání",
+      valueLabel: "📈 Jak naplňujeme",
       color: "green"
     },
     pains: {
-      customerLabel: "😢 Obavy",
-      valueLabel: "💊 Řešení",
+      customerLabel: "😰 Obavy",
+      valueLabel: "💊 Jak řešíme",
       color: "purple"
     }
   };

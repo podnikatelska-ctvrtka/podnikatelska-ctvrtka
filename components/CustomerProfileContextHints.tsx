@@ -10,9 +10,9 @@ export function CustomerProfileContextHints({ currentStep, selectedSegment }: Cu
   const [isExpanded, setIsExpanded] = useState(true);
 
   const hints = {
-    1: { // Jobs (Úkoly)
+    1: { // Jobs (Důvod návštěvy)
       icon: <Target className="w-5 h-5" />,
-      title: "💡 Tip pro Úkoly",
+      title: "💡 Tip pro Důvod návštěvy",
       description: "Co segment chce udělat? Proč k vám přichází? Co se snaží dokončit?",
       examples: [
         '✅ Konkrétní: "Pracovat produktivně mimo domov"',

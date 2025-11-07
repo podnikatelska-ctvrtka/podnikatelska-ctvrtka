@@ -134,7 +134,7 @@ export function ValuePropositionCanvas({ userId, selectedSegment = "Můj segment
           
           {/* Jobs */}
           <div className="mb-6">
-            <h4 className="font-bold text-amber-800 mb-2">🎯 Cíl/Důvod návštěvy</h4>
+            <h4 className="font-bold text-amber-800 mb-2">🎯 Důvod návštěvy</h4>
             <p className="text-xs text-amber-600 mb-3">Co segment chce udělat?</p>
             <div className="space-y-2 mb-3">
               {jobs.map((job, idx) => (
@@ -313,7 +313,7 @@ export function ValuePropositionCanvas({ userId, selectedSegment = "Můj segment
           
           {/* Pain Relievers */}
           <div className="mb-6">
-            <h4 className="font-bold text-green-800 mb-2">🛡️ Řešení Obtíží</h4>
+            <h4 className="font-bold text-green-800 mb-2">💊 Jak řešíme obavy</h4>
             <p className="text-xs text-green-600 mb-3">Jak řešíte obavy zákazníka?</p>
             <div className="space-y-2 mb-3">
               {painRelievers.map((reliever, idx) => (
@@ -356,8 +356,8 @@ export function ValuePropositionCanvas({ userId, selectedSegment = "Můj segment
           
           {/* Gain Creators */}
           <div>
-            <h4 className="font-bold text-green-800 mb-2">✨ Tvorba Přínosů</h4>
-            <p className="text-xs text-green-600 mb-3">Jak vytváříte očekávané přínosy?</p>
+            <h4 className="font-bold text-green-800 mb-2">📈 Jak naplňujeme očekávání</h4>
+            <p className="text-xs text-green-600 mb-3">Jak naplňujete očekávání zákazníka?</p>
             <div className="space-y-2 mb-3">
               {gainCreators.map((creator, idx) => (
                 <div key={idx} className="bg-green-50 p-3 rounded border-2 border-green-300 flex items-start gap-2">

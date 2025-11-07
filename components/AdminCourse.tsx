@@ -78,7 +78,13 @@ export function AdminCourse() {
       setLessons(lessonsData || []);
     } catch (error) {
       console.error('Error loading content:', error);
-      toast.error('Chyba při načítání obsahu');
+      toast.error('Nepodařilo se načíst obsah kurzu', {
+        description: 'Zkuste obnovit stránku nebo zkontrolujte připojení',
+        action: {
+          label: 'Obnovit',
+          onClick: () => window.location.reload()
+        }
+      });
     } finally {
       setIsLoading(false);
     }

@@ -448,7 +448,7 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
         {/* Pain Relievers */}
         <div className="mb-6">
           <h3 className="font-bold mb-2 text-lg" style={{ color: getValueColors(valueColor).painRelievers.text }}>
-            🛡️ Řešení Obtíží
+            💊 Jak řešíme obavy
           </h3>
           <p className="text-sm mb-3" style={{ color: getValueColors(valueColor).painRelievers.text }}>
             Jak řešíte obavy zákazníka?
@@ -518,7 +518,7 @@ export function VPCValueMap({ userId, selectedSegment, selectedValue }: Props) {
         {/* Gain Creators */}
         <div className="mb-6">
           <h3 className="font-bold mb-2 text-lg" style={{ color: getValueColors(valueColor).gainCreators.text }}>
-            ✨ Tvorba Přínosů
+            📈 Jak naplňujeme očekávání
           </h3>
           <p className="text-sm mb-3" style={{ color: getValueColors(valueColor).gainCreators.text }}>
             Jak vytváříte očekávané přínosy?

@@ -250,6 +250,13 @@ export function SimpleDashboard({
         }
       } catch (err) {
         console.error('❌ Failed to load canvas data:', err);
+        toast.error('Nepodařilo se načíst data z Canvasu', {
+          description: 'Zkuste obnovit stránku nebo nás kontaktujte',
+          action: {
+            label: 'Obnovit',
+            onClick: () => window.location.reload()
+          }
+        });
         setHasError(true);
       }
     };
@@ -281,6 +288,13 @@ export function SimpleDashboard({
     
     if (error) {
       console.error('❌ Failed to reload progress:', error);
+      toast.error('Nepodařilo se načíst váš pokrok', {
+        description: 'Zkuste to prosím znovu za chvíli',
+        action: {
+          label: 'Zkusit znovu',
+          onClick: () => handleRefreshProgress()
+        }
+      });
       return;
     }
     
@@ -424,40 +438,51 @@ export function SimpleDashboard({
 
           {/* Modules Overview */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {modules && modules.length > 0 && modules.map((module) => {
-              if (!module || !module.lessons) return null;
-              const moduleCompleted = module.lessons.filter(l => completedLessons.has(l.id)).length;
-              const moduleProgress = module.lessons.length > 0 ? Math.round((moduleCompleted / module.lessons.length) * 100) : 0;
-              
-              return (
-                <div
-                  key={module.id}
-                  className={`p-4 rounded-lg border-2 ${
-                    moduleCompleted === module.lessons.length
-                      ? 'bg-green-50 border-green-300'
-                      : moduleCompleted > 0
-                      ? 'bg-blue-50 border-blue-300'
-                      : 'bg-gray-50 border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    {moduleCompleted === module.lessons.length ? (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <BookOpen className="w-5 h-5 text-blue-600" />
-                    )}
-                    <h3 className="text-gray-900">Modul {module.id}</h3>
+            {modules && modules.length > 0 ? (
+              modules.map((module) => {
+                if (!module || !module.lessons) return null;
+                const moduleCompleted = module.lessons.filter(l => completedLessons.has(l.id)).length;
+                const moduleProgress = module.lessons.length > 0 ? Math.round((moduleCompleted / module.lessons.length) * 100) : 0;
+                
+                return (
+                  <div
+                    key={module.id}
+                    className={`p-4 rounded-lg border-2 ${
+                      moduleCompleted === module.lessons.length
+                        ? 'bg-green-50 border-green-300'
+                        : moduleCompleted > 0
+                        ? 'bg-blue-50 border-blue-300'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      {moduleCompleted === module.lessons.length ? (
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <BookOpen className="w-5 h-5 text-blue-600" />
+                      )}
+                      <h3 className="text-gray-900">Modul {module.id}</h3>
+                    </div>
+                    <p className="text-sm text-gray-700 mb-2">{module.title}</p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">
+                        {moduleCompleted}/{module.lessons.length} lekcí
+                      </span>
+                      <span className="font-bold text-blue-600">{moduleProgress}%</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-700 mb-2">{module.title}</p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">
-                      {moduleCompleted}/{module.lessons.length} lekcí
-                    </span>
-                    <span className="font-bold text-blue-600">{moduleProgress}%</span>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              /* Empty State */
+              <div className="col-span-2 text-center py-8">
+                <div className="text-5xl mb-3">📚</div>
+                <h3 className="text-gray-900 mb-2">Žádné moduly nenalezeny</h3>
+                <p className="text-sm text-gray-600">
+                  Kurz se načítá... Pokud problém přetrvává, obnovte stránku.
+                </p>
+              </div>
+            )}
           </div>
 
 
@@ -469,7 +494,7 @@ export function SimpleDashboard({
               size="lg"
               className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 gap-2"
             >
-              Pokračovat tam kde jsem skončil
+              {progressPercent === 0 ? 'Začít kurz' : 'Pokračovat tam kde jsem skončil'}
               <ArrowRight className="w-5 h-5" />
             </Button>
           )}

@@ -35,6 +35,7 @@ interface Props {
   onComplete?: (fitScore: number) => void;
   onAchievementUnlocked?: (achievementId: string) => void;
   onNavigateToTool?: (toolId: string) => void;
+  onNavigateToLesson?: (lessonId: number) => void;
 }
 
 interface VPCItem {
@@ -55,7 +56,8 @@ export function MobileFitValidator({
   selectedSegment, 
   onComplete,
   onAchievementUnlocked,
-  onNavigateToTool
+  onNavigateToTool,
+  onNavigateToLesson
 }: Props) {
   // 📍 STEP STATE (1, 2, 3)
   const [currentStep, setCurrentStep] = useState(1);
@@ -539,6 +541,9 @@ export function MobileFitValidator({
   const hasValueMapData = products.length > 0 || painRelievers.length > 0 || gainCreators.length > 0;
   const hasCustomerProfileData = jobs.length > 0 || pains.length > 0 || gains.length > 0;
   
+  // ✅ Zobraz čitelný název segmentu (fallback pro prázdný/undefined)
+  const displaySegment = selectedSegment || 'váš segment';
+  
   // ✅ BLOKUJ pokud nemá Value Map data (bez ohledu na Customer Profile)
   if (!hasValueMapData) {
     return (
@@ -563,7 +568,7 @@ export function MobileFitValidator({
               </li>
               <li className="flex gap-2">
                 <span className="font-bold text-blue-600">2.</span>
-                <span>Vyberte hodnotu pro segment <strong className="text-blue-600">{selectedSegment}</strong></span>
+                <span>Vyberte hodnotu pro segment <strong className="text-blue-600">{displaySegment}</strong></span>
               </li>
               <li className="flex gap-2">
                 <span className="font-bold text-blue-600">3.</span>
@@ -605,7 +610,7 @@ export function MobileFitValidator({
             Chybí Zákaznický profil!
           </h2>
           <p className="text-gray-700 mb-6">
-            Pro segment <strong className="text-blue-600">{selectedSegment}</strong> nemáte vytvořený zákaznický profil.
+            Pro segment <strong className="text-blue-600">{displaySegment}</strong> nemáte vytvořený zákaznický profil.
           </p>
           
           <div className="bg-white rounded-xl p-4 mb-6 text-left border-2 border-yellow-300">
@@ -654,7 +659,7 @@ export function MobileFitValidator({
             Chybí data pro FIT validaci!
           </h2>
           <p className="text-gray-700 mb-6">
-            Pro segment <strong className="text-blue-600">{selectedSegment}</strong> nemáte vytvořená potřebná data.
+            Pro segment <strong className="text-blue-600">{displaySegment}</strong> nemáte vytvořená potřebná data.
           </p>
           
           <div className="bg-white rounded-xl p-4 mb-6 text-left border-2 border-yellow-300">
@@ -706,7 +711,7 @@ export function MobileFitValidator({
             Chybí Hodnotová mapa!
           </h2>
           <p className="text-gray-700 mb-6">
-            Máte vytvořený zákaznický profil, ale chybí hodnotová mapa pro segment <strong className="text-blue-600">{selectedSegment}</strong>.
+            Máte vytvořený zákaznický profil, ale chybí hodnotová mapa pro segment <strong className="text-blue-600">{displaySegment}</strong>.
           </p>
           
           <div className="bg-white rounded-xl p-4 mb-6 text-left border-2 border-yellow-300">
@@ -818,7 +823,7 @@ export function MobileFitValidator({
             <div className="space-y-2">
               <h4 className="font-semibold text-yellow-900 flex items-center gap-2">
                 <Target className="w-4 h-4" />
-                Cíle zákazníka:
+                Důvod návštěvy:
               </h4>
               {jobs.map(job => (
                 <div key={job.id} className="bg-yellow-50 border border-yellow-300 rounded-lg p-3">
@@ -940,7 +945,7 @@ export function MobileFitValidator({
             <div className="space-y-2">
               <h4 className="font-semibold text-green-900 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
-                Zisky (40% váha):
+                Očekávání (40% váha):
               </h4>
               {gains.map(gain => (
                 <div key={gain.id} className="bg-green-50 border-2 border-green-300 rounded-lg p-3">
@@ -976,7 +981,7 @@ export function MobileFitValidator({
             <div className="space-y-2">
               <h4 className="font-semibold text-yellow-900 flex items-center gap-2">
                 <Target className="w-4 h-4" />
-                Cíle (20% váha):
+                Důvod návštěvy (20% váha):
               </h4>
               {jobs.map(job => (
                 <div key={job.id} className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3">
@@ -1055,7 +1060,7 @@ export function MobileFitValidator({
             <div className="space-y-3">
               <div className="flex items-center gap-2 pb-2 border-b-2 border-red-300">
                 <AlertCircle className="w-5 h-5 text-red-600" />
-                <h4 className="font-bold text-red-900">💊 Obavy/Problémy</h4>
+                <h4 className="font-bold text-red-900">😰 Obavy</h4>
                 <span className="text-xs text-gray-500 ml-auto">TOP {fitScoreData.topPains.length}</span>
               </div>
               
@@ -1081,7 +1086,7 @@ export function MobileFitValidator({
                     {/* Pain Reliever Checkboxes */}
                     {painRelievers.length > 0 ? (
                       <div className="ml-5 pl-3 border-l-2 border-red-300 space-y-1.5">
-                        <p className="text-xs text-red-800 font-medium mb-1.5">→ Vaše řešení:</p>
+                        <p className="text-xs text-red-800 font-medium mb-1.5">→ Jak řešíme:</p>
                         {painRelievers.map((reliever, idx) => {
                           const isChecked = (painRelieverMappings[reliever.text] || []).includes(pain.id);
                           return (
@@ -1130,7 +1135,7 @@ export function MobileFitValidator({
             <div className="space-y-3">
               <div className="flex items-center gap-2 pb-2 border-b-2 border-green-300">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
-                <h4 className="font-bold text-green-900">📈 Očekávání/Touhy</h4>
+                <h4 className="font-bold text-green-900">✨ Očekávání</h4>
                 <span className="text-xs text-gray-500 ml-auto">TOP {fitScoreData.topGains.length}</span>
               </div>
               
@@ -1156,7 +1161,7 @@ export function MobileFitValidator({
                     {/* Gain Creator Checkboxes */}
                     {gainCreators.length > 0 ? (
                       <div className="ml-5 pl-3 border-l-2 border-green-300 space-y-1.5">
-                        <p className="text-xs text-green-800 font-medium mb-1.5">→ Vaše řešení:</p>
+                        <p className="text-xs text-green-800 font-medium mb-1.5">→ Jak naplňujeme:</p>
                         {gainCreators.map((creator, idx) => {
                           const isChecked = (gainCreatorMappings[creator.text] || []).includes(gain.id);
                           return (
@@ -1191,7 +1196,7 @@ export function MobileFitValidator({
                       </div>
                     ) : (
                       <div className="ml-5 pl-3 border-l-2 border-green-300">
-                        <p className="text-xs text-amber-700">⚠️ Nemáte žádnou tvorbu přínosů</p>
+                        <p className="text-xs text-amber-700">⚠️ Nemáte jak naplňujete očekávání</p>
                       </div>
                     )}
                   </div>
@@ -1205,7 +1210,7 @@ export function MobileFitValidator({
             <div className="space-y-3">
               <div className="flex items-center gap-2 pb-2 border-b-2 border-yellow-300">
                 <Target className="w-5 h-5 text-yellow-600" />
-                <h4 className="font-bold text-yellow-900">🎯 Cíle zákazníka</h4>
+                <h4 className="font-bold text-yellow-900">🎯 Důvod návštěvy</h4>
                 <span className="text-xs text-gray-500 ml-auto">TOP {fitScoreData.topJobs.length}</span>
               </div>
               

@@ -66,8 +66,8 @@ export function MobileFitStepInstructions({ step }: MobileFitStepInstructionsPro
         <>
           <p className="font-semibold mb-2 text-sm">Propojte co nabízíte s tím, co zákazníci potřebují:</p>
           <ul className="space-y-1.5 text-sm">
-            <li>💊 <strong>Řešení obtíží</strong> → Obavy zákazníka</li>
-            <li>📈 <strong>Tvorba přínosů</strong> → Očekávání zákazníka</li>
+            <li>💊 <strong>Jak řešíme obavy</strong> → Obavy zákazníka</li>
+            <li>📈 <strong>Jak naplňujeme očekávání</strong> → Očekávání zákazníka</li>
             <li>✅ <strong>FIT Score 70%+</strong> = máte Product-Market Fit!</li>
           </ul>
           <div className="mt-3 bg-green-50 border border-green-300 rounded-lg p-2.5">

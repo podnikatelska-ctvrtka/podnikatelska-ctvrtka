@@ -363,13 +363,13 @@ export function MobileVPCCustomerProfile({
     
     if (!newJob.trim()) return;
     if (jobs.length >= 10) {
-      toast.error('Maximum 10 úkolů!');
+      toast.error('Maximum 10 důvodů návštěvy!');
       return;
     }
     
     const isDuplicate = jobs.some(j => j.text.toLowerCase() === newJob.trim().toLowerCase());
     if (isDuplicate) {
-      toast.error('❌ Tento úkol již existuje!');
+      toast.error('❌ Tento důvod již existuje!');
       return;
     }
     
@@ -444,7 +444,7 @@ export function MobileVPCCustomerProfile({
   // Progress stepper
   const steps = [
     { label: 'Segment', completed: !!selectedSegment },
-    { label: 'Úkoly', completed: jobs.length > 0 },
+    { label: 'Důvod návštěvy', completed: jobs.length > 0 },
     { label: 'Obavy', completed: pains.length > 0 },
     { label: 'Očekávání', completed: gains.length > 0 },
   ];
@@ -554,7 +554,7 @@ export function MobileVPCCustomerProfile({
       {currentStep === 1 && (
         <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
-            <h3 className="text-orange-900 mb-1">🎯 Cíl / Důvod návštěvy</h3>
+            <h3 className="text-orange-900 mb-1">🎯 Důvod návštěvy</h3>
             <p className="text-sm text-gray-600 mb-3">
               Proč <strong>{selectedSegment}</strong> přichází? ({jobs.length}/10)
             </p>
@@ -622,7 +622,7 @@ export function MobileVPCCustomerProfile({
                   haptic('medium');
                   setCurrentStep(2);
                 } else {
-                  toast.error('Přidejte alespoň 1 úkol!');
+                  toast.error('Přidejte alespoň 1 důvod návštěvy!');
                 }
               }}
               className="flex items-center gap-1"
@@ -638,7 +638,7 @@ export function MobileVPCCustomerProfile({
       {currentStep === 2 && (
         <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <h3 className="text-red-900 mb-1">😢 Obavy a problémy</h3>
+            <h3 className="text-red-900 mb-1">😰 Obavy</h3>
             <p className="text-sm text-gray-600 mb-3">
               Co ho TRÁPÍ? ({pains.length}/20)
             </p>
@@ -722,7 +722,7 @@ export function MobileVPCCustomerProfile({
       {currentStep === 3 && (
         <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-            <h3 className="text-green-900 mb-1">😊 Očekávání a touhy</h3>
+            <h3 className="text-green-900 mb-1">✨ Očekávání</h3>
             <p className="text-sm text-gray-600 mb-3">
               Co by CHTĚL? ({gains.length}/20)
             </p>

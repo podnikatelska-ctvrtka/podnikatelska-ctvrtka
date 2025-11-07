@@ -9,23 +9,23 @@ export const MODULE_3 = {
       title: "Zákaznický profil",
       canvasSection: "vpc-customer",
       videoUrl: "",
-      description: "Pochopte svého zákazníka do hloubky - cíle, obavy, očekávání",
+      description: "Pochopte svého zákazníka do hloubky - důvod návštěvy, obavy, očekávání",
       content: `
         <h3>👥 Zákaznický Profil</h3>
         <p><strong>VŠECHNO začíná u ZÁKAZNÍKA!</strong> Než začnete cokoliv nabízet, musíte pochopit <strong>KOMU</strong> to nabízíte.</p>
         
         <p><strong>📌 Nejdřív vyberte SEGMENT:</strong> Vyberte si jeden zákaznický segment z vaší Podnikatelské Čtvrtky (Modul 1) a pro něj vyplníte profil:</p>
         
-        <h4>✅ Úkoly zákazníka</h4>
+        <h4>🎯 Důvod návštěvy</h4>
         <p><strong>Proč k vám zákazník přichází? Co chce udělat?</strong></p>
         <ul>
           <li><strong>Funkční úkoly:</strong> "Pracovat produktivně mimo domov"</li>
           <li><strong>Sociální úkoly:</strong> "Networking s podobnými lidmi"</li>
           <li><strong>Emocionální:</strong> "Cítit se produktivně a motivovaně"</li>
         </ul>
-        <p>💡 <strong>Tip:</strong> Zákazník má často více úkolů najednou!</p>
+        <p>💡 <strong>Tip:</strong> Zákazník má často více důvodů najednou!</p>
         
-        <h4>😢 Obavy a problémy</h4>
+        <h4>😰 Obavy</h4>
         <p><strong>Co ho TRÁPÍ? Co mu brání v dosažení cíle?</strong></p>
         <ul>
           <li><strong>Překážky:</strong> "Drahý coworking (300 Kč/den)"</li>
@@ -35,7 +35,7 @@ export const MODULE_3 = {
         </ul>
         <p>💡 <strong>Důležité:</strong> Čím konkrétnější problémy, tím lepší!</p>
         
-        <h4>😊 Očekávání a touhy</h4>
+        <h4>✨ Očekávání</h4>
         <p><strong>Co by CHTĚL? Co by mu usnadnilo život?</strong></p>
         <ul>
           <li><strong>Nutné:</strong> "Profesionální prostředí s kvalitním WiFi"</li>
@@ -49,9 +49,9 @@ export const MODULE_3 = {
       `,
       tips: [
         "👉 ZAČNĚTE VŽDY U ZÁKAZNÍKA, ne u vašeho produktu!",
-        "✅ Úkoly = co chce zákazník udělat (důvod návštěvy)",
-        "😢 Obavy = co ho trápí (problémy, překážky)",
-        "😊 Očekávání = co očekává (touhy, přání)"
+        "🎯 Důvod návštěvy = proč k vám přichází, co potřebuje vyřešit",
+        "😰 Obavy = co ho trápí (problémy, překážky)",
+        "✨ Očekávání = co očekává (touhy, přání)"
       ]
     },
     {
@@ -76,7 +76,7 @@ export const MODULE_3 = {
         </ul>
         <p>💡 <strong>Tip:</strong> Vypište VŠE co zákazník dostane - i drobnosti!</p>
         
-        <h4>📈 Tvorba přínosů</h4>
+        <h4>📈 Jak naplňujeme očekávání</h4>
         <p><strong>Jak VYTVÁŘÍTE hodnotu? Jak naplňujete očekávání?</strong></p>
         <ul>
           <li>"Community events pro networking každý týden"</li>
@@ -84,9 +84,9 @@ export const MODULE_3 = {
           <li>"Fresh specialty káva celý den"</li>
           <li>"Tiché prostředí ideální na focus práci"</li>
         </ul>
-        <p>💡 <strong>Návaznost:</strong> Každý přínos by měl odpovídat OČEKÁVÁNÍ zákazníka (Gains)!</p>
+        <p>💡 <strong>Návaznost:</strong> Každý způsob by měl odpovídat OČEKÁVÁNÍ zákazníka!</p>
         
-        <h4>💊 Řešení obtíží</h4>
+        <h4>💊 Jak řešíme obavy</h4>
         <p><strong>Jak ŘEŠÍTE problémy zákazníka?</strong></p>
         <ul>
           <li>"Jen cena kávy (80 Kč) místo 300 Kč za coworking"</li>
@@ -94,7 +94,7 @@ export const MODULE_3 = {
           <li>"Tiché prostředí bez rozptylování"</li>
           <li>"Dlouhá otevírací doba 7-22h"</li>
         </ul>
-        <p>💡 <strong>Návaznost:</strong> Každé řešení by mělo odpovídat OBAVĚ zákazníka (Pains)!</p>
+        <p>💡 <strong>Návaznost:</strong> Každé řešení by mělo odpovídat OBAVĚ zákazníka!</p>
         
         <p><strong>🎯 Důležité:</strong> Vyplňujte to, co OPRAVDU nabízíte, ne co byste CHTĚLI nabízet!</p>
         
@@ -102,8 +102,8 @@ export const MODULE_3 = {
       `,
       tips: [
         "📦 Produkty = co nabízíte (konkrétní produkty/služby)",
-        "📈 Tvorba přínosů = jak vytváříte hodnotu (odpovídá očekáváním zákazníka)",
-        "💊 Řešení obtíží = jak řešíte problémy (odpovídá obavám zákazníka)",
+        "📈 Jak naplňujeme očekávání = jak vytváříte hodnotu (odpovídá očekáváním zákazníka)",
+        "💊 Jak řešíme obavy = jak řešíte problémy (odpovídá obavám zákazníka)",
         "🔄 Můžete rychle přepínat mezi hodnotami nahoře!"
       ]
     },

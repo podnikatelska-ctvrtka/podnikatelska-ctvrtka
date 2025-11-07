@@ -92,6 +92,9 @@ interface Props {
   /** Callback pro navigaci na nástroj */
   onNavigateToTool?: (toolId: string) => void;
   
+  /** Callback pro navigaci do lekce */
+  onNavigateToLesson?: (lessonId: number) => void;
+  
   /** Callback pro odemknutí achievementu */
   onAchievementUnlocked?: (achievementId: string) => void;
 }
@@ -116,6 +119,7 @@ export function MobileCourseModule3({
   totalLessons = 16, // Default: 9 + 4 + 3 lekce
   userData = null,
   onNavigateToTool,
+  onNavigateToLesson,
   onAchievementUnlocked,
 }: Props) {
   // Current lesson
@@ -230,6 +234,7 @@ export function MobileCourseModule3({
           }}
           onAchievementUnlocked={onAchievementUnlocked}
           onNavigateToTool={onNavigateToTool}
+          onNavigateToLesson={onNavigateToLesson}
         />
       );
     }

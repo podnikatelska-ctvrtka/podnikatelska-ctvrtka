@@ -337,7 +337,7 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
     
     if (!newJob.trim()) return;
     if (jobs.length >= 10) {
-      toast.error('Maximum 10 úkolů!');
+      toast.error('Maximum 10 důvodů návštěvy!');
       return;
     }
     
@@ -347,7 +347,7 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
     
     if (isDuplicate) {
       console.log('❌ [JOB] DUPLICATE DETECTED at:', timestamp);
-      toast.error('❌ Tento úkol již existuje! Použijte jiný text.');
+      toast.error('❌ Tento důvod návštěvy již existuje! Použijte jiný text.');
       console.log('✅ [JOB] Toast shown at:', Date.now());
       return;
     }
@@ -447,7 +447,7 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
   
   const steps = [
     { label: 'Segment', icon: '👥', completed: !!selectedSegment },
-    { label: 'Úkoly', icon: '🎯', completed: jobs.length > 0 },
+    { label: 'Důvod návštěvy', icon: '🎯', completed: jobs.length > 0 },
     { label: 'Obavy', icon: '😢', completed: pains.length > 0 },
     { label: 'Očekávání', icon: '😊', completed: gains.length > 0 },
     { label: 'Hotovo', icon: '✅', completed: false }
@@ -574,7 +574,7 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
                 🎯
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-lg sm:text-2xl font-bold text-orange-900">Cíl / Důvod návštěvy</h2>
+                <h2 className="text-lg sm:text-2xl font-bold text-orange-900">Důvod návštěvy</h2>
                 <p className="text-sm sm:text-base text-orange-700 truncate">Proč <span className="font-bold">{selectedSegment}</span> přichází? ({jobs.length}/10)</p>
               </div>
             </div>
@@ -930,7 +930,7 @@ export function VPCCustomerProfileStory({ userId, selectedSegment, onSelectSegme
                   <div className="bg-orange-500 text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl">
                     🎯
                   </div>
-                  <h3 className="font-bold text-orange-900 text-sm sm:text-base">Úkoly ({jobs.length})</h3>
+                  <h3 className="font-bold text-orange-900 text-sm sm:text-base">Důvod návštěvy ({jobs.length})</h3>
                 </div>
                 <div className="space-y-2">
                   {jobs.map((j, idx) => (

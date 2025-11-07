@@ -54,8 +54,8 @@ export function FitStepInstructions({ step }: FitStepInstructionsProps) {
         <>
           <p className="font-semibold mb-2">Propojte co nabízíte s tím, co zákazníci potřebují:</p>
           <ul className="space-y-1 text-sm">
-            <li>💊 <strong>Řešení obtíží</strong> → Obavy zákazníka (Pains)</li>
-            <li>📈 <strong>Tvorba přínosů</strong> → Očekávání zákazníka (Gains)</li>
+            <li>💊 <strong>Jak řešíme obavy</strong> → Obavy zákazníka</li>
+            <li>📈 <strong>Jak naplňujeme očekávání</strong> → Očekávání zákazníka</li>
             <li>✅ <strong>FIT Score 70%+</strong> = máte Product-Market Fit!</li>
           </ul>
           <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">

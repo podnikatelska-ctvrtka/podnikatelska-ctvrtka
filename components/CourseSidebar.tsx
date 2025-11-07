@@ -1,6 +1,6 @@
 import { CheckCircle, Lock, ChevronRight, BookOpen, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useIsMobile } from "./ui/use-mobile";
 import { ToolsSection } from "./ToolsSection";
 
@@ -39,6 +39,10 @@ export function CourseSidebar({
   currentTool = null
 }: CourseSidebarProps) {
   const isMobile = useIsMobile();
+  
+  // 📜 REFS pro auto-scroll na aktivní lekci
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const activeLessonRef = useRef<HTMLButtonElement>(null);
 
   // Calculate progress
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
@@ -50,6 +54,33 @@ export function CourseSidebar({
   const module2 = modules.find(m => m.id === 2);
   const isModule1Complete = module1 ? module1.lessons.every(l => completedLessons.has(l.id)) : false;
   const isModule2Complete = module2 ? module2.lessons.every(l => completedLessons.has(l.id)) : false;
+  
+  // ✨ AUTO-SCROLL na aktivní lekci při změně
+  useEffect(() => {
+    // Pokud NEJSME na Dashboard ani Tools, scrolluj na aktivní lekci
+    if (!showingDashboard && !currentTool && activeLessonRef.current && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const activeLesson = activeLessonRef.current;
+      
+      // Získej pozici aktivní lekce relativně k containeru
+      const containerRect = container.getBoundingClientRect();
+      const lessonRect = activeLesson.getBoundingClientRect();
+      
+      // Pokud je lekce mimo viewport, scrolluj na ni
+      const isAboveViewport = lessonRect.top < containerRect.top;
+      const isBelowViewport = lessonRect.bottom > containerRect.bottom;
+      
+      if (isAboveViewport || isBelowViewport) {
+        // Scrolluj tak aby byla lekce uprostřed viewportu
+        const scrollTop = activeLesson.offsetTop - container.offsetTop - (container.clientHeight / 2) + (activeLesson.clientHeight / 2);
+        
+        container.scrollTo({
+          top: scrollTop,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [currentModuleId, currentLessonIndex, showingDashboard, currentTool]);
 
   // Na mobilu (portrait i landscape) sidebar skrytý - je přes hamburger menu
   if (isMobile) {
@@ -109,7 +140,7 @@ export function CourseSidebar({
         )}
 
         {/* Modules & Lessons - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-3">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-3">
           <div className="space-y-4">
             {modules.map((module) => {
               const moduleCompleted = module.lessons.every(l => completedLessons.has(l.id));
@@ -178,6 +209,7 @@ export function CourseSidebar({
                       return (
                         <button
                           key={lesson.id}
+                          ref={isCurrent ? activeLessonRef : null}
                           onClick={() => !isLocked && onSelectLesson(module.id, lessonIndex)}
                           disabled={isLocked}
                           className={`w-full flex items-center gap-2 p-2 rounded text-left transition-all ${

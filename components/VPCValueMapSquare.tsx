@@ -22,6 +22,7 @@ interface Props {
   onSelectValue: (value: string) => void;
   onComplete?: () => void; // ✅ Callback pro dokončení lekce
   onAchievementUnlocked?: (achievementId: string) => void; // 🎉 Achievement callback
+  onNavigateToLesson?: (lessonId: number) => void; // 🎯 Navigace do lekcí
 }
 
 // 🎨 Helper pro generování barev podle hodnoty
@@ -80,7 +81,7 @@ function normalizeColor(color: string): string {
   return colorMap[color.toLowerCase()] || '#3b82f6';
 }
 
-export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSelectValue, onComplete, onAchievementUnlocked }: Props) {
+export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSelectValue, onComplete, onAchievementUnlocked, onNavigateToLesson }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const [products, setProducts] = useState<Tag[]>([]);
   const [painRelievers, setPainRelievers] = useState<Tag[]>([]);
@@ -563,8 +564,8 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
   const steps = [
     { label: 'Hodnota', icon: '🎁', completed: !!selectedValue },
     { label: 'Produkty', icon: '📦', completed: products.length > 0 },
-    { label: 'Přínosy', icon: '📈', completed: gainCreators.length > 0 },
-    { label: 'Řešení', icon: '💊', completed: painRelievers.length > 0 },
+    { label: 'Jak naplňujeme', icon: '📈', completed: gainCreators.length > 0 },
+    { label: 'Jak řešíme', icon: '💊', completed: painRelievers.length > 0 },
     { label: 'Hotovo', icon: '✅', completed: false }
   ];
   
@@ -707,14 +708,26 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 <p className="text-sm text-yellow-800 mb-3">
                   Segment <strong>{selectedSegment}</strong> nemá žádné hodnoty se stejnou barvou
                 </p>
-                <div className="bg-white rounded-lg p-3 text-left text-xs text-gray-700">
+                <div className="bg-white rounded-lg p-3 text-left text-xs text-gray-700 mb-4">
                   <p className="mb-1">💡 <strong>Co to znamená?</strong></p>
-                  <p>V Modulu 1 přidejte hodnoty, které mají barvu segmentu:</p>
+                  <p className="mb-2">V <strong>Modulu 1, Lekce 2 (Hodnotová nabídka)</strong> přidejte hodnotu se stejnou barvou jako váš segment:</p>
                   <div className="mt-2 flex items-center gap-2">
                     <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: selectedSegmentObj?.color }}></span>
                     <span className="font-medium">{selectedSegment}</span>
                   </div>
+                  <p className="mt-2 text-xs text-gray-600">
+                    Klikněte na hodnotu a nastavte ji stejnou barvou jako má segment "{selectedSegment}"
+                  </p>
                 </div>
+                {onNavigateToLesson && (
+                  <button
+                    onClick={() => onNavigateToLesson(2)}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2 mx-auto"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Přejít do Lekce 2: Hodnotová nabídka
+                  </button>
+                )}
               </div>
             ) : (
               <>
@@ -970,7 +983,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 📈
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-green-800 text-lg sm:text-2xl font-bold">Tvorba přínosů</h2>
+                <h2 className="text-green-800 text-lg sm:text-2xl font-bold">Jak naplňujeme očekávání</h2>
                 <p className="text-green-700 text-sm sm:text-base truncate">Jak <span className="font-bold">{selectedValue}</span> vytváří hodnotu? ({gainCreators.length}/20)</p>
               </div>
             </div>
@@ -1090,7 +1103,7 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 💊
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-purple-800 text-lg sm:text-2xl font-bold">Řešení obtíží</h2>
+                <h2 className="text-purple-800 text-lg sm:text-2xl font-bold">Jak řešíme obavy</h2>
                 <p className="text-purple-700 text-sm sm:text-base truncate">Jak <span className="font-bold">{selectedValue}</span> řeší problémy? ({painRelievers.length}/20)</p>
               </div>
             </div>
@@ -1247,13 +1260,13 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 </div>
               </div>
               
-              {/* Přínosy */}
+              {/* Jak naplňujeme očekávání */}
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-4 border-green-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl">
                     📈
                   </div>
-                  <h3 className="font-bold text-green-900">Přínosy ({gainCreators.length})</h3>
+                  <h3 className="font-bold text-green-900">Jak naplňujeme ({gainCreators.length})</h3>
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {gainCreators.map((g, idx) => (
@@ -1264,13 +1277,13 @@ export function VPCValueMapSquare({ userId, selectedSegment, selectedValue, onSe
                 </div>
               </div>
               
-              {/* Řešení */}
+              {/* Jak řešíme obavy */}
               <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border-4 border-purple-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl">
                     💊
                   </div>
-                  <h3 className="font-bold text-purple-900">Řešení ({painRelievers.length})</h3>
+                  <h3 className="font-bold text-purple-900">Jak řešíme ({painRelievers.length})</h3>
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {painRelievers.map((r, idx) => (

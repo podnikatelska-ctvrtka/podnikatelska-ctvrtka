@@ -38,7 +38,7 @@ export default function EmailPreview() {
             <a href="${mainCourseUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin-bottom: 10px;">
               Vstoupit do hlavního kurzu
             </a>
-            <p style="margin: 10px 0 0 0; font-size: 13px; color: #666;">⏱️ 12 lekcí • 90 minut práce • Kompletní byznys plán</p>
+            <p style="margin: 10px 0 0 0; font-size: 13px; color: #666;">⏱️ 16 lekcí • 90 minut práce • Kompletní byznys plán</p>
           </div>
           
           <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 8px; margin: 30px 0; border: 2px solid #f59e0b;">

@@ -230,7 +230,7 @@ export function VPCCustomerProfile({ userId, selectedSegment }: Props) {
         <CustomerProfileContextHints currentStep={1} selectedSegment={selectedSegment} />
         <div className="mb-6">
           <h3 className="font-bold mb-2 text-lg" style={{ color: getSegmentColors(segmentColor).jobs.text }}>
-            🎯 Cíl/Důvod návštěvy
+            🎯 Důvod návštěvy
           </h3>
           <p className="text-sm mb-3" style={{ color: getSegmentColors(segmentColor).jobs.text }}>
             Co segment chce udělat? Proč k vám přichází?

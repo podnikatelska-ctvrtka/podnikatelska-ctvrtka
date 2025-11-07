@@ -331,4 +331,69 @@ input[type="number"].no-spinner {
   img {
     content-visibility: auto;
   }
+  
+  /* 🖨️ PRINT STYLES - Action Plan friendly */
+  @media print {
+    /* Hide non-essential elements */
+    button,
+    nav,
+    .no-print,
+    [class*="breadcrumb"],
+    [class*="sidebar"],
+    [class*="mobile"] {
+      display: none !important;
+    }
+    
+    /* Optimize page breaks */
+    h1, h2, h3, h4 {
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    
+    /* Avoid breaking content blocks */
+    [class*="rounded-xl"],
+    [class*="bg-white"],
+    [class*="shadow"] {
+      page-break-inside: avoid;
+    }
+    
+    /* Remove backgrounds for better print */
+    body {
+      background: white !important;
+    }
+    
+    [class*="gradient"],
+    [class*="bg-blue"],
+    [class*="bg-green"],
+    [class*="bg-orange"],
+    [class*="bg-gray-50"],
+    [class*="bg-yellow"] {
+      background: white !important;
+      border: 1px solid #e5e7eb !important;
+    }
+    
+    /* Keep important colors */
+    [class*="text-red"],
+    [class*="text-green"],
+    [class*="text-orange"],
+    [class*="text-blue"] {
+      color: #374151 !important;
+    }
+    
+    /* Print links */
+    a[href]:after {
+      content: none !important;
+    }
+    
+    /* Expand collapsed sections */
+    [class*="hidden"] {
+      display: block !important;
+    }
+    
+    /* Page margins */
+    @page {
+      margin: 2cm;
+      size: A4;
+    }
+  }
 }

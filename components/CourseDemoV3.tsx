@@ -960,7 +960,7 @@ const MODULE_1 = {
         
         <h4>🎨 DŮLEŽITÉ: Logika barev!</h4>
         <p><strong>🌐 VĚTŠINOU GLOBÁLNÍ!</strong> Nájem, mzdy, suroviny = pro celý byznys.</p>
-        <p><strong>���� Specifické náklady = barva segmentu!</strong></p>
+        <p><strong>🎨 Specifické náklady = barva segmentu!</strong></p>
         <ul class="no-bullet">
           <li><strong>🌐 Globální:</strong> Nájem 25k, Mzdy 40k, Suroviny 15k</li>
           <li><strong>🔵 Modrý segment</strong> (Rodiny) → <strong>🔵 modrý náklad</strong> (Instagram reklama 2 000 Kč)</li>
@@ -2518,6 +2518,17 @@ export function CourseDemoV3() {
               setShowTool(toolId);
               setShowMainDashboard(false);
             }}
+            onNavigateToLesson={(lessonId) => {
+              allModules.forEach((module) => {
+                const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
+                if (lessonIdx !== -1) {
+                  setCurrentModuleNumber(module.id); // module.id je už 1, 2, 3
+                  setCurrentLessonIndex(lessonIdx);
+                  setShowMainDashboard(false);
+                  setShowTool(null);
+                }
+              });
+            }}
             onAchievementUnlocked={triggerAchievement}
           />
         )}
@@ -2866,6 +2877,19 @@ export function CourseDemoV3() {
                         selectedValue={selectedVPCValue}
                         onSelectValue={setSelectedVPCValue}
                         onAchievementUnlocked={triggerAchievement}
+                        onNavigateToLesson={(lessonId) => {
+                          // Navigate to lesson
+                          allModules.forEach((module) => {
+                            const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
+                            if (lessonIdx !== -1) {
+                              setCurrentModuleNumber(module.id); // module.id je už 1, 2, 3
+                              setCurrentLessonIndex(lessonIdx);
+                              setShowMainDashboard(false);
+                              setShowTool(null);
+                              window.scrollTo(0, 0);
+                            }
+                          });
+                        }}
                         onComplete={async () => {
                           console.log('🎯 Lekce 15 onComplete called!', { userId: userData?.id, lessonId: currentLesson.id });
                         
@@ -2907,21 +2931,39 @@ export function CourseDemoV3() {
                         isLessonCompleted={completedLessons.has(16)}
                         onAchievementUnlocked={triggerAchievement}
                         onNavigateToLesson={(lessonId) => {
-                          // Navigate to Modul 3, Lesson with specific ID
-                          const lessonIndex = MODULE_3.lessons.findIndex(l => l.id === lessonId);
-                          if (lessonIndex !== -1) {
-                            // Přepni na danou lekci v Modulu 3
-                            handleLessonChange(MODULE_3.lessons[lessonIndex]);
-                            // 📜 Scroll nahoru OKAMŽITĚ
-                            window.scrollTo(0, 0);
-                          }
+                          // Navigate to any lesson by ID across all modules
+                          allModules.forEach((module) => {
+                            const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
+                            if (lessonIdx !== -1) {
+                              setCurrentModuleNumber(module.id); // module.id je už 1, 2, 3
+                              setCurrentLessonIndex(lessonIdx);
+                              setShowMainDashboard(false);
+                              setShowTool(null);
+                              // 📜 Scroll nahoru
+                              window.scrollTo(0, 0);
+                            }
+                          });
                         }}
                         onNavigateToTool={(tool) => {
-                          // Navigate to tools (action-plan)
+                          // Navigate to tools (action-plan, vpc-value-map, vpc-customer-profile)
                           if (tool === 'action-plan') {
                             setShowMainDashboard(false);
                             setShowActionPlan(true);
                             setShowTool(null);
+                          } else if (tool === 'vpc-value-map') {
+                            // 🎯 Redirect na Lekci 2: Hodnotová mapa (Modul 3)
+                            const valueMapLesson = MODULE_3.lessons.find(l => l.id === 2);
+                            if (valueMapLesson) {
+                              handleLessonChange(valueMapLesson);
+                              window.scrollTo(0, 0);
+                            }
+                          } else if (tool === 'vpc-customer-profile') {
+                            // 🎯 Redirect na Lekci 1: Zákaznický profil (Modul 3)
+                            const customerProfileLesson = MODULE_3.lessons.find(l => l.id === 1);
+                            if (customerProfileLesson) {
+                              handleLessonChange(customerProfileLesson);
+                              window.scrollTo(0, 0);
+                            }
                           }
                         }}
                         onComplete={async (fitScore) => {
