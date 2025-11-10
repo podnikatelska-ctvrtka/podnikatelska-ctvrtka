@@ -422,6 +422,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   const [gainCreators, setGainCreators] = useState<ValueMapItem[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
+  const [dataLoadAttempted, setDataLoadAttempted] = useState(false); // ✅ FIX: Kontrola jestli se už pokusilo načíst data (zamezí probliknutí)
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false); // ✅ FIX: Extra flag pro úplné dokončení initial load
   
   // 🎯 Tracker jestli uživatel už něco přesunul (pak teprve ukázat priority)
   const [hasUserSorted, setHasUserSorted] = useState(false);
@@ -1367,11 +1369,15 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
       console.error('Error loading VPC:', err);
     } finally {
       setIsLoading(false);
-      setIsInitialLoad(false); // ✅ První načtení dokončeno
       // ✅ FIX: Dej malý timeout před odblokováním auto-save (aby se state stihl aktualizovat)
       setTimeout(() => {
         isLoadingDataRef.current = false;
-      }, 100);
+        setDataLoadAttempted(true); // ✅ FIX: Nastav AŽ PO načtení aby se zabránilo probliknutí
+        // ✅ Extra timeout pro jistotu že se všechno zobrazí správně
+        setTimeout(() => {
+          setInitialLoadComplete(true);
+        }, 100);
+      }, 150); // Zvýšil jsem z 100 na 150ms pro jistotu
     }
   };
 
@@ -2081,7 +2087,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   }, [fitScore, isLoading, onAchievementUnlocked]);
 
   // ✅ DŮLEŽITÉ: isLoading check MUSÍ být PRVNÍ - jinak blikne obsah!
-  if (isLoading) {
+  // ✅ PLUS: Zobraz loading i když ještě není initialLoadComplete (zamezí probliknutí)
+  if (isLoading || !initialLoadComplete) {
     return (
       <div className="bg-white rounded-xl border-2 border-gray-200 p-12 text-center">
         <RefreshCw className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
@@ -2097,8 +2104,8 @@ export function FitValidatorV2({ userId, selectedSegment, onSegmentChange, onVal
   // ✅ Zobraz čitelný název segmentu (fallback pro prázdný/undefined)
   const displaySegment = localSelectedSegment || selectedSegment || 'váš segment';
   
-  // ✅ BLOKUJ pokud není vybraná hodnota! (ALE JEN POKUD DATA UŽ BYLA NAČTENA - jinak problikne!)
-  if (!isLoading && (!localSelectedValue || localSelectedValue === '')) {
+  // ✅ BLOKUJ pokud není vybraná hodnota! (ALE JEN POKUD UŽ PROBĚHLO ALESPOŇ JEDNO NAČTENÍ - zamezí probliknutí)
+  if (initialLoadComplete && !isLoading && (!localSelectedValue || localSelectedValue === '')) {
     return (
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
         <div className="bg-gradient-to-br from-red-50 to-orange-50 border-3 border-red-400 rounded-2xl p-8 sm:p-12 text-center shadow-xl">

@@ -71,6 +71,7 @@ export function MobileFitValidator({
   const [gainCreators, setGainCreators] = useState<ValueMapItem[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
+  const [dataLoadAttempted, setDataLoadAttempted] = useState(false); // ✅ FIX: Kontrola jestli se už pokusilo načíst data (zamezí probliknutí)
   
   // 🎯 PRIORITIZATION STATE
   const [totalRespondents, setTotalRespondents] = useState(10);
@@ -573,7 +574,7 @@ export function MobileFitValidator({
         toast.error('❌ Chyba při načítání dat');
       } finally {
         setIsLoading(false);
-        setIsInitialLoad(false); // ✅ První načtení dokončeno
+        setDataLoadAttempted(true); // ✅ FIX: První načtení dokončeno - teď už může zobrazit bannery
         // ✅ FIX: Dej malý timeout před odblokováním auto-save (aby se state stihl aktualizovat)
         setTimeout(() => {
           isLoadingDataRef.current = false;
@@ -640,7 +641,7 @@ export function MobileFitValidator({
   const displaySegment = selectedSegment || 'váš segment';
   
   // ✅ BLOKUJ pokud nemá Value Map data (ALE JEN PO INITIAL LOAD - jinak problikne!)
-  if (!isInitialLoad && !hasValueMapData) {
+  if (dataLoadAttempted && !isLoading && !hasValueMapData) {
     return (
       <div className="p-4 pb-20">
         <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-400 rounded-2xl p-6 text-center">
@@ -696,7 +697,7 @@ export function MobileFitValidator({
   }
   
   // Pokud nemá ani Customer Profile (edge case) - ALE JEN PO INITIAL LOAD!
-  if (!isInitialLoad && !hasCustomerProfileData) {
+  if (dataLoadAttempted && !hasCustomerProfileData) {
     return (
       <div className="p-4 pb-20">
         <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-2xl p-6 text-center">

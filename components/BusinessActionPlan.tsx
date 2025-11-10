@@ -12,7 +12,8 @@ import {
   ChevronDown,
   ChevronUp,
   Trophy,
-  Zap
+  Zap,
+  X
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
@@ -114,7 +115,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
           top: 0;
           width: 100% !important;
           margin: 0 !important;
-          padding: 1cm !important;
+          padding: 0.5cm !important;
         }
         
         /* Kompaktní layout */
@@ -126,48 +127,75 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
         
         /* Menší mezery mezi sekcemi */
         .space-y-4, .space-y-6, .space-y-8 {
-          gap: 0.5rem !important;
+          gap: 0.25rem !important;
         }
         
         .sm\\:space-y-6 > * + *, .space-y-6 > * + * {
-          margin-top: 0.5rem !important;
+          margin-top: 0.25rem !important;
         }
         
         /* Kompaktní padding */
-        .p-4 { padding: 0.5rem !important; }
-        .p-6 { padding: 0.75rem !important; }
-        .p-8, .sm\\:p-8 { padding: 1rem !important; }
+        .p-4 { padding: 0.3rem !important; }
+        .p-6 { padding: 0.4rem !important; }
+        .p-8, .sm\\:p-8 { padding: 0.5rem !important; }
         
         .px-4, .sm\\:px-6, .lg\\:px-8 {
-          padding-left: 0.5rem !important;
-          padding-right: 0.5rem !important;
+          padding-left: 0.3rem !important;
+          padding-right: 0.3rem !important;
         }
         
         .py-6, .sm\\:py-12 {
-          padding-top: 0.5rem !important;
-          padding-bottom: 0.5rem !important;
+          padding-top: 0.3rem !important;
+          padding-bottom: 0.3rem !important;
         }
         
         /* Menší nadpisy */
-        h1 { font-size: 1.25rem !important; margin-bottom: 0.25rem !important; }
-        h2 { font-size: 1.1rem !important; margin-bottom: 0.25rem !important; }
-        h3 { font-size: 1rem !important; margin-bottom: 0.25rem !important; }
-        h4 { font-size: 0.9rem !important; margin-bottom: 0.2rem !important; }
+        h1 { font-size: 1.1rem !important; margin-bottom: 0.15rem !important; }
+        h2 { font-size: 1rem !important; margin-bottom: 0.15rem !important; }
+        h3 { font-size: 0.9rem !important; margin-bottom: 0.1rem !important; }
+        h4 { font-size: 0.85rem !important; margin-bottom: 0.1rem !important; }
         
         /* Kompaktní text */
-        p { font-size: 0.8rem !important; line-height: 1.2 !important; margin-bottom: 0.25rem !important; }
-        li { font-size: 0.8rem !important; line-height: 1.2 !important; }
+        p { font-size: 0.75rem !important; line-height: 1.1 !important; margin-bottom: 0.15rem !important; }
+        li { font-size: 0.75rem !important; line-height: 1.1 !important; }
         
         /* Menší ikony a dekorace */
         .text-5xl, .text-6xl, .text-7xl {
-          font-size: 1.5rem !important;
-          margin-bottom: 0.25rem !important;
+          font-size: 1.2rem !important;
+          margin-bottom: 0.15rem !important;
         }
         
         .w-16, .h-16, .w-20, .h-20,
         .sm\\:w-20, .sm\\:h-20 {
-          width: 2rem !important;
-          height: 2rem !important;
+          width: 1.5rem !important;
+          height: 1.5rem !important;
+        }
+        
+        /* Emoji support při tisku */
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+        }
+        
+        /* KLÍČOVÉ: Zachovat VŠECHNY barvy při tisku! */
+        @page {
+          size: A4;
+          margin: 1cm;
+        }
+        
+        html {
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        
+        body {
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+        }
+        
+        * {
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
         }
         
         /* Optimalizované page breaks */
@@ -185,7 +213,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
         
         /* Grid kompaktněji */
         .grid {
-          gap: 0.5rem !important;
+          gap: 0.3rem !important;
         }
         
         /* Zobraz jen hlavní content */
@@ -196,6 +224,27 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
         /* Skryj motion animace */
         [style*="opacity"] {
           opacity: 1 !important;
+        }
+        
+        /* ✅ Zobraz ikony v tisku */
+        svg {
+          display: inline-block !important;
+          visibility: visible !important;
+          width: 0.8rem !important;
+          height: 0.8rem !important;
+        }
+        
+        /* Menší gaps a margins */
+        .gap-2, .gap-3, .gap-4 {
+          gap: 0.25rem !important;
+        }
+        
+        .mb-3, .mb-4, .mb-6 {
+          margin-bottom: 0.2rem !important;
+        }
+        
+        .mt-4, .mt-6 {
+          margin-top: 0.2rem !important;
         }
       }
     `;
@@ -1027,13 +1076,13 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               )}
             </Button>
             
-            {/* 🖨️ PRINT BUTTON */}
+            {/* PRINT BUTTON */}
             <Button
               onClick={() => window.print()}
               variant="outline"
               className="gap-2"
             >
-              🖨️ Vytisknout
+              Vytisknout
             </Button>
           </div>
         </motion.div>
@@ -1050,7 +1099,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-gray-900">💰 Které zdroje příjmů jsou nejúspěšnější?</h2>
+              <h2 className="text-gray-900">Které zdroje příjmů jsou nejúspěšnější?</h2>
               <p className="text-gray-600">Detailní analýza každého zdroje příjmů</p>
             </div>
           </div>
@@ -1067,8 +1116,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 }
               }
 
-              // Medaile podle ranku (ne indexu!)
-              const medal = rank === 1 ? '🏆' : rank === 2 ? '🥈' : '🥉';
+              // Ikona podle ranku (ne indexu!)
               const isTopRank = rank === 1;
               
               return (
@@ -1085,7 +1133,11 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{medal}</span>
+                      {isTopRank ? (
+                        <Trophy className="w-6 h-6 text-yellow-500 flex-shrink-0" />
+                      ) : (
+                        <Star className="w-6 h-6 text-gray-400 flex-shrink-0" />
+                      )}
                       <div>
                         <h3 className="text-xl font-bold text-gray-900">
                           #{rank} {stream.name}
@@ -1144,7 +1196,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 <Trophy className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-gray-900">📊 Jaký segment je nejlepší?</h2>
+                <h2 className="text-gray-900">Jaký segment je nejlepší?</h2>
                 <p className="text-gray-600">Podle Modulu 2 - Lekce 2: Prosperuje váš model?</p>
               </div>
             </div>
@@ -1163,8 +1215,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                   }
                 }
 
-                // Medaile podle ranku (ne indexu!)
-                const medal = rank === 1 ? '🏆' : rank === 2 ? '🥈' : '🥉';
+                // Ikona podle ranku (ne indexu!)
                 const isTopRank = rank === 1;
 
                 return (
@@ -1181,7 +1232,11 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <span className="text-3xl">{medal}</span>
+                        {isTopRank ? (
+                          <Trophy className="w-8 h-8 text-yellow-500 flex-shrink-0" />
+                        ) : (
+                          <Star className="w-8 h-8 text-gray-400 flex-shrink-0" />
+                        )}
                         <div>
                           <h3 className="text-gray-900">
                             #{rank} {segment.name}
@@ -1269,7 +1324,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
-                  🎯 Zaměřte se na: {segmentRankings[0].name}
+                  Zaměřte se na: {segmentRankings[0].name}
                 </h2>
                 <p className="text-gray-600">
                   {segmentRankings[0].name === fitSegment 
@@ -1289,21 +1344,21 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 </h3>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
-                    <span className="text-green-600 mt-0.5">✅</span>
+                    <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-gray-700">
                       <span className="font-bold">Nejvyšší potenciál:</span> {Math.round(segmentRankings[0].potentialRevenue).toLocaleString()} Kč/měsíc
                     </p>
                   </div>
                   {segmentRankings[0].name === fitSegment && (
                     <div className="flex items-start gap-2">
-                      <span className="text-green-600 mt-0.5">✅</span>
+                      <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700">
                         <span className="font-bold">Máte FIT data:</span> Víte přesně co potřebují
                       </p>
                     </div>
                   )}
                   <div className="flex items-start gap-2">
-                    <span className="text-green-600 mt-0.5">✅</span>
+                    <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-gray-700">
                       <span className="font-bold">Jasný směr:</span> Zaměřte všechny aktivity na tento segment
                     </p>
@@ -1312,11 +1367,11 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               </div>
 
             <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
-              {/* Jobs */}
+              {/* Důvody návštěvy */}
               <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 sm:p-6 border-2 border-orange-200">
                 <div className="flex items-center gap-2 mb-4">
                   <Target className="w-5 h-5 text-orange-600" />
-                  <h3 className="font-bold text-orange-900">Jobs</h3>
+                  <h3 className="font-bold text-orange-900">Důvody návštěvy</h3>
                 </div>
                 <p className="text-sm text-orange-700 mb-3">Co nejčastěji řeší:</p>
                 <div className="space-y-2">
@@ -1335,11 +1390,11 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 </div>
               </div>
 
-              {/* Pains */}
+              {/* Obavy */}
               <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 sm:p-6 border-2 border-red-200">
                 <div className="flex items-center gap-2 mb-4">
                   <AlertCircle className="w-5 h-5 text-red-600" />
-                  <h3 className="font-bold text-red-900">Pains</h3>
+                  <h3 className="font-bold text-red-900">Obavy</h3>
                 </div>
                 <p className="text-sm text-red-700 mb-3">Co je nejvíc trápí:</p>
                 <div className="space-y-2">
@@ -1358,11 +1413,11 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 </div>
               </div>
 
-              {/* Gains */}
+              {/* Očekávání */}
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 sm:p-6 border-2 border-green-200">
                 <div className="flex items-center gap-2 mb-4">
                   <Star className="w-5 h-5 text-green-600" />
-                  <h3 className="font-bold text-green-900">Gains</h3>
+                  <h3 className="font-bold text-green-900">Očekávání</h3>
                 </div>
                 <p className="text-sm text-green-700 mb-3">Co nejvíc chtějí:</p>
                 <div className="space-y-2">
@@ -1413,7 +1468,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
               <Package className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-gray-900">📦 Produktová analýza</h2>
+              <h2 className="text-gray-900">Produktová analýza</h2>
               <p className="text-gray-600">
                 {segmentRankings.length > 0 
                   ? `Produkty/hodnoty pro TOP segment: ${segmentRankings[0].name}`
@@ -1465,21 +1520,27 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                         : 'bg-red-50 border-red-300'
                     }`}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">
-                          {isTopRank && product.status === 'good' ? '🏆' : product.status === 'good' ? '✅' : product.status === 'warning' ? '⚠️' : '❌'}
-                        </span>
-                        <div>
-                          <h3 className="font-bold text-gray-900">{product.name}</h3>
+                    <div className="flex items-start justify-between mb-2 gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {isTopRank && product.status === 'good' ? (
+                          <Trophy className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                        ) : product.status === 'good' ? (
+                          <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                        ) : product.status === 'warning' ? (
+                          <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                        ) : (
+                          <X className="w-5 h-5 text-red-600 flex-shrink-0" />
+                        )}
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-gray-900 break-words">{product.name}</h3>
                           <p className="text-xs text-gray-600">
                             {(product as any).segment && `Pro segment: ${(product as any).segment}`}
                           </p>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-1">
+                      <div className="flex flex-col items-end gap-1 flex-shrink-0">
                         {isTopRank && product.status === 'good' && (
-                          <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                          <span className="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold whitespace-nowrap">
                             TOP PRODUKT
                           </span>
                         )}
@@ -1494,7 +1555,10 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                       </div>
                     </div>
                     <p className="text-sm text-gray-700 mb-2">{product.reason}</p>
-                    <p className="text-sm font-bold text-gray-900">💡 {product.action}</p>
+                    <p className="text-sm font-bold text-gray-900 flex items-center gap-1">
+                      <Star className="w-3 h-3 inline-block flex-shrink-0" />
+                      {product.action}
+                    </p>
                   </motion.div>
                 );
               })}
@@ -1531,7 +1595,7 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 <Zap className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="mb-0 text-gray-900">✅ Váš akční plán</h2>
+                <h2 className="mb-0 text-gray-900">Váš akční plán</h2>
                 <p className="text-gray-600">Přeneste model do praxe a testujte, co funguje</p>
               </div>
             </div>
@@ -1543,14 +1607,14 @@ export function BusinessActionPlan({ userId, onNavigateToLesson, onBack, refresh
                 variant="outline"
                 className="gap-2 border-orange-500 text-orange-700 hover:bg-orange-50"
               >
-                🖨️ Vytisknout
+                Vytisknout
               </Button>
             )}
           </div>
 
           {actionItems.length === 0 ? (
             <div className="bg-white rounded-xl p-6 text-center border-2 border-orange-200">
-              <p className="text-gray-900 mb-2 font-medium">🚀 Začněte vyplňovat data v kurzu abychom mohli vytvořit váš akční plán!</p>
+              <p className="text-gray-900 mb-2 font-medium">Začněte vyplňovat data v kurzu abychom mohli vytvořit váš akční plán!</p>
               <p className="text-sm text-gray-600">Dokončete FIT Validator (Modul 3) a ProfitCalculator (Modul 2)</p>
             </div>
           ) : (

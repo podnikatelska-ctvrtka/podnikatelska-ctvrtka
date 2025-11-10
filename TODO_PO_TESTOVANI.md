@@ -111,6 +111,29 @@ if (amount === 4999) {
 
 ---
 
+## 6️⃣ **TISK AKČNÍHO PLÁNU - NÍZKÁ PRIORITA**
+
+### **PROBLÉM:**
+- Tisk Akčního plánu (Lekce 16) je černobílý místo barevný
+- SVG ikony v nadpisech sekcí se někde zobrazují, někde ne
+
+### **POZNÁMKY:**
+- Není kritické pro spuštění
+- Uživatelé si mohou udělat screenshot místo tisku
+- Řešit později až bude čas po ostrém spuštění
+
+### **CO ZKOUŠENO:**
+- `print-color-adjust: exact` na různých elementech
+- Skrytí SVG ikon při tisku
+- Různá CSS pravidla pro tisk
+
+### **MOŽNÁ ŘEŠENÍ DO BUDOUCNA:**
+- Nahradit SVG ikony Unicode symboly (✓, ★, ⚡) které fungují v tisku vždy
+- Vytvořit speciální "print view" tlačítko které otevře optimalizovanou verzi
+- Přidat tlačítko "Stáhnout jako PDF" místo klasického tisku
+
+---
+
 ## 🎯 **PŘIPOMÍNKA:**
 
 **Po testování kurzu dnes večer:**
