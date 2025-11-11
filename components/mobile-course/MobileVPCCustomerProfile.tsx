@@ -29,6 +29,7 @@ interface Props {
   onSelectSegment: (segment: string) => void;
   onComplete?: () => void;
   onAchievementUnlocked?: (achievementId: string) => void;
+  isLessonCompleted?: boolean;
 }
 
 function normalizeColor(color: string): string {
@@ -53,7 +54,8 @@ export function MobileVPCCustomerProfile({
   selectedSegment, 
   onSelectSegment, 
   onComplete,
-  onAchievementUnlocked 
+  onAchievementUnlocked,
+  isLessonCompleted = false
 }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const [jobs, setJobs] = useState<Tag[]>([]);
@@ -874,7 +876,7 @@ export function MobileVPCCustomerProfile({
               Zpět
             </Button>
             
-            {gains.length > 0 && onComplete && (
+            {gains.length > 0 && onComplete && !isLessonCompleted && (
               <Button
                 onClick={() => {
                   haptic('success');

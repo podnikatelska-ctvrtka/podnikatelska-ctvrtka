@@ -53,7 +53,7 @@ interface Props {
   onCanvasUpdate: (section: string, items: CanvasItem[]) => void;
   
   /** Dokončené lekce */
-  completedLessons: Set<string>;
+  completedLessons: Set<number>;
   
   /** Callback pro označení lekce jako dokončené */
   onLessonComplete: (lessonId: number) => void;
@@ -78,6 +78,9 @@ interface Props {
   
   /** Callback pro odemknutí achievementu */
   onAchievementUnlocked?: (achievementId: string) => void;
+  
+  /** Callback pro přechod na další modul */
+  onNavigateToNextModule?: () => void;
 }
 
 export function MobileCourseModule1({
@@ -93,11 +96,20 @@ export function MobileCourseModule1({
   onShowWelcomeModal,
   totalLessons = 16,
   onAchievementUnlocked,
+  onNavigateToNextModule,
 }: Props) {
   // Current lesson
   const lesson = moduleData.lessons[currentLessonIndex];
   // ✅ POUŽÍVÁME GLOBÁLNÍ LESSON ID (ne moduleId-lessonId)
   const isCompleted = completedLessons.has(lesson.id);
+  
+  // 🐛 DEBUG: Log completion status
+  console.log('📊 Module 1 - Lesson completion:', {
+    lessonId: lesson.id,
+    lessonTitle: lesson.title,
+    isCompleted,
+    completedLessonsArray: Array.from(completedLessons)
+  });
   
   // Navigation
   const hasPrevious = currentLessonIndex > 0;
@@ -112,17 +124,19 @@ export function MobileCourseModule1({
   };
   
   const handleNext = () => {
-    if (hasNext && onLessonChange) {
-      // 🚨 VALIDACE: Zkontroluj jestli je vyplněno alespoň 1 položka
-      const currentSection = lesson.canvasSection;
-      const currentSectionData = (canvasData as any)[currentSection] || [];
-      
-      if (currentSectionData.length === 0) {
-        haptic('error');
-        alert(`⚠️ Než přejdete dál, vyplňte alespoň 1 položku v sekci:\n\n"${lesson.title}"\n\nToto je klíčová část pro váš podnikatelský model!`);
-        return;
-      }
-      
+    if (!hasNext) return; // Žádná další lekce
+    
+    // 🚨 VALIDACE: Zkontroluj jestli je vyplněno alespoň 1 položka
+    const currentSection = lesson.canvasSection;
+    const currentSectionData = (canvasData as any)[currentSection] || [];
+    
+    if (currentSectionData.length === 0) {
+      haptic('error');
+      alert(`⚠️ Než přejdete dál, vyplňte alespoň 1 položku v sekci:\n\n"${lesson.title}"\n\nToto je klíčová část pro váš podnikatelský model!`);
+      return;
+    }
+    
+    if (onLessonChange) {
       haptic('light');
       onLessonChange(currentLessonIndex + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -312,28 +326,6 @@ export function MobileCourseModule1({
             Označit jako dokončené
           </Button>
         )}
-        
-        {/* 🎉 MODUL COMPLETE CTA - Zobrazí se na poslední lekci pokud je dokončená */}
-        {!hasNext && isCompleted && (
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-center shadow-lg mt-4">
-            <h3 className="text-white text-xl mb-2">
-              🎉 Gratulujeme!
-            </h3>
-            <p className="text-green-50 text-sm mb-4">
-              Dokončili jste {moduleData.title}!
-            </p>
-            <Button
-              onClick={() => {
-                haptic('success');
-                if (onOpenDashboard) onOpenDashboard();
-              }}
-              size="lg"
-              className="w-full bg-white text-green-700 hover:bg-green-50"
-            >
-              Pokračovat na další modul →
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* BOTTOM NAVIGATION */}
@@ -349,14 +341,28 @@ export function MobileCourseModule1({
             Předchozí
           </Button>
           
-          <Button
-            onClick={handleNext}
-            disabled={!hasNext}
-            className="flex-1"
-          >
-            Další
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
+          {/* ✅ POSLEDNÍ LEKCE MODULU: Povolit přechod na další modul */}
+          {!hasNext && isCompleted && onNavigateToNextModule ? (
+            <Button
+              onClick={() => {
+                haptic('success');
+                onNavigateToNextModule();
+              }}
+              className="flex-1 bg-green-600 hover:bg-green-700"
+            >
+              Další modul
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleNext}
+              disabled={!hasNext} 
+              className="flex-1"
+            >
+              Další
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

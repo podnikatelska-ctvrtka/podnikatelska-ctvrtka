@@ -19,6 +19,7 @@ import { haptic } from '../lib/haptics';
 interface MobileBusinessModelGalleryProps {
   onComplete?: () => void;
   onNavigateNext?: () => void;
+  isLessonCompleted?: boolean;
 }
 
 interface BusinessModel {
@@ -191,7 +192,7 @@ const getColorClasses = (color: string) => {
   return colors[color] || colors.global;
 };
 
-export function MobileBusinessModelGallery({ onComplete, onNavigateNext }: MobileBusinessModelGalleryProps) {
+export function MobileBusinessModelGallery({ onComplete, onNavigateNext, isLessonCompleted = false }: MobileBusinessModelGalleryProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('Kavárny');
   const [currentModelIndex, setCurrentModelIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
@@ -404,9 +405,8 @@ export function MobileBusinessModelGallery({ onComplete, onNavigateNext }: Mobil
         </Button>
       </div>
 
-      {/* Complete button (only on last card in last category) */}
-      {selectedCategory === CATEGORIES[CATEGORIES.length - 1].id && 
-       currentModelIndex === filteredModels.length - 1 && (
+      {/* Complete button - SKRÝT když je lekce completed */}
+      {!isLessonCompleted && (
         <div className="pt-4">
           <Button
             size="lg"

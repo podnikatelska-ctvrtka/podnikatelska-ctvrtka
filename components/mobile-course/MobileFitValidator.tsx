@@ -32,6 +32,7 @@ import { MobileFitStepInstructions } from "./MobileFitStepInstructions";
 interface Props {
   userId: string;
   selectedSegment?: string;
+  isLessonCompleted?: boolean;
   onComplete?: (fitScore: number) => void;
   onAchievementUnlocked?: (achievementId: string) => void;
   onNavigateToTool?: (toolId: string) => void;
@@ -53,7 +54,8 @@ interface ValueMapItem {
 
 export function MobileFitValidator({ 
   userId, 
-  selectedSegment, 
+  selectedSegment,
+  isLessonCompleted = false,
   onComplete,
   onAchievementUnlocked,
   onNavigateToTool,
@@ -326,9 +328,21 @@ export function MobileFitValidator({
             allJobs = [...allJobs, ...(row.jobs || [])];
             allPains = [...allPains, ...(row.pains || [])];
             allGains = [...allGains, ...(row.gains || [])];
-            allProducts = [...allProducts, ...(row.products || [])];
-            allPainRelievers = [...allPainRelievers, ...(row.pain_relievers || [])];
-            allGainCreators = [...allGainCreators, ...(row.gain_creators || [])];
+            
+            // ✅ FIX: Convert Value Map arrays (which might be strings or objects) to objects with color
+            const rowProducts = (row.products || []).map((p: any) => 
+              typeof p === 'string' ? { text: p, color: row.segment_color || '#3b82f6' } : p
+            );
+            const rowPainRelievers = (row.pain_relievers || []).map((pr: any) => 
+              typeof pr === 'string' ? { text: pr, color: row.segment_color || '#3b82f6' } : pr
+            );
+            const rowGainCreators = (row.gain_creators || []).map((gc: any) => 
+              typeof gc === 'string' ? { text: gc, color: row.segment_color || '#3b82f6' } : gc
+            );
+            
+            allProducts = [...allProducts, ...rowProducts];
+            allPainRelievers = [...allPainRelievers, ...rowPainRelievers];
+            allGainCreators = [...allGainCreators, ...rowGainCreators];
             
             // Load saved FIT progress (from row without selected_value)
             if (!row.selected_value && row.fit_validation_data) {
@@ -356,9 +370,76 @@ export function MobileFitValidator({
           setJobs(uniqueJobs.map((j, i) => convertToVPCItem(j, i, 'job')));
           setPains(uniquePains.map((p, i) => convertToVPCItem(p, i, 'pain')));
           setGains(uniqueGains.map((g, i) => convertToVPCItem(g, i, 'gain')));
-          setProducts(uniqueProducts);
-          setPainRelievers(uniquePainRelievers);
-          setGainCreators(uniqueGainCreators);
+          
+          // 🚨 FALLBACK: Pokud Value Map data chybí, načti z user_canvas_data!
+          let finalProducts = uniqueProducts;
+          let finalPainRelievers = uniquePainRelievers;
+          let finalGainCreators = uniqueGainCreators;
+          
+          if (uniqueProducts.length === 0 || uniquePainRelievers.length === 0 || uniqueGainCreators.length === 0) {
+            console.log('⚠️ Value Map data chybí v VPC table, načítám fallback z user_canvas_data...');
+            
+            // Načti products z user_canvas_data
+            const { data: productsData } = await supabase
+              .from('user_canvas_data')
+              .select('content')
+              .eq('user_id', userId)
+              .eq('section_key', 'products')
+              .maybeSingle();
+            
+            if (productsData?.content && Array.isArray(productsData.content)) {
+              finalProducts = productsData.content.map((p: any) => ({
+                text: typeof p === 'string' ? p : p.text,
+                color: p.color || '#3b82f6'
+              }));
+              console.log('✅ Loaded products from fallback:', finalProducts.length);
+            }
+            
+            // Načti painRelievers z user_canvas_data
+            const { data: painRelieversData } = await supabase
+              .from('user_canvas_data')
+              .select('content')
+              .eq('user_id', userId)
+              .eq('section_key', 'painRelievers')
+              .maybeSingle();
+            
+            if (painRelieversData?.content && Array.isArray(painRelieversData.content)) {
+              finalPainRelievers = painRelieversData.content.map((pr: any) => ({
+                text: typeof pr === 'string' ? pr : pr.text,
+                color: pr.color || '#ef4444'
+              }));
+              console.log('✅ Loaded painRelievers from fallback:', finalPainRelievers.length);
+            }
+            
+            // Načti gainCreators z user_canvas_data
+            const { data: gainCreatorsData } = await supabase
+              .from('user_canvas_data')
+              .select('content')
+              .eq('user_id', userId)
+              .eq('section_key', 'gainCreators')
+              .maybeSingle();
+            
+            if (gainCreatorsData?.content && Array.isArray(gainCreatorsData.content)) {
+              finalGainCreators = gainCreatorsData.content.map((gc: any) => ({
+                text: typeof gc === 'string' ? gc : gc.text,
+                color: gc.color || '#10b981'
+              }));
+              console.log('✅ Loaded gainCreators from fallback:', finalGainCreators.length);
+            }
+          }
+          
+          setProducts(finalProducts);
+          setPainRelievers(finalPainRelievers);
+          setGainCreators(finalGainCreators);
+          
+          console.log('📊 FIT VALIDATOR - Loaded data:', {
+            jobs: uniqueJobs.length,
+            pains: uniquePains.length,
+            gains: uniqueGains.length,
+            products: finalProducts.length,
+            painRelievers: finalPainRelievers.length,
+            gainCreators: finalGainCreators.length
+          });
           
           // Restore saved progress
           if (savedProgress) {
@@ -985,15 +1066,18 @@ export function MobileFitValidator({
               Celkový počet respondentů:
             </label>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={totalRespondents}
               onChange={(e) => {
-                const val = parseInt(e.target.value) || 0;
-                setTotalRespondents(Math.max(1, val));
+                const val = e.target.value.replace(/[^0-9]/g, '');
+                const num = val === '' ? 1 : parseInt(val);
+                setTotalRespondents(Math.max(1, num));
                 haptic('light');
               }}
+              onFocus={(e) => e.target.select()}
               className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg text-lg no-spinner"
-              min="1"
             />
             <p className="text-xs text-blue-700 mt-2">
               💡 Kolik lidí jste se zeptali celkem?
@@ -1012,12 +1096,18 @@ export function MobileFitValidator({
                   <p className="text-sm text-red-900 mb-2">{pain.text}</p>
                   <div className="flex items-center gap-3">
                     <input
-                      type="number"
-                      value={pain.count || 0}
-                      onChange={(e) => updateCount('pains', pain.id, parseInt(e.target.value) || 0)}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={pain.count === undefined || pain.count === null ? '' : pain.count}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        const num = val === '' ? 0 : parseInt(val);
+                        updateCount('pains', pain.id, Math.max(0, Math.min(totalRespondents, num)));
+                      }}
+                      onFocus={(e) => e.target.select()}
+                      placeholder="0"
                       className="w-20 px-3 py-2 border-2 border-red-300 rounded-lg text-center no-spinner"
-                      min="0"
-                      max={totalRespondents}
                     />
                     <div className="flex-1">
                       <div className="text-sm text-red-700">
@@ -1048,12 +1138,18 @@ export function MobileFitValidator({
                   <p className="text-sm text-green-900 mb-2">{gain.text}</p>
                   <div className="flex items-center gap-3">
                     <input
-                      type="number"
-                      value={gain.count || 0}
-                      onChange={(e) => updateCount('gains', gain.id, parseInt(e.target.value) || 0)}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={gain.count === undefined || gain.count === null ? '' : gain.count}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        const num = val === '' ? 0 : parseInt(val);
+                        updateCount('gains', gain.id, Math.max(0, Math.min(totalRespondents, num)));
+                      }}
+                      onFocus={(e) => e.target.select()}
+                      placeholder="0"
                       className="w-20 px-3 py-2 border-2 border-green-300 rounded-lg text-center no-spinner"
-                      min="0"
-                      max={totalRespondents}
                     />
                     <div className="flex-1">
                       <div className="text-sm text-green-700">
@@ -1084,12 +1180,18 @@ export function MobileFitValidator({
                   <p className="text-sm text-yellow-900 mb-2">{job.text}</p>
                   <div className="flex items-center gap-3">
                     <input
-                      type="number"
-                      value={job.count || 0}
-                      onChange={(e) => updateCount('jobs', job.id, parseInt(e.target.value) || 0)}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={job.count === undefined || job.count === null ? '' : job.count}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        const num = val === '' ? 0 : parseInt(val);
+                        updateCount('jobs', job.id, Math.max(0, Math.min(totalRespondents, num)));
+                      }}
+                      onFocus={(e) => e.target.select()}
+                      placeholder="0"
                       className="w-20 px-3 py-2 border-2 border-yellow-300 rounded-lg text-center no-spinner"
-                      min="0"
-                      max={totalRespondents}
                     />
                     <div className="flex-1">
                       <div className="text-sm text-yellow-700">
@@ -1393,35 +1495,56 @@ export function MobileFitValidator({
                 <ArrowLeft className="w-4 h-4" />
                 Zpět
               </Button>
+              {/* 🔄 Validovat znovu button */}
               <Button
                 onClick={() => {
-                  haptic('success');
-                  
-                  // 🏆 ACHIEVEMENT: FIT Score achievements (stejně jako desktop)
-                  const fitScore = fitScoreData.fitScore;
-                  if (onAchievementUnlocked) {
-                    if (fitScore >= 70) {
-                      onAchievementUnlocked('fit-70-percent');
-                    }
-                    if (fitScore >= 80) {
-                      onAchievementUnlocked('product-fit-master');
-                    }
-                    if (fitScore >= 90) {
-                      onAchievementUnlocked('fit-90-percent');
+                  haptic('medium');
+                  setCurrentStep(1);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  toast.info('🔄 Začínáme znovu');
+                }}
+                variant="outline"
+                className={isLessonCompleted ? "flex-1 flex items-center gap-2" : "flex items-center gap-2"}
+              >
+                <Target className="w-4 h-4" />
+                Znovu
+              </Button>
+              
+              {/* ✅ Skrýt "Dokončit lekci" když je lekce completed */}
+              {!isLessonCompleted && (
+                <Button
+                  onClick={() => {
+                    haptic('success');
+                    
+                    // 🏆 ACHIEVEMENT: FIT Score achievements (stejně jako desktop)
+                    const fitScore = fitScoreData.fitScore;
+                    if (onAchievementUnlocked) {
+                      if (fitScore >= 70) {
+                        onAchievementUnlocked('fit-70-percent');
+                      }
+                      if (fitScore >= 80) {
+                        onAchievementUnlocked('product-fit-master');
+                      }
+                      if (fitScore >= 90) {
+                        onAchievementUnlocked('fit-90-percent');
+                      }
+                      
+                      // 🎯 ODEMKNI AKČNÍ PLÁN!
+                      onAchievementUnlocked('action-plan-unlocked');
+                      
+                      // 🎓 Module 3 complete achievement (lekce 16 dokončena)
+                      onAchievementUnlocked('module-3-complete');
                     }
                     
-                    // 🎓 Module 3 complete achievement (lekce 16 dokončena)
-                    onAchievementUnlocked('module-3-complete');
-                  }
-                  
-                  if (onComplete) onComplete(fitScore);
-                  toast.success(`✅ FIT Score: ${fitScore}%`);
-                }}
-                className="flex-1 flex items-center gap-2 justify-center bg-green-600 hover:bg-green-700"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                Dokončit lekci
-              </Button>
+                    if (onComplete) onComplete(fitScore);
+                    toast.success(`✅ FIT Score: ${fitScore}%`);
+                  }}
+                  className="flex-1 flex items-center gap-2 justify-center bg-green-600 hover:bg-green-700"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  Dokončit lekci
+                </Button>
+              )}
             </div>
             
             {/* Akční plán CTA - zobrazit po dokončení validace */}

@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { haptic } from "../../lib/haptics";
-import { ACHIEVEMENTS, calculateTotalPoints } from "../../lib/achievements";
+import { ACHIEVEMENTS, calculateTotalPoints, scanAndUnlockMissedAchievements, loadUnlockedAchievementsFromDB } from "../../lib/achievements";
 import type { Achievement } from "../../lib/achievements";
 
 interface Module {
@@ -39,7 +39,7 @@ interface Props {
   modules: Module[];
   
   /** Dokončené lekce (Set of lesson IDs) */
-  completedLessons: Set<string>;
+  completedLessons: Set<number>;
   
   /** Aktuální modul ID */
   currentModuleId: number;
@@ -55,6 +55,9 @@ interface Props {
   
   /** Odemčená achievements */
   unlockedAchievements?: Set<string>;
+  
+  /** Callback pro aktualizaci achievements (po auto-scan) */
+  onUpdateAchievements?: (achievements: Set<string>) => void;
   
   /** Callback pro otevření sidebaru */
   onOpenSidebar?: () => void;
@@ -72,6 +75,7 @@ export function MobileCourseDashboard({
   onContinue,
   onSelectModule,
   unlockedAchievements = new Set(),
+  onUpdateAchievements,
   onOpenSidebar,
   onShowWelcomeModal,
 }: Props) {
@@ -114,6 +118,79 @@ export function MobileCourseDashboard({
     .filter((a): a is Achievement => Boolean(a))
     .slice(-3)
     .reverse();
+
+  // 🔄 AUTO-SCAN ACHIEVEMENTS - když se otevře dashboard
+  useEffect(() => {
+    if (!userId || !onUpdateAchievements) return;
+    
+    console.log('🔍 [MOBILE] AUTO-SCAN STARTED for userId:', userId);
+    console.log('📊 [MOBILE] Currently unlocked achievements:', unlockedAchievements.size);
+    
+    // Auto-scan in background
+    (async () => {
+      try {
+        const { newlyUnlocked, totalChecked } = await scanAndUnlockMissedAchievements(userId, unlockedAchievements);
+        
+        console.log(`📋 [MOBILE] AUTO-SCAN COMPLETE: Checked ${totalChecked} achievements, found ${newlyUnlocked.length} new`);
+        
+        if (newlyUnlocked.length > 0) {
+          console.log('🎉 [MOBILE] Newly unlocked achievements:', newlyUnlocked);
+          
+          // ✅ Reload achievements FROM SUPABASE
+          const updated = await loadUnlockedAchievementsFromDB(userId);
+          onUpdateAchievements(updated);
+          
+          console.log('✅ [MOBILE] Achievements updated in parent component');
+        }
+        
+        // 🛠️ MASTER OF TOOLS: Check if all tools used (manual check because it depends on other achievements)
+        const currentUnlocked = await loadUnlockedAchievementsFromDB(userId);
+        const hasValidator = currentUnlocked.has('validator-used');
+        const hasCalculator = currentUnlocked.has('profit-calculated');
+        const hasVPC = currentUnlocked.has('customer-profile-complete') || currentUnlocked.has('value-map-complete');
+        const hasActionPlan = currentUnlocked.has('action-plan-unlocked');
+        
+        if (!currentUnlocked.has('master-of-tools') && hasValidator && hasCalculator && hasVPC && hasActionPlan) {
+          console.log('🛠️ [MOBILE] All tools used! Triggering master-of-tools achievement...');
+          
+          const { unlockAchievement } = await import('../../lib/achievements');
+          await unlockAchievement(userId, 'master-of-tools');
+          
+          // Reload again after triggering master-of-tools
+          const updated = await loadUnlockedAchievementsFromDB(userId);
+          if (onUpdateAchievements) {
+            onUpdateAchievements(updated);
+          }
+          
+          console.log('✅ [MOBILE] master-of-tools achievement unlocked!');
+        }
+        
+        // 💫 ULTIMATE MASTER: Final check (after all other achievements)
+        const finalUnlocked = await loadUnlockedAchievementsFromDB(userId);
+        
+        const totalAchievements = 20; // Total including ultimate-master
+        const achievementsWithoutUltimate = totalAchievements - 1; // 19
+        const unlockedWithoutUltimate = Array.from(finalUnlocked).filter(id => id !== 'ultimate-master').length;
+        
+        if (!finalUnlocked.has('ultimate-master') && unlockedWithoutUltimate >= achievementsWithoutUltimate) {
+          console.log('💫 [MOBILE] All achievements unlocked! Triggering ultimate-master...');
+          
+          const { unlockAchievement } = await import('../../lib/achievements');
+          await unlockAchievement(userId, 'ultimate-master');
+          
+          // Final reload
+          const updated = await loadUnlockedAchievementsFromDB(userId);
+          if (onUpdateAchievements) {
+            onUpdateAchievements(updated);
+          }
+          
+          console.log('✅ [MOBILE] ultimate-master achievement unlocked!');
+        }
+      } catch (error) {
+        console.error('❌ [MOBILE] Auto-scan error:', error);
+      }
+    })();
+  }, [userId]); // Spustí se jen při mount
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">

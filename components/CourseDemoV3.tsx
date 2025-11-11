@@ -1279,19 +1279,6 @@ export function CourseDemoV3() {
   const isLastLesson = safeLessonIndex === currentModule.lessons.length - 1;
   const moduleCompleted = completedLessons.size === currentModule.lessons.length;
   const totalLessons = allModules.reduce((sum, m) => sum + m.lessons.length, 0);
-  
-  // 📱 MOBILE: Convert Set<number> to Set<string> for mobile components
-  const completedLessonsStrings = new Set(
-    Array.from(completedLessons).map(id => {
-      // Find which module this lesson belongs to
-      for (const module of allModules) {
-        if (module.lessons.some(l => l.id === id)) {
-          return `${module.id}-${id}`;
-        }
-      }
-      return `1-${id}`; // Fallback to module 1
-    })
-  );
 
   // 🔥 SWIPE NAVIGATION - Pomocné funkce
   const canGoPreviousLesson = currentModuleNumber > 1 || currentLessonIndex > 0;
@@ -1333,14 +1320,37 @@ export function CourseDemoV3() {
     const handleOpenCanvasSection = (e: any) => {
       const { lessonId, solutionTitle } = e.detail;
       
+      // 🔄 MAPPING: STRING lessonId → NUMBER lesson.id
+      // ProblemSolver posílá 'module1-lesson1' ale lekce mají číselné ID (1, 2, 3...)
+      const lessonIdMap: Record<string, number> = {
+        'module1-lesson1': 1,  // Zákaznické segmenty
+        'module1-lesson2': 2,  // Hodnotová nabídka
+        'module1-lesson3': 3,  // Kanály
+        'module1-lesson4': 4,  // Vztahy se zákazníky
+        'module1-lesson5': 5,  // Zdroje příjmů
+        'module1-lesson6': 6,  // Klíčové zdroje
+        'module1-lesson7': 7,  // Klíčové činnosti
+        'module1-lesson8': 8,  // Klíčová partnerství
+        'module1-lesson9': 9   // Náklady
+      };
+      
+      const targetLessonId = lessonIdMap[lessonId];
+      if (!targetLessonId) {
+        console.error('❌ Unknown lessonId:', lessonId);
+        return;
+      }
+      
       // Switch to Module 1
       setCurrentModuleNumber(1);
       setShowMainDashboard(false);
       
-      // Find lesson index by ID
-      const lessonIndex = MODULE_1.lessons.findIndex((l: any) => l.id === lessonId);
+      // Find lesson index by ID (number)
+      const lessonIndex = MODULE_1.lessons.findIndex((l: any) => l.id === targetLessonId);
       if (lessonIndex >= 0) {
         setCurrentLessonIndex(lessonIndex);
+        console.log(`✅ Navigating to lesson ${targetLessonId} (index ${lessonIndex}): ${MODULE_1.lessons[lessonIndex].title}`);
+      } else {
+        console.error('❌ Lesson not found:', targetLessonId);
       }
       
       // Toast removed - zobrazuje se už v ProblemSolver
@@ -1591,8 +1601,15 @@ export function CourseDemoV3() {
       console.log('🎉 NEW ACHIEVEMENT UNLOCKED:', achievementId);
       const achievement = getAchievement(achievementId);
       if (achievement) {
-        // ✅ ADD TO VISIBLE STACK (zobrazení okamžitě!)
-        setVisibleAchievements(prev => [...prev, achievement]);
+        // ✅ ADD TO VISIBLE STACK (zobrazení okamžitě!) - POUZE pokud tam ještě není
+        setVisibleAchievements(prev => {
+          // Zkontroluj jestli achievement už není v listu
+          if (prev.some(a => a.id === achievementId)) {
+            console.log('⏭️ Achievement already visible, skipping:', achievementId);
+            return prev;
+          }
+          return [...prev, achievement];
+        });
         
         // 🔥 SHOW TOAST NOTIFICATION
         toast.success(`🎉 ${achievement.title}`, {
@@ -2018,8 +2035,13 @@ export function CourseDemoV3() {
     if (lessonId === 9) {
       const module1Lessons = [1, 2, 3, 4, 5, 6, 7, 8, 9];
       const isModule1Complete = module1Lessons.every(l => newCompleted.has(l));
-      if (isModule1Complete && !unlockedAchievements.has('module-1-complete')) {
-        triggerAchievement('module-1-complete');
+      if (isModule1Complete) {
+        // 🎉 KONFETTI + ACHIEVEMENT
+        celebrateModuleComplete();
+        
+        if (!unlockedAchievements.has('module-1-complete')) {
+          triggerAchievement('module-1-complete');
+        }
       }
     }
     
@@ -2027,8 +2049,20 @@ export function CourseDemoV3() {
     if (lessonId === 13) {
       const module2Lessons = [10, 11, 12, 13];
       const isModule2Complete = module2Lessons.every(l => newCompleted.has(l));
-      if (isModule2Complete && !unlockedAchievements.has('module-2-complete')) {
-        triggerAchievement('module-2-complete');
+      if (isModule2Complete) {
+        // 🎉 KONFETTI + ACHIEVEMENT
+        celebrateModuleComplete();
+        
+        if (!unlockedAchievements.has('module-2-complete')) {
+          triggerAchievement('module-2-complete');
+        }
+        
+        // 🎉 AUTOMATICKY PŘEJÍT NA MODUL 3!
+        setTimeout(() => {
+          console.log('✅ Navigating to Module 3...');
+          setCurrentModuleNumber(3);
+          setCurrentLessonIndex(0);
+        }, 1000); // Delší timeout aby achievement stihlo vyjet
       }
     }
     
@@ -2036,8 +2070,14 @@ export function CourseDemoV3() {
     if (lessonId === 16) {
       const module3Lessons = [14, 15, 16];
       const isModule3Complete = module3Lessons.every(l => newCompleted.has(l));
-      if (isModule3Complete && !unlockedAchievements.has('module-3-complete')) {
-        triggerAchievement('module-3-complete');
+      if (isModule3Complete) {
+        // 🎉🎉 MEGA KONFETTI! (poslední modul)
+        celebrateModuleComplete();
+        setTimeout(() => celebrateModuleComplete(), 500); // Double konfetti!
+        
+        if (!unlockedAchievements.has('module-3-complete')) {
+          triggerAchievement('module-3-complete');
+        }
       }
     }
   };
@@ -2074,6 +2114,17 @@ export function CourseDemoV3() {
       
       if (!isModule1Complete) {
         toast.error("🔒 Nejprve dokončete Modul 1 pro odemčení dalších modulů!");
+        return;
+      }
+    }
+    
+    // Check if trying to access Module 3 without completing Module 2
+    if (moduleId === 3) {
+      const module2 = allModules.find(m => m.id === 2);
+      const isModule2Complete = module2 ? module2.lessons.every(l => completedLessons.has(l.id)) : false;
+      
+      if (!isModule2Complete) {
+        toast.error("🔒 Nejprve dokončete Modul 2 pro odemčení Modulu 3!");
         return;
       }
     }
@@ -2197,12 +2248,12 @@ export function CourseDemoV3() {
         {/* 🎉 ACHIEVEMENT NOTIFICATIONS - VERTICAL STACK */}
         {visibleAchievements.map((achievement, index) => (
           <AchievementNotification 
-            key={achievement.id}
+            key={`action-plan-${achievement.id}-${index}`}
             achievement={achievement}
             index={index}
             onClose={() => {
-              // Remove tento konkrétní achievement z visible listu
-              setVisibleAchievements(prev => prev.filter(a => a.id !== achievement.id));
+              // Remove tento konkrétní achievement z visible listu (by index for safety)
+              setVisibleAchievements(prev => prev.filter((_, i) => i !== index));
             }}
           />
         ))}
@@ -2389,24 +2440,15 @@ export function CourseDemoV3() {
       // Achievements are checked automatically via handleCheckAchievements
     };
     
-    // Convert completedLessons to string format for mobile components
-    const completedLessonsStrings = new Set(
-      Array.from(completedLessons).map(id => {
-        // Find which module this lesson belongs to
-        for (const module of allModules) {
-          const lesson = module.lessons.find(l => l.id === id);
-          if (lesson) {
-            return `${module.id}-${id}`;
-          }
-        }
-        return '';
-      }).filter(Boolean)
-    );
+    // ✅ FIX: Mobile components používají PŘÍMO completedLessons (Set<number>)
+    // Původně se konvertovaly na string formát "module-id-lesson-id", ale to způsobovalo
+    // bug kde completedLessons.has(lesson.id) vracelo false (porovnávalo string vs number)
     
     return (
       <div className="min-h-screen bg-gray-50 overflow-x-hidden">
         <Toaster position="top-right" />
-        <AutosaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
+        {/* AutosaveIndicator SKRYTÝ NA MOBILU - překrývá obsah */}
+        <AutosaveIndicator isSaving={isSaving} lastSaved={lastSaved} show={false} />
         
         {/* 👋 WELCOME MODAL */}
         <WelcomeModal
@@ -2419,11 +2461,12 @@ export function CourseDemoV3() {
         {/* ACHIEVEMENT NOTIFICATIONS */}
         {visibleAchievements.map((achievement, index) => (
           <AchievementNotification
-            key={achievement.id}
+            key={`mobile-${achievement.id}-${index}`}
             achievement={achievement}
             index={index}
             onClose={() => {
-              setVisibleAchievements(prev => prev.filter(a => a.id !== achievement.id));
+              // Remove tento konkrétní achievement z visible listu (by index for safety)
+              setVisibleAchievements(prev => prev.filter((_, i) => i !== index));
             }}
           />
         ))}
@@ -2435,7 +2478,7 @@ export function CourseDemoV3() {
           modules={allModules}
           currentModuleId={currentModuleNumber}
           currentLessonIndex={currentLessonIndex}
-          completedLessons={completedLessonsStrings}
+          completedLessons={completedLessons}
           onSelectLesson={(moduleId, lessonIndex) => {
             setCurrentModuleNumber(moduleId);
             setCurrentLessonIndex(lessonIndex);
@@ -2464,10 +2507,26 @@ export function CourseDemoV3() {
           <MobileCourseDashboard
             userId={userData?.id || 'guest'}
             modules={allModules}
-            completedLessons={completedLessonsStrings}
+            completedLessons={completedLessons}
             currentModuleId={currentModuleNumber}
             currentLessonIndex={currentLessonIndex}
             onContinue={() => {
+              // 🎯 NAJDI PRVNÍ NEDOKONČENOU LEKCI
+              let foundIncomplete = false;
+              for (const module of allModules) {
+                for (let i = 0; i < module.lessons.length; i++) {
+                  const lesson = module.lessons[i];
+                  if (!completedLessons.has(lesson.id)) {
+                    // Našli jsme první nedokončenou lekci
+                    setCurrentModuleNumber(module.id);
+                    setCurrentLessonIndex(i);
+                    foundIncomplete = true;
+                    break;
+                  }
+                }
+                if (foundIncomplete) break;
+              }
+              
               setShowMainDashboard(false);
               setShowTool(null); // 🔧 VYNULUJ NÁSTROJ při pokračování
             }}
@@ -2478,6 +2537,7 @@ export function CourseDemoV3() {
               setShowTool(null); // 🔧 VYNULUJ NÁSTROJ při výběru modulu
             }}
             unlockedAchievements={unlockedAchievements}
+            onUpdateAchievements={setUnlockedAchievements}
             onOpenSidebar={() => setShowMobileSidebar(true)}
             onShowWelcomeModal={handleOpenHelp}
           />
@@ -2499,7 +2559,7 @@ export function CourseDemoV3() {
               costs: canvasSections.find(s => s.id === 'costs')?.items || [],
             }}
             onCanvasUpdate={handleMobileCanvasUpdate}
-            completedLessons={completedLessonsStrings}
+            completedLessons={completedLessons}
             onLessonComplete={handleMobileLessonComplete}
             currentLessonIndex={currentLessonIndex}
             onLessonChange={(index) => setCurrentLessonIndex(index)}
@@ -2511,6 +2571,13 @@ export function CourseDemoV3() {
             onShowWelcomeModal={handleOpenHelp}
             totalLessons={totalLessons}
             onAchievementUnlocked={triggerAchievement}
+            onNavigateToNextModule={() => {
+              // ✅ Module 1 → Module 2
+              setCurrentModuleNumber(2);
+              setCurrentLessonIndex(0);
+              toast.success('🎉 Pokračujeme do dalšího modulu!');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
         
@@ -2531,7 +2598,7 @@ export function CourseDemoV3() {
               costs: canvasSections.find(s => s.id === 'costs')?.items || [],
             }}
             onCanvasUpdate={handleMobileCanvasUpdate}
-            completedLessons={completedLessonsStrings}
+            completedLessons={completedLessons}
             onLessonComplete={handleMobileLessonComplete}
             currentLessonIndex={currentLessonIndex}
             onLessonChange={(index) => setCurrentLessonIndex(index)}
@@ -2543,6 +2610,13 @@ export function CourseDemoV3() {
             onShowWelcomeModal={handleOpenHelp}
             totalLessons={totalLessons}
             onAchievementUnlocked={triggerAchievement}
+            onNavigateToNextModule={() => {
+              // ✅ Module 2 → Module 3
+              setCurrentModuleNumber(3);
+              setCurrentLessonIndex(0);
+              toast.success('🎉 Pokračujeme do dalšího modulu!');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
         
@@ -2555,7 +2629,7 @@ export function CourseDemoV3() {
               value: vpcValueData,
             }}
             onVPCUpdate={handleVPCUpdate}
-            completedLessons={completedLessonsStrings}
+            completedLessons={completedLessons}
             onLessonComplete={handleMobileLessonComplete}
             currentLessonIndex={currentLessonIndex}
             onLessonChange={(index) => setCurrentLessonIndex(index)}
@@ -3484,12 +3558,12 @@ export function CourseDemoV3() {
         {/* 🎉 ACHIEVEMENT NOTIFICATIONS - VERTICAL STACK */}
         {visibleAchievements.map((achievement, index) => (
           <AchievementNotification 
-            key={achievement.id}
+            key={`desktop-${achievement.id}-${index}`}
             achievement={achievement}
             index={index}
             onClose={() => {
-              // Remove tento konkrétní achievement z visible listu
-              setVisibleAchievements(prev => prev.filter(a => a.id !== achievement.id));
+              // Remove tento konkrétní achievement z visible listu (by index for safety)
+              setVisibleAchievements(prev => prev.filter((_, i) => i !== index));
             }}
           />
         ))}

@@ -320,6 +320,11 @@ export function MobileBusinessActionPlan({
         setLoading(false);
         return;
       }
+      
+      // 🏆 ACHIEVEMENT: Akční plán odemknut (triggeruje se HNED při načtení dat)
+      if (onAchievementUnlocked) {
+        onAchievementUnlocked('action-plan-unlocked');
+      }
 
       const fitData = vpcWithFit.fit_validation_data;
       const jobs = fitData.jobs || [];

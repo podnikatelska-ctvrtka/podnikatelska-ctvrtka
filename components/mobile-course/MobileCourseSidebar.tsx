@@ -48,7 +48,7 @@ interface Props {
   currentLessonIndex: number;
   
   /** Dokončené lekce (Set of lesson IDs) */
-  completedLessons: Set<string>;
+  completedLessons: Set<number>;
   
   /** Callback pro výběr lekce */
   onSelectLesson: (moduleId: number, lessonIndex: number) => void;
@@ -109,8 +109,9 @@ export function MobileCourseSidebar({
     const previousModule = modules.find(m => m.id === moduleId - 1);
     if (!previousModule) return false;
     
+    // ✅ FIX: Používáme PŘÍMO lesson.id (number), ne string formát
     return previousModule.lessons.every(l => 
-      completedLessons.has(`${previousModule.id}-${l.id}`)
+      completedLessons.has(l.id)
     );
   };
   
@@ -284,8 +285,9 @@ export function MobileCourseSidebar({
             {modules.map((module) => {
               const isExpanded = expandedModules.has(module.id);
               const isUnlocked = isModuleUnlocked(module.id);
+              // ✅ FIX: Používáme PŘÍMO lesson.id (number), ne string formát
               const completedInModule = module.lessons.filter(l => 
-                completedLessons.has(`${module.id}-${l.id}`)
+                completedLessons.has(l.id)
               ).length;
               const isModuleComplete = completedInModule === module.lessons.length;
 
@@ -340,11 +342,11 @@ export function MobileCourseSidebar({
                   {isExpanded && isUnlocked && (
                     <div className="bg-gray-50 border-t border-gray-200">
                       {module.lessons.map((lesson, lessonIndex) => {
-                        const lessonKey = `${module.id}-${lesson.id}`;
-                        const isCompleted = completedLessons.has(lessonKey);
+                        // ✅ FIX: Používáme PŘÍMO lesson.id (number), ne string formát
+                        const isCompleted = completedLessons.has(lesson.id);
                         // 🔧 FIX: Lekce je aktivní POUZE když není aktivní nástroj
                         const isActive = currentModuleId === module.id && currentLessonIndex === lessonIndex && !currentTool;
-                        const isLocked = lessonIndex > 0 && !completedLessons.has(`${module.id}-${module.lessons[lessonIndex - 1].id}`);
+                        const isLocked = lessonIndex > 0 && !completedLessons.has(module.lessons[lessonIndex - 1].id);
 
                         return (
                           <button

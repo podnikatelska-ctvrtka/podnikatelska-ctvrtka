@@ -350,7 +350,24 @@ export async function scanAndUnlockMissedAchievements(
           const hasCanvas = canvasData?.some(d => d.content?.length > 0);
           const hasRevenue = canvasData?.find(d => d.section_key === 'revenue')?.content?.length > 0;
           const hasCosts = canvasData?.find(d => d.section_key === 'costs')?.content?.length > 0;
-          const hasVPC = canvasData?.some(d => d.section_key?.startsWith('vpc_'));
+          
+          // ✅ FIX: Check VPC data in value_proposition_canvas table (not user_canvas_data!)
+          const { data: vpcData } = await supabase
+            .from('value_proposition_canvas')
+            .select('id')
+            .eq('user_id', userId)
+            .limit(1);
+          
+          const hasVPC = vpcData && vpcData.length > 0;
+          
+          console.log('🔍 [SCAN] master-of-tools check:', {
+            hasCanvas,
+            hasRevenue,
+            hasCosts,
+            hasVPC,
+            vpcCount: vpcData?.length || 0
+          });
+          
           shouldUnlock = hasCanvas && hasRevenue && hasCosts && hasVPC;
           break;
         }
@@ -514,8 +531,13 @@ export async function unlockAchievement(userId: string, achievementId: string): 
       });
     
     if (error) {
-      console.error(`❌ SUPABASE ERROR - Failed to save achievement "${achievementId}" for user ${userId}:`, error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
+      // ✅ 409 Conflict = achievement already exists (race condition) - OK!
+      if (error.code === '23505') {
+        console.log(`⏭️ Achievement "${achievementId}" already exists in DB (race condition prevented)`);
+      } else {
+        console.error(`❌ SUPABASE ERROR - Failed to save achievement "${achievementId}" for user ${userId}:`, error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+      }
       // ⚠️ Continue anyway - achievement is saved in localStorage
     } else {
       console.log(`✅ Successfully saved achievement "${achievementId}" to Supabase`);

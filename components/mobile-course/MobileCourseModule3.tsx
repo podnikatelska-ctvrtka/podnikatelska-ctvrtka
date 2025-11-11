@@ -13,6 +13,7 @@ import { useState } from "react";
 import { CheckCircle2, Menu, Home, ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { Button } from "../ui/button";
 import { haptic } from "../../lib/haptics";
+import { toast } from "sonner";
 import { MobileVPCCustomerProfile } from "./MobileVPCCustomerProfile";
 import { MobileVPCValueMap } from "./MobileVPCValueMap";
 import { MobileFitValidator } from "./MobileFitValidator";
@@ -45,7 +46,7 @@ interface Props {
   onVPCUpdate: (section: 'customer' | 'value', data: any) => void;
   
   /** Dokončené lekce */
-  completedLessons: Set<string>;
+  completedLessons: Set<number>;
   
   /** Callback pro označení lekce jako dokončené */
   onLessonComplete: (lessonId: number) => void;
@@ -129,7 +130,9 @@ export function MobileCourseModule3({
   
   // Navigation
   const hasPrevious = currentLessonIndex > 0;
-  const hasNext = currentLessonIndex < moduleData.lessons.length - 1;
+  // ✅ BLOKACE: Další lekci lze otevřít JEN pokud je současná lekce dokončená!
+  const hasNextLesson = currentLessonIndex < moduleData.lessons.length - 1;
+  const hasNext = hasNextLesson && isCompleted;
   
   const handlePrevious = () => {
     if (hasPrevious && onLessonChange) {
@@ -140,28 +143,11 @@ export function MobileCourseModule3({
   };
   
   const handleNext = () => {
-    if (hasNext && onLessonChange) {
-      // 🚨 VALIDACE: Zkontroluj jestli lekce obsahuje VPC canvas a jestli je vyplněno
-      const section = lesson.canvasSection;
-      
-      if (section === 'vpc-customer' || section === 'vpc-value') {
-        // Pro VPC lekce vyžaduj dokončení přes tlačítko "Dokončit" v komponentě
-        if (!isCompleted) {
-          haptic('error');
-          alert(`⚠️ Než přejdete dál, dokončete vyplnění této lekce pomocí tlačítka "Dokončit" uvnitř nástroje.`);
-          return;
-        }
-      }
-      
+    if (hasNextLesson && onLessonChange) {
       haptic('light');
       onLessonChange(currentLessonIndex + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
-  
-  const handleComplete = () => {
-    haptic('success');
-    onLessonComplete(lesson.id);
   };
   
   // Render VPC content based on lesson
@@ -177,6 +163,7 @@ export function MobileCourseModule3({
           onSelectSegment={(seg) => {
             if (onSelectSegment) onSelectSegment(seg);
           }}
+          isLessonCompleted={isCompleted}
           onComplete={async () => {
             // 🎉 Achievement za kompletní zákaznický profil
             if (onAchievementUnlocked) {
@@ -210,6 +197,7 @@ export function MobileCourseModule3({
           onSelectValue={(val) => {
             if (onSelectValue) onSelectValue(val);
           }}
+          isLessonCompleted={isCompleted}
           onComplete={async () => {
             // 🎉 Achievement za kompletní hodnotovou mapu
             if (onAchievementUnlocked) {
@@ -239,6 +227,7 @@ export function MobileCourseModule3({
         <MobileFitValidator
           userId={userData?.id || "guest"}
           selectedSegment={selectedSegment || ""}
+          isLessonCompleted={isCompleted}
           onComplete={async (fitScore) => {
             if (onLessonComplete) {
               onLessonComplete(16);
@@ -345,43 +334,33 @@ export function MobileCourseModule3({
 
         {/* VPC CONTENT (Canvas nebo FIT Validator) */}
         {renderVPCContent()}
-
-        {/* COMPLETE BUTTON */}
-        {!isCompleted && (
-          <Button
-            onClick={handleComplete}
-            className="w-full"
-            size="lg"
-          >
-            <CheckCircle2 className="w-5 h-5 mr-2" />
-            Označit jako dokončené
-          </Button>
-        )}
       </div>
 
-      {/* BOTTOM NAVIGATION */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
-        <div className="flex gap-3">
-          <Button
-            onClick={handlePrevious}
-            disabled={!hasPrevious}
-            variant="outline"
-            className="flex-1"
-          >
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Předchozí
-          </Button>
-          
-          <Button
-            onClick={handleNext}
-            disabled={!hasNext}
-            className="flex-1"
-          >
-            Další
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
+      {/* BOTTOM NAVIGATION - SKRÝT pro lekci 16 (FIT Validator má vlastní navigaci) */}
+      {lesson.id !== 16 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+          <div className="flex gap-3">
+            <Button
+              onClick={handlePrevious}
+              disabled={!hasPrevious}
+              variant="outline"
+              className="flex-1"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Předchozí
+            </Button>
+            
+            <Button
+              onClick={handleNext}
+              disabled={!hasNext}
+              className="flex-1"
+            >
+              Další
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

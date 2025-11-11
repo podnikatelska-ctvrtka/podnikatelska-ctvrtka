@@ -35,6 +35,7 @@ interface Props {
   onSelectValue: (value: string) => void;
   onComplete?: () => void;
   onAchievementUnlocked?: (achievementId: string) => void;
+  isLessonCompleted?: boolean;
 }
 
 function normalizeColor(color: string): string {
@@ -60,7 +61,8 @@ export function MobileVPCValueMap({
   selectedValue,
   onSelectValue,
   onComplete,
-  onAchievementUnlocked
+  onAchievementUnlocked,
+  isLessonCompleted = false
 }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const [products, setProducts] = useState<Tag[]>([]);
@@ -79,6 +81,8 @@ export function MobileVPCValueMap({
   
   // 🎨 Barva vybrané hodnoty (pro sticky notes a UI)
   const valueColor = availableValues.find(v => v.text === selectedValue)?.color || '#3b82f6';
+  
+
   
   // Load segments and values
   useEffect(() => {
@@ -255,12 +259,15 @@ export function MobileVPCValueMap({
     }
   };
   
-  // Load VPC data when value changes
+  // Load VPC data when value changes (WAIT for availableValues to load first!)
   useEffect(() => {
-    if (selectedValue && userId !== "guest") {
+    if (selectedValue && userId !== "guest" && availableValues.length > 0) {
+      console.log('🔄 [Mobile ValueMap] Loading VPC data (availableValues ready)');
       loadVPCData();
+    } else if (selectedValue && availableValues.length === 0) {
+      console.log('⏳ [Mobile ValueMap] Waiting for availableValues to load...');
     }
-  }, [selectedValue, selectedSegment, userId]);
+  }, [selectedValue, selectedSegment, userId, availableValues.length]);
   
   // 🗑️ CLEANUP: Smaž orphaned records když se změní seznam hodnot
   useEffect(() => {
@@ -372,7 +379,13 @@ export function MobileVPCValueMap({
         // Použij valueColor state (který je synchronizovaný s real-time změnami)
         const currentColor = valueColor || '#3b82f6';
         
-        console.log('🎨 [Mobile ValueMap] Překreslování štítků na barvu HODNOTY:', currentColor, 'valueColor:', valueColor);
+        console.log('🎨 [Mobile ValueMap] Překreslování štítků na barvu HODNOTY:', {
+          currentColor,
+          valueColor,
+          selectedValue,
+          availableValuesCount: availableValues.length,
+          rawProducts: data.products
+        });
         
         // Překresli VŠECHNY štítky na barvu HODNOTY (ignoruj staré barvy!)
         const productsWithCorrectColor = (data.products || []).map((p: any) => ({
@@ -442,13 +455,11 @@ export function MobileVPCValueMap({
     try {
       // ⚠️ IMPORTANT: Ukládej jen TEXT (ne barvu!)
       // Barva se určí dynamicky podle aktuální barvy hodnoty
+      // 🚫 NEUKLÁDEJ jobs, pains, gains - ty patří do Customer Profile!
       const vpcData = {
         user_id: userId,
         segment_name: selectedSegment,
         selected_value: selectedValue,
-        jobs: [],
-        pains: [],
-        gains: [],
         products: products.map(p => p.text), // ✅ Jen text!
         pain_relievers: painRelievers.map(pr => pr.text), // ✅ Jen text!
         gain_creators: gainCreators.map(gc => gc.text), // ✅ Jen text!
@@ -471,21 +482,42 @@ export function MobileVPCValueMap({
       const recordId = existing?.id || vpcId;
       
       if (recordId) {
-        // UPDATE existující záznam
+        // UPDATE existující záznam - NAČTI ho CELÝ aby se zachovaly jobs, pains, gains!
+        const { data: fullRecord } = await supabase
+          .from('value_proposition_canvas')
+          .select('*')
+          .eq('id', recordId)
+          .single();
+        
+        // Zachovej jobs, pains, gains z původního záznamu
+        const updateData = {
+          ...vpcData,
+          jobs: fullRecord?.jobs || [],
+          pains: fullRecord?.pains || [],
+          gains: fullRecord?.gains || []
+        };
+        
         const { error } = await supabase
           .from('value_proposition_canvas')
-          .update(vpcData)
+          .update(updateData)
           .eq('id', recordId);
         
         if (error) throw error;
         
         if (!vpcId) setVpcId(recordId); // Aktualizuj state pokud nebyl
-        console.log('✅ [Mobile ValueMap] Data updated successfully, id:', recordId);
+        console.log('✅ [Mobile ValueMap] Data updated successfully (preserved customer profile), id:', recordId);
       } else {
-        // INSERT nový záznam (pokud opravdu neexistuje)
+        // INSERT nový záznam (pokud opravdu neexistuje) - s prázdnými jobs, pains, gains
+        const insertData = {
+          ...vpcData,
+          jobs: [],
+          pains: [],
+          gains: []
+        };
+        
         const { data, error } = await supabase
           .from('value_proposition_canvas')
-          .insert([vpcData])
+          .insert([insertData])
           .select()
           .single();
         
@@ -950,7 +982,7 @@ export function MobileVPCValueMap({
               Zpět
             </Button>
             
-            {gainCreators.length > 0 && onComplete && (
+            {gainCreators.length > 0 && onComplete && !isLessonCompleted && (
               <Button
                 onClick={() => {
                   haptic('success');

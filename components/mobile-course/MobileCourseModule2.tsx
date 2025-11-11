@@ -89,6 +89,9 @@ interface Props {
   
   /** Callback pro odemknutí achievementu */
   onAchievementUnlocked?: (achievementId: string) => void;
+  
+  /** Callback pro přechod na další modul */
+  onNavigateToNextModule?: () => void;
 }
 
 export function MobileCourseModule2({
@@ -105,15 +108,26 @@ export function MobileCourseModule2({
   onShowWelcomeModal,
   totalLessons = 16,
   onAchievementUnlocked,
+  onNavigateToNextModule,
 }: Props) {
   // Current lesson
   const lesson = moduleData.lessons[currentLessonIndex];
   // ✅ POUŽÍVÁME GLOBÁLNÍ LESSON ID (ne moduleId-lessonId)
   const isCompleted = completedLessons.has(lesson.id);
   
+  // 🐛 DEBUG: Log completion status
+  console.log('📊 Module 2 - Lesson completion:', {
+    lessonId: lesson.id,
+    lessonTitle: lesson.title,
+    isCompleted,
+    completedLessonsArray: Array.from(completedLessons)
+  });
+  
   // Navigation
   const hasPrevious = currentLessonIndex > 0;
-  const hasNext = currentLessonIndex < moduleData.lessons.length - 1;
+  // ✅ BLOKACE: Další lekci lze otevřít JEN pokud je současná lekce dokončená!
+  const hasNextLesson = currentLessonIndex < moduleData.lessons.length - 1;
+  const hasNext = hasNextLesson && isCompleted;
   
   const handlePrevious = () => {
     if (hasPrevious && onLessonChange) {
@@ -124,7 +138,7 @@ export function MobileCourseModule2({
   };
   
   const handleNext = () => {
-    if (hasNext && onLessonChange) {
+    if (hasNextLesson && onLessonChange) {
       haptic('light');
       onLessonChange(currentLessonIndex + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -202,6 +216,7 @@ export function MobileCourseModule2({
           <MobileBusinessModelGallery 
             onComplete={handleComplete}
             onNavigateNext={handleNext}
+            isLessonCompleted={isCompleted}
           />
         </div>
       );
@@ -327,14 +342,28 @@ export function MobileCourseModule2({
             Předchozí
           </Button>
           
-          <Button
-            onClick={handleNext}
-            disabled={!hasNext}
-            className="flex-1"
-          >
-            Další
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
+          {/* ✅ POSLEDNÍ LEKCE MODULU: Povolit přechod na další modul */}
+          {!hasNextLesson && isCompleted && onNavigateToNextModule ? (
+            <Button
+              onClick={() => {
+                haptic('success');
+                onNavigateToNextModule();
+              }}
+              className="flex-1 bg-green-600 hover:bg-green-700"
+            >
+              Další modul
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleNext}
+              disabled={!hasNext}
+              className="flex-1"
+            >
+              Další
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -521,6 +521,12 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
   const [isValidating, setIsValidating] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [showCanvasPreview, setShowCanvasPreview] = useState(true);
+  
+  // 🐛 DEBUG: Log completion status
+  console.log('📊 CanvasValidator - Lesson completion:', {
+    isLessonCompleted,
+    userId
+  });
 
   // 🧹 CLEANUP: Remove old localStorage keys on mount
   useEffect(() => {
@@ -858,20 +864,23 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
             </div>
 
             {/* Action Buttons */}
-            {!isCompleted && !isLessonCompleted && (
-              <div className="flex gap-3 pt-4">
-                <Button
-                  onClick={() => {
-                    setShowResults(false);
-                    setResults([]);
-                    // Smaž uložený stav - nechceme starou validaci
-                    localStorage.removeItem(`canvas_validator_${userId}`);
-                  }}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  🔄 Zkontrolovat znovu
-                </Button>
+            <div className="flex gap-3 pt-4">
+              {/* 🔄 Button "Zkontrolovat znovu" - VŽDY VIDITELNÝ */}
+              <Button
+                onClick={() => {
+                  setShowResults(false);
+                  setResults([]);
+                  // Smaž uložený stav - nechceme starou validaci
+                  localStorage.removeItem(`canvas_validator_${userId}`);
+                }}
+                variant="outline"
+                className={isLessonCompleted ? "flex-1" : "flex-1"}
+              >
+                🔄 Zkontrolovat znovu
+              </Button>
+              
+              {/* ✅ Button "Dokončit lekci" - SKRÝT když je completed */}
+              {!isLessonCompleted && (
                 <Button
                   onClick={() => {
                     // ✅ Označ dokončení
@@ -894,8 +903,8 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
                   {errorCount > 0 ? '⚠️ Pokračovat i přesto' : '✅ Hotovo - Dokončit lekci'}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
 
             {errorCount > 0 && (
               <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded mt-4">
