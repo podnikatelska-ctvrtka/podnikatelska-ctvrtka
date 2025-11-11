@@ -103,14 +103,20 @@ export function MobileCanvasPreview({ sections, defaultOpen = false }: Props) {
                         const colorName = hexToColorName(item.color as any);
                         const colorClasses = STICKY_COLORS[colorName] || STICKY_COLORS.blue;
                         const randomRotate = (index % 3 - 1) * 1.5; // Mírnější rotace
+                        const isGlobal = colorName === 'global';
                         
                         return (
                           <div
                             key={index}
-                            className={`${colorClasses.bg} ${colorClasses.border} border-2 p-2 rounded shadow-sm text-xs min-w-[80px] max-w-[140px]`}
+                            className={`${colorClasses.bg} ${colorClasses.border} ${
+                              isGlobal ? 'border-dashed' : 'border-2'
+                            } p-2 rounded shadow-sm text-xs min-w-[80px] max-w-[140px]`}
                             style={{ transform: `rotate(${randomRotate}deg)` }}
                           >
-                            <div className={colorClasses.text}>{item.text}</div>
+                            <div className={`${colorClasses.text} flex items-start gap-1`}>
+                              {isGlobal && <span className="text-base leading-none">🌐</span>}
+                              <span className="flex-1">{item.text}</span>
+                            </div>
                             {/* Zobraz VALUE POUZE pro revenue/costs sekce (mají valueLabel) */}
                             {section.valueLabel && item.value !== undefined && (
                               <div className={`${colorClasses.text} font-bold mt-1 text-xs`}>

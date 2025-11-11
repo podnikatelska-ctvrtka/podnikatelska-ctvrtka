@@ -106,15 +106,25 @@ export function MobileCourseModule1({
     if (hasPrevious && onLessonChange) {
       haptic('light');
       onLessonChange(currentLessonIndex - 1);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   
   const handleNext = () => {
     if (hasNext && onLessonChange) {
+      // 🚨 VALIDACE: Zkontroluj jestli je vyplněno alespoň 1 položka
+      const currentSection = lesson.canvasSection;
+      const currentSectionData = (canvasData as any)[currentSection] || [];
+      
+      if (currentSectionData.length === 0) {
+        haptic('error');
+        alert(`⚠️ Než přejdete dál, vyplňte alespoň 1 položku v sekci:\n\n"${lesson.title}"\n\nToto je klíčová část pro váš podnikatelský model!`);
+        return;
+      }
+      
       haptic('light');
       onLessonChange(currentLessonIndex + 1);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   
@@ -271,6 +281,28 @@ export function MobileCourseModule1({
             <CheckCircle2 className="w-5 h-5 mr-2" />
             Označit jako dokončené
           </Button>
+        )}
+        
+        {/* 🎉 MODUL COMPLETE CTA - Zobrazí se na poslední lekci pokud je dokončená */}
+        {!hasNext && isCompleted && (
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-center shadow-lg mt-4">
+            <h3 className="text-white text-xl mb-2">
+              🎉 Gratulujeme!
+            </h3>
+            <p className="text-green-50 text-sm mb-4">
+              Dokončili jste {moduleData.title}!
+            </p>
+            <Button
+              onClick={() => {
+                haptic('success');
+                if (onOpenDashboard) onOpenDashboard();
+              }}
+              size="lg"
+              className="w-full bg-white text-green-700 hover:bg-green-50"
+            >
+              Pokračovat na další modul →
+            </Button>
+          </div>
         )}
       </div>
 

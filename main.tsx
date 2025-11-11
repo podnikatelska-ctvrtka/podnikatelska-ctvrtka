@@ -53,25 +53,60 @@ Sentry.init({
 // Wrap App with Sentry ErrorBoundary
 const SentryApp = Sentry.withErrorBoundary(App, {
   fallback: ({ error, resetError }) => (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-          <span className="text-4xl">⚠️</span>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100">
+        {/* Icon */}
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full mb-6">
+          <span className="text-5xl">🔧</span>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Něco se pokazilo</h2>
-        <p className="text-gray-600 mb-6">
-          Aplikace narazila na neočekávanou chybu. Chyba byla automaticky nahlášena.
+        
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          Chvilku strpení...
+        </h2>
+        
+        {/* Message */}
+        <p className="text-gray-600 mb-2">
+          Narazili jsme na technický problém, ale už na tom pracujeme!
         </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Obnovit stránku
-        </button>
+        <p className="text-gray-500 text-sm mb-6">
+          Chyba byla automaticky nahlášena našemu týmu a opravíme ji co nejdříve.
+        </p>
+        
+        {/* Reassurance box */}
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+          <p className="text-blue-900 text-sm">
+            ✅ <strong>Vaše data jsou v bezpečí</strong>
+            <br />
+            <span className="text-blue-700">Žádná vaše práce nebyla ztracena.</span>
+          </p>
+        </div>
+        
+        {/* Action buttons */}
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg font-medium"
+          >
+            Obnovit stránku
+          </button>
+          
+          <a
+            href="/"
+            className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+          >
+            Zpět na hlavní stránku
+          </a>
+        </div>
+        
+        {/* Help text */}
+        <p className="text-gray-400 text-xs mt-6">
+          Problémy přetrvávají? Napište nám na <a href="mailto:podpora@podnikatelskactvrtka.cz" className="text-blue-600 hover:underline">podpora@podnikatelskactvrtka.cz</a>
+        </p>
       </div>
     </div>
   ),
-  showDialog: true, // Zobrazí dialog pro nahlášení problému
+  showDialog: false, // ❌ VYPNUTO: Nezobrazovat Sentry dialog - máme vlastní UI
 });
 
 // Disable StrictMode in dev to prevent double toast (React 18 behavior)

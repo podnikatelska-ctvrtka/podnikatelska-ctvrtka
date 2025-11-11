@@ -218,7 +218,7 @@ const VALIDATION_RULES: ValidationRule[] = [
   {
     id: 'color-cross-validation',
     title: '🔗 Propojení barev napříč sekcemi',
-    description: 'Segment → Hodnota → Kanál → Příjem/Náklad (stejná barva nebo 🌐 global)',
+    description: 'Segment → Hodnota → Kanál → Př��jem/Náklad (stejná barva nebo 🌐 global)',
     check: (data) => {
       const segments = data.segments || [];
       const values = data.value || [];
@@ -595,35 +595,53 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
     
     // Simulate validation delay for effect
     setTimeout(() => {
-      const validationResults = VALIDATION_RULES.map(rule => {
-        const result = rule.check(canvasData);
-        return {
-          ...rule,
-          ...result
-        };
-      });
-      
-      setResults(validationResults);
-      setShowResults(true);
-      setIsValidating(false);
-      
-      // 💾 Save validation results to localStorage WITH canvas hash
-      const VALIDATOR_VERSION = 'v2';
-      const storageKey = `canvas_validator_${VALIDATOR_VERSION}_${userId}`;
-      const canvasHash = JSON.stringify(canvasData);
-      localStorage.setItem(storageKey, JSON.stringify({
-        results: validationResults,
-        canvasHash: canvasHash,
-        timestamp: new Date().toISOString()
-      }));
-      console.log('💾 Saved validation to localStorage with canvas hash');
-      
-      const errorCount = validationResults.filter(r => !r.passed && r.severity === 'error').length;
-      
-      if (errorCount === 0) {
-        // ❌ Odstraněno - duplicitní toast (vizuální validace stačí)
-      } else {
-        // ❌ Odstraněno - duplicitní toast (vizuální validace stačí)
+      try {
+        const validationResults = VALIDATION_RULES.map(rule => {
+          try {
+            const result = rule.check(canvasData);
+            return {
+              ...rule,
+              ...result
+            };
+          } catch (ruleError: any) {
+            console.error(`❌ Error in validation rule "${rule.id}":`, ruleError);
+            return {
+              ...rule,
+              passed: false,
+              message: '❌ Chyba při validaci',
+              tip: `Chyba v pravidle "${rule.title}". Kontaktujte podporu.`
+            };
+          }
+        });
+        
+        setResults(validationResults);
+        setShowResults(true);
+        setIsValidating(false);
+        
+        // 💾 Save validation results to localStorage WITH canvas hash
+        const VALIDATOR_VERSION = 'v2';
+        const storageKey = `canvas_validator_${VALIDATOR_VERSION}_${userId}`;
+        const canvasHash = JSON.stringify(canvasData);
+        localStorage.setItem(storageKey, JSON.stringify({
+          results: validationResults,
+          canvasHash: canvasHash,
+          timestamp: new Date().toISOString()
+        }));
+        console.log('💾 Saved validation to localStorage with canvas hash');
+        
+        const errorCount = validationResults.filter(r => !r.passed && r.severity === 'error').length;
+        
+        if (errorCount === 0) {
+          // ❌ Odstraněno - duplicitní toast (vizuální validace stačí)
+        } else {
+          // ❌ Odstraněno - duplicitní toast (vizuální validace stačí)
+        }
+      } catch (err: any) {
+        console.error('❌ Critical error in runValidation:', err);
+        toast.error('❌ Chyba při validaci', {
+          description: 'Zkuste to znovu nebo kontaktujte podporu'
+        });
+        setIsValidating(false);
       }
     }, 1500);
   };

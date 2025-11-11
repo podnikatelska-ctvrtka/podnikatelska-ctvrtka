@@ -879,6 +879,12 @@ export function MobileVPCCustomerProfile({
                 onClick={() => {
                   haptic('success');
                   saveVPCData();
+                  
+                  // 🎉 UNLOCK ACHIEVEMENT za kompletní zákaznický profil
+                  if (onAchievementUnlocked) {
+                    onAchievementUnlocked('customer-profile-complete');
+                  }
+                  
                   onComplete();
                 }}
                 className="flex items-center gap-1"

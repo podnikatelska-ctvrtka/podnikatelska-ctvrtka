@@ -955,6 +955,12 @@ export function MobileVPCValueMap({
                 onClick={() => {
                   haptic('success');
                   saveVPCData();
+                  
+                  // 🎉 UNLOCK ACHIEVEMENT za kompletní value map
+                  if (onAchievementUnlocked) {
+                    onAchievementUnlocked('value-map-complete');
+                  }
+                  
                   onComplete();
                 }}
               >

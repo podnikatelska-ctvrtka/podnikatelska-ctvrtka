@@ -53,36 +53,46 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-md w-full"
           >
-            <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100">
+              {/* Icon */}
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", delay: 0.1 }}
-                className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4"
+                className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full mb-6"
               >
-                <AlertTriangle className="w-8 h-8 text-red-500" />
+                <span className="text-5xl">🔧</span>
               </motion.div>
               
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Něco se pokazilo
+              {/* Title */}
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Chvilku strpení...
               </h2>
               
-              <p className="text-gray-600 mb-4">
-                Aplikace narazila na neočekávanou chybu. Zkuste stránku obnovit.
+              {/* Message */}
+              <p className="text-gray-600 mb-2">
+                Narazili jsme na technický problém, ale už na tom pracujeme!
+              </p>
+              <p className="text-gray-500 text-sm mb-6">
+                Chyba byla automaticky nahlášena našemu týmu a opravíme ji co nejdříve.
               </p>
               
-              {this.state.eventId && (
-                <p className="text-sm text-gray-500 mb-6">
-                  Chyba byla automaticky nahlášena. ID: {this.state.eventId.substring(0, 8)}
+              {/* Reassurance box */}
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+                <p className="text-blue-900 text-sm">
+                  ✅ <strong>Vaše data jsou v bezpečí</strong>
+                  <br />
+                  <span className="text-blue-700">Žádná vaše práce nebyla ztracena.</span>
                 </p>
-              )}
+              </div>
               
+              {/* Dev mode: Show error details */}
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <div className="mb-6 p-4 bg-red-50 rounded-lg text-left">
                   <p className="text-xs font-mono text-red-800 break-all">
@@ -91,10 +101,11 @@ export class ErrorBoundary extends Component<Props, State> {
                 </div>
               )}
               
-              <div className="flex gap-3">
+              {/* Action buttons */}
+              <div className="flex flex-col gap-3">
                 <Button
                   onClick={this.handleReset}
-                  className="flex-1 gap-2"
+                  className="w-full gap-2"
                   variant="outline"
                 >
                   <RefreshCw className="w-4 h-4" />
@@ -103,20 +114,29 @@ export class ErrorBoundary extends Component<Props, State> {
                 
                 <Button
                   onClick={() => window.location.reload()}
-                  className="flex-1"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                 >
                   Obnovit stránku
                 </Button>
+                
+                <a
+                  href="/"
+                  className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                >
+                  Zpět na hlavní stránku
+                </a>
               </div>
               
-              {this.state.eventId && (
-                <button
-                  onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId || undefined })}
-                  className="mt-4 text-sm text-blue-600 hover:text-blue-700 underline"
+              {/* Help text - NO SENTRY DIALOG! */}
+              <p className="text-gray-400 text-xs mt-6">
+                Problémy přetrvávají? Napište nám na{' '}
+                <a 
+                  href="mailto:podpora@podnikatelskactvrtka.cz" 
+                  className="text-blue-600 hover:underline"
                 >
-                  Popsat co se stalo
-                </button>
-              )}
+                  podpora@podnikatelskactvrtka.cz
+                </a>
+              </p>
             </div>
           </motion.div>
         </div>

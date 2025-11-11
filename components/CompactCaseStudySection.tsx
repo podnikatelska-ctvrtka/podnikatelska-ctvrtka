@@ -233,16 +233,17 @@ export function CompactCaseStudySection() {
 
         {/* Top 3 Takeaways - Timeline Style */}
         <motion.div
+          className="mt-16 md:mt-24 pt-12 md:pt-16 border-t-4 border-gradient-to-r from-blue-200 via-orange-200 to-green-200"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <div className="text-center mb-8">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
-              🎯 3 klíčové poznatky z Marie's příběhu
+          <div className="text-center mb-8 md:mb-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 md:p-8 border-2 border-blue-200 shadow-lg">
+            <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-3">
+              🎯 3 klíčové poznatky z Marie příběhu
             </h3>
-            <p className="text-base md:text-lg text-gray-700 max-w-2xl mx-auto font-semibold">
+            <p className="text-lg md:text-xl text-gray-800 max-w-2xl mx-auto font-bold">
               Co si můžeš odnést a <span className="text-blue-600">aplikovat ve svém podnikání hned dnes</span>
             </p>
           </div>

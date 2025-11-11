@@ -830,7 +830,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                 <p className="text-sm text-purple-600">
                   ✓ 10+ hotových příkladů (kavárna, fitness, e-shop...)<br />
                   ✓ Inspirace pro TVŮJ typ byznysu<br />
-                  ✓ Uvidíš KDO jsou jejich zákazníci, JAK získávají leady...
+                  ✓ Uvidíš KDO jsou jejich zákazníci, JAK s nimi komunikují...
                 </p>
               </motion.div>
 
@@ -841,7 +841,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                 <div className="text-4xl mb-3">🚀</div>
                 <h3 className="text-xl mb-3 font-black">Personalizovaný akční plán</h3>
                 <p className="text-gray-700 mb-3">
-                  Na základě tvého Canvas dostaneš konkrétní kroky na 30 dní. Přesně víš CO dělat zítra, za týden, za měsíc.
+                  Na základě tvé Čtvrtky dostaneš konkrétní kroky na 30 dní. Přesně víš CO dělat zítra, za týden, za měsíc.
                 </p>
                 <p className="text-sm text-orange-600">
                   ✓ Konkrétní úkoly<br />
@@ -1035,7 +1035,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2">Potřebuji nějaké technické znalosti?</h3>
-                    <p className="text-gray-700"><strong className="text-blue-600">Ne.</strong> Jen prohlížeč. Klikáš, vyplňuješ, hotovo. Žádné instalace, žádné komplikace.</p>
+                    <p className="text-gray-700"><strong className="text-blue-600">Ne.</strong> Jen prohlížeč. Klikáš, vyplňuješ, hotovo. Žádné komplikace.</p>
                   </div>
                 </div>
               </motion.div>
@@ -1140,7 +1140,8 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                       <div className="flex items-center gap-4 bg-white/20 backdrop-blur-sm rounded-xl p-4">
                         <div className="text-right">
                           <div className="text-lg line-through opacity-60">8.499,- Kč</div>
-                          <div className="text-4xl font-black">4.999,- Kč</div>
+                          <div className="text-3xl sm:text-4xl font-black whitespace-nowrap">4.999,- Kč</div>
+                          <div className="text-xs text-white/70 mt-1">(bez DPH)</div>
                         </div>
                         <div className="bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
                           <Zap className="w-4 h-4" />

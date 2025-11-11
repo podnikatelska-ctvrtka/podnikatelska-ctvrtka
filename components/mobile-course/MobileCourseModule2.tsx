@@ -118,7 +118,7 @@ export function MobileCourseModule2({
     if (hasPrevious && onLessonChange) {
       haptic('light');
       onLessonChange(currentLessonIndex - 1);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   
@@ -126,7 +126,7 @@ export function MobileCourseModule2({
     if (hasNext && onLessonChange) {
       haptic('light');
       onLessonChange(currentLessonIndex + 1);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   

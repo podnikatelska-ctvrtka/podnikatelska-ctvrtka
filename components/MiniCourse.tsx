@@ -1244,7 +1244,7 @@ export function MiniCourse() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-6 md:py-12 px-3 md:px-4">
       <div className="max-w-4xl mx-auto">
         {/* Auto-save indicator */}
-        <div className="fixed top-2 right-2 md:top-4 md:right-4 z-50">
+        <div className="fixed top-2 left-2 md:top-4 md:left-4 z-50">
           <div className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full shadow-lg transition-all ${
             isSaving 
               ? 'bg-yellow-100 border border-yellow-300 text-yellow-800' 
@@ -1452,7 +1452,16 @@ export function MiniCourse() {
               
               {currentLesson.action.steps.map((step, index) => {
                 const fieldKey = step.input ? `day${currentLesson.day}-${step.input}` : null;
-                const hasValue = fieldKey ? (formData[fieldKey] && formData[fieldKey].trim().length > 0) : false;
+                // 🎯 FIX: Zkontroluj jestli je vyplněno JINAK než defaultValue (aby se nezobrazovala fajfka na předvyplněný text)
+                const hasValue = fieldKey ? (() => {
+                  const value = formData[fieldKey];
+                  if (!value || !value.trim()) return false;
+                  // Pokud má step defaultValue, zkontroluj jestli uživatel něco změnil
+                  if (step.defaultValue) {
+                    return value.trim() !== step.defaultValue.trim();
+                  }
+                  return true;
+                })() : false;
                 
                 // Spočítej pořadí jen pro stepy s inputem
                 const stepsWithInput = currentLesson.action.steps.filter(s => s.input);
@@ -1781,10 +1790,10 @@ export function MiniCourse() {
                     Doufáme, že vám tyto 3 dny pomohly získat jasno v byznysu. Máte teď konkrétní kroky co dělat.
                   </p>
                   <div className="bg-white/50 border border-green-200 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-green-800 mb-2">📅 Co vás čeká dál:</p>
+                    <p className="text-sm font-semibold text-green-800 mb-2">📅 Pokračujte dál:</p>
                     <p className="text-sm text-gray-700">
-                      <strong>Podnikatelská Čtvrtka</strong> - kompletní kurz na vytvoření prodejní stránky která skutečně prodává - 
-                      brzy startuje! V emailu vám přijde speciální nabídka s exkluzivní slevou.
+                      Máte už přístup k <strong>Podnikatelské Čtvrtce</strong> - kompletnímu kurzu s interaktivními nástroji pro validaci vašeho byznysu. 
+                      Najdete tam Podnikatelskou Čtvrtku, FIT validátor, kalkulačky a další praktické nástroje.
                     </p>
                   </div>
                   <p className="text-sm text-gray-600">

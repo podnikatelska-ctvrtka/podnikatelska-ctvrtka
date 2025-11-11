@@ -113,7 +113,7 @@ export function TakeawaysTimeline() {
 
               {/* Content card */}
               <motion.div
-                className={`bg-gradient-to-br ${takeaway.bgGradient} rounded-2xl p-4 md:p-5 pb-3 md:pb-4 shadow-md h-full`}
+                className={`bg-gradient-to-br ${takeaway.bgGradient} rounded-2xl p-4 md:p-5 pb-3 md:pb-4 shadow-lg border-2 ${takeaway.borderColor} h-full`}
                 whileHover={{ y: -5, shadow: "0 20px 40px rgba(0,0,0,0.1)" }}
                 transition={{ duration: 0.3 }}
               >
@@ -193,7 +193,7 @@ export function TakeawaysTimeline() {
 
                     {/* Content card */}
                     <div
-                      className={`bg-gradient-to-br ${takeaway.bgGradient} rounded-2xl p-5 shadow-md`}
+                      className={`bg-gradient-to-br ${takeaway.bgGradient} rounded-2xl p-5 shadow-lg border-2 ${takeaway.borderColor}`}
                     >
                       {/* Title */}
                       <h4 className={`font-bold text-xl mb-2 ${takeaway.textColor} text-center`}>
@@ -219,7 +219,7 @@ export function TakeawaysTimeline() {
                         {takeaway.examples.map((example, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-3 bg-white/70 rounded-lg p-3 border border-gray-200"
+                            className="flex items-center gap-3 bg-white/90 rounded-lg p-3 border-2 border-gray-300 shadow-sm"
                           >
                             <span className="text-xl flex-shrink-0">{example.emoji}</span>
                             <span className="text-gray-700 text-base font-medium flex-1">

@@ -249,8 +249,11 @@ export function MobileCanvasAccordion({
                       setNewItem(e.target.value);
                     }
                   }}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) handleSubmit();
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
                   }}
                   placeholder="Napište text..."
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

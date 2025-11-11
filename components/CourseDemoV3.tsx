@@ -1444,6 +1444,40 @@ export function CourseDemoV3() {
         }
       }
       
+      // 📱 PWA FALLBACK: Zkus načíst token z localStorage (pokud není v URL)
+      const savedToken = localStorage.getItem('course_access_token');
+      if (savedToken && !token) {
+        console.log('📱 PWA: Načítám token z localStorage');
+        const user = await verifyAccessToken(savedToken);
+        
+        if (user) {
+          setIsAuthenticated(true);
+          setUserData(user);
+          setIsVerifying(false);
+          
+          // Load progress for real user
+          const progress = await loadCourseProgress(user.id);
+          setCompletedLessons(progress);
+          
+          // 🎯 Load achievements from SUPABASE (ne localStorage!)
+          const achievements = await loadUnlockedAchievementsFromDB(user.id);
+          setUnlockedAchievements(achievements);
+          
+          // 👋 Check if first time visit
+          const hasSeenWelcome = localStorage.getItem('course_welcome_seen');
+          if (!hasSeenWelcome) {
+            setShowWelcomeModal(true);
+            setWelcomeMode("welcome");
+          }
+          
+          return;
+        } else {
+          // Token je neplatný - smaž ho
+          console.log('❌ Token z localStorage je neplatný - mažu');
+          localStorage.removeItem('course_access_token');
+        }
+      }
+      
       // No valid token - deny access
       setIsAuthenticated(false);
       setIsVerifying(false);

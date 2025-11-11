@@ -988,6 +988,11 @@ export function ProfitCalculator({ userId, onComplete, onNavigateNext, onAchieve
           </p>
           <Button
             onClick={() => {
+              // 🎉 UNLOCK ACHIEVEMENT za pozitivní profit
+              if (onAchievementUnlocked && isProfitable) {
+                onAchievementUnlocked('profit-positive');
+              }
+              
               onComplete();
               // Auto-redirect po 500ms (rychlejší UX)
               if (onNavigateNext) {

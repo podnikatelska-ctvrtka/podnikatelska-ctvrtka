@@ -35,11 +35,11 @@ export function HeroSectionVariant1Clean() {
     },
     'segments': {
       title: 'Zákaznické segmenty',
-      content: 'Zjistíte, komu prodávat - a přestaňte mařit peníze na špatný marketing'
+      content: 'Zjistíte, komu prodávat - a přestanete mařit peníze na špatný marketing'
     },
     'resources': {
       title: 'Klíčové zdroje',
-      content: 'Zjistíte, co OPRAVDU potřebujete - a přestaňte utrácet za věci, které nepotřebujete'
+      content: 'Zjistíte, co OPRAVDU potřebujete - a přestanete utrácet za věci, které nepotřebujete'
     },
     'channels': {
       title: 'Distribuční kanály',

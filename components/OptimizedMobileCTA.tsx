@@ -16,7 +16,7 @@ export function OptimizedMobileCTA() {
     },
     { 
       icon: <Users className="w-4 h-4" />, 
-      text: "3-denní mini kurz ZDARMA",
+      text: "Mini kurz ZDARMA",
       urgency: "Okamžitě po registraci"
     },
     { 

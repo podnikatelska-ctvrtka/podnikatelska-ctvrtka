@@ -402,6 +402,11 @@ export function ProblemSolver({ onComplete, onNavigateNext, onAchievementUnlocke
           </p>
           <Button
             onClick={() => {
+              // 🎉 UNLOCK ACHIEVEMENT za prohlédnutí alespoň 1 řešení
+              if (onAchievementUnlocked && appliedSolutions.size > 0) {
+                onAchievementUnlocked('problem-solver-master');
+              }
+              
               onComplete();
               // Auto-redirect po 1s bez druhého completion screenu
               if (onNavigateNext) {

@@ -43,10 +43,10 @@ export function LiveProductShowcase() {
           </motion.div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl mb-4 text-gray-900 leading-tight">
-            Nejsou to jen <span className="text-purple-600 font-black">videa</span>.
+            Hotové <span className="text-purple-600 font-black">nástroje</span> které můžeš použít <span className="text-purple-600 font-black">hned</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-3">
-            <strong>Interaktivní nástroje</strong> které okamžitě použiješ ve svém podnikání:
+            <strong>Interaktivní aplikace</strong> které okamžitě použiješ ve svém podnikání:
           </p>
           <p className="text-sm text-gray-500 italic">
             (Ukázka 4 z 10+ nástrojů v kurzu)
@@ -159,24 +159,24 @@ export function LiveProductShowcase() {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-3 h-24 flex flex-col justify-between">
-                  <div className="text-xs text-blue-600 font-bold">Partneři</div>
+                  <div className="text-xs md:text-sm text-blue-600 font-bold">Partneři</div>
                   <div className="flex items-center gap-1">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-xs text-gray-600">3 položky</span>
+                    <span className="text-xs md:text-sm text-gray-600">3 položky</span>
                   </div>
                 </div>
                 <div className="bg-green-50 border-2 border-green-200 rounded-lg p-3 h-24 flex flex-col justify-between">
-                  <div className="text-xs text-green-600 font-bold">Hodnota</div>
+                  <div className="text-xs md:text-sm text-green-600 font-bold">Hodnota</div>
                   <div className="flex items-center gap-1">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-xs text-gray-600">Validováno</span>
+                    <span className="text-xs md:text-sm text-gray-600">Validováno</span>
                   </div>
                 </div>
                 <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-3 h-24 flex flex-col justify-between">
-                  <div className="text-xs text-purple-600 font-bold">Zákazníci</div>
+                  <div className="text-xs md:text-sm text-purple-600 font-bold">Zákazníci</div>
                   <div className="flex items-center gap-1">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-xs text-gray-600">2 segmenty</span>
+                    <span className="text-xs md:text-sm text-gray-600">2 segmenty</span>
                   </div>
                 </div>
               </div>
@@ -371,6 +371,18 @@ export function LiveProductShowcase() {
           </motion.div>
         </div>
 
+        {/* Text pod nástroji */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          className="text-center mt-8"
+        >
+          <p className="text-gray-500 italic">
+            A mnoho dalšího...
+          </p>
+        </motion.div>
 
       </div>
     </div>

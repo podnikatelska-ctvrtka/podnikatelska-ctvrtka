@@ -134,15 +134,27 @@ export function MobileCourseModule3({
     if (hasPrevious && onLessonChange) {
       haptic('light');
       onLessonChange(currentLessonIndex - 1);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   
   const handleNext = () => {
     if (hasNext && onLessonChange) {
+      // 🚨 VALIDACE: Zkontroluj jestli lekce obsahuje VPC canvas a jestli je vyplněno
+      const section = lesson.canvasSection;
+      
+      if (section === 'vpc-customer' || section === 'vpc-value') {
+        // Pro VPC lekce vyžaduj dokončení přes tlačítko "Dokončit" v komponentě
+        if (!isCompleted) {
+          haptic('error');
+          alert(`⚠️ Než přejdete dál, dokončete vyplnění této lekce pomocí tlačítka "Dokončit" uvnitř nástroje.`);
+          return;
+        }
+      }
+      
       haptic('light');
       onLessonChange(currentLessonIndex + 1);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   

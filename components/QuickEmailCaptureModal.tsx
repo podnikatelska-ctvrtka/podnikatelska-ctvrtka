@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { CheckCircle, ArrowRight, Gift, Zap, Target, Users, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
+import { getRemainingSpots, isCampaignFull } from "../lib/scarcity";
 
 // 🎯 EMAIL SERVICE CONFIG - Smartemailing
 const EMAIL_SERVICE = {
@@ -24,6 +25,25 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
+  const [remainingSpots, setRemainingSpots] = useState(50);
+  const [isWaitlist, setIsWaitlist] = useState(false);
+
+  // 🎯 SCARCITY SYNC: Synchronize with landing page scarcity system
+  useEffect(() => {
+    const updateSpots = () => {
+      const spots = getRemainingSpots();
+      setRemainingSpots(spots);
+      setIsWaitlist(isCampaignFull());
+    };
+    
+    // Initial update
+    updateSpots();
+    
+    // Update every minute
+    const interval = setInterval(updateSpots, 60000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // Reset step when modal closes
   useEffect(() => {
@@ -89,7 +109,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] p-6 pr-12 max-h-[90vh] overflow-y-auto">
         <AnimatePresence mode="wait">
           {step === 1 ? (
             <motion.div
@@ -101,13 +121,28 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
             >
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-center mb-2">
-                  <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    🔥 BUĎTE MEZI PRVNÍMI!
-                  </span>
+                  {isWaitlist ? (
+                    <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                      📝 ČEKACÍ LISTINA
+                    </span>
+                  ) : (
+                    <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      🔥 BUĎTE MEZI PRVNÍMI!
+                    </span>
+                  )}
                 </DialogTitle>
                 <DialogDescription className="text-sm text-gray-600 text-center leading-relaxed">
-                  <span className="font-semibold text-gray-800">Od prvního úspěšného podnikání vás dělí 90 minut.</span><br/>
-                  Omezená kapacita - 50 průkopnických míst!
+                  {isWaitlist ? (
+                    <>
+                      <span className="font-semibold text-gray-800">Všechna místa jsou obsazena!</span><br/>
+                      Zapište se na čekací listinu pro další kolo.
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-gray-800">Od prvního úspěšného podnikání vás dělí 90 minut.</span><br/>
+                      Omezená kapacita - zbývá jen {remainingSpots} míst!
+                    </>
+                  )}
                 </DialogDescription>
               </DialogHeader>
 
@@ -174,10 +209,15 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-base shadow-lg hover:shadow-xl transition-all"
+                    className={`w-full h-12 ${isWaitlist ? 'bg-gradient-to-r from-gray-600 to-slate-600 hover:from-gray-700 hover:to-slate-700' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'} text-white font-bold text-base shadow-lg hover:shadow-xl transition-all`}
                   >
                     {isLoading ? (
                       "Odesílám..."
+                    ) : isWaitlist ? (
+                      <>
+                        Zapsat na čekací listinu 📝
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </>
                     ) : (
                       <>
                         Budu mezi prvními! 🔥
@@ -187,7 +227,11 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                   </Button>
 
                   <p className="text-xs text-center text-gray-500">
-                    💰 Slevu 40% pošleme do emailu během 5 minut!
+                    {isWaitlist ? (
+                      "📧 Ozveme se, až spustíme další kolo!"
+                    ) : (
+                      "💰 Slevu 40% pošleme do emailu během 5 minut!"
+                    )}
                   </p>
                 </motion.form>
 
@@ -293,7 +337,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
                       <Sparkles className="w-5 h-5 text-purple-600" />
                     </div>
                     <div className="flex-1">
-                      <div className="font-bold text-purple-900">🎁 BONUS: 3-denní mini kurz ZDARMA</div>
+                      <div className="font-bold text-purple-900">🎁 BONUS: Mini kurz ZDARMA</div>
                       <div className="text-sm text-purple-700 font-medium">Pro prvních 50 průkopníků! První lekce už čeká v emailu.</div>
                     </div>
                   </div>

@@ -188,7 +188,7 @@ export function MobileCourseDashboard({
             className="w-full h-14 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg"
           >
             <Play className="w-5 h-5 mr-2" />
-            Pokračovat v kurzu
+            {completedCount === 0 ? 'Začít kurz' : 'Pokračovat v kurzu'}
             <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
         )}
