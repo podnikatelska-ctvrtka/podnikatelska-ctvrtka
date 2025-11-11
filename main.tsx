@@ -101,7 +101,7 @@ const SentryApp = Sentry.withErrorBoundary(App, {
         
         {/* Help text */}
         <p className="text-gray-400 text-xs mt-6">
-          Problémy přetrvávají? Napište nám na <a href="mailto:podpora@podnikatelskactvrtka.cz" className="text-blue-600 hover:underline">podpora@podnikatelskactvrtka.cz</a>
+          Problémy přetrvávají? Napište nám na <a href="mailto:kurz@podnikatelskactvrtka.cz" className="text-blue-600 hover:underline">kurz@podnikatelskactvrtka.cz</a>
         </p>
       </div>
     </div>

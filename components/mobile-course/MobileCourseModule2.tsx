@@ -64,7 +64,7 @@ interface Props {
   onCanvasUpdate?: (section: string, items: CanvasItem[]) => void;
   
   /** Dokončené lekce */
-  completedLessons: Set<string>;
+  completedLessons: Set<number>;
   
   /** Callback pro označení lekce jako dokončené */
   onLessonComplete: (lessonId: number) => void;
@@ -138,6 +138,12 @@ export function MobileCourseModule2({
   
   // Render content based on lesson
   const renderToolContent = () => {
+    console.log('📱 [MobileCourseModule2] renderToolContent called', {
+      lessonId: lesson.id,
+      lessonTitle: lesson.title,
+      userId
+    });
+    
     // LEKCE 1 (id: 10): Canvas Validator
     if (lesson.id === 10) {
       return (

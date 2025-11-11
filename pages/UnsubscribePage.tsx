@@ -137,8 +137,8 @@ export default function UnsubscribePage() {
         <div className="mt-8 text-center">
           <p className="text-gray-500">
             Máš dotazy? Napiš na{' '}
-            <a href="mailto:podpora@podnikatelskactvrtka.cz" className="text-indigo-600 hover:text-indigo-800">
-              podpora@podnikatelskactvrtka.cz
+            <a href="mailto:kurz@podnikatelskactvrtka.cz" className="text-indigo-600 hover:text-indigo-800">
+              kurz@podnikatelskactvrtka.cz
             </a>
           </p>
         </div>

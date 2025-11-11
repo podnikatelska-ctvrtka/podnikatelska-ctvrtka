@@ -131,10 +131,10 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-gray-400 text-xs mt-6">
                 Problémy přetrvávají? Napište nám na{' '}
                 <a 
-                  href="mailto:podpora@podnikatelskactvrtka.cz" 
+                  href="mailto:kurz@podnikatelskactvrtka.cz" 
                   className="text-blue-600 hover:underline"
                 >
-                  podpora@podnikatelskactvrtka.cz
+                  kurz@podnikatelskactvrtka.cz
                 </a>
               </p>
             </div>
