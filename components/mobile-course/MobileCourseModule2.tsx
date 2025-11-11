@@ -108,7 +108,8 @@ export function MobileCourseModule2({
 }: Props) {
   // Current lesson
   const lesson = moduleData.lessons[currentLessonIndex];
-  const isCompleted = completedLessons.has(`${moduleData.id}-${lesson.id}`);
+  // ✅ POUŽÍVÁME GLOBÁLNÍ LESSON ID (ne moduleId-lessonId)
+  const isCompleted = completedLessons.has(lesson.id);
   
   // Navigation
   const hasPrevious = currentLessonIndex > 0;

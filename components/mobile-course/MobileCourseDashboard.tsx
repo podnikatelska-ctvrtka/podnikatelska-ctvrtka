@@ -82,8 +82,9 @@ export function MobileCourseDashboard({
   
   // Calculate module completion
   const getModuleProgress = (module: Module) => {
+    // ✅ POUŽÍVÁME GLOBÁLNÍ LESSON ID (ne moduleId-lessonId)
     const completed = module.lessons.filter(l => 
-      completedLessons.has(`${module.id}-${l.id}`)
+      completedLessons.has(l.id)
     ).length;
     return {
       completed,

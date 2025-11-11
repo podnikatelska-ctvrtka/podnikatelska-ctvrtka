@@ -96,7 +96,8 @@ export function MobileCourseModule1({
 }: Props) {
   // Current lesson
   const lesson = moduleData.lessons[currentLessonIndex];
-  const isCompleted = completedLessons.has(`${moduleData.id}-${lesson.id}`);
+  // ✅ POUŽÍVÁME GLOBÁLNÍ LESSON ID (ne moduleId-lessonId)
+  const isCompleted = completedLessons.has(lesson.id);
   
   // Navigation
   const hasPrevious = currentLessonIndex > 0;
@@ -245,7 +246,23 @@ export function MobileCourseModule1({
                 color: color as CanvasItem['color'],
                 value,
               };
-              onCanvasUpdate(sectionId, [...section, newItem]);
+              const updatedSection = [...section, newItem];
+              onCanvasUpdate(sectionId, updatedSection);
+              
+              // 🏆 ACHIEVEMENT TRIGGERING
+              const itemCount = updatedSection.length;
+              
+              // First segment/value
+              if (sectionId === 'segments' && itemCount === 1 && onAchievementUnlocked) {
+                onAchievementUnlocked('first-segment');
+              } else if (sectionId === 'value' && itemCount === 1 && onAchievementUnlocked) {
+                onAchievementUnlocked('first-value');
+              }
+              
+              // Profit calculated (revenue/costs s value > 0)
+              if ((sectionId === 'revenue' || sectionId === 'costs') && updatedSection.some((i: any) => i.value && i.value > 0) && onAchievementUnlocked) {
+                onAchievementUnlocked('profit-calculated');
+              }
             }}
             onRemoveItem={(sectionId, index) => {
               const section = (canvasData as any)[sectionId] || [];

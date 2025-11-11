@@ -2003,6 +2003,7 @@ export function CourseDemoV3() {
   
   // 📝 MOBILE LESSON COMPLETE HANDLER
   const handleMobileLessonComplete = async (lessonId: number) => {
+    // ✅ Používáme GLOBÁLNÍ lesson ID (1-9, 10-13, 14-16...)
     const newCompleted = new Set(completedLessons);
     newCompleted.add(lessonId);
     setCompletedLessons(newCompleted);
