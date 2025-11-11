@@ -629,6 +629,11 @@ export function CanvasValidator({ userId, onComplete, onNavigateNext, onAchievem
         }));
         console.log('💾 Saved validation to localStorage with canvas hash');
         
+        // 🏆 ACHIEVEMENT: validator-used (stejně jako desktop)
+        if (onAchievementUnlocked) {
+          onAchievementUnlocked('validator-used');
+        }
+        
         const errorCount = validationResults.filter(r => !r.passed && r.severity === 'error').length;
         
         if (errorCount === 0) {

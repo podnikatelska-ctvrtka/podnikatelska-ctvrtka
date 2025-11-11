@@ -1396,9 +1396,26 @@ export function MobileFitValidator({
               <Button
                 onClick={() => {
                   haptic('success');
-                  if (onComplete) onComplete(fitScoreData.fitScore);
-                  // ❌ REMOVED: 'fit-validated' achievement doesn't exist - FIT achievements se triggerují podle score (70%, 80%, 90%)
-                  toast.success(`✅ FIT Score: ${fitScoreData.fitScore}%`);
+                  
+                  // 🏆 ACHIEVEMENT: FIT Score achievements (stejně jako desktop)
+                  const fitScore = fitScoreData.fitScore;
+                  if (onAchievementUnlocked) {
+                    if (fitScore >= 70) {
+                      onAchievementUnlocked('fit-70-percent');
+                    }
+                    if (fitScore >= 80) {
+                      onAchievementUnlocked('product-fit-master');
+                    }
+                    if (fitScore >= 90) {
+                      onAchievementUnlocked('fit-90-percent');
+                    }
+                    
+                    // 🎓 Module 3 complete achievement (lekce 16 dokončena)
+                    onAchievementUnlocked('module-3-complete');
+                  }
+                  
+                  if (onComplete) onComplete(fitScore);
+                  toast.success(`✅ FIT Score: ${fitScore}%`);
                 }}
                 className="flex-1 flex items-center gap-2 justify-center bg-green-600 hover:bg-green-700"
               >

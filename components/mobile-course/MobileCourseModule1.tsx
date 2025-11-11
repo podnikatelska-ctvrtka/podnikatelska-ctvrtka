@@ -263,6 +263,19 @@ export function MobileCourseModule1({
               if ((sectionId === 'revenue' || sectionId === 'costs') && updatedSection.some((i: any) => i.value && i.value > 0) && onAchievementUnlocked) {
                 onAchievementUnlocked('profit-calculated');
               }
+              
+              // Check if all 9 sections filled (stejně jako desktop)
+              if (onAchievementUnlocked) {
+                const requiredSections = ['segments', 'value', 'channels', 'relationships', 'revenue', 'resources', 'activities', 'partners', 'costs'];
+                const filledSections = requiredSections.filter(section => {
+                  const data = (canvasData as any)[section] || [];
+                  return data.length > 0;
+                });
+                
+                if (filledSections.length === 9) {
+                  onAchievementUnlocked('all-sections-filled');
+                }
+              }
             }}
             onRemoveItem={(sectionId, index) => {
               const section = (canvasData as any)[sectionId] || [];
