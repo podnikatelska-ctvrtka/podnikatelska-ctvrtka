@@ -254,10 +254,10 @@ export async function handler(event, context) {
     // 4.999 Kč = Early Bird (průkopník, dostane hlavní + mini kurz)
     // 8.499 Kč = Full Price (normální, dostane jen hlavní kurz)
     // 
-    // ⚠️ TESTOVACÍ REŽIM:
-    // 1 Kč (nebo 1.21 Kč s DPH) = Early Bird test → POŠLE MINIKURZ ✅
-    // 2 Kč (nebo 2.42 Kč s DPH) = Full Price test → NEPOŠLE MINIKURZ ❌
-    const isEarlyBird = amount === 4999 || amount === 6049 || amount === 1 || amount === 1.21; // TESTING: 2 Kč NENÍ v podmínce!
+    // ⚠️ CENY UPRAVENY NA PRODUKČNÍ:
+    // 4.999 Kč (nebo 6.049 Kč s DPH) = Průkopník → POŠLE MINIKURZ ✅
+    // 8.499 Kč (nebo 10.284 Kč s DPH) = Normální → NEPOŠLE MINIKURZ ❌
+    const isEarlyBird = amount === 4999 || amount === 6049; // Průkopník (40% sleva)
     
     console.log('👤 Customer:', { email, name, amount, isEarlyBird });
     

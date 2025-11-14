@@ -152,7 +152,7 @@ První v ČR. Poprvé v češtině.
     }
   },
 
-  // COLD #2: PRAVDA (modrá) - Anti-guru
+  // COLD #2: PRAVDA (modrá) - Anti-guru [OPTIMIZED FOR FB 4:5]
   {
     id: 'truth-blue',
     name: 'Cold #2: PRAVDA',
@@ -162,60 +162,60 @@ První v ČR. Poprvé v češtině.
     trigger: 'Authenticity • Problem agitation • Contrast',
     background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
     content: (
-      <div className="flex flex-col items-center justify-center h-full text-center px-8 py-6">
-        <div className="bg-red-600 text-white px-10 py-4 rounded-lg mb-6 shadow-lg">
-          <p className="text-3xl font-black">
-            ⚠️ PRAVDA, KTEROU NIKDO NEŘEKNE
+      <div className="flex flex-col items-center justify-center h-full text-center px-8 py-5">
+        <div className="bg-red-600 text-white px-8 py-3 rounded-lg mb-4 shadow-lg">
+          <p className="text-2xl font-black">
+            ⚠️ PRAVDA
           </p>
         </div>
 
-        <h1 className="text-6xl font-black text-white mb-8 leading-tight drop-shadow-lg">
+        <h1 className="text-5xl font-black text-white mb-5 leading-tight drop-shadow-lg">
           V Česku žádná<br/>
           <span className="text-red-400">REÁLNÁ POMOC</span><br/>
           podnikatelům není.
         </h1>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-7 mb-7 max-w-3xl w-full border-2 border-white/30">
-          <div className="space-y-4 text-left">
-            <p className="text-2xl">
-              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Guru kurzy?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(50 hodin teorie, nula praxe)</span>
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 mb-4 max-w-3xl w-full border-2 border-white/30">
+          <div className="space-y-2 text-left">
+            <p className="text-lg">
+              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Guru kurzy?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(50h teorie)</span>
             </p>
-            <p className="text-2xl">
-              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">FB marketing experti?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(Každý umí reklamu. Nikdo byznys.)</span>
+            <p className="text-lg">
+              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">FB marketing?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(Nikdo byznys neřeší)</span>
             </p>
-            <p className="text-2xl">
-              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Online konzultanti?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(Obecné rady)</span>
+            <p className="text-lg">
+              <span style={{ color: '#ffffff' }}>✅ <span className="font-bold">Konzultanti?</span> Máme.</span> <span style={{ color: '#e5e5e5' }}>(Obecné rady)</span>
             </p>
-            <p className="text-3xl font-black mt-6" style={{ color: '#fbbf24' }}>
+            <p className="text-2xl font-black mt-3" style={{ color: '#fbbf24' }}>
               ❌ KONKRÉTNÍ METODA? NIKDE.
             </p>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black rounded-xl px-10 py-6 mb-7 shadow-lg">
-          <p className="text-4xl font-black mb-2">
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-black rounded-xl px-8 py-4 mb-4 shadow-lg">
+          <p className="text-3xl font-black mb-1">
             TAK JSME TO VYTVOŘILI.
           </p>
-          <p className="text-2xl font-bold">
-            Funkční systém • Konečně realita • Bez keců
+          <p className="text-lg font-bold">
+            Funkční systém • Konečně realita
           </p>
         </div>
 
-        <div className="mb-7">
-          <p className="text-5xl font-black text-white mb-3">
+        <div className="mb-4">
+          <p className="text-4xl font-black text-white mb-2">
             PODNIKATELSKÁ ČTVRTKA
           </p>
-          <p className="text-2xl text-gray-300">
-            Celý byznys model • 90 minut • Hotovo
+          <p className="text-xl text-gray-300">
+            Model podnikání • 90 minut • Hotovo
           </p>
         </div>
 
-        <div className="bg-white text-black px-16 py-7 rounded-xl shadow-2xl mb-5">
-          <p className="text-5xl font-black">CHCI VIDĚT! →</p>
+        <div className="bg-white text-black px-12 py-5 rounded-xl shadow-2xl mb-3">
+          <p className="text-4xl font-black">CHCI VIDĚT! →</p>
         </div>
 
-        <p className="text-yellow-300 text-2xl font-bold">
-          🔥 Jenom 50 lidí • Průkopnická cena • Sleva 40%
+        <p className="text-yellow-300 text-xl font-bold">
+          🔥 50 lidí • Sleva 40%
         </p>
       </div>
     ),
@@ -630,7 +630,7 @@ Interaktivní byznys model • 90 minut • 4.999 Kč
     }
   },
 
-  // COLD #6: DENNÍ ZTRÁTY - Huge pain (s konkrétními čísly!)
+  // COLD #6: DENNÍ ZTRÁTY - Huge pain [OPTIMIZED FOR FB 4:5]
   {
     id: 'daily-loss',
     name: 'Cold #6: DENNÍ ZTRÁTY',
@@ -640,69 +640,71 @@ Interaktivní byznys model • 90 minut • 4.999 Kč
     trigger: 'Loss aversion • Pain agitation • Hope',
     background: 'linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%)',
     content: (
-      <div className="flex flex-col items-center justify-center h-full text-center px-10 py-3">
-        <div className="text-8xl mb-3">💸</div>
-
-        <h1 className="text-7xl font-black text-white mb-4 leading-tight drop-shadow-lg">
+      <div className="flex flex-col items-center justify-center h-full text-center px-8 py-4">
+        <h1 className="text-6xl font-black text-white mb-3 leading-tight drop-shadow-lg">
           KAŽDÝ DEN<br/>
           <span className="text-red-300">ZTRÁCÍŠ PENÍZE</span>
         </h1>
 
-        <p className="text-3xl text-gray-300 mb-5">
+        <p className="text-2xl text-gray-300 mb-4">
           A ani to nevíš.
         </p>
 
-        <div className="bg-white/95 rounded-2xl p-6 mb-4 max-w-4xl w-full">
-          <p className="text-3xl font-black text-gray-900 mb-4">
-            Bez jasné strategie:
-          </p>
-          
-          <div className="space-y-2 text-left">
-            <div className="bg-red-50 rounded-lg p-3 border-l-4 border-red-500">
-              <p className="text-3xl font-bold text-red-600">-1.500 Kč/den</p>
-              <p className="text-base text-gray-600 mt-1">Nevíš komu prodávat = prázdno</p>
+        {/* 2-column layout for compactness */}
+        <div className="grid grid-cols-2 gap-3 mb-4 max-w-4xl w-full">
+          <div className="bg-white/95 rounded-xl p-4">
+            <p className="text-2xl font-black text-gray-900 mb-3">
+              Bez jasné strategie:
+            </p>
+            <div className="space-y-2">
+              <div className="bg-red-50 rounded-lg p-2 border-l-4 border-red-500">
+                <p className="text-2xl font-bold text-red-600">-1.500 Kč/den</p>
+                <p className="text-sm text-gray-600">Nevíš komu prodávat</p>
+              </div>
+              <div className="bg-yellow-50 rounded-lg p-2 border-l-4 border-yellow-500">
+                <p className="text-2xl font-bold text-yellow-700">-600 Kč/den</p>
+                <p className="text-sm text-gray-600">Prodáváš levně</p>
+              </div>
+              <div className="bg-red-600 rounded-lg p-3">
+                <p className="text-xl font-black text-white">
+                  ⏰ Čas běží • Stojíš na místě
+                </p>
+              </div>
             </div>
+          </div>
 
-            <div className="bg-yellow-50 rounded-lg p-3 border-l-4 border-yellow-500">
-              <p className="text-3xl font-bold text-yellow-700">-600 Kč/den</p>
-              <p className="text-base text-gray-600 mt-1">Prodáváš levně = málo marže</p>
-            </div>
-
-            <div className="h-px bg-gray-300 my-2"></div>
-
-            <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-5 border-l-4 border-red-800">
-              <p className="text-3xl font-black text-white mb-2">
-                ⏰ NEJVĚTŠÍ ZTRÁTA?
-              </p>
-              <p className="text-lg font-bold text-yellow-300">
-                Čas běží • Příležitosti mizí • Stojíš na místě
-              </p>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border-2 border-white/30 flex flex-col justify-center">
+            <p className="text-3xl font-black mb-2 text-green-400">
+              💡 CO KDYBY...
+            </p>
+            <p className="text-lg mb-2 text-white">
+              Za 90 minut měl/a<br/>
+              <span className="text-yellow-300 font-black text-2xl">INTERAKTIVNÍ PLÁN</span>
+            </p>
+            <div className="text-base text-gray-200 space-y-1">
+              <p>✓ Víš komu prodávat</p>
+              <p>✓ Víš jak na marketing</p>
+              <p>✓ Máš jasné ceny</p>
+              <p className="text-yellow-300 font-bold">✓ Přestaneš ztrácet peníze</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl px-10 py-5 mb-4 border-2 border-white/30">
-          <p className="text-4xl font-black mb-2 text-green-400">
-            💡 CO KDYBY...
+        <div className="mb-3">
+          <p className="text-4xl font-black text-white mb-1">
+            PODNIKATELSKÁ ČTVRTKA
           </p>
-          <p className="text-2xl mb-2 leading-relaxed text-white">
-            Za 90 minut měl/a<br/>
-            <span className="text-yellow-300 font-black text-3xl">INTERAKTIVNÍ PLÁN</span>
-          </p>
-          <p className="text-xl leading-relaxed text-gray-200">
-            ✓ Víš komu prodávat<br/>
-            ✓ Víš jak na marketing<br/>
-            ✓ Máš jasné ceny<br/>
-            <span className="text-yellow-300 font-bold">✓ Přestaneš ztrácet peníze</span>
+          <p className="text-lg text-gray-300">
+            90 minut • 4.999 Kč
           </p>
         </div>
 
-        <div className="bg-white text-black px-14 py-5 rounded-xl shadow-2xl mb-3">
-          <p className="text-4xl font-black">STOP ZTRÁTÁM! →</p>
+        <div className="bg-white text-black px-12 py-4 rounded-xl shadow-2xl mb-3">
+          <p className="text-3xl font-black">STOP ZTRÁTÁM! →</p>
         </div>
 
-        <p className="text-yellow-300 text-xl font-bold">
-          ⏰ 90 minut • 4.999 Kč • Aplikuj okamžitě!
+        <p className="text-yellow-300 text-lg font-bold">
+          ⏰ Prvních 50 • Každý den počítá
         </p>
       </div>
     ),
@@ -735,7 +737,7 @@ Za 90 minut měl/a INTERAKTIVNÍ PLÁN:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 PODNIKATELSKÁ ČTVRTKA
-90 minut • 4.999 Kč • Návratnost: 2 dny
+90 minut • 4.999 Kč
 
 ⏰ Prvních 50 • Každý den počítá`,
       headline: 'Každý den ztrácíš peníze',

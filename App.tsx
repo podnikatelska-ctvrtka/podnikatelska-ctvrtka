@@ -25,6 +25,7 @@ import All6AdSets from "./components/All6AdSets";
 import TenNewAngles from "./components/TenNewAngles";
 import Final6Angles from "./components/Final6Angles";
 import Ultimate13Ads from "./components/Ultimate10Ads";
+import ExportAds from "./components/ExportAds";
 import { AdComparison } from "./pages/AdComparison";
 import OrderPage from "./components/OrderPage";
 import OrderPageFinal from "./components/OrderPageFinal";
@@ -34,6 +35,8 @@ import ThankYouPage from "./components/ThankYouPage";
 import EmailPreview from "./components/EmailPreview";
 import WebhookTester from "./components/WebhookTester";
 import UnsubscribePage from "./pages/UnsubscribePage";
+import FBPageAssets from "./components/FBPageAssets";
+import SocialMediaPosts from "./components/SocialMediaPosts";
 
 import { Analytics } from "./components/Analytics";
 import { CriticalCSS } from "./components/CriticalCSS";
@@ -47,6 +50,7 @@ import { Toaster } from "./components/ui/sonner";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import * as Sentry from "@sentry/react";
+import { initMetaPixel, trackPageView } from "./lib/metaPixel";
 
 export default function App() {
   // 🚀 READY TO DEPLOY - Fresh version with all ads and improvements!
@@ -97,7 +101,17 @@ export default function App() {
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [showWebhookTester, setShowWebhookTester] = useState(false);
   const [showUnsubscribe, setShowUnsubscribe] = useState(false);
+  const [showFBAssets, setShowFBAssets] = useState(false);
+  const [showSocialMedia, setShowSocialMedia] = useState(false);
+  const [showExportAds, setShowExportAds] = useState(false);
 
+  
+  // 📊 META PIXEL: Inicializace
+  useEffect(() => {
+    initMetaPixel();
+    trackPageView();
+    console.log('🎯 Meta Pixel inicializován a PageView tracked!');
+  }, []);
   
   // 📱 PWA AUTO-REDIRECT: Pokud user otevře PWA z desktopu a má uložený token
   useEffect(() => {
@@ -170,8 +184,86 @@ export default function App() {
       const isTestMode = urlParams.get('test') === 'true';
       setOrderPageTestMode(isTestMode);
       
-      if (hash.startsWith('#odhlasit-odber') || path === '/odhlasit-odber') {
+      if (hash.startsWith('#export-ads') || path === '/export-ads') {
+        setShowExportAds(true);
+        setShowSocialMedia(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#social-media') || path === '/social-media') {
+        setShowSocialMedia(true);
+        setShowExportAds(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#fb-assets') || path === '/fb-assets') {
+        setShowFBAssets(true);
+        setShowSocialMedia(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#odhlasit-odber') || path === '/odhlasit-odber') {
         setShowUnsubscribe(true);
+        setShowFBAssets(false);
         setShowWebhookTester(false);
         setShowEmailPreview(false);
         setShowUltimate10Ads(false);
@@ -539,12 +631,45 @@ export default function App() {
     );
   }
   
+  // Show Export Ads if URL has #export-ads
+  if (showExportAds) {
+    return (
+      <>
+        <CriticalCSS />
+        <ExportAds />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
   // Show Webhook Tester if URL has #test-webhook
   if (showWebhookTester) {
     return (
       <>
         <CriticalCSS />
         <WebhookTester />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Social Media Posts if URL has #social-media
+  if (showSocialMedia) {
+    return (
+      <>
+        <CriticalCSS />
+        <SocialMediaPosts />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show FB Assets if URL has #fb-assets
+  if (showFBAssets) {
+    return (
+      <>
+        <CriticalCSS />
+        <FBPageAssets />
         <Toaster position="top-right" />
       </>
     );

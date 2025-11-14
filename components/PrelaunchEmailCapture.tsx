@@ -8,6 +8,7 @@ import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
 import { trackCourseEvent, trackError } from "../lib/sentry";
 import { getRemainingSpots, isCampaignFull, getUrgencyText } from "../lib/scarcity";
+import { trackLead } from "../lib/metaPixel";
 
 // 🎯 EMAIL SERVICE CONFIG - Choose your method!
 const EMAIL_SERVICE = {
@@ -109,15 +110,8 @@ export function PrelaunchEmailCapture() {
       });
     }
     
-    // Track conversion - Facebook Pixel
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'Lead', {
-        content_name: 'Průkopník Prelaunch',
-        content_category: 'prelaunch_email_capture',
-        value: 7999, // Hodnota úspory
-        currency: 'CZK'
-      });
-    }
+    // 🎯 META PIXEL: Track Lead conversion!
+    trackLead(email);
 
     // 🎯 POŠLI EMAIL - podle konfigurace
     

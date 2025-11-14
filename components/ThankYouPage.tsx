@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { CheckCircle, Sparkles, Loader2, Mail, Lock, Zap } from 'lucide-react';
 import { motion } from 'motion/react';
 import { celebrateModuleComplete } from '../lib/confetti';
+import { trackPurchase } from '../lib/metaPixel';
 
 export default function ThankYouPage() {
   const [isVerifying, setIsVerifying] = useState(true);
@@ -26,12 +27,22 @@ export default function ThankYouPage() {
     if (token) {
       setIsVerifying(false);
       
+      // 🎯 META PIXEL: Track Purchase conversion!
+      // Hodnota: 4999 Kč (průkopnická sleva 40%)
+      trackPurchase(4999, token);
+      console.log('💰 Meta Pixel: Purchase tracked! 4999 Kč');
+      
       // Fire confetti
       celebrateModuleComplete();
     } else {
       // If no token, wait a bit (payment might be processing)
       setTimeout(() => {
         setIsVerifying(false);
+        
+        // Track purchase i bez tokenu (fallback)
+        trackPurchase(4999);
+        console.log('💰 Meta Pixel: Purchase tracked (no token)');
+        
         celebrateModuleComplete();
       }, 2000);
     }

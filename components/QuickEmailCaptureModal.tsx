@@ -6,6 +6,7 @@ import { CheckCircle, ArrowRight, Gift, Zap, Target, Users, Sparkles } from "luc
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { getRemainingSpots, isCampaignFull } from "../lib/scarcity";
+import { trackLead } from "../lib/metaPixel";
 
 // 🎯 EMAIL SERVICE CONFIG - Smartemailing
 const EMAIL_SERVICE = {
@@ -90,15 +91,27 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
       }
     }
 
+    // 🎯 META PIXEL: Track Lead conversion!
+    trackLead(email);
+    console.log('🎯 [Hero Modal] Meta Pixel: Lead tracked!', email);
+    
     // Zobraz step 2
     setTimeout(() => {
       setIsLoading(false);
       setStep(2);
       
-      toast.success("🎉 Úspěšně registrováno!", {
-        description: "Sledujte svůj email pro další instrukce",
-        duration: 5000,
-      });
+      // ✅ Různé zprávy pro normální registraci vs. waitlist
+      if (isWaitlist) {
+        toast.success("📝 Zapsáno na čekací listinu!", {
+          description: "Ozveme se vám až budou nová místa k dispozici",
+          duration: 5000,
+        });
+      } else {
+        toast.success("🎉 Úspěšně registrováno!", {
+          description: "Sledujte svůj email pro další instrukce",
+          duration: 5000,
+        });
+      }
     }, 500);
   };
 
@@ -269,29 +282,47 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
             >
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-center mb-2">
-                  <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                    ✅ Jste zaregistrováni!
-                  </span>
+                  {isWaitlist ? (
+                    <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                      📝 Jste na čekací listině!
+                    </span>
+                  ) : (
+                    <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      ✅ Jste zaregistrováni!
+                    </span>
+                  )}
                 </DialogTitle>
                 <DialogDescription className="text-sm text-gray-600 text-center">
-                  Co vás čeká v kurzu Podnikatelská Čtvrtka
+                  {isWaitlist ? (
+                    "Ozveme se vám, až budou nová místa k dispozici"
+                  ) : (
+                    "Co vás čeká v kurzu Podnikatelská Čtvrtka"
+                  )}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-5 pt-4">
                 {/* Success Message */}
                 <motion.div 
-                  className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border-2 border-green-200 text-center"
+                  className={`rounded-xl p-5 border-2 text-center ${
+                    isWaitlist 
+                      ? 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200' 
+                      : 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'
+                  }`}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                  <p className="text-sm text-green-800 font-medium">
+                  <CheckCircle className={`w-12 h-12 mx-auto mb-3 ${isWaitlist ? 'text-orange-600' : 'text-green-600'}`} />
+                  <p className={`text-sm font-medium ${isWaitlist ? 'text-orange-800' : 'text-green-800'}`}>
                     Email odeslán na <span className="font-bold">{email}</span>
                   </p>
-                  <p className="text-xs text-green-700 mt-1">
-                    Sledujte schránku pro exkluzivní nabídku
+                  <p className={`text-xs mt-1 ${isWaitlist ? 'text-orange-700' : 'text-green-700'}`}>
+                    {isWaitlist ? (
+                      "Kontaktujeme vás, jakmile budou nová místa"
+                    ) : (
+                      "Sledujte schránku pro exkluzivní nabídku"
+                    )}
                   </p>
                 </motion.div>
 

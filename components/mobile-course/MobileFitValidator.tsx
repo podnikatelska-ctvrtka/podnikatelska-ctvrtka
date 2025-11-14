@@ -1495,20 +1495,6 @@ export function MobileFitValidator({
                 <ArrowLeft className="w-4 h-4" />
                 Zpět
               </Button>
-              {/* 🔄 Validovat znovu button */}
-              <Button
-                onClick={() => {
-                  haptic('medium');
-                  setCurrentStep(1);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  toast.info('🔄 Začínáme znovu');
-                }}
-                variant="outline"
-                className={isLessonCompleted ? "flex-1 flex items-center gap-2" : "flex items-center gap-2"}
-              >
-                <Target className="w-4 h-4" />
-                Znovu
-              </Button>
               
               {/* ✅ Skrýt "Dokončit lekci" když je lekce completed */}
               {!isLessonCompleted && (

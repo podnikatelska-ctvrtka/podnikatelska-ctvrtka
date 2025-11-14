@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { LiveProductShowcase } from './LiveProductShowcase';
 import { trackCourseEvent, trackError } from '../lib/sentry';
+import { trackInitiateCheckout, trackViewContent } from '../lib/metaPixel';
 
 interface OrderPageProps {
   expired?: boolean;
@@ -24,6 +25,11 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useEffect(() => {
+    // 🎯 META PIXEL: Track InitiateCheckout (uživatel vidí order page)
+    trackInitiateCheckout();
+    trackViewContent('Order Page - Podnikatelská Čtvrtka');
+    console.log('🛒 Meta Pixel: InitiateCheckout tracked!');
+    
     // Detekce A/B varianty a error stavu z URL
     const urlParams = new URLSearchParams(window.location.search);
     
