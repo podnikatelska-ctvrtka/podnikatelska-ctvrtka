@@ -15,11 +15,15 @@ Sentry.init({
   // Performance monitoring
   integrations: [
     Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration({
-      // Session replay pro debugging
-      maskAllText: false, // Zobrazí text (pokud nechceš, změň na true)
-      blockAllMedia: true, // Blokuje obrázky/videa (GDPR friendly)
-    }),
+    // 🔧 FIX: Disable replay v Facebook/Instagram in-app browseru (způsobovalo chyby)
+    ...(navigator.userAgent.includes('FBAN') || navigator.userAgent.includes('FBAV') || navigator.userAgent.includes('Instagram') 
+      ? [] 
+      : [Sentry.replayIntegration({
+          // Session replay pro debugging
+          maskAllText: false, // Zobrazí text (pokud nechceš, změň na true)
+          blockAllMedia: true, // Blokuje obrázky/videa (GDPR friendly)
+        })]
+    ),
   ],
   
   // Performance traces sample rate (1.0 = 100%)
@@ -36,6 +40,9 @@ Sentry.init({
   ignoreErrors: [
     'ResizeObserver loop limit exceeded',
     'Non-Error promise rejection captured',
+    // Facebook/Instagram in-app browser errors
+    'enableAbortionListenerCatalogning',
+    'Java exception when invoking Java function',
   ],
   
   // Before sending - přidej custom data
