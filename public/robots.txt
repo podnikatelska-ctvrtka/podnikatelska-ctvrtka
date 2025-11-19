@@ -1,0 +1,18 @@
+# robots.txt pro Podnikatelskou čtvrtku
+# Optimalizováno pro maximální SEO viditelnost
+
+User-agent: *
+Allow: /
+
+# Blokovat admin/internal stránky
+Disallow: /admin
+Disallow: /test
+Disallow: /dev
+Disallow: /_next/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://www.podnikatelskactvrtka.cz/sitemap.xml
+
+# Crawl delay (optional - pro slušné boty)
+Crawl-delay: 1

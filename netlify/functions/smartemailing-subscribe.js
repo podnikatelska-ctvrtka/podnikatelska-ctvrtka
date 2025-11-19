@@ -29,9 +29,9 @@ export async function handler(event, context) {
   
   try {
     // Parse request body
-    const { email, name } = JSON.parse(event.body);
+    const { email, name, isWaitlist } = JSON.parse(event.body);
     
-    console.log('📧 Smartemailing subscription request:', { email, name });
+    console.log('📧 Smartemailing subscription request:', { email, name, isWaitlist });
     
     // Validate email
     if (!email || !email.includes('@')) {
@@ -85,9 +85,10 @@ export async function handler(event, context) {
               status: 'confirmed' // Důležité: status kontaktu v listu
             }
           ],
-          // Custom fields podle potřeby
+          // 🎯 Custom fields - tag pro waitlist
           customfields: {
-            // source: 'landing_page_prelaunch'
+            source: isWaitlist ? 'landing_page_waitlist' : 'landing_page_prelaunch',
+            waitlist: isWaitlist ? 'true' : 'false'
           }
         }]
       })

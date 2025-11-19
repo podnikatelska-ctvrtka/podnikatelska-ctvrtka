@@ -36,9 +36,11 @@ import EmailPreview from "./components/EmailPreview";
 import WebhookTester from "./components/WebhookTester";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import FBPageAssets from "./components/FBPageAssets";
-import SocialMediaPosts from "./components/SocialMediaPosts";
+import OrganicPosts from "./components/OrganicPosts";
+import AdOptimizationWeek1 from "./components/AdOptimizationWeek1";
 
 import { Analytics } from "./components/Analytics";
+import { AnalyticsTracking } from "./components/AnalyticsTracking";
 import { CriticalCSS } from "./components/CriticalCSS";
 import { MobileProgressBar } from "./components/MobileProgressBar";
 import { OptimizedMobileCTA } from "./components/OptimizedMobileCTA";
@@ -51,6 +53,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import * as Sentry from "@sentry/react";
 import { initMetaPixel, trackPageView } from "./lib/metaPixel";
+import { initAllAnalytics } from "./lib/analytics";
 
 export default function App() {
   // 🚀 READY TO DEPLOY - Fresh version with all ads and improvements!
@@ -102,8 +105,9 @@ export default function App() {
   const [showWebhookTester, setShowWebhookTester] = useState(false);
   const [showUnsubscribe, setShowUnsubscribe] = useState(false);
   const [showFBAssets, setShowFBAssets] = useState(false);
-  const [showSocialMedia, setShowSocialMedia] = useState(false);
   const [showExportAds, setShowExportAds] = useState(false);
+  const [showOrganicPosts, setShowOrganicPosts] = useState(false);
+  const [showAdOptimization, setShowAdOptimization] = useState(false);
 
   
   // 📊 META PIXEL: Inicializace
@@ -111,6 +115,11 @@ export default function App() {
     initMetaPixel();
     trackPageView();
     console.log('🎯 Meta Pixel inicializován a PageView tracked!');
+  }, []);
+  
+  // 📊 ANALYTICS: Inicializace GA4 + Clarity
+  useEffect(() => {
+    initAllAnalytics();
   }, []);
   
   // 📱 PWA AUTO-REDIRECT: Pokud user otevře PWA z desktopu a má uložený token
@@ -126,7 +135,7 @@ export default function App() {
     // Zjisti jestli máme uložený token
     const savedToken = localStorage.getItem('course_access_token');
     
-    // Pokud VŠECHNY 3 podmínky platí → redirect do kurzu!
+    // Pokud VŠECHNY 3 podmínky platí  redirect do kurzu!
     if (isPWA && isLandingPage && savedToken) {
       console.log('📱 PWA otevřena z desktopu → redirect do kurzu s tokenem:', savedToken);
       window.location.href = `/#course-v3?token=${savedToken}`;
@@ -184,9 +193,10 @@ export default function App() {
       const isTestMode = urlParams.get('test') === 'true';
       setOrderPageTestMode(isTestMode);
       
-      if (hash.startsWith('#export-ads') || path === '/export-ads') {
-        setShowExportAds(true);
-        setShowSocialMedia(false);
+      if (hash.startsWith('#ad-optimization') || path === '/ad-optimization') {
+        setShowAdOptimization(true);
+        setShowOrganicPosts(false);
+        setShowExportAds(false);
         setShowFBAssets(false);
         setShowUnsubscribe(false);
         setShowWebhookTester(false);
@@ -210,9 +220,35 @@ export default function App() {
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
-      } else if (hash.startsWith('#social-media') || path === '/social-media') {
-        setShowSocialMedia(true);
-        setShowExportAds(false);
+      } else if (hash.startsWith('#organic-posts') || path === '/organic-posts') {
+        setShowOrganicPosts(true);
+        setShowAdOptimization(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#export-ads') || path === '/export-ads') {
+        setShowExportAds(true);
+        setShowOrganicPosts(false);
         setShowFBAssets(false);
         setShowUnsubscribe(false);
         setShowWebhookTester(false);
@@ -238,7 +274,6 @@ export default function App() {
         setShowCourseV3(false);
       } else if (hash.startsWith('#fb-assets') || path === '/fb-assets') {
         setShowFBAssets(true);
-        setShowSocialMedia(false);
         setShowUnsubscribe(false);
         setShowWebhookTester(false);
         setShowEmailPreview(false);
@@ -653,12 +688,23 @@ export default function App() {
     );
   }
   
-  // Show Social Media Posts if URL has #social-media
-  if (showSocialMedia) {
+  // Show Organic Posts if URL has #organic-posts
+  if (showOrganicPosts) {
     return (
       <>
         <CriticalCSS />
-        <SocialMediaPosts />
+        <OrganicPosts />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Ad Optimization if URL has #ad-optimization
+  if (showAdOptimization) {
+    return (
+      <>
+        <CriticalCSS />
+        <AdOptimizationWeek1 />
         <Toaster position="top-right" />
       </>
     );
@@ -897,10 +943,12 @@ export default function App() {
       {/* Analytics tracking */}
       <Analytics />
       
+      {/* Scroll depth tracking */}
+      <AnalyticsTracking />
+      
       {/* Mobile UX Enhancements */}
       <MobileProgressBar />
       <OptimizedMobileCTA />
-      
     <div className="min-h-screen">
       {/* 1. Úvod a hlavní nabídka */}
       <HeroSection />

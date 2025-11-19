@@ -127,7 +127,7 @@ export function HeroSection() {
                     className="text-lg text-gray-600 leading-relaxed"
                   >
                     <span className="text-indigo-600 font-medium">Pro každého podnikatele – od e-shopů po freelancery a služby.</span>
-                    <br className="hidden sm:block" />
+                    <br />
                     Žádná teorie – vyplňujete přímo v kurzu a odcházíte s konkrétním výsledkem.
                   </p>
                 </div>

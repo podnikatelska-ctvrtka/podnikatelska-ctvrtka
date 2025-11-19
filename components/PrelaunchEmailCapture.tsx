@@ -220,6 +220,7 @@ export function PrelaunchEmailCapture() {
             body: JSON.stringify({
               email: email,
               name: '',
+              isWaitlist: isWaitlist, // 🎯 Tag pro rozlišení waitlist vs normal opt-in
             }),
           });
           
@@ -630,23 +631,19 @@ export function PrelaunchEmailCapture() {
                     
                     {/* Cenový design */}
                     <div className="text-center">
-                      {!isCampaignFull() ? (
-                        <>
-                          {/* Hlavní cena SE SLEVOU */}
-                          <div className="text-4xl md:text-5xl font-bold text-white bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-2 drop-shadow-lg">
-                            4.999,- Kč
+                      {/* 🎯 VŽDY zobrazit SLEVOVOU CENU - i pro waitlist! */}
+                      <div className="text-4xl md:text-5xl font-bold text-white bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-2 drop-shadow-lg">
+                        4.999,- Kč
+                      </div>
+                      <div className="text-white/60 text-sm mb-2">(normálně 8.499,- Kč)</div>
+                      <div className="text-white/50 text-xs mb-4">bez DPH</div>
+                      
+                      {isCampaignFull() && (
+                        <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg px-4 py-2 mb-4">
+                          <div className="text-yellow-300 text-sm font-medium">
+                            ⚠️ Místa obsazena - na čekací listině dostanete stejnou slevu!
                           </div>
-                          <div className="text-white/60 text-sm mb-2">(normálně 8.499,- Kč)</div>
-                          <div className="text-white/50 text-xs mb-4">bez DPH</div>
-                        </>
-                      ) : (
-                        <>
-                          {/* Normální cena BEZ SLEVY */}
-                          <div className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
-                            8.499,- Kč
-                          </div>
-                          <div className="text-white/50 text-xs mb-4">bez DPH (běžná cena)</div>
-                        </>
+                        </div>
                       )}
                       
                       {/* Co obsahuje */}
@@ -665,22 +662,19 @@ export function PrelaunchEmailCapture() {
                           <div className="flex justify-between">
                             <span>• Úspěšné modely (příklady)</span>
                           </div>
-                          {!isCampaignFull() && (
-                            <div className="border-t border-white/30 mt-2 pt-2 flex justify-between text-green-300 font-medium">
-                              <span>🎁 BONUS: Mini kurz</span>
-                              <span>ZDARMA</span>
-                            </div>
-                          )}
+                          {/* 🎯 BONUS mini kurz - VŽDY zobrazit (i pro waitlist!) */}
+                          <div className="border-t border-white/30 mt-2 pt-2 flex justify-between text-green-300 font-medium">
+                            <span>🎁 BONUS: Mini kurz</span>
+                            <span>ZDARMA</span>
+                          </div>
                         </div>
                       </div>
                       
-                      {/* Sleva info - jen když není plno */}
-                      {!isCampaignFull() && (
-                        <div className="inline-flex flex-col items-center gap-1 bg-gradient-to-r from-green-500/25 to-emerald-500/25 px-5 py-3 rounded-xl border-2 border-green-400/50 transition-all hover:shadow-xl hover:scale-105">
-                          <div className="text-green-300 font-bold text-lg">💰 UŠETŘÍTE 3.500,- Kč</div>
-                          <div className="text-green-200 text-sm">Sleva 40%</div>
-                        </div>
-                      )}
+                      {/* 🎯 Sleva info - VŽDY zobrazit (i pro waitlist!) */}
+                      <div className="inline-flex flex-col items-center gap-1 bg-gradient-to-r from-green-500/25 to-emerald-500/25 px-5 py-3 rounded-xl border-2 border-green-400/50 transition-all hover:shadow-xl hover:scale-105">
+                        <div className="text-green-300 font-bold text-lg">💰 UŠETŘÍTE 3.500,- Kč</div>
+                        <div className="text-green-200 text-sm">Sleva 40%</div>
+                      </div>
                     </div>
                   </div>
                   

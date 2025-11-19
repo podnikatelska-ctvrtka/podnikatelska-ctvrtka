@@ -76,6 +76,7 @@ export function QuickEmailCaptureModal({ open, onOpenChange }: QuickEmailCapture
           body: JSON.stringify({
             email: email,
             name: '',
+            isWaitlist: isWaitlist, // 🎯 Tag pro rozlišení waitlist vs normal opt-in
           }),
         });
 
