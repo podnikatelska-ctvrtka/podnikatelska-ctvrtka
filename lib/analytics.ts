@@ -98,35 +98,47 @@ export const initClarity = () => {
     return;
   }
 
-  // Load Clarity script
-  (function(c: any, l: any, a: any, r: any, i: any, t: any, y: any) {
-    c[a] = c[a] || function() {
-      (c[a].q = c[a].q || []).push(arguments);
-    };
-    t = l.createElement(r);
-    t.async = 1;
-    t.src = "https://www.clarity.ms/tag/" + i;
-    y = l.getElementsByTagName(r)[0];
-    y.parentNode.insertBefore(t, y);
-  })(window, document, "clarity", "script", CLARITY_PROJECT_ID);
+  try {
+    // Load Clarity script
+    (function(c: any, l: any, a: any, r: any, i: any, t: any, y: any) {
+      c[a] = c[a] || function() {
+        (c[a].q = c[a].q || []).push(arguments);
+      };
+      t = l.createElement(r);
+      t.async = 1;
+      t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0];
+      y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", CLARITY_PROJECT_ID);
 
-  console.log('✅ Clarity initialized:', CLARITY_PROJECT_ID);
+    console.log('✅ Clarity initialized:', CLARITY_PROJECT_ID);
+  } catch (error) {
+    console.warn('⚠️ Clarity initialization failed:', error);
+  }
 };
 
 // Track Custom Clarity Event
 export const trackClarityEvent = (eventName: string) => {
   if (!window.clarity) return;
   
-  window.clarity('event', eventName);
-  console.log('📹 Clarity: Event tracked:', eventName);
+  try {
+    window.clarity('event', eventName);
+    console.log('📹 Clarity: Event tracked:', eventName);
+  } catch (error) {
+    console.warn('⚠️ Clarity event tracking failed:', error);
+  }
 };
 
 // Tag Clarity Session (např. "converted", "bounced", etc.)
 export const tagClaritySession = (tag: string) => {
   if (!window.clarity) return;
   
-  window.clarity('set', tag, 'true');
-  console.log('🏷️ Clarity: Session tagged:', tag);
+  try {
+    window.clarity('set', tag, 'true');
+    console.log('🏷️ Clarity: Session tagged:', tag);
+  } catch (error) {
+    console.warn('⚠️ Clarity session tagging failed:', error);
+  }
 };
 
 // ============================================
