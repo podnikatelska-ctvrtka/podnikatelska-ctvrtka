@@ -396,16 +396,16 @@ Prvních 50 • Sleva 40%
               MODRÁ PILULKA
             </p>
             <div className="space-y-2 text-left">
-              <p className="text-lg" style={{ color: '#d1d5db' }}>
+              <p className="text-xl font-bold" style={{ color: '#d1d5db' }}>
                 ✓ Online kurz (30h videí, žádná akce)
               </p>
-              <p className="text-lg" style={{ color: '#d1d5db' }}>
-                ✓ "Zkusím to sám" (6 měsíců ztraceného času)
+              <p className="text-xl font-bold" style={{ color: '#d1d5db' }}>
+                ✓ "Sám to zvládnu" (6 měsíců hádání)
               </p>
-              <p className="text-lg" style={{ color: '#d1d5db' }}>
-                ✓ Marketingová agentura (bez strategie)
+              <p className="text-xl font-bold" style={{ color: '#d1d5db' }}>
+                ✓ Expert na reklamu (zastaralé cílení)
               </p>
-              <p className="text-lg font-bold" style={{ color: '#fb923c' }}>
+              <p className="text-xl font-bold" style={{ color: '#fb923c' }}>
                 ✓ Nic nedělat (chaos pokračuje)
               </p>
             </div>
@@ -414,7 +414,7 @@ Prvních 50 • Sleva 40%
                 Čas: 3-6 měsíců
               </p>
               <p className="text-base mt-1" style={{ color: '#93c5fd' }}>
-                Výsledek: Nejasný
+                Výsledek: Doufání
               </p>
             </div>
           </div>
@@ -430,17 +430,17 @@ Prvních 50 • Sleva 40%
                 ČERVENÁ PILULKA
               </p>
               <div className="space-y-2 text-left">
-                <p className="text-lg font-bold" style={{ color: '#ffffff' }}>
+                <p className="text-xl font-bold" style={{ color: '#ffffff' }}>
                   ✓ Kompletní byznys strategie
                 </p>
-                <p className="text-lg font-bold" style={{ color: '#fbbf24' }}>
+                <p className="text-xl font-bold" style={{ color: '#fbbf24' }}>
                   ✓ Plán za 90 minut
                 </p>
-                <p className="text-lg font-bold" style={{ color: '#fbbf24' }}>
+                <p className="text-xl font-bold" style={{ color: '#fbbf24' }}>
                   ✓ Víš co dělat zítra
                 </p>
-                <p className="text-lg font-bold" style={{ color: '#fbbf24' }}>
-                  ✓ Byznys vidíš jasně
+                <p className="text-xl font-bold" style={{ color: '#fbbf24' }}>
+                  ✓ Máš kontrolu nad byznysem
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-red-400">
@@ -448,7 +448,7 @@ Prvních 50 • Sleva 40%
                   Čas: 90 minut
                 </p>
                 <p className="text-base mt-1 font-bold" style={{ color: '#fca5a5' }}>
-                  Výsledek: Hotový plán
+                  Výsledek: Funkční byznys
                 </p>
               </div>
             </div>
@@ -459,7 +459,7 @@ Prvních 50 • Sleva 40%
           <p className="text-2xl font-bold mb-2" style={{ color: '#22c55e' }}>
             Co dostaneš s ČERVENOU:
           </p>
-          <div className="space-y-1 text-left text-lg">
+          <div className="space-y-1 text-left text-xl">
             <p style={{ color: '#ffffff' }}>📊 <span className="font-bold">Model podnikání</span> <span style={{ color: '#d1d5db' }}>• Celý model na jedné čtvrtce</span></p>
             <p style={{ color: '#ffffff' }}>💎 <span className="font-bold">FIT Validátor</span> <span style={{ color: '#d1d5db' }}>• Marketing</span></p>
             <p style={{ color: '#ffffff' }}>🎯 <span className="font-bold">Jasný akční plán</span> <span style={{ color: '#d1d5db' }}>• Víš co dělat</span></p>
@@ -514,119 +514,93 @@ VÝSLEDEK: Hotový plán
     category: 'Pain point • Empatie • Operativní chaos',
     budget: '75 Kč/den',
     trigger: 'Burnout • Overwhelm • Hope',
-    background: 'linear-gradient(135deg, #78716c 0%, #57534e 100%)',
+    background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
     content: (
-      <div className="flex flex-col items-center justify-center h-full text-center px-10 py-8">
-        <div className="text-7xl mb-4">😵</div>
+      <div className="flex flex-col items-center justify-center h-full text-center px-8 py-5">
+        <div className="bg-yellow-500 text-black px-8 py-3 rounded-lg mb-4 shadow-lg">
+          <p className="text-2xl font-black">
+            ⚠️ PODNIKATEL?
+          </p>
+        </div>
 
-        <h1 className="text-6xl font-black text-white mb-4 leading-tight drop-shadow-lg">
-          TOPÍŠ SE<br/>
-          <span className="text-stone-300">V OPERATIVĚ?</span>
+        <h1 className="text-5xl font-black text-white mb-5 leading-tight drop-shadow-lg">
+          Pracuješ<br/>
+          <span className="text-red-300">12 HODIN DENNĚ?</span><br/>
+          A byznys neroste.
         </h1>
 
-        <div className="bg-white/95 rounded-2xl p-6 mb-4 max-w-4xl w-full">
-          <p className="text-3xl font-black text-gray-900 mb-4">
-            Celý den řešíš:
-          </p>
-          
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 mb-4 max-w-3xl w-full border-2 border-white/30">
           <div className="space-y-2 text-left">
-            <div className="bg-red-50 rounded-lg p-4 border-l-4 border-red-600">
-              <p className="text-2xl font-bold text-gray-800">📄 Faktury, účetnictví</p>
-              <p className="text-base text-gray-600 mt-1">3 hodiny denně s čísly</p>
-            </div>
-
-            <div className="bg-orange-50 rounded-lg p-4 border-l-4 border-orange-600">
-              <p className="text-2xl font-bold text-gray-800">📦 Dodavatelé, objednávky</p>
-              <p className="text-base text-gray-600 mt-1">Telefonáty a emaily</p>
-            </div>
-
-            <div className="bg-yellow-50 rounded-lg p-4 border-l-4 border-yellow-600">
-              <p className="text-2xl font-bold text-gray-800">🔧 Výroba, služby</p>
-              <p className="text-base text-gray-600 mt-1">Musíš to dělat sám/sama</p>
-            </div>
-
-            <div className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-600">
-              <p className="text-2xl font-bold text-gray-800">📱 Marketing, weby...</p>
-              <p className="text-base text-gray-600 mt-1">"Měl/a bych, ale kdy?"</p>
-            </div>
-
-            <div className="bg-red-100 rounded-lg p-5 border-2 border-red-500 mt-3">
-              <p className="text-2xl font-black text-red-700 mb-2">
-                Výsledek?
-              </p>
-              <p className="text-lg text-gray-800">
-                Pracuješ 12h/den.<br/>
-                Ale byznys neroste.
-              </p>
-            </div>
+            <p className="text-lg">
+              <span style={{ color: '#ffffff' }}>📄 <span className="font-bold">Faktury</span></span> <span style={{ color: '#e5e5e5' }}>(nestíháš)</span>
+            </p>
+            <p className="text-lg">
+              <span style={{ color: '#ffffff' }}>📦 <span className="font-bold">Dodavatelé</span></span> <span style={{ color: '#e5e5e5' }}>(nestíháš)</span>
+            </p>
+            <p className="text-lg">
+              <span style={{ color: '#ffffff' }}>📱 <span className="font-bold">Marketing</span></span> <span style={{ color: '#e5e5e5' }}>(nestíháš)</span>
+            </p>
+            <p className="text-2xl font-black mt-3" style={{ color: '#fbbf24' }}>
+              ❌ PROBLÉM: Pracuješ V byznysu. Ne NA něm.
+            </p>
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl px-10 py-5 mb-4 border-2 border-white/30">
-          <p className="text-4xl font-black mb-2 text-emerald-400">
-            💡 CO KDYBY...
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl px-8 py-4 mb-4 shadow-lg">
+          <p className="text-3xl font-black mb-1">
+            ZA 90 MINUT MÍT SYSTÉM
           </p>
-          <p className="text-2xl mb-2 leading-relaxed text-white">
-            Věděl/a bys <span className="text-yellow-300 font-black text-3xl">NA CO SE ZAMĚŘIT?</span>
+          <p className="text-lg font-bold">
+            Víš co dělat • Víš co delegovat
           </p>
-          <div className="text-left text-xl space-y-1 text-gray-200">
-            <p>✓ Co je důležité PRO RŮST</p>
-            <p>✓ Co je jen "běžná operativa"</p>
-            <p>✓ Kam investovat čas</p>
-            <p className="text-yellow-300 font-bold">✓ Přestaň ztrácet čas na kraviny</p>
-          </div>
         </div>
 
-        <div className="bg-white text-black px-14 py-5 rounded-xl shadow-2xl mb-4">
-          <p className="text-4xl font-black">CHCI PRIORITY →</p>
+        <div className="mb-4">
+          <p className="text-4xl font-black text-white mb-2">
+            PODNIKATELSKÁ ČTVRTKA
+          </p>
+          <p className="text-xl text-gray-300">
+            Model podnikání • 90 minut • Hotovo
+          </p>
         </div>
 
-        <p className="text-stone-300 text-xl font-bold mb-2">
-          🎯 Interaktivní byznys model • 90 minut • 4.999 Kč
+        <div className="bg-white text-black px-12 py-5 rounded-xl shadow-2xl mb-3">
+          <p className="text-4xl font-black">CHCI SYSTÉM →</p>
+        </div>
+
+        <p className="text-yellow-300 text-xl font-bold">
+          🔥 50 lidí • Sleva 40%
         </p>
       </div>
     ),
     copy: {
-      primary: `TOPÍŠ SE V OPERATIVĚ?
+      primary: `PRACUJEŠ 12 HODIN DENNĚ? A byznys neroste?
 
-Celý den řešíš:
+📄 Faktury (nestíháš)
+📦 Dodavatelé (nestíháš)
+📱 Marketing (nestíháš)
 
-📄 Faktury, účetnictví
-→ 3 hodiny denně s čísly
-
-📦 Dodavatelé, objednávky
-→ Telefonáty a emaily
-
-🔧 Výroba, služby
-→ Musíš to dělat sám/sama
-
-📱 Marketing, weby...
-→ "Měl/a bych, ale kdy?"
+PROBLÉM: Pracuješ V byznysu. Ne NA něm.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-VÝSLEDEK?
-Pracuješ 12h/den. Ale byznys neroste.
+ZA 90 MINUT MÍT SYSTÉM
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PODNIKATELSKÁ ČTVRTKA = funkční systém.
 
-💡 CO KDYBY...
+Víš co dělat PRO RŮST.
+Víš co delegovat.
+Přestaň ztrácet čas.
 
-Věděl/a bys NA CO SE ZAMĚŘIT?
+Bez teorií. Bez keců. Bez čekání.
 
-✓ Co je důležité PRO RŮST
-✓ Co je jen "běžná operativa"
-✓ Kam investovat čas
-✓ Přestaň ztrácet čas na kraviny
+🔥 JENOM 50 LIDÍ
+→ Průkopnická cena
+→ Sleva 40% navždy
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PODNIKATELSKÁ ČTVRTKA
-Interaktivní byznys model • 90 minut • 4.999 Kč
-
-🎯 Víš co dělat • Prvních 50 míst`,
-      headline: 'Topíš se v operativě?',
-      cta: 'Chci priority'
+⏰ Není čas na váhání.`,
+      headline: 'Systém místo dřiny • 90 minut',
+      cta: 'Chci systém'
     }
   },
 
@@ -1708,6 +1682,493 @@ Investice: 4.999 Kč
 ✨ Prvních 50 • Tvá budoucnost začíná dnes`,
       headline: 'Představ si za měsíc...',
       cta: 'Chci to taky'
+    }
+  },
+
+  // ========================================
+  // 🎄 COLD #9: VÁNOČNÍ ANGLE - Self-gift
+  // ========================================
+
+  {
+    id: 'christmas-gift',
+    name: 'Cold #9: VÁNOCE 🎄',
+    type: 'cold',
+    category: 'Sezónní • Self-gift • Nový začátek',
+    budget: '75 Kč/den',
+    trigger: 'Self-gift justification • Year-end urgence • Hope',
+    background: 'linear-gradient(135deg, #991b1b 0%, #166534 50%, #ca8a04 100%)',
+    content: (
+      <div className="flex flex-col items-center justify-center h-full text-center px-8 py-6">
+        <div className="text-7xl mb-4">🎄</div>
+
+        <h1 className="text-6xl font-black text-white mb-5 leading-tight drop-shadow-lg">
+          NADĚL SI<br/>
+          <span className="text-yellow-300">POD STROMEČEK</span><br/>
+          FUNGUJÍCÍ BYZNYS?
+        </h1>
+
+        <p className="text-2xl text-gray-300 mb-6">
+          Dárky pro všechny máš.<br/>
+          <span className="font-black text-white">A pro sebe?</span>
+        </p>
+
+        <div className="bg-white/95 rounded-2xl p-6 mb-5 max-w-3xl w-full">
+          <p className="text-2xl font-black text-gray-900 mb-4">
+            Letos pod stromečkem:
+          </p>
+          
+          <div className="space-y-3 text-left">
+            <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-600">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">✅</span>
+                <p className="text-xl font-bold text-gray-900">Dárky pro děti</p>
+              </div>
+              <p className="text-sm text-gray-600 pl-10">
+                Hračky, oblečení, zážitky
+              </p>
+            </div>
+
+            <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-600">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">✅</span>
+                <p className="text-xl font-bold text-gray-900">Dárky pro partnera</p>
+              </div>
+              <p className="text-sm text-gray-600 pl-10">
+                Parfém, elektronika, dovolená
+              </p>
+            </div>
+
+            <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-600">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">✅</span>
+                <p className="text-xl font-bold text-gray-900">Dárky pro rodiče</p>
+              </div>
+              <p className="text-sm text-gray-600 pl-10">
+                Večeře, knihy, poukazy
+              </p>
+            </div>
+
+            <div className="h-px bg-gray-300 my-3"></div>
+
+            <div className="bg-red-50 rounded-lg p-5 border-l-4 border-red-600">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-3xl">❌</span>
+                <p className="text-2xl font-black text-red-700">Dárek pro SEBE?</p>
+              </div>
+              <p className="text-base text-gray-700 pl-12">
+                Zase nic. Zase příští rok. Zase „nemám čas".
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-yellow-600 to-amber-600 text-white rounded-xl px-8 py-5 mb-5 shadow-xl border-2 border-yellow-400">
+          <p className="text-4xl font-black mb-2">
+            LETOS JE TO JINAK
+          </p>
+          <p className="text-xl leading-relaxed">
+            Nadělíš si něco, co opravdu změní život:<br/>
+            <span className="text-yellow-200 font-bold">Jasno v byznysu • Plán na růst • 90 minut</span>
+          </p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 mb-5 max-w-3xl w-full border-2 border-white/30">
+          <p className="text-xl font-bold text-white mb-3">
+            🎁 CO SI NADĚLÍŠ:
+          </p>
+          <div className="space-y-2 text-left text-lg text-gray-300">
+            <p>✓ Víš přesně, komu prodávat</p>
+            <p>✓ Víš, jak zákazníky získat</p>
+            <p>✓ Máš jasný plán na 2025</p>
+            <p className="text-yellow-300 font-bold">✓ 2025 začneš S JASNEM, ne s chaosem</p>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <p className="text-4xl font-black text-white mb-2">
+            PODNIKATELSKÁ ČTVRTKA
+          </p>
+          <p className="text-xl text-gray-300">
+            Nejlepší investice do sebe • 4.999 Kč • 90 minut
+          </p>
+        </div>
+
+        <div className="bg-white text-black px-14 py-6 rounded-xl shadow-2xl mb-4">
+          <p className="text-4xl font-black">NADĚLÍM SI JASNO! →</p>
+        </div>
+
+        <p className="text-yellow-300 text-xl font-bold">
+          🎄 Do Vánoc mít jasno • Prvních 50 míst
+        </p>
+      </div>
+    ),
+    copy: {
+      primary: `🎄 NADĚL SI POD STROMEČEK FUNGUJÍCÍ BYZNYS?
+
+Dárky pro všechny máš. A pro sebe?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LETOS POD STROMEČKEM:
+
+✅ Dárky pro děti (hračky, oblečení, zážitky)
+✅ Dárky pro partnera (parfém, elektronika, dovolená)
+✅ Dárky pro rodiče (večeře, knihy, poukazy)
+
+❌ Dárek pro SEBE?
+→ Zase nic. Zase příští rok. Zase „nemám čas".
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LETOS JE TO JINAK.
+
+Nadělíš si něco, co opravdu změní život:
+→ Jasno v byznysu
+→ Plán na růst
+→ 90 minut = hotovo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎁 CO SI NADĚLÍŠ:
+
+✓ Víš přesně, komu prodávat
+✓ Víš, jak zákazníky získat
+✓ Máš jasný plán na 2025
+✓ 2025 začneš S JASNEM, ne s chaosem
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PODNIKATELSKÁ ČTVRTKA
+Nejlepší investice do sebe
+4.999 Kč • 90 minut
+
+🎄 Do Vánoc mít jasno • Prvních 50 míst`,
+      headline: 'Naděl si fungující byznys?',
+      cta: 'Nadělím si jasno'
+    }
+  },
+
+  // ========================================
+  // 💥 BRUTAL VALUE ADS - Empatická konkrétnost
+  // ========================================
+
+  // BRUTAL #1: CHCI VÍC PENĚZ
+  {
+    id: 'brutal-vic-penez',
+    name: 'BRUTAL #1: CHCI VÍC PENĚZ',
+    type: 'cold',
+    category: 'VALUE • Achieve desire',
+    budget: '20 Kč/den (omnipresent)',
+    trigger: 'Chci víc peněz z byznysu → Brutálně konkrétní touha',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+    content: (
+      <div className="flex flex-col items-center justify-center h-full px-8 py-6 relative overflow-hidden">
+        {/* Matrix background effect */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 text-9xl">💰</div>
+          <div className="absolute bottom-10 right-10 text-9xl">💰</div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-9xl opacity-30">💰</div>
+        </div>
+
+        <div className="relative z-10 max-w-4xl w-full space-y-6">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="text-7xl font-black text-white mb-4 leading-tight">
+              CHCI VÍC PENĚZ<br/>Z BYZNYSU
+            </div>
+            <div className="text-2xl text-gray-400">
+              (Ne víc práce. Víc výsledků.)
+            </div>
+          </div>
+
+          {/* Matrix boxes */}
+          <div className="bg-red-900/30 backdrop-blur border-2 border-red-500/50 rounded-xl p-6 mb-4">
+            <div className="flex items-start gap-4">
+              <span className="text-5xl">❌</span>
+              <div>
+                <p className="text-2xl font-bold text-red-400 mb-2">99% PODNIKATELŮ:</p>
+                <p className="text-xl text-gray-300 leading-relaxed">
+                  Makají víc.<br/>
+                  Investují víc.<br/>
+                  <span className="text-red-400 font-bold">Ale peníze nepřibývají.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-green-900/30 backdrop-blur border-2 border-green-500/50 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <span className="text-5xl">✅</span>
+              <div>
+                <p className="text-2xl font-bold text-green-400 mb-2">1% VÍ JAK:</p>
+                <p className="text-xl text-gray-300 leading-relaxed">
+                  Model podnikání.<br/>
+                  Přesné kroky.<br/>
+                  <span className="text-green-400 font-bold">90 minut = hotovo.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-8">
+            <div className="bg-white text-black px-12 py-6 rounded-xl shadow-2xl inline-block mb-4">
+              <p className="text-4xl font-black">CHCI MODEL →</p>
+            </div>
+            <p className="text-xl text-gray-400">
+              Podnikatelská Čtvrtka • 4.999 Kč
+            </p>
+          </div>
+        </div>
+      </div>
+    ),
+    copy: {
+      primary: `CHCI VÍC PENĚZ Z BYZNYSU.
+
+(Ne víc práce. Víc výsledků.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ 99% PODNIKATELŮ:
+
+→ Makají víc
+→ Investují víc
+→ Ale peníze nepřibývají
+
+Proč? Nemají MODEL.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ 1% VÍ JAK:
+
+→ Model podnikání
+→ Přesné kroky
+→ 90 minut = hotovo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PODNIKATELSKÁ ČTVRTKA
+
+Postav si Model za 90 minut.
+Pak škáluj.
+
+👉 www.podnikatelskactvrtka.cz
+4.999 Kč
+
+#modelpodnikani #podnikani #rust #zisk`,
+      headline: 'Chci víc peněz z byznysu',
+      cta: 'Chci model'
+    }
+  },
+
+  // BRUTAL #2: NECHCI SE BÁT NÁJMU
+  {
+    id: 'brutal-strach-najmu',
+    name: 'BRUTAL #2: STRACH Z NÁJMU',
+    type: 'cold',
+    category: 'VALUE • Avoid pain',
+    budget: '20 Kč/den (omnipresent)',
+    trigger: 'Nechci se bát nájmu každý měsíc → Brutálně empatický strach',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+    content: (
+      <div className="flex flex-col items-center justify-center h-full px-8 py-6 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 text-9xl">😰</div>
+          <div className="absolute bottom-10 right-10 text-9xl">😰</div>
+        </div>
+
+        <div className="relative z-10 max-w-4xl w-full space-y-6">
+          <div className="text-center mb-8">
+            <div className="text-6xl font-black text-white mb-4 leading-tight">
+              NECHCI SE BÁT NÁJMU<br/>KAŽDÝ MĚSÍC
+            </div>
+            <div className="text-2xl text-gray-400">
+              (Ani ty. Ale něco musíš změnit.)
+            </div>
+          </div>
+
+          <div className="bg-red-900/30 backdrop-blur border-2 border-red-500/50 rounded-xl p-6 mb-4">
+            <div className="flex items-start gap-4">
+              <span className="text-5xl">💔</span>
+              <div>
+                <p className="text-2xl font-bold text-red-400 mb-2">TEĎ:</p>
+                <p className="text-xl text-gray-300 leading-relaxed">
+                  Každý 1. v měsíci = stres.<br/>
+                  „Vyjde to? Nevyjde to?"<br/>
+                  <span className="text-red-400 font-bold">Tohle není svoboda.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-green-900/30 backdrop-blur border-2 border-green-500/50 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <span className="text-5xl">🎯</span>
+              <div>
+                <p className="text-2xl font-bold text-green-400 mb-2">S MODELEM:</p>
+                <p className="text-xl text-gray-300 leading-relaxed">
+                  Víš KDO platí.<br/>
+                  Víš KDE ho najít.<br/>
+                  <span className="text-green-400 font-bold">Nájem není stres. Je jistota.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <div className="bg-white text-black px-12 py-6 rounded-xl shadow-2xl inline-block mb-4">
+              <p className="text-4xl font-black">CHCI JISTOTU →</p>
+            </div>
+            <p className="text-xl text-gray-400">
+              Podnikatelská Čtvrtka • 4.999 Kč
+            </p>
+          </div>
+        </div>
+      </div>
+    ),
+    copy: {
+      primary: `NECHCI SE BÁT NÁJMU KAŽDÝ MĚSÍC.
+
+(Ani ty. Ale něco musíš změnit.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💔 TEĎ:
+
+Každý 1. v měsíci = stres
+„Vyjde to? Nevyjde to?"
+
+Tohle není svoboda.
+To je jen jiná klec.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 S MODELEM:
+
+→ Víš KDO platí
+→ Víš KDE ho najít
+→ Víš CO mu nabídnout
+
+Nájem není stres.
+Je jistota.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PODNIKATELSKÁ ČTVRTKA
+
+90 minut = Model = Klid v hlavě
+
+👉 www.podnikatelskactvrtka.cz
+4.999 Kč
+
+#modelpodnikani #podnikani #jistota #stabilita`,
+      headline: 'Nechci se bát nájmu',
+      cta: 'Chci jistotu'
+    }
+  },
+
+  // BRUTAL #3: NECHCI DĚLAT ZA DVA
+  {
+    id: 'brutal-delat-za-dva',
+    name: 'BRUTAL #3: DŘINA ZA DVA',
+    type: 'cold',
+    category: 'VALUE • Avoid exhaustion',
+    budget: '20 Kč/den (omnipresent)',
+    trigger: 'Nechci dělat za dva lidi 12h denně → Brutální vyčerpání',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+    content: (
+      <div className="flex flex-col items-center justify-center h-full px-8 py-6 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 text-9xl">😫</div>
+          <div className="absolute bottom-10 right-10 text-9xl">⏰</div>
+        </div>
+
+        <div className="relative z-10 max-w-4xl w-full space-y-6">
+          <div className="text-center mb-8">
+            <div className="text-6xl font-black text-white mb-4 leading-tight">
+              NECHCI DĚLAT ZA DVA<br/>12H DENNĚ
+            </div>
+            <div className="text-2xl text-gray-400">
+              (Chtěl jsi svobodu. Ne vyhoření.)
+            </div>
+          </div>
+
+          <div className="bg-red-900/30 backdrop-blur border-2 border-red-500/50 rounded-xl p-6 mb-4">
+            <div className="flex items-start gap-4">
+              <span className="text-5xl">🔥</span>
+              <div>
+                <p className="text-2xl font-bold text-red-400 mb-2">BEZ MODELU:</p>
+                <p className="text-xl text-gray-300 leading-relaxed">
+                  Marketing + Prodej + Účetnictví + Support<br/>
+                  Makáš víc než v práci.<br/>
+                  <span className="text-red-400 font-bold">A stejně nevíš, jestli to funguje.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-green-900/30 backdrop-blur border-2 border-green-500/50 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <span className="text-5xl">⚡</span>
+              <div>
+                <p className="text-2xl font-bold text-green-400 mb-2">S MODELEM:</p>
+                <p className="text-xl text-gray-300 leading-relaxed">
+                  Víš CO je priorita.<br/>
+                  Víš KAM investovat čas.<br/>
+                  <span className="text-green-400 font-bold">Makáš chytře. Ne víc.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <div className="bg-white text-black px-12 py-6 rounded-xl shadow-2xl inline-block mb-4">
+              <p className="text-4xl font-black">CHCI SYSTÉM →</p>
+            </div>
+            <p className="text-xl text-gray-400">
+              Podnikatelská Čtvrtka • 4.999 Kč
+            </p>
+          </div>
+        </div>
+      </div>
+    ),
+    copy: {
+      primary: `NECHCI DĚLAT ZA DVA 12H DENNĚ.
+
+(Chtěl jsi svobodu. Ne vyhoření.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔥 BEZ MODELU:
+
+Marketing + Prodej + Účetnictví + Support
+
+Makáš víc než v práci.
+Víkend neexistuje.
+A stejně nevíš, jestli to funguje.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ S MODELEM:
+
+→ Víš CO je priorita
+→ Víš KAM investovat čas
+→ Víš CO delegovat první
+
+Makáš chytře. Ne víc.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PODNIKATELSKÁ ČTVRTKA
+
+90 minut = Jasno kam makat
+
+👉 www.podnikatelskactvrtka.cz
+4.999 Kč
+
+#modelpodnikani #podnikani #efektivita #system`,
+      headline: 'Nechci dělat za dva 12h denně',
+      cta: 'Chci systém'
     }
   }
 ];

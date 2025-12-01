@@ -105,7 +105,7 @@ export function HeroSection() {
                 {...animationConfig}
               >
                 <span className="text-lg">✨</span>
-                <span className="font-semibold">Od chaosu ke struktuře za 90 minut</span>
+                <span className="font-semibold">Od nápadu k ziskovému byznysu</span>
               </motion.div>
 
               {/* Hlavní nadpis */}
@@ -113,14 +113,14 @@ export function HeroSection() {
                 <h1 
                   className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight"
                 >
-                  <span className="text-indigo-600 font-black">Jeden list papíru</span> změní váš byznys
+                  <span className="text-indigo-600 font-black">Jeden list papíru</span> změní váš život
                 </h1>
                 
                 <div className="space-y-3">
                   <p 
                     className="text-xl text-gray-600 leading-relaxed"
                   >
-                    Za 90 minut vyplníte Čtvrtku krok za krokem a <strong>víte přesně, co dělat dál.</strong>
+                    Za 90 minut víte kolik zákazníků potřebujete, jestli je marže dobrá a jestli to vůbec stojí za to - ještě PŘED startem.
                   </p>
                   
                   <p 
@@ -128,7 +128,7 @@ export function HeroSection() {
                   >
                     <span className="text-indigo-600 font-medium">Pro každého podnikatele – od e-shopů po freelancery a služby.</span>
                     <br />
-                    Žádná teorie – vyplňujete přímo v kurzu a odcházíte s konkrétním výsledkem.
+                    Žádná teorie – vyplňujete přímo v kurzu a odcházíte s konkrétním plánem.
                   </p>
                 </div>
               </div>

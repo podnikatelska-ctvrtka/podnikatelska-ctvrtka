@@ -37,7 +37,14 @@ import WebhookTester from "./components/WebhookTester";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import FBPageAssets from "./components/FBPageAssets";
 import OrganicPosts from "./components/OrganicPosts";
+import { OrganicPostsVideos } from "./components/OrganicPostsVideos";
 import AdOptimizationWeek1 from "./components/AdOptimizationWeek1";
+import StoriesAds from "./components/StoriesAds";
+import { Value3AdsPreview } from "./components/Value3AdsPreview";
+import { Omnipresent10AdsPreview } from "./components/Omnipresent10AdsPreview";
+import { Value3Versions } from "./components/Value3Versions";
+import { Value3NewDesigns } from "./components/Value3NewDesigns";
+import { Value3MediumDesigns } from "./components/Value3MediumDesigns";
 
 import { Analytics } from "./components/Analytics";
 import { AnalyticsTracking } from "./components/AnalyticsTracking";
@@ -108,6 +115,13 @@ export default function App() {
   const [showExportAds, setShowExportAds] = useState(false);
   const [showOrganicPosts, setShowOrganicPosts] = useState(false);
   const [showAdOptimization, setShowAdOptimization] = useState(false);
+  const [showStoriesAds, setShowStoriesAds] = useState(false);
+  const [showValue3Ads, setShowValue3Ads] = useState(false);
+  const [showOmnipresent10, setShowOmnipresent10] = useState(false);
+  const [showOrganicVideos, setShowOrganicVideos] = useState(false);
+  const [showValue3Versions, setShowValue3Versions] = useState(false);
+  const [showValue3NewDesigns, setShowValue3NewDesigns] = useState(false);
+  const [showValue3MediumDesigns, setShowValue3MediumDesigns] = useState(false);
 
   
   // 📊 META PIXEL: Inicializace
@@ -195,8 +209,8 @@ export default function App() {
       
       if (hash.startsWith('#ad-optimization') || path === '/ad-optimization') {
         setShowAdOptimization(true);
+        setShowStoriesAds(false);
         setShowOrganicPosts(false);
-        setShowExportAds(false);
         setShowFBAssets(false);
         setShowUnsubscribe(false);
         setShowWebhookTester(false);
@@ -220,8 +234,85 @@ export default function App() {
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
+      } else if (hash.startsWith('#stories-ads') || path === '/stories-ads') {
+        setShowStoriesAds(true);
+        setShowAdOptimization(false);
+        setShowOrganicPosts(false);
+        setShowValue3Ads(false);
+      } else if (hash.startsWith('#value-ads') || path === '/value-ads') {
+        setShowValue3Ads(true);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+        setShowOmnipresent10(false);
+      } else if (hash.startsWith('#omnipresent-10') || path === '/omnipresent-10') {
+        setShowOmnipresent10(true);
+        setShowValue3Ads(false);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+        setShowValue3Versions(false);
+      } else if (hash.startsWith('#value3-versions') || path === '/value3-versions') {
+        setShowValue3Versions(true);
+        setShowOmnipresent10(false);
+        setShowValue3Ads(false);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+      } else if (hash.startsWith('#value3-new-designs') || path === '/value3-new-designs') {
+        setShowValue3NewDesigns(true);
+        setShowValue3Versions(false);
+        setShowOmnipresent10(false);
+        setShowValue3Ads(false);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+      } else if (hash.startsWith('#value3-medium-designs') || path === '/value3-medium-designs') {
+        setShowValue3MediumDesigns(true);
+        setShowValue3NewDesigns(false);
+        setShowValue3Versions(false);
+        setShowOmnipresent10(false);
+        setShowValue3Ads(false);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
       } else if (hash.startsWith('#organic-posts') || path === '/organic-posts') {
         setShowOrganicPosts(true);
+        setShowOrganicVideos(false);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#organic-videos') || path === '/organic-videos') {
+        setShowOrganicVideos(true);
+        setShowOrganicPosts(false);
+        setShowStoriesAds(false);
         setShowAdOptimization(false);
         setShowFBAssets(false);
         setShowUnsubscribe(false);
@@ -640,20 +731,20 @@ export default function App() {
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
   
-  // 🔐 AUTO-REDIRECT: If user is authenticated and on landing page, redirect to course
-  useEffect(() => {
-    if (authChecked && isAuthenticated) {
-      // Check if we're on landing page (no special routes)
-      const hash = window.location.hash;
-      const path = window.location.pathname;
-      
-      // If on landing page, auto-redirect to course
-      if ((!hash || hash === '#') && (path === '/' || path === '')) {
-        console.log('🔐 User authenticated, redirecting to course...');
-        window.location.hash = '#course-v3';
-      }
-    }
-  }, [authChecked, isAuthenticated]);
+  // 🔐 AUTO-REDIRECT: DISABLED - User can see landing page even when authenticated
+  // useEffect(() => {
+  //   if (authChecked && isAuthenticated) {
+  //     // Check if we're on landing page (no special routes)
+  //     const hash = window.location.hash;
+  //     const path = window.location.pathname;
+  //     
+  //     // If on landing page, auto-redirect to course
+  //     if ((!hash || hash === '#') && (path === '/' || path === '')) {
+  //       console.log('🔐 User authenticated, redirecting to course...');
+  //       window.location.hash = '#course-v3';
+  //     }
+  //   }
+  // }, [authChecked, isAuthenticated]);
   
   // Show ad creatives if enabled
   if (showAdCreatives) {
@@ -699,12 +790,89 @@ export default function App() {
     );
   }
   
+  // Show Organic Videos if URL has #organic-videos
+  if (showOrganicVideos) {
+    return (
+      <>
+        <CriticalCSS />
+        <OrganicPostsVideos />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
   // Show Ad Optimization if URL has #ad-optimization
   if (showAdOptimization) {
     return (
       <>
         <CriticalCSS />
         <AdOptimizationWeek1 />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Stories Ads if URL has #stories-ads
+  if (showStoriesAds) {
+    return (
+      <>
+        <CriticalCSS />
+        <StoriesAds />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show VALUE 3 Ads if URL has #value-ads
+  if (showValue3Ads) {
+    return (
+      <>
+        <CriticalCSS />
+        <Value3AdsPreview />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show OMNIPRESENT 10 Ads if URL has #omnipresent-10
+  if (showOmnipresent10) {
+    return (
+      <>
+        <CriticalCSS />
+        <Omnipresent10AdsPreview />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show VALUE 3 Design Versions if URL has #value3-versions
+  if (showValue3Versions) {
+    return (
+      <>
+        <CriticalCSS />
+        <Value3Versions />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show VALUE 3 New Designs if URL has #value3-new-designs
+  if (showValue3NewDesigns) {
+    return (
+      <>
+        <CriticalCSS />
+        <Value3NewDesigns />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show VALUE 3 Medium Designs if URL has #value3-medium-designs
+  if (showValue3MediumDesigns) {
+    return (
+      <>
+        <CriticalCSS />
+        <Value3MediumDesigns />
         <Toaster position="top-right" />
       </>
     );

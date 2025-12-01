@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1080">
+  <title>T3 - 47K LOSS (1080x1080)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .container {
+      width: 1080px;
+      height: 1080px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: background 1s ease;
+    }
+    .bg-dark { background: linear-gradient(135deg, #111827 0%, #450a0a 50%, #111827 100%); }
+    .bg-green { background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #134e4a 100%); }
+    .bg-light { background: linear-gradient(135deg, #f1f5f9 0%, #e5e7eb 50%, #ffffff 100%); }
+    
+    .scene {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      text-align: center;
+      opacity: 0;
+    }
+    .scene.active {
+      animation: fadeIn 0.6s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .box {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 32px;
+      padding: 40px;
+      margin-bottom: 32px;
+      border: 6px solid;
+      max-width: 1000px;
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    .box.show {
+      animation: boxIn 0.5s forwards;
+    }
+    @keyframes boxIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .box-text {
+      font-size: 48px;
+      color: white;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .box-italic {
+      font-size: 48px;
+      color: white;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+    .loss-box {
+      background: #dc2626;
+      border-radius: 32px;
+      padding: 40px 64px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      border: 6px solid #b91c1c;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    .loss-box.show {
+      animation: popIn 0.5s forwards;
+    }
+    @keyframes popIn {
+      to { opacity: 1; transform: scale(1); }
+    }
+    .loss-big {
+      font-size: 100px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 12px;
+    }
+    .loss-number {
+      font-size: 88px;
+      font-weight: 900;
+      color: #fde047;
+    }
+    .scene-title {
+      font-size: 48px;
+      color: white;
+      font-weight: 900;
+      margin-bottom: 32px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .grid-item {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 32px;
+      padding: 32px;
+      border: 6px solid rgba(239,68,68,0.5);
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    .grid-item.show {
+      animation: gridIn 0.5s forwards;
+    }
+    @keyframes gridIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .emoji {
+      font-size: 88px;
+      margin-bottom: 16px;
+    }
+    .amount {
+      font-size: 60px;
+      font-weight: 900;
+      color: #f87171;
+      margin-bottom: 16px;
+    }
+    .item-title {
+      font-size: 28px;
+      color: white;
+      margin-bottom: 8px;
+    }
+    .item-note {
+      font-size: 20px;
+      color: #9ca3af;
+      font-style: italic;
+    }
+    .insight-box {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 32px;
+      padding: 48px;
+      border: 6px solid rgba(255,255,255,0.3);
+      max-width: 900px;
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    .insight-box.show {
+      animation: boxIn 0.5s forwards;
+    }
+    .insight-text {
+      font-size: 48px;
+      color: white;
+      margin-bottom: 32px;
+    }
+    .insight-big {
+      font-size: 72px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 40px;
+    }
+    .insight-sub {
+      font-size: 36px;
+      color: #d1d5db;
+    }
+    .decision-box {
+      background: linear-gradient(135deg, #ea580c, #ca8a04);
+      border-radius: 32px;
+      padding: 48px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      max-width: 900px;
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    .decision-box.show {
+      animation: boxIn 0.5s forwards;
+    }
+    .decision-title {
+      font-size: 48px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 24px;
+    }
+    .decision-text {
+      font-size: 60px;
+      font-weight: 900;
+      color: white;
+      font-style: italic;
+    }
+    .green-box {
+      background: linear-gradient(135deg, #059669, #047857);
+      border-radius: 32px;
+      padding: 56px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      border: 6px solid #10b981;
+      max-width: 1000px;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    .green-box.show {
+      animation: popIn 0.5s forwards;
+    }
+    .green-emoji {
+      font-size: 120px;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: rotate(-180deg) scale(0);
+    }
+    .green-emoji.show {
+      animation: emojiSpin 0.8s forwards;
+    }
+    @keyframes emojiSpin {
+      to { opacity: 1; transform: rotate(0) scale(1); }
+    }
+    .green-title {
+      font-size: 60px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 24px;
+    }
+    .green-model {
+      font-size: 88px;
+      font-weight: 900;
+      color: #fde047;
+    }
+    .results-title {
+      font-size: 48px;
+      color: #6ee7b7;
+      font-weight: 900;
+      margin-bottom: 32px;
+    }
+    .check-box {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 32px;
+      border: 6px solid #4ade80;
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    .check-box.show {
+      animation: slideInLeft 0.5s forwards;
+    }
+    @keyframes slideInLeft {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .check-text {
+      font-size: 36px;
+      color: white;
+    }
+    .check-icon {
+      color: #4ade80;
+      font-weight: 900;
+      font-size: 48px;
+    }
+    .result-box {
+      background: white;
+      border-radius: 32px;
+      padding: 40px 64px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      margin-top: 40px;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    .result-box.show {
+      animation: popIn 0.5s forwards;
+    }
+    .result-number {
+      font-size: 88px;
+      font-weight: 900;
+      color: #111827;
+    }
+    .result-sub {
+      font-size: 36px;
+      font-weight: bold;
+      color: #374151;
+      margin-top: 12px;
+    }
+    .regret-box {
+      background: white;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+      border-radius: 32px;
+      padding: 48px;
+      margin-bottom: 32px;
+      border: 6px solid #e5e7eb;
+      max-width: 1000px;
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    .regret-box.show {
+      animation: boxIn 0.5s forwards;
+    }
+    .regret-text {
+      font-size: 48px;
+      color: #111827;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    .regret-amount {
+      font-size: 88px;
+      font-weight: 900;
+      color: #dc2626;
+      margin-bottom: 32px;
+    }
+    .warning-box {
+      background: #fef3c7;
+      border: 6px solid #eab308;
+      border-radius: 32px;
+      padding: 40px;
+      margin-bottom: 32px;
+      max-width: 1000px;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .warning-box.show {
+      animation: boxIn 0.5s forwards;
+    }
+    .warning-text {
+      font-size: 48px;
+      font-weight: 900;
+      color: #111827;
+    }
+    .cta-box {
+      background: linear-gradient(to right, #059669, #16a34a);
+      color: white;
+      border-radius: 32px;
+      padding: 32px 64px;
+      display: inline-block;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    .cta-box.show {
+      animation: popIn 0.5s forwards;
+    }
+    .cta-text {
+      font-size: 60px;
+      font-weight: 900;
+    }
+    .progress {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: all 0.3s;
+    }
+    .progress-dot.active {
+      width: 32px;
+      background: white;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container bg-dark" id="container">
+    
+    <!-- SCENE 0: HOOK -->
+    <div class="scene" id="scene0">
+      <div class="box" id="box0-1" style="border-color:rgba(234,179,8,0.5)">
+        <div class="box-text" style="color:#fde047;font-size:36px;margin-bottom:8px">⚠️</div>
+        <div class="box-text">"Netajím, že jsem tomu nevěřil."</div>
+        <div class="box-italic">Zase další kurz... 😤</div>
+      </div>
+      <div class="loss-box" id="loss0">
+        <div style="font-size:28px;color:rgba(255,255,255,0.9);margin-bottom:16px">Ale já už jsem</div>
+        <div class="loss-big">PROPÁLIL</div>
+        <div class="loss-number">47 000 Kč</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.9);margin-top:16px">za chyby</div>
+      </div>
+    </div>
+
+    <!-- SCENE 1: GRID -->
+    <div class="scene" id="scene1">
+      <div class="scene-title">💸 NA CO JSEM TO PROPÁLIL:</div>
+      <div class="grid">
+        <div class="grid-item" id="grid1">
+          <div class="emoji">💸</div>
+          <div class="amount">12 000</div>
+          <div class="item-title">Expert na reklamu</div>
+          <div class="item-note">(Nefungovalo)</div>
+        </div>
+        <div class="grid-item" id="grid2">
+          <div class="emoji">💸</div>
+          <div class="amount">18 000</div>
+          <div class="item-title">Web a logo</div>
+          <div class="item-note">(Krásný design. Nula zákazníků.)</div>
+        </div>
+        <div class="grid-item" id="grid3">
+          <div class="emoji">💸</div>
+          <div class="amount">17 000</div>
+          <div class="item-title">Vylepšení prostor</div>
+          <div class="item-note">(Luxusní interiér. Zákazníci nepřicházeli.)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 2: REALIZATION -->
+    <div class="scene" id="scene2">
+      <div class="insight-box" id="insight2">
+        <div class="insight-text">Myslel jsem, že se zákazníci pohrnou.</div>
+        <div class="insight-big">Nehrnuli.</div>
+        <div style="height:8px;background:rgba(255,255,255,0.3);margin:32px 0;border-radius:4px"></div>
+        <div class="insight-sub">Protože jsem řešil <span style="color:#f87171;font-weight:900">SYMPTOMY</span>.<br>Ne <span style="color:#4ade80;font-weight:900">PŘÍČINU</span>.</div>
+      </div>
+    </div>
+
+    <!-- SCENE 3: DECISION -->
+    <div class="scene" id="scene3">
+      <div class="decision-box" id="decision3">
+        <div class="decision-title">Řekl jsem si:</div>
+        <div class="decision-text">💭 "Co když to zkusím..."</div>
+      </div>
+    </div>
+
+    <!-- SCENE 4: SOLUTION GREEN -->
+    <div class="scene" id="scene4">
+      <div class="green-box" id="greenbox4">
+        <div class="green-emoji" id="emoji4">💡</div>
+        <div class="green-title">ZA 90 MINUT JSEM SI UDĚLAL</div>
+        <div class="green-model">MODEL PODNIKÁNÍ</div>
+      </div>
+    </div>
+
+    <!-- SCENE 5: RESULTS GREEN -->
+    <div class="scene" id="scene5">
+      <div class="results-title">NAJEDNOU JSEM VIDĚL:</div>
+      <div style="max-width:1000px;width:100%;margin-bottom:40px">
+        <div class="check-box" id="check1">
+          <div class="check-text"><span class="check-icon">✓</span> Kde dělám chybu</div>
+        </div>
+        <div class="check-box" id="check2">
+          <div class="check-text"><span class="check-icon">✓</span> Proč reklama nefungovala</div>
+        </div>
+        <div class="check-box" id="check3">
+          <div class="check-text"><span class="check-icon">✓</span> Co změnit ZÍTRA</div>
+        </div>
+      </div>
+      <div class="result-box" id="resultbox">
+        <div class="result-number">📈 +60% tržby</div>
+        <div class="result-sub">za měsíc</div>
+      </div>
+    </div>
+
+    <!-- SCENE 6: REGRET + CTA -->
+    <div class="scene" id="scene6">
+      <div class="regret-box" id="regretbox">
+        <div class="regret-text">Kdybych měl ten model o měsíc dřív...</div>
+        <div class="regret-amount">ušetřil bych 47 000 Kč</div>
+      </div>
+      <div class="warning-box" id="warningbox">
+        <div class="warning-text">⚠️ Nemakej naslepo jako já.<br>Udělej si model TEĎ.</div>
+      </div>
+      <div class="cta-box" id="ctabox">
+        <div class="cta-text">CHCI TEN MODEL →</div>
+      </div>
+    </div>
+
+    <div class="progress">
+      <div class="progress-dot" id="pdot0"></div>
+      <div class="progress-dot" id="pdot1"></div>
+      <div class="progress-dot" id="pdot2"></div>
+      <div class="progress-dot" id="pdot3"></div>
+      <div class="progress-dot" id="pdot4"></div>
+      <div class="progress-dot" id="pdot5"></div>
+      <div class="progress-dot" id="pdot6"></div>
+    </div>
+  </div>
+
+  <script>
+    let scene = 0;
+    const timings = [3500, 3000, 3000, 2500, 3000, 3000, 3500];
+    const scenes = [
+      document.getElementById('scene0'),
+      document.getElementById('scene1'),
+      document.getElementById('scene2'),
+      document.getElementById('scene3'),
+      document.getElementById('scene4'),
+      document.getElementById('scene5'),
+      document.getElementById('scene6')
+    ];
+    const pdots = [
+      document.getElementById('pdot0'),
+      document.getElementById('pdot1'),
+      document.getElementById('pdot2'),
+      document.getElementById('pdot3'),
+      document.getElementById('pdot4'),
+      document.getElementById('pdot5'),
+      document.getElementById('pdot6')
+    ];
+    const container = document.getElementById('container');
+
+    function showScene(index) {
+      scenes.forEach((s, i) => {
+        s.classList.remove('active');
+        pdots[i].classList.remove('active');
+        if (i === index) {
+          s.classList.add('active');
+          pdots[i].classList.add('active');
+          
+          // Background
+          if (index >= 4 && index <= 5) {
+            container.className = 'container bg-green';
+          } else if (index === 6) {
+            container.className = 'container bg-light';
+          } else {
+            container.className = 'container bg-dark';
+          }
+          
+          // Animations
+          if (index === 0) {
+            setTimeout(() => document.getElementById('box0-1').classList.add('show'), 200);
+            setTimeout(() => document.getElementById('loss0').classList.add('show'), 800);
+          } else if (index === 1) {
+            setTimeout(() => document.getElementById('grid1').classList.add('show'), 200);
+            setTimeout(() => document.getElementById('grid2').classList.add('show'), 400);
+            setTimeout(() => document.getElementById('grid3').classList.add('show'), 600);
+          } else if (index === 2) {
+            setTimeout(() => document.getElementById('insight2').classList.add('show'), 200);
+          } else if (index === 3) {
+            setTimeout(() => document.getElementById('decision3').classList.add('show'), 200);
+          } else if (index === 4) {
+            setTimeout(() => document.getElementById('greenbox4').classList.add('show'), 200);
+            setTimeout(() => document.getElementById('emoji4').classList.add('show'), 200);
+          } else if (index === 5) {
+            setTimeout(() => document.getElementById('check1').classList.add('show'), 200);
+            setTimeout(() => document.getElementById('check2').classList.add('show'), 500);
+            setTimeout(() => document.getElementById('check3').classList.add('show'), 800);
+            setTimeout(() => document.getElementById('resultbox').classList.add('show'), 1200);
+          } else if (index === 6) {
+            setTimeout(() => document.getElementById('regretbox').classList.add('show'), 200);
+            setTimeout(() => document.getElementById('warningbox').classList.add('show'), 600);
+            setTimeout(() => document.getElementById('ctabox').classList.add('show'), 1000);
+          }
+        }
+      });
+    }
+
+    function nextScene() {
+      scene = (scene + 1) % scenes.length;
+      showScene(scene);
+      setTimeout(nextScene, timings[scene]);
+    }
+
+    showScene(0);
+    setTimeout(nextScene, timings[0]);
+  </script>
+</body>
+</html>

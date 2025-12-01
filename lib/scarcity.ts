@@ -86,5 +86,5 @@ export function getUrgencyText(spots: number): string {
   if (spots <= 5) return `⚠️ POZOR! Zbývá pouze ${spots} ${spots === 1 ? 'místo' : 'místa'}!`;
   if (spots <= 10) return `⚠️ Rychle! Zbývá ${spots} míst!`;
   if (spots <= 20) return `⚠️ Zbývá pouze ${spots} míst`;
-  return `Zbývá ${spots} míst v prvním běhu`;
+  return `Zbývá ${spots} míst v prvním kole`;
 }
