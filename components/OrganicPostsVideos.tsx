@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Value2GainVideo } from './Value2GainVideo';
 import { Value3EducationVideo } from './Value3EducationVideo';
 import { Testimonial47kLossVideo } from './Testimonial47kLossVideo';
+import { OrganicPost17MythBusterVideo } from './OrganicPost17MythBusterVideo';
 
 interface VideoPost {
   id: number;
@@ -15,6 +16,42 @@ interface VideoPost {
 }
 
 const VIDEO_POSTS: VideoPost[] = [
+  {
+    id: 4,
+    title: 'VIDEO: Myth Buster',
+    subtitle: 'CO NEPOTŘEBUJEŠ - 4 mýty před validací',
+    copy: `❌ CO NEPOTŘEBUJEŠ k úspěšnému podnikání
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Většina lidí prohodí tisíce na startu.
+
+1️⃣ OBJEDNAT TISÍCE KUSŮ NAPŘED ❌
+Nemusíš investovat do výroby. Stačí ověřit ŽE to někdo chce.
+
+2️⃣ PRONAJMOUT SI PROSTOR HNED ❌
+Nepotřebuješ kancelář. Potřebuješ PRVNĚ vědět že to funguje.
+
+3️⃣ ČEKAT SE SPUŠTĚNÍM NEŽ ZAČNEŠ MARKETING ❌
+Nemusíš mít hotovo. Marketing může běžet UŽ TEĎ.
+
+4️⃣ NAJMOUT TÝM NA ZAČÁTKU ❌
+Nepotřebuješ lidi. Potřebuješ vědět CO vůbec dělat.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Model ti ukáže CO doopravdy potřebuješ a KDE začít.
+
+27 podnikatelů už BEZPEČNĚ investovalo 1,4M Kč do svých byznysů.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+90 minut • Model podnikání • Bezpečná validace
+
+👉 www.podnikatelskactvrtka.cz
+
+#podnikani #myty #validace #bezpečně`
+  },
   {
     id: 1,
     title: 'VIDEO: Představ si za měsíc',
@@ -227,6 +264,7 @@ export function OrganicPostsVideos() {
             {currentVideo === 0 && <Value2GainVideo />}
             {currentVideo === 1 && <Value3EducationVideo />}
             {currentVideo === 2 && <Testimonial47kLossVideo />}
+            {currentVideo === 3 && <OrganicPost17MythBusterVideo />}
           </div>
         </div>
       </div>

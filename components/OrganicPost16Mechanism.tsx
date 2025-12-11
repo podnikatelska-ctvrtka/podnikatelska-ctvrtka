@@ -6,106 +6,121 @@ import { Target, MessageSquare, Award, Zap } from 'lucide-react';
 
 export function OrganicPost16Mechanism() {
   return (
-    <div className="w-[1080px] h-[1080px] bg-gradient-to-br from-blue-50 via-white to-purple-50 p-12 flex flex-col">
+    <div className="w-[1080px] h-[1080px] bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center p-12 relative overflow-hidden">
       
-      {/* Header */}
-      <div className="text-center mb-10">
-        <p className="text-5xl mb-4">🤔</p>
-        <h1 className="text-6xl font-black text-gray-900 mb-4 leading-tight">
-          "Není to moc jednoduché?"
-        </h1>
-        <p className="text-3xl text-gray-600 leading-snug">
-          90 minut zní <span className="font-black text-orange-600">podezřele rychle</span>.<br/>
-          Ale tady je <span className="font-black text-blue-600">PROČ to funguje</span>:
-        </p>
+      {/* Background decoration */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-20 text-9xl">🤔</div>
+        <div className="absolute bottom-20 right-20 text-9xl">✨</div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-9xl opacity-5">💡</div>
       </div>
 
-      {/* 4 Cards Grid */}
-      <div className="grid grid-cols-2 gap-6 flex-1">
+      {/* Main content box */}
+      <div className="relative z-10 bg-white/95 backdrop-blur rounded-3xl p-12 shadow-2xl max-w-4xl w-full space-y-6">
         
-        {/* Card 1 - Positioning */}
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl p-8 flex flex-col shadow-xl">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white/20 rounded-2xl p-4">
-              <Target className="w-12 h-12 text-white" />
-            </div>
-            <h2 className="text-4xl font-black text-white">
-              1. POZICOVÁNÍ<br/>ZABUDOVANÉ
-            </h2>
-          </div>
-          <p className="text-2xl text-white/95 leading-relaxed">
-            Neříkáš jen "co prodávám".<br/><br/>
-            Říkáš <span className="font-black">"PROČ si mě vybrat"</span> místo konkurence.<br/><br/>
-            → Vidíš jak se odlišit.
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-black text-gray-900 leading-tight">
+            "Není to moc jednoduché?"
+          </h1>
+          <p className="text-xl text-gray-600 leading-snug">
+            90 minut zní <span className="font-black text-orange-600">podezřele rychle</span>.<br/>
+            Ale tady je <span className="font-black text-blue-600">PROČ to funguje</span>:
           </p>
         </div>
 
-        {/* Card 2 - Marketing */}
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl p-8 flex flex-col shadow-xl">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white/20 rounded-2xl p-4">
-              <MessageSquare className="w-12 h-12 text-white" />
+        {/* Separator */}
+        <div className="border-t-4 border-purple-200"></div>
+
+        {/* 4 Cards Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          
+          {/* Card 1 - Positioning */}
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 flex flex-col shadow-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="bg-white/20 rounded-xl p-2">
+                <Target className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-lg font-black text-white leading-tight">
+                POZICOVÁNÍ<br/>ZABUDOVANÉ
+              </h2>
             </div>
-            <h2 className="text-4xl font-black text-white">
-              2. MARKETING<br/>JE TAM UŽ
-            </h2>
+            <p className="text-sm text-white/95 leading-relaxed">
+              Neříkáš jen "co prodávám".<br/>
+              Říkáš <span className="font-black">"PROČ si mě vybrat"</span> místo konkurence.<br/>
+              → Vidíš jak se odlišit.
+            </p>
           </div>
-          <p className="text-2xl text-white/95 leading-relaxed">
-            Když víš <span className="font-black">CO tvůj segment chce</span>...<br/><br/>
-            ...víš PŘESNĚ co jim říct v marketingu.<br/><br/>
-            → Není to extra práce. Je to výsledek modelu.
-          </p>
+
+          {/* Card 2 - Marketing */}
+          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-5 flex flex-col shadow-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="bg-white/20 rounded-xl p-2">
+                <MessageSquare className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-lg font-black text-white leading-tight">
+                MARKETING<br/>JE TAM UŽ
+              </h2>
+            </div>
+            <p className="text-sm text-white/95 leading-relaxed">
+              Když víš <span className="font-black">CO tvůj segment chce</span>...<br/>
+              ...víš PŘESNĚ co jim říct v marketingu.<br/>
+              → <span className="font-black">Ušetříš spoustu peněz</span> a přilákáš zákazníky.
+            </p>
+          </div>
+
+          {/* Card 3 - Verified */}
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-5 flex flex-col shadow-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="bg-white/20 rounded-xl p-2">
+                <Award className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-lg font-black text-white leading-tight">
+                OVĚŘENÉ<br/>NA PRAXI
+              </h2>
+            </div>
+            <p className="text-sm text-white/95 leading-relaxed">
+              Není to školská teorie.<br/>
+              Je to <span className="font-black">postavené na reálných byznysech</span>.<br/>
+              → 27 podnikatelů. 1,4M Kč investic.
+            </p>
+          </div>
+
+          {/* Card 4 - Essential */}
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-5 flex flex-col shadow-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="bg-white/20 rounded-xl p-2">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-lg font-black text-white leading-tight">
+                JEN<br/>PODSTATNÉ
+              </h2>
+            </div>
+            <p className="text-sm text-white/95 leading-relaxed">
+              Ne 50 stránek teorie.<br/>
+              Jen <span className="font-black">9 polí co DOOPRAVDY fungují</span>.<br/>
+              → Žádné kecy. Jen strategie.
+            </p>
+          </div>
+
         </div>
 
-        {/* Card 3 - Verified */}
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl p-8 flex flex-col shadow-xl">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white/20 rounded-2xl p-4">
-              <Award className="w-12 h-12 text-white" />
-            </div>
-            <h2 className="text-4xl font-black text-white">
-              3. OVĚŘENÉ<br/>NA PRAXI
-            </h2>
-          </div>
-          <p className="text-2xl text-white/95 leading-relaxed">
-            Není to školská teorie.<br/><br/>
-            Je to splácané z <span className="font-black">reálných byznysů</span>.<br/><br/>
-            → 27 podnikatelů. 1,4M Kč investic.
-          </p>
-        </div>
+        {/* Separator */}
+        <div className="border-t-4 border-purple-200"></div>
 
-        {/* Card 4 - Essential */}
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-3xl p-8 flex flex-col shadow-xl">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white/20 rounded-2xl p-4">
-              <Zap className="w-12 h-12 text-white" />
-            </div>
-            <h2 className="text-4xl font-black text-white">
-              4. JEN<br/>PODSTATNÉ
-            </h2>
-          </div>
-          <p className="text-2xl text-white/95 leading-relaxed">
-            Ne 50 stránek teorie.<br/><br/>
-            Jen <span className="font-black">9 polí co DOOPRAVDY potřebuješ</span>.<br/><br/>
-            → Konkrétní. Použitelné. TEĎKA.
-          </p>
-        </div>
-
-      </div>
-
-      {/* Footer */}
-      <div className="text-center mt-10">
-        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8">
-          <p className="text-4xl font-black text-white mb-3">
+        {/* Footer */}
+        <div className="text-center space-y-2">
+          <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             Model není zjednodušení.
-          </p>
-          <p className="text-4xl font-black text-yellow-400 mb-6">
-            Je to DESTILACE.
-          </p>
-          <p className="text-2xl text-gray-300">
-            Všechno podstatné. Nic zbytečného.
-          </p>
+          </div>
+          <div className="text-3xl font-black text-slate-800">
+            Je to PŘESNĚ CO POTŘEBUJEŠ.
+          </div>
+          <div className="text-lg text-slate-600">
+            Celý byznys. Jedna stránka.
+          </div>
         </div>
+
       </div>
 
     </div>
@@ -117,58 +132,41 @@ export function OrganicPost16MechanismCopy() {
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-Tohle slyším často.
-A chápu to.
+Chápu proč tomu nevěříš.
 
-90 minut zní podezřele rychle.
+Něco tak jednoduchýho prostě NENÍ.
 
-━━━━━━━━━━━━━━━━━━━━━━━
-
-Ale tady je PROČ to funguje:
+Nebo aspoň... nebylo.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-1️⃣ POZICOVÁNÍ ZABUDOVANÉ
+Protože víš jak to většinou vypadá?
 
-Neříkáš jen "co prodávám".
-Říkáš "PROČ si mě vybrat místo konkurence".
+Buď máš skvělý nápad a chceš začít...
 
-→ Vidíš jak se odlišit.
+...NEBO už podnikáš, ale nevíš co KONKRÉTNĚ dělat, aby to šlo k lepšímu.
 
-━━━━━━━━━━━━━━━━━━━━━━━
-
-2️⃣ MARKETING JE TAM UŽ
-
-Když víš CO tvůj segment chce...
-...víš PŘESNĚ co jim říct v marketingu.
-
-→ Není to extra práce. Je to výsledek modelu.
+A v obou případech... nevíš KDE začít.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-3️⃣ OVĚŘENÉ NA PRAXI
+Protože na trhu prostě NEBYLO nic jednoduchýho.
 
-Není to školská teorie.
-Je to splácané z reálných byznysů.
+Co by ti dalo:
 
-→ 27 podnikatelů. 1,4M Kč investic.
-
-━━━━━━━━━━━━━━━━━━━━━━━
-
-4️⃣ JEN TO PODSTATNÉ
-
-Ne 50 stránek teorie.
-Jen 9 polí co DOOPRAVDY potřebuješ.
-
-→ Konkrétní. Použitelné. TEĎKA.
+✅ Celý byznys na jednom místě
+✅ Jasnej postup KDE začít
+✅ A VŠE co potřebuješ hned na startu
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-Model není zjednodušení.
+Proto Model.
 
-Je to DESTILACE.
+90 minut. Jedna stránka. Hotovo.
 
-Všechno podstatné. Nic zbytečného.
+━━━━━━━━━━━━━━━━━━━━━━━
+
+27 podnikatelů už BEZPEČNĚ investovalo 1,4M Kč do svých byznysů.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 

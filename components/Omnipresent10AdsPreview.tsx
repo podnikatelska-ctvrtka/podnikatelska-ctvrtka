@@ -1,18 +1,6 @@
-// 🎯 OMNIPRESENT 10 ADS - COMPLETE PREVIEW
-// VALUE (3x) + DEMONSTRATION (3x) + TESTIMONIAL (3x) + CTA (1x)
-
+import { omnipresentAdCopy } from './OmnipresentAdCopy';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Copy } from 'lucide-react';
-import { ValueAchieveCarousel } from './ValueAchieveCarousel';
-import { Demo2DeepDive, Demo3VideoLook } from './Demonstration3AdsNew';
-import { Testimonial3MessageStyle, Testimonial4DeepDive } from './Testimonial3AdsNew';
-import { CtaStart2026 } from './CtaAdNew';
-import { LibraryOfModels } from './NewOmnipresent3Ads';
-import { Warm4ObjectionHandlerAdjusted, Warm1SocialProofAdjusted } from './WarmAdsAdjusted';
-import { Testimonial47kLossStatic } from './Testimonial47kLossStatic';
-import { Value2GainStatic } from './Value2GainStatic';
-import { Value3DontStart } from './Value3DontStart';
-import { omnipresentAdCopy } from './OmnipresentAdCopy';
 
 export function Omnipresent10AdsPreview() {
   const [currentAd, setCurrentAd] = useState(0);
@@ -66,15 +54,15 @@ export function Omnipresent10AdsPreview() {
       color: 'from-orange-500 to-red-500'
     },
     {
-      id: 'demo-2-library',
-      name: 'DEMO #2: KNIHOVNA',
+      id: 'demo-2-zasilkovna',
+      name: 'DEMO #2: ZÁSILKOVNA',
       category: 'DEMONSTRATION',
-      subtitle: 'Nebudeš na to sám (Library)',
-      format: 'Gallery showcase',
+      subtitle: 'Jak postavit giganta (case study)',
+      format: 'Real business breakdown',
       budget: '20 Kč/den',
       objective: 'ENGAGEMENT',
-      trigger: 'Social proof • Community • Inspiration • Not alone',
-      color: 'from-teal-500 to-cyan-500'
+      trigger: 'Inspiration • Ambition • Real example • Scalability',
+      color: 'from-orange-500 to-yellow-500'
     },
     {
       id: 'demo-3-easy-flow',
@@ -100,26 +88,26 @@ export function Omnipresent10AdsPreview() {
       color: 'from-gray-100 to-gray-300'
     },
     {
-      id: 'testimonial-3-salon',
-      name: 'TESTIMONIAL #2: SALON',
+      id: 'testimonial-4-lenka',
+      name: 'TESTIMONIAL #2: LENKA',
       category: 'TESTIMONIAL',
-      subtitle: 'Kosmetický salon +40%',
-      format: 'Real example deep dive',
+      subtitle: 'Kosmetička +40% nad plán',
+      format: 'Deep-dive case study - screenshot style',
       budget: '20 Kč/den',
       objective: 'ENGAGEMENT',
-      trigger: 'Concrete example • Real results • Specific solution',
+      trigger: 'Real story • Concrete results • Specific niche',
       color: 'from-pink-500 to-purple-500'
     },
     {
-      id: 'testimonial-47k-loss',
-      name: 'TESTIMONIAL #3: 47K ZTRÁTA',
+      id: 'testimonial-3-eshop-petr',
+      name: 'TESTIMONIAL #3: E-SHOP PETR',
       category: 'TESTIMONIAL',
-      subtitle: 'Kolik m stály chyby... (VIDEO)',
-      format: 'Animated video - confession + skepticism',
+      subtitle: 'Od hobby k +18k vedle práce',
+      format: 'Emotional journey - hobby to business',
       budget: '20 Kč/den',
       objective: 'ENGAGEMENT',
-      trigger: 'Regret • Loss aversion • Skepticism overcome • Authenticity',
-      color: 'from-red-900 to-gray-900'
+      trigger: 'Side hustle • Relatable fears • Clear segment',
+      color: 'from-emerald-500 to-blue-500'
     },
     // CTA (1x)
     {
@@ -255,11 +243,11 @@ export function Omnipresent10AdsPreview() {
             {currentAd === 1 && <Value2GainStatic />}
             {currentAd === 2 && <Value3DontStart />}
             {currentAd === 3 && <Warm4ObjectionHandlerAdjusted />}
-            {currentAd === 4 && <LibraryOfModels />}
+            {currentAd === 4 && <ZasilkovnaAdOmnipresent />}
             {currentAd === 5 && <Demo3VideoLook />}
             {currentAd === 6 && <Testimonial3MessageStyle />}
             {currentAd === 7 && <Testimonial4DeepDive />}
-            {currentAd === 8 && <Testimonial47kLossStatic />}
+            {currentAd === 8 && <TestimonialEshopPetr />}
             {currentAd === 9 && <CtaStart2026 />}
           </div>
         </div>
@@ -407,11 +395,11 @@ function AdCopyPanel({ adIndex }: { adIndex: number }) {
     omnipresentAdCopy.value2Gain,
     omnipresentAdCopy.value3Education,
     omnipresentAdCopy.demo1JeToProTebe,
-    omnipresentAdCopy.demo2Knihovna,
+    omnipresentAdCopy.demo2Zasilkovna,
     omnipresentAdCopy.demo3JakToFunguje,
     omnipresentAdCopy.testimonial1Chat,
-    omnipresentAdCopy.testimonial2Salon,
-    omnipresentAdCopy.testimonial3Loss47k,
+    omnipresentAdCopy.testimonial2Lenka, // ✅ T2 = LENKA (best performer!)
+    omnipresentAdCopy.testimonial3EshopPetr, // ✅ T3 = E-SHOP PETR (nahradil 47k loss)
     omnipresentAdCopy.ctaVanoce2026,
   ];
 

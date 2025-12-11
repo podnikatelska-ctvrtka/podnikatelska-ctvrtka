@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { OrganicPost16Mechanism } from './OrganicPost16Mechanism';
+import { OrganicPost17MythBuster } from './OrganicPost17MythBuster';
+import { OrganicPost19OpportunityCost } from './OrganicPost19OpportunityCost';
+import { OrganicPost20RedFlags } from './OrganicPost20RedFlags';
+import { OrganicPost21NoResponse } from './OrganicPost21NoResponse';
+import { OrganicPost22WeekValidation } from './OrganicPost22WeekValidation';
+import { OrganicPost23Domino } from './OrganicPost23Domino';
+import { OrganicPost24SplitScreen } from './OrganicPost24SplitScreen';
+import { OrganicPost25NoDiscounts } from './OrganicPost25NoDiscounts';
 
 /**
  * 🎯 ORGANIC POSTS - 30 DNÍ SÉRIE
@@ -21,12 +30,16 @@ import { Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react';
  * - Post #13: ANTI-GURU (animated, proč nejsme jako ostatní kurzy)
  * - Post #14: CO NEMUSÍŠ (animated, nepodstatné vs podstatné)
  * - Post #15: KONKRÉTNÍ OUTCOME (animated, stack reveal - co všechno dostaneš)
- * - Post #16: MECHANISM (static, 4 karty - proč to funguje)
- * 
- * 📝 TODO - Připravené nápady:
- * - Post #17: MYTH BUSTER (static, karty - co NEPOTŘEBUJEŠ k úspěchu)
- * - Post #18: SIMPLICITY (Proč je to jednoduché)
- * - Post #19: COST/VALUE (Cena vs. hodnota, ušetřené tisíce)
+ * - Post #16: MECHANISM (static, 4 karty - proč to funguje) ✅
+ * - Post #17: MYTH BUSTER (static, 4 karty - co NEPOTŘEBUJEŠ k úspěchu) ✅
+ * - Post #18: SIMPLICITY (animated, CHAOS → SIMPLE magnetic transformation) ✅
+ * - Post #19: OPPORTUNITY COST (animated, ticker - nájem nepočká) ✅
+ * - Post #20: RED FLAGS (static, 4 warning cards - co IGNOROVAT) ✅
+ * - Post #21: NO RESPONSE (static, sticky notes - "Nemám čas na odpovědi") ✅
+ * - Post #22: TÝDEN VALIDACE (animated, timeline - 7 dní vs 6 měsíců) ✅
+ * - Post #23: DOMINO EFEKT (animated, chain reaction - 9 bloků = 9 domino kostek) ✅
+ * - Post #24: SPLIT SCREEN (static, 2 podnikatelé - chaos vs systém) ✅
+ * - Post #25: PROČ SLEVY NEFUNGUJÍ (animated, inbox spam - hodnota > sleva) ✅
  */
 
 interface PostData {
@@ -813,58 +826,41 @@ To je základ na roky.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-Tohle slyším často.
-A chápu to.
+Chápu proč tomu nevěříš.
 
-90 minut zní podezřele rychle.
+Něco tak jednoduchýho prostě NENÍ.
 
-━━━━━━━━━━━━━━━━━━━━━━━
-
-Ale tady je PROČ to funguje:
+Nebo aspoň... nebylo.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-1️⃣ POZICOVÁNÍ ZABUDOVANÉ
+Protože víš jak to většinou vypadá?
 
-Neříkáš jen "co prodávám".
-Říkáš "PROČ si mě vybrat místo konkurence".
+Buď máš skvělý nápad a chceš začít...
 
-→ Vidíš jak se odlišit.
+...NEBO už podnikáš, ale nevíš co KONKRÉTNĚ dělat, aby to šlo k lepšímu.
 
-━━━━━━━━━━━━━━━━━━━━━━━
-
-2️⃣ MARKETING JE TAM UŽ
-
-Když víš CO tvůj segment chce...
-...víš PŘESNĚ co jim říct v marketingu.
-
-→ Není to extra práce. Je to výsledek modelu.
+A v obou případech... nevíš KDE začít.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-3️⃣ OVĚŘENÉ NA PRAXI
+Protože na trhu prostě NEBYLO nic jednoduchýho.
 
-Není to školská teorie.
-Je to splácané z reálných byznysů.
+Co by ti dalo:
 
-→ 27 podnikatelů. 1,4M Kč investic.
-
-━━━━━━━━━━━━━━━━━━━━━━━
-
-4️⃣ JEN TO PODSTATNÉ
-
-Ne 50 stránek teorie.
-Jen 9 polí co DOOPRAVDY potřebuješ.
-
-→ Konkrétní. Použitelné. TEĎKA.
+✅ Celý byznys na jednom místě
+✅ Jasnej postup KDE začít
+✅ A VŠE co potřebuješ hned na startu
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-Model není zjednodušení.
+Proto Model.
 
-Je to DESTILACE.
+90 minut. Jedna stránka. Hotovo.
 
-Všechno podstatné. Nic zbytečného.
+━━━━━━━━━━━━━━━━━━━━━━━
+
+27 podnikatelů už BEZPEČNĚ investovalo 1,4M Kč do svých byznysů.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -874,7 +870,613 @@ Podnikatelská Čtvrtka
 👉 www.podnikatelskactvrtka.cz
 
 #podnikani #model #marketing #validace`
-  }
+  },
+  {
+    id: 17,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #17: MYTH BUSTER (Co NEPOTŘEBUJEŠ)',
+    copy: `❌ „Musím do toho dát všechny úspory!"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Ne.
+
+Nemusíš.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Vidím to pořád:
+
+Někdo má skvělý nápad...
+
+...a první co udělá?
+
+Objedná 1000 kusů zboží.
+Pronajme si kancelář.
+Udělá perfektní web.
+Najme grafika.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+A pak?
+
+Zjistí že to nikdo nechce.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Protože investoval do VŠEHO...
+
+...kromě toho NEJDŮLEŽITĚJŠÍHO:
+
+Ověřit ŽE to někdo chce.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Tady je pravda:
+
+Nepotřebuješ tisíce kusů na skladě.
+Nepotřebuješ pronájem.
+Nepotřebuješ tým.
+Nepotřebuješ ani hotový produkt.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Potřebuješ VĚDĚT:
+
+✅ KDO to chce
+✅ PROČ by si to měl vybrat
+✅ KOLIK je ochoten zaplatit
+
+A to všechno můžeš zjistit BEZ investice.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Model ti ukáže:
+
+Co skutečně potřebuješ na startu.
+A co je jen ZBYTEČNÁ investice.
+
+90 minut. Hotovo.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+27 podnikatelů už BEZPEČNĚ investovalo 1,4M Kč do svých byznysů.
+
+Protože věděli DO ČEHO investují.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Podnikatelská Čtvrtka
+90 minut • Konkrétní výsledek
+
+👉 www.podnikatelskactvrtka.cz
+
+#podnikani #model #validace #start`
+  },
+  {
+    id: 18,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #18: SIMPLICITY (Proč je to jednoduché)',
+    copy: `🤔 Kolik nástrojů potřebuješ k úspěšnému podnikání?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+CHAOS:
+📊 Excel tabulky
+👨‍💼 Drahý konzultant
+📚 10 různých kurzů
+📝 Business plán šablony
+🧮 Kalkulačky
+📖 Knihy o podnikání
+💼 Poradenství
+📈 Analytické nástroje
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+REALITA:
+
+Stačí JEDEN model.
+90 minut.
+Hotovo.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Podnikatelská Čtvrtka ti ukáže vše pod jednou střechou.
+
+Jeden nástroj • Všechny odpovědi • Jasný plán
+
+👉 www.podnikatelskactvrtka.cz
+
+#podnikani #jednoduchost #model #efektivita`
+  },
+  {
+    id: 19,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #19: HOKEJOVÁ VÝBAVA (Jak konkurovat Decathlonu)',
+    copy: `Celý život miloval hokej. Hrál, sledoval, žil jím.
+
+Pak si splnil sen – otevřel obchod s hokejovou výbavou. Ve městě, mezi lidmi. Místo, kde by mohl sdílet svou vášeň a pomáhat ostatním.
+
+Ale po 3 měsících seděl v prázdném obchodě a koukal do stropu.
+
+"Proč by ke mně lidi chodili, když je Decathlon levnější? Sportisimo má lepší polohu. E-shopy doručí domů za den..."
+
+Platil nájem. Topil peníze do zásob. A nikdo nepřicházel.
+
+━━━━━━━━━━━━━━━━━��━━━━━
+
+Pak přišel na Čtvrtku.
+
+A ukázali jsme mu něco, co neviděl:
+
+❌ Není to o ceně. Decathlon prodává hole. Ty prodáv��š lepší hru.
+
+🎯 Tvoje síla je expertiza. Poraď rodičům jakou hůl pro juniora. Jak vybrat brusle co vydrží. To řetězce nezvládnou.
+
+🤝 Nekonkuruj cenou. Staň se místem, kde se hokejisté potkávají, radí, sdílí vášeň.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Dnes?
+
+Dodává výbavu celým týmům. Pořádá hokejové večery pro fanoušky. A konkuruje velkým hráčům svým stylem – ne jejich.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Tvůj podnik má taky cestu. I když teď nevidíš jak.
+
+Stačí 90 minut, jeden jasný Model podnikání, a víš přesně kam jít.
+
+👉 www.podnikatelskactvrtka.cz
+
+Podnikatelská Čtvrtka → 4 999 Kč
+
+Nemusíš být největší. Stačí být jiný.
+
+#podnikani #hokej #konkurence #model`
+  },
+  {
+    id: 20,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #20: RED FLAGS (Kdy do toho NEJÍT)',
+    copy: `Před 3 lety jsem byl nadšený z nápadu na aplikaci pro rezervace v barber shopech.
+
+Konkurence? ✅ Existuje
+Problém? ✅ Lidi si rezervují a nepřijdou
+Řešení? ✅ Jasné
+
+Červená vlajka, kterou jsem přehlédl?
+
+"Ideální zákazník si to nemůže dovolit."
+
+Mal�� barber shopy neměly peníze na SaaS předplatné. Ti co měli, už používali Booksy nebo vlastní řešení.
+
+Strávil jsem 4 měsíce vývojem.
+Získal jsem 2 beta testery.
+Prodal jsem 0 předplatných.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Dneska bych se NEJDŘÍV zeptal:
+
+→ Kolik barber shopů v ČR vůbec je?
+→ Kolik z nich má ten problém?
+→ Kolik z nich si může dovolit 800 Kč/měsíc?
+→ Kolik z nich už NEPOUŽÍVÁ konkurenci?
+
+A teprve pak bych psal jediný řádek kódu.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+5 ČERVENÝCH VLAJEK:
+
+1️⃣ MUSÍŠ JE PŘESVĚDČOVAT
+   → Že problém vůbec mají
+
+2️⃣ NEMAJÍ PENÍZE
+   → Ideální zákazník si to nemůže dovolit
+
+3️⃣ PŘESYCENÝ TRH BEZ DIFERENCIACE
+   → Všichni to mají, ty nemáš nic navíc
+
+4️⃣ DLOUHÝ PRODEJ
+   → Rozhodnutí 6+ měsíců
+
+5️⃣ NEZNÁŠ POČET POTENCIÁLNÍCH ZÁKAZNÍKŮ
+   → Možná jich je 20 možná 2000
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ DOBRÉ SIGNÁLY:
+
+→ Lidé AKTIVNĚ hledají řešení
+→ Mají peníze na zaplacení
+→ Konkurence existuje a vydělává
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Ušetři si 6 měsíců.
+
+Nauč se validovat PŘED investicí. Data, ne dohady.
+
+👉 www.podnikatelskactvrtka.cz
+
+Podnikatelská Čtvrtka → 4 999 Kč
+
+#podnikani #validace #cervenevlajky #checklist`
+  },
+  {
+    id: 21,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #21: NO RESPONSE (Proč se ti nikdo neozve)',
+    copy: `Můj první cold email v roce 2019:
+
+"Dobrý den,
+
+jmenuji se XY a dělám webové aplikace. Všimł jsem si, že vaše firma by mohła využít modernější řešení pro správu objednávek.
+
+Rád bych vám nabídl konzultaci zdarma.
+
+Těším se na vaši odpověď!"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Odpověď: 🦗 TICHO
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+CO BYLO ŠPATNĚ?
+
+❌ Neřeším JEJICH bolest (řeším "modernější řešení")
+❌ Generický text (mohl jsem poslat komukoliv)
+❌ Nejasný benefit (co tím získají?)
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+3 DŮVODY PROČ TICHO:
+
+1️⃣ NEŘEŠÍŠ BOLEST
+   → Píšeš "Nabízím XYZ"
+   → Místo: "Řeším tvůj problém ABC"
+
+2️⃣ MOC KOMPLIKOVANÉ
+   → 3 paragrafy textu
+   → Místo: 1 jasný benefit
+
+3️⃣ NEJASNÝ DALŠÍ KROK
+   → "Ozvěte se mi"
+   → Místo: "Klikni sem pro X"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Když NEZNÁŠ jejich skutečnou bolest...
+
+...píšeš o sobě místo o nich.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+V Podnikatelské Čtvrtce se naučíš:
+
+→ Identifikovat SKUTEČNOU bolest
+→ Mluvit jazykem zákazníka
+→ Testovat nabídku PŘED kampání
+
+Validace = méně failed pokusů.
+
+👉 www.podnikatelskactvrtka.cz
+
+Podnikatelská Čtvrtka → 4 999 Kč
+
+#podnikani #nabidka #coldoutreach #validace`
+  },
+  {
+    id: 22,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #22: TÝDEN VALIDACE (7 dní framework)',
+    copy: `Většina lidí s nápadem udělá jednu z těchto dvou chyb:
+
+1️⃣ Plánují měsíce, staví produkt... a NIKDO to nechce.
+2���⃣ Ptají se kamarádů "líbí se ti to?" a berou komplimenty jako validaci.
+
+Obojí = promrhané měsíce + peníze.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Existuje lepší způsob.
+
+Validuj nápad za TÝDEN. Bez investice. Jen rozhovory a data.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+JAK NA TO? 📅
+
+DEN 1 - Vyber si zákazníka
+Většina lidí začne s produktem. Špatně.
+Začni s člověkem, kterého OSOBNĚ znáš.
+Kdo má ten problém? Kde je najdeš?
+
+DEN 2 - Mluv s lidmi (ne o nápadu!)
+Nesnaž se prodat. Snaž se POCHOPIT.
+"Jak to řešíš teď? Co tě na tom štve?"
+10 lidí. Káva, call, DM. Cokoliv.
+
+DEN 3 - Hledej pattern
+Přečti si odpovědi. Co se opakuje?
+Pokud 7 z 10 lidí říká něco stejného = to je pravda.
+Pokud každý říká něco jiného = nemáš jasného zákazníka.
+
+DEN 4 - Napiš jednu větu
+"Pomůžu [komu] s [čím] pomocí [jak]"
+Pokud to nedokážeš říct jednoduše, není to jasné ani tobě.
+Babička test: Musí to pochopit i tvoje babička.
+
+DEN 5 - Otestuj cenu
+"Kolik bys za to dal?"
+Pak zmlkni. Nech je odpovědět první.
+Pokud váhají = buď problém není dost velký, nebo tvoje řešení není jasné.
+
+DEN 6 - Podívej se na konkurenci
+To že to už někdo dělá není důvod to nedělat.
+Je to DŮKAZ, že o to je zájem.
+Google. Instagram. LinkedIn. 30 minut.
+
+DEN 7 - Rozhodnutí
+Teď máš data. Ne dojmy. Ne pocity. DATA.
+
+✅ Lidé mluví o problému + jsou ochotni platit = jdi do toho
+❌ Nezaplatí nebo tě ignorují = změň nápad nebo zákazníka
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+VÝSLEDEK ZA TÝDEN:
+
+✅ Víš JESTLI má nápad smysl
+✅ Znáš přesného zákazníka
+✅ Rozumíš jejich bolesti
+✅ Máš představu o ceně
+✅ Znáš konkurenci
+
+A investoval jsi: 0 Kč. Jen čas.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Tahle validace ti ukáže JESTLI má nápad smysl.
+
+Ale pořád nevíš JAK ho postavit.
+Jak získat první zákazníky. Jak nastavit cenu. Jak růst.
+
+K tomu potřebuješ Model podnikání.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+V Podnikatelské Čtvrtce dostaneš:
+
+✅ Kompletní Model podnikání - celý byznys na 1 stránce
+✅ Přesné zacílení - zjistíš KDO je tvůj ideální zákazník
+✅ Jasnou hodnotovou nabídku - PROČ by si měli vybrat tebe
+✅ První výsledky za 1-2 týdny - ne teorie, ale kroky co fungují
+✅ Celoživotní strategický nástroj - používáš ho pořád
+
+90 minut = kompletní systém místo měsíců hádání.
+
+👉 www.podnikatelskactvrtka.cz
+
+Podnikatelská Čtvrtka → 4 999 Kč
+
+#podnikani #validace #napad #framework #tydenvalidace`
+  },
+  {
+    id: 23,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #23: DOMINO EFEKT',
+    copy: `Martin měl skvělý nápad na e-shop.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Investoval 180 000 Kč:
+✅ Web
+✅ Logo  
+✅ Sklad
+✅ Produkty
+
+Myslel si že to stačí.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Po 4 měsících:
+
+💸 80 000 Kč utraceno za reklamu
+🤷 Pár objednávek
+😤 Nevěděl proč to nefunguje
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLÉM?
+
+Vynechal 5 klíčových otázek:
+
+❌ KDO PŘESNĚ je jeho zákazník?
+❌ PROČ by u něj měli kupovat?
+❌ KDE ty lidi najít?
+❌ JAK je přesvědčit?
+❌ KOLIK může reálně vydělat?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Zaměřil se jen na PRODUKT.
+
+Vynechal ZBYTEK modelu podnikání.
+
+= Domino efekt.
+= Všechno spadlo.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Model podnikání = 9 propojených bloků.
+
+Jako domino kostky.
+
+Vynech jednu → VŠECHNO SPADNE.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👥 Zákaznický segment  
+💎 Hodnotová nabídka
+📢 Kanály
+🤝 Vztahy se zákazníky
+💰 Zdroje příjmů  
+🔧 Klíčové zdroje
+⚙️ Klíčové aktivity
+🤝 Partnerství
+💸 Náklady
+
+Všech 9. Propojených.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Martin měl produkt.
+Ale neměl MODEL.
+
+Proto to nesedlo.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Podnikatelská Čtvrtka tě provede VŠEMI 9 bloky:
+
+✅ Systematicky  
+✅ S konkrétními daty
+✅ Pro TVŮJ byznys
+✅ Za 90 minut
+
+Žádné domino nepadne.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👉 www.podnikatelskactvrtka.cz
+
+Podnikatelská Čtvrtka → 4 999 Kč
+14 dní záruka vrácení peněz
+
+#podnikani #businessmodel #eshop #validace #chyby`
+  },
+  
+  // POST #24: SPLIT SCREEN - "2 PODNIKATELÉ"
+  {
+    id: 24,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #24: SPLIT SCREEN - "2 PODNIKATELÉ"',
+    copy: `Známe 2 typy podnikatelů:
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ Prvního poznáš podle:
+
+Neustálý chaos. Hádání. Frustrace.
+"Nevím co dnes dělat..."
+"Kam investovat další peníze?"
+"Proč to nefunguje?!"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Druhého poznáš podle:
+
+Klid. Jasný plán. Data.
+Ví přesně co dělat.
+Ví kam investovat.
+Byznys roste.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+V ČEM je rozdíl?
+
+První řeší byznys "od oka".
+Druhý má MODEL PODNIKÁNÍ.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Ke kterému typu chceš patřit?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Podnikatelská Čtvrtka tě naučí vytvořit model podnikání za 90 minut.
+
+Systematicky. S daty. Pro tvůj byznys.
+
+👉 www.podnikatelskactvrtka.cz
+
+#podnikani #modelpodnikani #systematika #rozvoj`
+  },
+
+  // POST #25: PROČ SLEVY NEFUNGUJÍ
+  {
+    id: 25,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #25: PROČ SLEVY NEFUNGUJÍ',
+    copy: `Každé ráno ti přijde do mailu:
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎁 "ZDARMA na zkoušku!"
+⚡ "50% SLEVA - pouze dnes!"
+🔥 "GRATIS konzultace v hodnotě 5000 Kč"
+💎 "Exkluzivní nabídka - 70% OFF"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Otevřeš něco z toho?
+
+❌ NE.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Proč?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 Protože když nemáš HODNOTU kterou potřebuješ...
+
+...nepomůže ti ani SLEVA 70%
+...ani ZDARMA
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+A přesně TAK přemýšlí i TVOJI zákazníci.
+
+Když nemají problém = neřeší slevu.
+Když mají problém = řeší hodnotu.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💎 ZAMĚŘ SE NA HODNOTU
+
+Na to CO nabízíš, ne JAK LEVNĚ.
+
+Vybuduj produkt/službu, kterou lidé OPRAVDU CHTĚJÍ.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ A přesně tohle řeší Podnikatelská Čtvrtka.
+
+Pomůžeme ti vytvořit hodnotu, kterou tvoji zákazníci POTŘEBUJÍ.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👉 www.podnikatelskactvrtka.cz
+
+Podnikatelská Čtvrtka → 4 999 Kč
+14 dní záruka vrácení peněz
+
+#podnikani #hodnota #marketing #positioning`
+  },
 ];
 
 // Container pro 1080x1080 nebo 1080x1350
@@ -4024,9 +4626,651 @@ function Post15StackReveal() {
 
 // POST #16: MECHANISM
 function Post16Mechanism() {
-  // Import the component
-  const { OrganicPost16Mechanism } = require('./OrganicPost16Mechanism');
   return <OrganicPost16Mechanism />;
+}
+
+// POST #17: MYTH BUSTER
+function Post17MythBuster() {
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStage((prev) => (prev + 1) % 7); // 0=intro, 1-4=myths, 5=truth, 6=cta
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [stage]);
+
+  const myths = [
+    {
+      emoji: "📦",
+      title: "Objednat tisíce kusů předem",
+      truth: "Nemusíš investovat do výroby. Stačí ověřit ŽE to někdo chce."
+    },
+    {
+      emoji: "🏢",
+      title: "Pronajmout si prostor ihned",
+      truth: "Nepotřebuješ prostor. Potřebuješ PRVNĚ vědět že to funguje."
+    },
+    {
+      emoji: "⏳",
+      title: "Čekat se spuštěním než začneš s marketingem",
+      truth: "Nemusíš mít hotovo. Marketing může běžet UŽ TEĎ."
+    },
+    {
+      emoji: "👥",
+      title: "Najmout tým na začátku",
+      truth: "Nepotřebuješ lidi. Potřebuješ vědět CO vůbec dělat."
+    }
+  ];
+
+  return (
+    <PostContainer id={17} title="POST #17: MYTH BUSTER" format="1:1">
+      <div className="relative h-full flex items-center justify-center overflow-hidden bg-white">
+        
+        {/* STAGE 0: INTRO / HOOK */}
+        <AnimatePresence mode="wait">
+          {stage === 0 && (
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 p-20 text-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="text-9xl mb-10"
+              >
+                ❌
+              </motion.div>
+              
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="bg-red-600 text-white px-10 py-4 rounded-full mb-10"
+              >
+                <p className="text-[28px]">CO NEPOTŘEBUJEŠ</p>
+              </motion.div>
+
+              <motion.h1
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-[64px] leading-tight mb-8"
+              >
+                K úspěšnému<br/>
+                <span className="text-red-600">podnikání</span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.9 }}
+                className="text-[28px] text-gray-600 max-w-2xl"
+              >
+                Většina lidí vyhodí <span className="text-red-600 font-bold">desetitisíce</span> na startu.<br/>
+                Ty to můžeš udělat <span className="text-red-600 font-bold">chytřeji</span>.
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* STAGE 1-4: INDIVIDUAL MYTHS */}
+        <AnimatePresence mode="wait">
+          {stage >= 1 && stage <= 4 && (
+            <motion.div
+              key={`myth-${stage}`}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 flex flex-col items-center justify-center bg-white p-20"
+            >
+              {/* Myth Number Badge */}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="bg-red-100 text-red-600 w-20 h-20 rounded-full flex items-center justify-center mb-10"
+              >
+                <span className="text-[40px]">{stage}</span>
+              </motion.div>
+
+              {/* Emoji + X mark */}
+              <div className="flex items-center gap-10 mb-12">
+                <motion.div
+                  initial={{ scale: 0, rotate: -90 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.4, type: "spring" }}
+                  className="text-[100px]"
+                >
+                  {myths[stage - 1].emoji}
+                </motion.div>
+                
+                <motion.div
+                  initial={{ scale: 0, rotate: 90 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.6, type: "spring" }}
+                  className="text-red-600 text-[120px] leading-none"
+                >
+                  ❌
+                </motion.div>
+              </div>
+
+              {/* Title with strikethrough */}
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="text-[40px] mb-10 text-center max-w-4xl px-8"
+              >
+                <span className="line-through decoration-red-500 decoration-[4px]">
+                  {myths[stage - 1].title}
+                </span>
+              </motion.h2>
+
+              {/* Truth box */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.2 }}
+                className="bg-gray-50 px-12 py-10 rounded-3xl border-4 border-gray-200 max-w-4xl"
+              >
+                <p className="text-[32px] text-gray-700 text-center leading-relaxed">
+                  {myths[stage - 1].truth}
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* STAGE 5: THE TRUTH */}
+        <AnimatePresence mode="wait">
+          {stage === 5 && (
+            <motion.div
+              key="truth"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-blue-700 p-20 text-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="text-9xl mb-10"
+              >
+                ✅
+              </motion.div>
+
+              <motion.h2
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-[56px] text-white leading-tight mb-8"
+              >
+                Musíš vědět<br/>
+                <span className="font-black">CO skutečně potřebuješ</span>
+              </motion.h2>
+
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7 }}
+                className="bg-white/20 backdrop-blur-sm px-12 py-8 rounded-3xl border-4 border-white/30"
+              >
+                <p className="text-[32px] text-white leading-relaxed">
+                  Model ti ukáže<br/>
+                  <span className="font-black">KDE začít</span> a <span className="font-black">CO dělat PRVNÍ</span>
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* STAGE 6: CTA + SOCIAL PROOF */}
+        <AnimatePresence mode="wait">
+          {stage === 6 && (
+            <motion.div
+              key="cta"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-700 to-indigo-800 p-20 text-center"
+            >
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="mb-12"
+              >
+                <h2 className="text-[48px] text-white leading-tight">
+                  <span className="font-black">27 podnikatelů</span><br/>
+                  už BEZPEČNĚ investovalo
+                </h2>
+              </motion.div>
+
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5, type: "spring" }}
+                className="bg-white/20 backdrop-blur-sm px-16 py-10 rounded-3xl border-4 border-white/40 mb-12"
+              >
+                <p className="text-[72px] font-black text-cyan-300 mb-2">
+                  1,4M Kč
+                </p>
+                <p className="text-[28px] text-blue-100">
+                  do svých byznysů
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="bg-white px-14 py-8 rounded-full"
+              >
+                <p className="text-[36px] text-blue-600">
+                  👉 <span className="font-black">podnikatelskactvrtka.cz</span>
+                </p>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.2 }}
+                className="mt-10 text-[24px] text-blue-100"
+              >
+                90 minut • Model podnikání • Bezpečná validace
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Progress dots */}
+        <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-4 z-10">
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className={`rounded-full transition-all ${
+                i === stage 
+                  ? 'w-16 h-4 bg-red-600' 
+                  : 'w-4 h-4 bg-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </PostContainer>
+  );
+}
+
+// POST #18: SIMPLICITY (Chaos → Simple transformation)
+function Post18Simplicity() {
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStage((prev) => (prev + 1) % 5); // 0=hook, 1=chaos, 2=transform, 3=simple, 4=cta
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [stage]);
+
+  // Nástroje které se objeví v chaosu
+  const tools = [
+    { icon: "📊", label: "Excel" },
+    { icon: "👨‍💼", label: "Konzultant" },
+    { icon: "📚", label: "Kurzy" },
+    { icon: "📝", label: "Šablony" },
+    { icon: "🧮", label: "Kalkulačky" },
+    { icon: "📖", label: "Knihy" },
+    { icon: "💼", label: "Poradenství" },
+    { icon: "📈", label: "Analytika" },
+    { icon: "🎯", label: "Strategie" },
+    { icon: "💡", label: "Workshopy" },
+    { icon: "📋", label: "Checklisty" },
+    { icon: "🔍", label: "Průzkum" }
+  ];
+
+  // Structured chaos - fixed pozice v grid aby se nepřekrývaly, ale chaotic rotation
+  // 4 rows x 3 cols grid - posunuto dolů aby nepřekrývalo text nahoře
+  const chaosPositions = [
+    // Row 1 - posunuto výš z -320 na -260
+    { x: -350, y: -260, rotate: -15 },
+    { x: -100, y: -280, rotate: 8 },
+    { x: 180, y: -250, rotate: -12 },
+    // Row 2
+    { x: -380, y: -80, rotate: 12 },
+    { x: -80, y: -60, rotate: -8 },
+    { x: 220, y: -90, rotate: 15 },
+    // Row 3
+    { x: -340, y: 120, rotate: -10 },
+    { x: -60, y: 140, rotate: 18 },
+    { x: 200, y: 110, rotate: -14 },
+    // Row 4
+    { x: -370, y: 320, rotate: 10 },
+    { x: -100, y: 340, rotate: -16 },
+    { x: 180, y: 310, rotate: 12 }
+  ];
+
+  return (
+    <PostContainer id={18} title="POST #18: SIMPLICITY" format="1:1">
+      <div className="relative h-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 to-gray-100">
+        
+        {/* STAGE 0: HOOK */}
+        <AnimatePresence mode="wait">
+          {stage === 0 && (
+            <motion.div
+              key="hook"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
+                className="text-9xl mb-10"
+              >
+                🤔
+              </motion.div>
+
+              <motion.h1
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-[56px] leading-tight mb-6"
+              >
+                Kolik nástrojů<br/>
+                <span className="text-purple-600">potřebuješ</span><br/>
+                k úspěšnému podnikání?
+              </motion.h1>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* STAGE 1: CHAOS - Exploding tools */}
+        <AnimatePresence mode="wait">
+          {stage === 1 && (
+            <motion.div
+              key="chaos"
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {/* Background text */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute top-20 text-center"
+              >
+                <h2 className="text-[48px] text-red-600 font-black">CHAOS</h2>
+                <p className="text-[24px] text-gray-600">Většina lidí myslí že potřebují...</p>
+              </motion.div>
+
+              {/* Flying tools */}
+              {tools.map((tool, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ x: 0, y: 0, opacity: 0, scale: 0, rotate: 0 }}
+                  animate={{
+                    x: chaosPositions[i].x,
+                    y: chaosPositions[i].y,
+                    opacity: 1,
+                    scale: 1,
+                    rotate: chaosPositions[i].rotate
+                  }}
+                  transition={{
+                    delay: i * 0.1,
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 10
+                  }}
+                  className="absolute bg-white px-6 py-4 rounded-2xl shadow-xl border-2 border-gray-300"
+                >
+                  <div className="text-[40px] mb-1">{tool.icon}</div>
+                  <div className="text-[18px] font-bold text-gray-700 whitespace-nowrap">{tool.label}</div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* STAGE 2: TRANSFORMATION - Magnetic pull */}
+        <AnimatePresence mode="wait">
+          {stage === 2 && (
+            <motion.div
+              key="transform"
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {/* Tools flying back to center */}
+              {tools.map((tool, i) => (
+                <motion.div
+                  key={i}
+                  initial={{
+                    x: chaosPositions[i].x,
+                    y: chaosPositions[i].y,
+                    opacity: 1,
+                    scale: 1,
+                    rotate: chaosPositions[i].rotate
+                  }}
+                  animate={{
+                    x: 0,
+                    y: 0,
+                    opacity: 0,
+                    scale: 0.3,
+                    rotate: 0
+                  }}
+                  transition={{
+                    delay: i * 0.05,
+                    type: "spring",
+                    stiffness: 150,
+                    damping: 15
+                  }}
+                  className="absolute bg-white px-6 py-4 rounded-2xl shadow-xl border-2 border-gray-300"
+                >
+                  <div className="text-[40px] mb-1">{tool.icon}</div>
+                  <div className="text-[18px] font-bold text-gray-700 whitespace-nowrap">{tool.label}</div>
+                </motion.div>
+              ))}
+
+              {/* Center magnet effect */}
+              <motion.div
+                initial={{ scale: 0, rotate: 0 }}
+                animate={{ scale: [1, 1.2, 1], rotate: 360 }}
+                transition={{ delay: 0.5, duration: 1.5 }}
+                className="text-[120px]"
+              >
+                🧲
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* STAGE 3: SIMPLE - One clean box */}
+        <AnimatePresence mode="wait">
+          {stage === 3 && (
+            <motion.div
+              key="simple"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center"
+            >
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="mb-10"
+              >
+                <h2 className="text-[48px] text-green-600 font-black mb-4">REALITA</h2>
+                <p className="text-[28px] text-gray-600">Ve skutečnosti stačí...</p>
+              </motion.div>
+
+              {/* One clean model box */}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.5, type: "spring", stiffness: 150 }}
+                className="bg-gradient-to-br from-purple-600 to-blue-600 px-20 py-16 rounded-3xl shadow-2xl border-4 border-white mb-8"
+              >
+                <div className="text-[80px] mb-4">📋</div>
+                <div className="text-[48px] text-white font-black">JEDEN MODEL</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="space-y-2"
+              >
+                <p className="text-[40px] font-black text-gray-800">90 minut.</p>
+                <p className="text-[40px] font-black text-gray-800">Hotovo.</p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* STAGE 4: CTA */}
+        <AnimatePresence mode="wait">
+          {stage === 4 && (
+            <motion.div
+              key="cta"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-700 to-blue-800 p-20 text-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="text-8xl mb-10"
+              >
+                ✨
+              </motion.div>
+
+              <motion.h2
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-[52px] text-white leading-tight mb-8"
+              >
+                Podnikatelská Čtvrtka<br/>
+                ti ukáže <span className="font-black">vše pod jednou střechou</span>
+              </motion.h2>
+
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7 }}
+                className="bg-white/20 backdrop-blur-sm px-12 py-8 rounded-3xl border-4 border-white/30 mb-12"
+              >
+                <p className="text-[36px] text-white leading-relaxed">
+                  Jeden nástroj<br/>
+                  Všechny odpovědi<br/>
+                  Jasný plán
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="bg-white px-14 py-8 rounded-full"
+              >
+                <p className="text-[36px] text-purple-600">
+                  👉 <span className="font-black">podnikatelskactvrtka.cz</span>
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Progress dots */}
+        <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-4 z-10">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className={`rounded-full transition-all ${
+                i === stage 
+                  ? 'w-16 h-4 bg-purple-600' 
+                  : 'w-4 h-4 bg-gray-400'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </PostContainer>
+  );
+}
+
+// POST #19: HOKEJOVÁ VÝBAVA
+function Post19OpportunityCost() {
+  return (
+    <PostContainer format="4:5" id={19} title="Post #19: HOKEJOVÁ VÝBAVA">
+      <OrganicPost19OpportunityCost />
+    </PostContainer>
+  );
+}
+
+// POST #20: RED FLAGS - Kdy do toho NEJÍT
+function Post20EducationalTip() {
+  return (
+    <PostContainer format="4:5" id={20} title="Post #20: RED FLAGS">
+      <OrganicPost20RedFlags />
+    </PostContainer>
+  );
+}
+
+// POST #21: NO RESPONSE - Sticky Notes
+function Post21NoResponse() {
+  return (
+    <PostContainer format="4:5" id={21} title="Post #21: NO RESPONSE">
+      <OrganicPost21NoResponse />
+    </PostContainer>
+  );
+}
+
+// POST #22: WEEK VALIDATION - Timeline
+function Post22WeekValidation() {
+  return (
+    <PostContainer format="4:5" id={22} title="Post #22: TÝDEN VALIDACE">
+      <OrganicPost22WeekValidation />
+    </PostContainer>
+  );
+}
+
+// POST #23: DOMINO EFEKT - Chain Reaction
+function Post23Domino() {
+  return (
+    <PostContainer format="4:5" id={23} title="Post #23: DOMINO EFEKT">
+      <OrganicPost23Domino />
+    </PostContainer>
+  );
+}
+
+// Post #24: Split Screen (Static)
+function Post24SplitScreen() {
+  return (
+    <PostContainer format="4:5" id={24} title="Post #24: SPLIT SCREEN - 2 PODNIKATELÉ">
+      <OrganicPost24SplitScreen />
+    </PostContainer>
+  );
+}
+
+// Post #25: No Discounts (Animated)
+function Post25NoDiscounts() {
+  return (
+    <PostContainer format="4:5" id={25} title="Post #25: PROČ SLEVY NEFUNGUJÍ">
+      <OrganicPost25NoDiscounts />
+    </PostContainer>
+  );
 }
 
 // Main component
@@ -4058,6 +5302,15 @@ export default function OrganicPosts() {
       case 13: return <Post14WhatYouDontNeed />;
       case 14: return <Post15StackReveal />;
       case 15: return <Post16Mechanism />;
+      case 16: return <Post17MythBuster />;
+      case 17: return <Post18Simplicity />;
+      case 18: return <Post19OpportunityCost />;
+      case 19: return <Post20EducationalTip />;
+      case 20: return <Post21NoResponse />;
+      case 21: return <Post22WeekValidation />;
+      case 22: return <Post23Domino />;
+      case 23: return <Post24SplitScreen />;
+      case 24: return <Post25NoDiscounts />;
       default: return <Post1Static />;
     }
   };

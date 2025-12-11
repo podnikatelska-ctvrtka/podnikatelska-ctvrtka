@@ -1,3 +1,15 @@
+import { ZalohaLanding } from "./components/ZalohaLanding"; // ✅ BACKUP: Original homepage
+import { QuizAdRemarketing1 } from "./components/QuizAdRemarketing1"; // ✅ REMARKETING AD 1
+import { QuizAdRemarketing2 } from "./components/QuizAdRemarketing2"; // ✅ REMARKETING AD 2
+import { ChristmasRemarketingAd } from "./components/ChristmasRemarketingAd"; // ✅ CHRISTMAS AD
+import { RemarketingAdsPreview } from "./components/RemarketingAdsPreview"; // ✅ REMARKETING ADS PREVIEW
+import { QuizLandingPage } from "./components/QuizLandingPage"; // ✅ QUIZ LANDING PAGE
+import { ActionPlanPreview } from "./components/ActionPlanPreview"; // ✅ ACTION PLAN PDF
+import { KonzultacePage } from "./components/KonzultacePage"; // ✅ FREE KONZULTACE PAGE
+import { ZasilkovnaBusinessModel } from "./components/ZasilkovnaBusinessModel"; // ✅ ZASILKOVNA MODEL
+import { MiniCourse } from "./components/MiniCourse"; // ✅ MINI KURZ
+import { CourseDemoV3 } from "./components/CourseDemoV3"; // ✅ MAIN COURSE
+
 import { HeroSection } from "./components/HeroSection";
 import { ProblemsSectionCompact } from "./components/ProblemsSectionCompact";
 import { SolutionIntroSection } from "./components/SolutionIntroSection";
@@ -7,8 +19,6 @@ import { CompactCaseStudySection } from "./components/CompactCaseStudySection";
 import { CountdownBanner } from "./components/CountdownBanner";
 import { PrelaunchEmailCapture } from "./components/PrelaunchEmailCapture";
 import { EarlyAccessSale } from "./components/EarlyAccessSale";
-import { MiniCourse } from "./components/MiniCourse";
-import { CourseDemoV3 as CourseDemo } from "./components/CourseDemoV3";
 
 import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
 import { FinalAdSetsShowcase } from "./components/FinalAdSets";
@@ -122,7 +132,12 @@ export default function App() {
   const [showValue3Versions, setShowValue3Versions] = useState(false);
   const [showValue3NewDesigns, setShowValue3NewDesigns] = useState(false);
   const [showValue3MediumDesigns, setShowValue3MediumDesigns] = useState(false);
-
+  const [showKonzultace, setShowKonzultace] = useState(false);
+  const [showZasilkovnaModel, setShowZasilkovnaModel] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [showActionPlans, setShowActionPlans] = useState(false); // ✅ PDF Preview
+  const [showZaloha, setShowZaloha] = useState(false); // ✅ BACKUP: Original landing page
+  const [showRemarketingAds, setShowRemarketingAds] = useState(false); // ✅ REMARKETING ADS
   
   // 📊 META PIXEL: Inicializace
   useEffect(() => {
@@ -207,7 +222,104 @@ export default function App() {
       const isTestMode = urlParams.get('test') === 'true';
       setOrderPageTestMode(isTestMode);
       
-      if (hash.startsWith('#ad-optimization') || path === '/ad-optimization') {
+      if (hash.startsWith('#action-plans') || path === '/action-plans') {
+        setShowActionPlans(true);
+        setShowQuiz(false);
+        setShowZasilkovnaModel(false);
+        setShowKonzultace(false);
+      } else if (hash.startsWith('#zaloha') || path === '/zaloha') {
+        setShowZaloha(true);
+      } else if (hash.startsWith('#zasilkovna') || path === '/zasilkovna' || hash.startsWith('#business-model-zasilkovna') || path === '/business-model-zasilkovna') {
+        setShowZasilkovnaModel(true);
+        setShowKonzultace(false);
+        setShowQuiz(false);
+        setShowAdOptimization(false);
+        setShowStoriesAds(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#kviz') || path === '/kviz') {
+        setShowQuiz(true);
+        setShowZasilkovnaModel(false);
+        setShowKonzultace(false);
+        setShowAdOptimization(false);
+        setShowStoriesAds(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#konzultace') || path === '/konzultace') {
+        setShowKonzultace(true);
+        setShowQuiz(false);
+        setShowZasilkovnaModel(false);
+        setShowAdOptimization(false);
+        setShowStoriesAds(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
+      } else if (hash.startsWith('#ad-optimization') || path === '/ad-optimization') {
         setShowAdOptimization(true);
         setShowStoriesAds(false);
         setShowOrganicPosts(false);
@@ -273,6 +385,17 @@ export default function App() {
         setShowFBAssets(false);
       } else if (hash.startsWith('#value3-medium-designs') || path === '/value3-medium-designs') {
         setShowValue3MediumDesigns(true);
+        setShowValue3NewDesigns(false);
+        setShowValue3Versions(false);
+        setShowOmnipresent10(false);
+        setShowValue3Ads(false);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowOrganicPosts(false);
+        setShowFBAssets(false);
+      } else if (hash.startsWith('#remarketing') || path === '/remarketing') {
+        setShowRemarketingAds(true);
+        setShowValue3MediumDesigns(false);
         setShowValue3NewDesigns(false);
         setShowValue3Versions(false);
         setShowOmnipresent10(false);
@@ -999,7 +1122,7 @@ export default function App() {
     );
   }
 
-  // Show creative ads if URL has #kreativni-reklamy (MÉ KREATIVNÍ!)
+  // Show creative ads if URL has #kreativni-reklamy (MÉ KREATIVN!)
   if (showCreativeAds) {
     return (
       <>
@@ -1087,18 +1210,111 @@ export default function App() {
     );
   }
   
+  // Show Konzultace page if URL has #konzultace or /konzultace
+  if (showKonzultace) {
+    return (
+      <>
+        <CriticalCSS />
+        <KonzultacePage />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Quiz page if URL has #kviz or /kviz
+  if (showQuiz) {
+    return (
+      <>
+        <CriticalCSS />
+        <QuizLandingPage />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Action Plans Preview if URL has #action-plans
+  if (showActionPlans) {
+    return (
+      <>
+        <CriticalCSS />
+        <ActionPlanPreview />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Zásilkovna Business Model if URL has #zasilkovna or /zasilkovna
+  if (showZasilkovnaModel) {
+    return (
+      <>
+        <CriticalCSS />
+        <ZasilkovnaBusinessModel />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Remarketing Ads if URL has #remarketing or /remarketing
+  if (showRemarketingAds) {
+    return (
+      <>
+        <CriticalCSS />
+        <RemarketingAdsPreview />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
   // Show course if URL has #course, #kurz, /course, /kurz, or /course-v3
   if (showCourseDemo || showCourseV3) {
     return (
       <>
         <DevBadge />
         <CriticalCSS />
-        <CourseDemo />
+        <CourseDemoV3 /> {/* ✅ FIXED: Changed from CourseDemo to CourseDemoV3 */}
         <InstallPrompt />
         <Toaster position="top-right" />
       </>
     );
   }
+  
+  // Show Zaloha landing page if URL has #zaloha or /zaloha (BACKUP ORIGINAL HOMEPAGE)
+  if (showZaloha) {
+    return (
+      <>
+        <CriticalCSS />
+        <ZalohaLanding />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // ✅ DEFAULT HOMEPAGE: Původní landing page (omnipresent kampaň běží s CTA na koupi)
+  const handleQuizComplete = async (result: any, email: string, answers: Record<string, number>) => {
+    try {
+      const response = await fetch('/.netlify/functions/quiz-submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          name: '',
+          quizType: result.category === 'beginner' ? 'beginner' : 'existing',
+          answers,
+          result
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit quiz');
+      }
+      
+      console.log('✅ Quiz submitted successfully');
+    } catch (error) {
+      console.error('❌ Quiz submission error:', error);
+    }
+  };
   
   return (
     <>

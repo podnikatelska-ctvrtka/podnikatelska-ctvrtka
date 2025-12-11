@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { EnhancedCTA } from "./EnhancedCTA";
 import { TouchFeedback } from "./TouchFeedback";
 import { QuickEmailCaptureModal } from "./QuickEmailCaptureModal";
+import { BusinessHealthQuiz } from "./BusinessHealthQuiz"; // ✅ KVÍZ import
 import { getRemainingSpots } from "../lib/scarcity";
 
 export function HeroSection() {
   const [activeCanvasBlock, setActiveCanvasBlock] = useState('value');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false); // ✅ NOVÝ - pro kvíz
   const [mobileTooltip, setMobileTooltip] = useState<string | null>(null);
   const [remainingSpots, setRemainingSpots] = useState(50);
   
@@ -167,19 +169,21 @@ export function HeroSection() {
               <div 
                 className="text-center mt-8 hidden md:block"
               >
-                <TouchFeedback className="max-w-sm mx-auto">
-                  <EnhancedCTA 
-                    variant="primary" 
-                    size="lg"
-                    className="w-full"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    Chci vědět, co dělat jako první
-                  </EnhancedCTA>
-                </TouchFeedback>
-                <p className="text-xs text-gray-600 mt-2 font-medium">
-                  ⏰ Sleva platí 24 hodin od registrace
-                </p>
+                <div className="max-w-md mx-auto">
+                  {/* 🎯 PRIMARY CTA - KVÍZ (soft offer, dominantní) */}
+                  <TouchFeedback>
+                    <button
+                      onClick={() => setIsQuizOpen(true)}
+                      className="w-full px-8 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl"
+                    >
+                      🎯 Zjisti ZDARMA jak zdravý je tvůj model podnikání
+                    </button>
+                  </TouchFeedback>
+                  
+                  <p className="text-sm text-gray-600 mt-3">
+                    ⏱️ 3 minuty • Personalizované výsledky • Akční plán na míru
+                  </p>
+                </div>
               </div>
 
             </motion.div>
@@ -270,7 +274,7 @@ export function HeroSection() {
                     </h4>
                   </div>
                   <p className="text-white opacity-95 text-sm leading-relaxed">
-                    {tooltipData[activeCanvasBlock as keyof typeof tooltipData]?.content || "Vybudujte si síť spolehlivých partnerů, kteří vás posunou vpřed rychleji než konkurenci!"}
+                    {tooltipData[activeCanvasBlock as keyof typeof tooltipData]?.content || "Vybudujte si síť spolehlivých partnerů, kteí vás posunou vpřed rychleji než konkurenci!"}
                   </p>
                 </motion.div>
               </div>
@@ -344,16 +348,19 @@ export function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 }}
               >
-                <button 
-                  onClick={() => setIsModalOpen(true)}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3.5 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group max-w-xs mx-auto w-full"
-                >
-                  Chci vědět, co dělat jako první
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </button>
-                <p className="text-xs text-gray-500 mt-2">
-                  Sleva 40% vyprší za 24 hodin od registrace
-                </p>
+                <div className="max-w-xs mx-auto">
+                  {/* 🎯 PRIMARY CTA - KVÍZ (soft offer, dominantní) */}
+                  <button 
+                    onClick={() => setIsQuizOpen(true)}
+                    className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl active:from-blue-700 active:to-indigo-700 transition-all duration-200 shadow-lg font-semibold text-lg"
+                  >
+                    🎯 Zjisti ZDARMA jak zdravý je tvůj byznys
+                  </button>
+                  
+                  <p className="text-xs text-gray-600 mt-3">
+                    ⏱️ 3 min • Personalizované výsledky • Akční plán
+                  </p>
+                </div>
               </motion.div>
 
             </div>
@@ -372,6 +379,12 @@ export function HeroSection() {
         tooltipKey={mobileTooltip}
         tooltipData={tooltipData}
         onClose={() => setMobileTooltip(null)}
+      />
+
+      {/* Business Health Quiz Modal */}
+      <BusinessHealthQuiz
+        open={isQuizOpen}
+        onOpenChange={setIsQuizOpen}
       />
     </>
   );
