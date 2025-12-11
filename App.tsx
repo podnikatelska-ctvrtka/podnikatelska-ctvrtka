@@ -1,9 +1,7 @@
-import { ZalohaLanding } from "./components/ZalohaLanding"; // ✅ BACKUP: Original homepage
-import { QuizAdRemarketing1 } from "./components/QuizAdRemarketing1"; // ✅ REMARKETING AD 1
-import { QuizAdRemarketing2 } from "./components/QuizAdRemarketing2"; // ✅ REMARKETING AD 2
 import { ChristmasRemarketingAd } from "./components/ChristmasRemarketingAd"; // ✅ CHRISTMAS AD
 import { RemarketingAdsPreview } from "./components/RemarketingAdsPreview"; // ✅ REMARKETING ADS PREVIEW
 import { QuizLandingPage } from "./components/QuizLandingPage"; // ✅ QUIZ LANDING PAGE
+import { QuizResultsPage } from "./components/QuizResultsPage"; // ✅ QUIZ RESULTS PAGE
 import { ActionPlanPreview } from "./components/ActionPlanPreview"; // ✅ ACTION PLAN PDF
 import { KonzultacePage } from "./components/KonzultacePage"; // ✅ FREE KONZULTACE PAGE
 import { ZasilkovnaBusinessModel } from "./components/ZasilkovnaBusinessModel"; // ✅ ZASILKOVNA MODEL
@@ -135,6 +133,7 @@ export default function App() {
   const [showKonzultace, setShowKonzultace] = useState(false);
   const [showZasilkovnaModel, setShowZasilkovnaModel] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [showQuizResults, setShowQuizResults] = useState(false); // ✅ NOVÝ - kvíz výsledky
   const [showActionPlans, setShowActionPlans] = useState(false); // ✅ PDF Preview
   const [showZaloha, setShowZaloha] = useState(false); // ✅ BACKUP: Original landing page
   const [showRemarketingAds, setShowRemarketingAds] = useState(false); // ✅ REMARKETING ADS
@@ -261,6 +260,7 @@ export default function App() {
         setShowCourseV3(false);
       } else if (hash.startsWith('#kviz') || path === '/kviz') {
         setShowQuiz(true);
+        setShowQuizResults(false); // ✅ Vypnout výsledky když se zobrazuje kvíz
         setShowZasilkovnaModel(false);
         setShowKonzultace(false);
         setShowAdOptimization(false);
@@ -289,6 +289,12 @@ export default function App() {
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
+      } else if (path === '/kviz/vysledky') {
+        // ✅ NOVÝ ROUTING pro výsledkovou stránku
+        setShowQuizResults(true);
+        setShowQuiz(false);
+        setShowZasilkovnaModel(false);
+        setShowKonzultace(false);
       } else if (hash.startsWith('#konzultace') || path === '/konzultace') {
         setShowKonzultace(true);
         setShowQuiz(false);
@@ -1227,6 +1233,17 @@ export default function App() {
       <>
         <CriticalCSS />
         <QuizLandingPage />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // ✅ Show Quiz Results page if URL has /kviz/vysledky
+  if (showQuizResults) {
+    return (
+      <>
+        <CriticalCSS />
+        <QuizResultsPage />
         <Toaster position="top-right" />
       </>
     );
