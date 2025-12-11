@@ -11,7 +11,6 @@ export function HeroSection() {
   const [activeCanvasBlock, setActiveCanvasBlock] = useState('value');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false); // ✅ NOVÝ - pro kvíz
-  const [quizCompleted, setQuizCompleted] = useState(false); // ✅ Completion state
   const [mobileTooltip, setMobileTooltip] = useState<string | null>(null);
   const [remainingSpots, setRemainingSpots] = useState(50);
   
@@ -75,13 +74,8 @@ export function HeroSection() {
         console.log('✅ Quiz data saved to Supabase!');
       }
       
-      // ✅ Show completion modal
-      setQuizCompleted(true);
-      
       // ✅ Close quiz modal
-      setTimeout(() => {
-        setIsQuizOpen(false);
-      }, 200);
+      setIsQuizOpen(false);
       
       // 📊 Track completion in Meta Pixel
       if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -90,14 +84,21 @@ export function HeroSection() {
           status: result.category
         });
       }
+      
+      // ✅ REDIRECT na děkovnou stránku s parametry
+      const params = new URLSearchParams({
+        email: email,
+        score: result.score.toString(),
+        category: result.category
+      });
+      window.location.href = `/kviz/vysledky?${params.toString()}`;
+      
     } catch (error) {
       console.error('❌ Quiz submission error:', error);
       
-      // ✅ I přes chybu ukážeme completion modal
-      setQuizCompleted(true);
-      setTimeout(() => {
-        setIsQuizOpen(false);
-      }, 200);
+      // ✅ I přes chybu redirect (email se pošle z edge funkce)
+      setIsQuizOpen(false);
+      window.location.href = `/kviz/vysledky`;
     }
   };
 
@@ -455,45 +456,6 @@ export function HeroSection() {
         onOpenChange={setIsQuizOpen}
         onComplete={handleQuizComplete}
       />
-      
-      {/* ✅ COMPLETION MODAL - Po dokončení kvízu */}
-      {quizCompleted && (
-        <div className="fixed inset-0 z-[70] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 md:p-12 max-w-lg w-full border border-white/10 shadow-2xl">
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-10 h-10 text-green-400" />
-              </div>
-              <h2 className="text-3xl mb-3 text-white">
-                Hotovo! 🎉
-              </h2>
-              <p className="text-lg text-slate-300">
-                Tvé výsledky jsou připravené!
-              </p>
-            </div>
-
-            <div className="space-y-3 mb-8">
-              <div className="flex items-start gap-3 bg-white/5 rounded-lg p-4 border border-white/10">
-                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-white">Skóre uloženo</p>
-                  <p className="text-sm text-slate-400">Data byla úspěšně uložena</p>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setQuizCompleted(false);
-                setIsQuizOpen(false);
-              }}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full py-3 px-6 font-semibold transition-all"
-            >
-              Zavřít
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
