@@ -302,7 +302,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
     categoryDescription = 'Byznys funguje, ale visíš na vlásku. Pár konkrétních kroků a budeš stabilnější.';
     categoryColor = 'text-yellow-600';
     risks = [
-      'Kritická z��vislost na 1-2 klientech/kanálech - pokud zmizí, tratíš 50%+ tržeb',
+      'Kritická závislost na 1-2 klientech/kanálech - pokud zmizí, tratíš 50%+ tržeb',
       'Žádné finanční rezervy - jeden výpadek (nemoc, problém s dodavatelem) a jsi v existenčním problému',
       'Všechno dělá majitel - když onemocníš nebo chceš dovolenou, byznys stojí',
       'Neznáš svoje čísla - nevíš kolik tě stojí získání zákazníka a kolik ti průměrně utratí'
@@ -393,14 +393,26 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('🔍 DEBUG: handleEmailSubmit called');
+    console.log('🔍 DEBUG: email =', email);
+    console.log('🔍 DEBUG: name =', name);
+    console.log('🔍 DEBUG: answers =', answers);
+    console.log('🔍 DEBUG: quizType =', quizType);
+    
     setIsSubmitting(true);
     
     const calculatedResult = calculateResult(answers, quizType);
+    console.log('🔍 DEBUG: calculatedResult =', calculatedResult);
     setResult(calculatedResult);
     
     // Zavolej callback pro uložení do DB a odeslání emailu
     if (onComplete) {
+      console.log('🔍 DEBUG: Calling onComplete callback...');
       await onComplete(calculatedResult, email, answers);
+      console.log('🔍 DEBUG: onComplete finished!');
+    } else {
+      console.log('⚠️ DEBUG: No onComplete callback provided!');
     }
     
     setIsSubmitting(false);
@@ -656,13 +668,13 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
                         </div>
                       </div>
                       
-                      <Button
+                      <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
-                        {isSubmitting ? 'Zpracovávám...' : 'Zobrazit výsledky'} <ArrowRight className="ml-2" />
-                      </Button>
+                        {isSubmitting ? 'Zpracovávám...' : 'Zobrazit výsledky'} <ArrowRight className="w-5 h-5" />
+                      </button>
                       
                       <p className="text-xs text-center text-slate-500">
                         Pošleme ti detailní rozbor + konkrétní doporučení. Žádný spam.
