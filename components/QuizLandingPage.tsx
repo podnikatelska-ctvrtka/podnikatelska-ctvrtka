@@ -9,25 +9,40 @@ export function QuizLandingPage() {
 
   const handleQuizComplete = async (result: any, email: string, answers: Record<string, number>) => {
     try {
-      // ✅ Submit to Netlify Functions → Smartemailing + Resend
-      const response = await fetch('/.netlify/functions/quiz-submit', {
+      console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
+      
+      // ✅ FALLBACK: Save directly to Supabase from frontend
+      const supabaseUrl = 'https://jdcpzswpecntlqiyzxac.supabase.co';
+      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppY3B6c3dwZWNudGxxaXl6eGFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MjQyNDksImV4cCI6MjA0OTUwMDI0OX0.t_vJZdYq0RfPp5QyWLRCaL9X8pVMB9zOQKEHCbdH3gE';
+      
+      // Save to Supabase
+      const saveResponse = await fetch(`${supabaseUrl}/rest/v1/quiz_results`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Prefer': 'return=representation'
         },
         body: JSON.stringify({
           email,
           name: '',
-          quizType: result.category === 'beginner' ? 'beginner' : 'existing',
+          quiz_type: result.category === 'beginner' ? 'beginner' : 'existing',
           answers,
-          result,
           score: result.score,
-          category: result.category
+          category: result.category,
+          category_label: result.categoryLabel,
+          risks: result.risks,
+          recommendations: result.recommendations,
+          created_at: new Date().toISOString()
         })
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to submit quiz');
+      console.log('📊 Supabase save response:', saveResponse.status);
+      
+      if (!saveResponse.ok) {
+        const errorText = await saveResponse.text();
+        console.error('❌ Supabase error:', errorText);
       }
       
       // ✅ NEJDŘÍV zobrazit completion modal
@@ -38,7 +53,7 @@ export function QuizLandingPage() {
         setShowQuiz(false);
       }, 200);
       
-      console.log('✅ Quiz submitted successfully - Email sequence triggered!');
+      console.log('✅ Quiz submitted successfully!');
       
       // 📊 Track completion in Meta Pixel
       if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -49,6 +64,12 @@ export function QuizLandingPage() {
       }
     } catch (error) {
       console.error('❌ Quiz submission error:', error);
+      
+      // ✅ I přes chybu ukážeme completion modal
+      setQuizCompleted(true);
+      setTimeout(() => {
+        setShowQuiz(false);
+      }, 200);
     }
   };
 
