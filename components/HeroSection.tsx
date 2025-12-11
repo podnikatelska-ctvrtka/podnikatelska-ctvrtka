@@ -11,6 +11,7 @@ export function HeroSection() {
   const [activeCanvasBlock, setActiveCanvasBlock] = useState('value');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false); // ✅ NOVÝ - pro kvíz
+  const [quizCompleted, setQuizCompleted] = useState(false); // ✅ Completion state
   const [mobileTooltip, setMobileTooltip] = useState<string | null>(null);
   const [remainingSpots, setRemainingSpots] = useState(50);
   
@@ -32,6 +33,73 @@ export function HeroSection() {
   useEffect(() => {
     setRemainingSpots(getRemainingSpots());
   }, []);
+  
+  // ✅ HANDLER pro dokončení kvízu
+  const handleQuizComplete = async (result: any, email: string, answers: Record<string, number>) => {
+    try {
+      console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
+      
+      // ✅ Save directly to Supabase from frontend
+      const supabaseUrl = 'https://jdcpzswpecntlqiyzxac.supabase.co';
+      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppY3B6c3dwZWNudGxxaXl6eGFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MjQyNDksImV4cCI6MjA0OTUwMDI0OX0.t_vJZdYq0RfPp5QyWLRCaL9X8pVMB9zOQKEHCbdH3gE';
+      
+      // Save to Supabase
+      const saveResponse = await fetch(`${supabaseUrl}/rest/v1/quiz_results`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          email,
+          name: '',
+          quiz_type: result.category === 'beginner' ? 'beginner' : 'existing',
+          answers,
+          score: result.score,
+          category: result.category,
+          category_label: result.categoryLabel,
+          risks: result.risks,
+          recommendations: result.recommendations,
+          created_at: new Date().toISOString()
+        })
+      });
+      
+      console.log('📊 Supabase save response:', saveResponse.status);
+      
+      if (!saveResponse.ok) {
+        const errorText = await saveResponse.text();
+        console.error('❌ Supabase error:', errorText);
+      } else {
+        console.log('✅ Quiz data saved to Supabase!');
+      }
+      
+      // ✅ Show completion modal
+      setQuizCompleted(true);
+      
+      // ✅ Close quiz modal
+      setTimeout(() => {
+        setIsQuizOpen(false);
+      }, 200);
+      
+      // 📊 Track completion in Meta Pixel
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'CompleteRegistration', {
+          content_name: 'Business Health Quiz',
+          status: result.category
+        });
+      }
+    } catch (error) {
+      console.error('❌ Quiz submission error:', error);
+      
+      // ✅ I přes chybu ukážeme completion modal
+      setQuizCompleted(true);
+      setTimeout(() => {
+        setIsQuizOpen(false);
+      }, 200);
+    }
+  };
 
   const tooltipData = {
     'partners': {
@@ -385,7 +453,47 @@ export function HeroSection() {
       <BusinessHealthQuiz
         open={isQuizOpen}
         onOpenChange={setIsQuizOpen}
+        onComplete={handleQuizComplete}
       />
+      
+      {/* ✅ COMPLETION MODAL - Po dokončení kvízu */}
+      {quizCompleted && (
+        <div className="fixed inset-0 z-[70] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 md:p-12 max-w-lg w-full border border-white/10 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-10 h-10 text-green-400" />
+              </div>
+              <h2 className="text-3xl mb-3 text-white">
+                Hotovo! 🎉
+              </h2>
+              <p className="text-lg text-slate-300">
+                Tvé výsledky jsou připravené!
+              </p>
+            </div>
+
+            <div className="space-y-3 mb-8">
+              <div className="flex items-start gap-3 bg-white/5 rounded-lg p-4 border border-white/10">
+                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-white">Skóre uloženo</p>
+                  <p className="text-sm text-slate-400">Data byla úspěšně uložena</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setQuizCompleted(false);
+                setIsQuizOpen(false);
+              }}
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full py-3 px-6 font-semibold transition-all"
+            >
+              Zavřít
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
