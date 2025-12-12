@@ -41,7 +41,7 @@ async function sendEmail(to, subject, html) {
   }
   
   const data = await response.json();
-  console.log('✅ Email sent via Resend:', data.id);
+  console.log('�� Email sent via Resend:', data.id);
   return data;
 }
 
@@ -125,7 +125,7 @@ export async function handler(event, context) {
     
     // ──────────────────────────────────────────
     // 🏷️ ADD TO SMARTEMAILING LIST 4
-    // ──────────────────────────────────────────
+    // ─────────────────────────────────────────
     console.log('📤 Adding to Smartemailing list 4 (kvíz)...');
     
     try {
@@ -163,21 +163,9 @@ export async function handler(event, context) {
               contactlists: [{
                 id: parseInt(seListId), // ✅ LIST 4
                 status: 'confirmed'
-              }],
-              customfields: [
-                {
-                  id: 4, // source
-                  value: 'quiz_landing_page'
-                },
-                {
-                  id: 7, // quiz_category (assuming ID 7)
-                  value: result.category
-                },
-                {
-                  id: 8, // quiz_score (assuming ID 8)
-                  value: result.score.toString()
-                }
-              ]
+              }]
+              // ❌ REMOVED: customfields - need to configure correct IDs first
+              // TODO: Add custom fields after checking SmartEmailing dashboard for correct IDs
             }]
           })
         });
@@ -266,8 +254,8 @@ export async function handler(event, context) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://podnikatelskactvrtka.cz/kviz" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #15803d 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 18px; font-weight: 600; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);">
-                      🎄 Zobrazit kompletní výsledky
+                    <a href="https://podnikatelskactvrtka.cz/kviz/vysledky?email=${encodeURIComponent(email)}&score=${result.score}&category=${encodeURIComponent(result.category)}&name=${encodeURIComponent(name || email.split('@')[0])}" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #15803d 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 18px; font-weight: 600; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);">
+                      🎄 Zobrazit kompletní výsledky a akční plán
                     </a>
                   </td>
                 </tr>

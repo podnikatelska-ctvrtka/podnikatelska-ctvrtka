@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle, Mail, Sparkles } from 'lucide-react';
+import { CheckCircle, Mail, Sparkles, Printer } from 'lucide-react';
 import { motion } from 'motion/react';
+import { ActionPlanPDF } from './ActionPlanPDF';
 
 interface QuizResultsPageProps {
   email?: string;
   score?: number;
   category?: string;
   subScores?: { label: string; score: number; icon: string }[];
+  name?: string;
 }
 
 export function QuizResultsPage({ 
   email: propsEmail, 
   score: propsScore, 
   category: propsCategory, 
-  subScores: propsSubScores 
+  subScores: propsSubScores,
+  name: propsName
 }: QuizResultsPageProps = {}) {
   const [email, setEmail] = useState('');
   const [score, setScore] = useState<number | null>(null);
   const [category, setCategory] = useState('');
   const [subScores, setSubScores] = useState<{ label: string; score: number; icon: string }[]>([]);
+  const [name, setName] = useState('');
 
   useEffect(() => {
     // ✅ PRIORITA 1: Props (když se volá z QuizLandingPage)
@@ -26,6 +30,7 @@ export function QuizResultsPage({
     if (propsScore !== undefined) setScore(propsScore);
     if (propsCategory) setCategory(propsCategory);
     if (propsSubScores) setSubScores(propsSubScores);
+    if (propsName) setName(propsName);
     
     // ✅ PRIORITA 2: URL params (když se naviguje přímo na /kviz)
     if (!propsEmail) {
@@ -34,6 +39,7 @@ export function QuizResultsPage({
       const scoreParam = urlParams.get('score');
       const categoryParam = urlParams.get('category');
       const subScoresParam = urlParams.get('subScores');
+      const nameParam = urlParams.get('name');
 
       if (emailParam) setEmail(emailParam);
       if (scoreParam) setScore(parseInt(scoreParam));
@@ -45,8 +51,9 @@ export function QuizResultsPage({
           console.error('Failed to parse subScores:', e);
         }
       }
+      if (nameParam) setName(nameParam);
     }
-  }, [propsEmail, propsScore, propsCategory, propsSubScores]);
+  }, [propsEmail, propsScore, propsCategory, propsSubScores, propsName]);
 
   // Emoji podle kategorie
   const getCategoryEmoji = () => {
@@ -196,6 +203,41 @@ export function QuizResultsPage({
                 Personalizované doporučení ti pomohou posunout se dál – ať už teprve začínáš nebo už máš zákazníky
               </p>
             </motion.div>
+
+            {/* 🎯 AKČNÍ PLÁN - JEN PRO TVOJI KATEGORII! */}
+            {category && score !== null && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                className="border-t-2 border-dashed border-slate-200 pt-8"
+              >
+                <div className="bg-gradient-to-r from-red-50 to-green-50 rounded-2xl p-6 mb-6 border-2 border-red-600/20">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl text-slate-900">
+                      🎁 Tvůj personalizovaný akční plán
+                    </h2>
+                    <button
+                      onClick={() => window.print()}
+                      className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg border border-slate-300 transition-colors print:hidden"
+                    >
+                      <Printer className="w-4 h-4" />
+                      Vytisknout
+                    </button>
+                  </div>
+                  <p className="text-sm text-slate-600">
+                    📋 Konkrétní kroky, které potřebuješ udělat PRVNÍ. Můžeš si to vytisknout nebo uložit jako PDF.
+                  </p>
+                </div>
+                
+                {/* ✅ AKČNÍ PLÁN - JEN JEDEN PRO TVOJI KATEGORII */}
+                <ActionPlanPDF 
+                  category={category as 'critical' | 'unstable' | 'solid' | 'advanced' | 'beginner'} 
+                  score={score} 
+                  name={name || email.split('@')[0] || 'podnikateli'} 
+                />
+              </motion.div>
+            )}
 
             {/* CTA Button */}
             <motion.div
