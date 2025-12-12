@@ -197,3 +197,32 @@ export const trackFormInteraction = (formName: string, action: 'start' | 'comple
   
   console.log('📝 Form interaction tracked:', formName, action);
 };
+
+// ============================================
+// QUIZ TRACKING
+// ============================================
+
+// Track quiz start
+export const trackQuizStarted = (quizType: 'beginner' | 'existing') => {
+  trackGA4Event('quiz_started', {
+    quiz_type: quizType,
+  });
+  
+  trackClarityEvent(`quiz_started_${quizType}`);
+  
+  console.log('🎯 Quiz started:', quizType);
+};
+
+// Track quiz completion
+export const trackQuizCompleted = (quizType: 'beginner' | 'existing', score: number, category: string) => {
+  trackGA4Event('quiz_completed', {
+    quiz_type: quizType,
+    score: score,
+    category: category,
+  });
+  
+  trackClarityEvent(`quiz_completed_${category}`);
+  tagClaritySession(`quiz_${category}`);
+  
+  console.log('✅ Quiz completed:', { quizType, score, category });
+};

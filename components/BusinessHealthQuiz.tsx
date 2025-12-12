@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, ChevronLeft, CheckCircle, AlertTriangle, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
-import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { motion, AnimatePresence } from 'motion/react';
+import { CheckCircle, AlertCircle, TrendingUp, TrendingDown, Minus, ArrowRight, Mail, User, ChevronLeft } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner@2.0.3';
+import { trackQuizCompleted, trackQuizStarted } from '../lib/analytics';
 import { Progress } from './ui/progress';
-import { trackQuizStarted, trackQuizCompleted } from '../lib/metaPixel';
-import { toast } from 'react-toastify';
 
 // Typy pro kvíz
 type QuizType = 'beginner' | 'existing' | null;
@@ -779,7 +779,7 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
                   <Card className="p-8 bg-white/80 backdrop-blur">
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
-                        <AlertTriangle className="w-6 h-6 text-red-600" />
+                        <AlertCircle className="w-6 h-6 text-red-600" />
                         <h3 className="text-2xl text-slate-900">
                           Tvá největší rizika:
                         </h3>
