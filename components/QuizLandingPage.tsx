@@ -1,6 +1,6 @@
 import { BusinessHealthQuiz } from './BusinessHealthQuiz';
 import { useState } from 'react';
-import { CheckCircle, TrendingUp, Zap, Target, Shield, ArrowRight, ChevronRight, Mail, BookOpen, Gift, Sparkles, Calendar } from 'lucide-react';
+import { CheckCircle, TrendingUp, Zap, Target, Shield, ArrowRight, ChevronRight, Mail, BookOpen, Gift, Sparkles, Calendar, Clock, Award, Star } from 'lucide-react';
 import { Button } from './ui/button';
 import { Snowfall } from './Snowfall';
 
@@ -46,10 +46,6 @@ export function QuizLandingPage() {
       
       console.log('📥 Response status:', response.status);
       console.log('📥 Response headers:', response.headers);
-      
-      // ⚠️ WAIT 2 seconds so you can see console logs!
-      console.log('⏳ Waiting 2 seconds so you can see logs...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // ⚠️ LOKÁLNÍ DEV FALLBACK - pokud Netlify functions nefungují (404)
       if (response.status === 404) {
@@ -110,86 +106,198 @@ export function QuizLandingPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+    <div className="relative min-h-screen bg-gradient-to-br from-red-900 via-green-900 to-slate-900">
       {/* ❄️ Snowfall Effect */}
       <Snowfall />
       
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 px-4">
-        <div className="max-w-5xl mx-auto text-center">
+      <section className="relative pt-20 pb-24 px-4 overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 text-8xl">🎄</div>
+          <div className="absolute top-40 right-20 text-6xl">✨</div>
+          <div className="absolute bottom-40 left-20 text-7xl">🎁</div>
+          <div className="absolute bottom-20 right-10 text-6xl">⭐</div>
+        </div>
+        
+        <div className="max-w-6xl mx-auto text-center relative z-10">
           {/* Christmas Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-green-600 text-white px-4 py-2 rounded-full text-sm mb-6 shadow-lg">
-            <Gift className="w-4 h-4" />
-            <span>🎄 Vánoční dárek pro tvůj byznys</span>
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white px-8 py-4 rounded-full text-lg mb-8 shadow-2xl animate-pulse">
+            <Gift className="w-6 h-6" />
+            <span className="font-bold">🎄 VÁNOČNÍ DÁREK PRO PODNIKATELE 🎁</span>
           </div>
           
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-6xl mb-6 text-slate-900 max-w-4xl mx-auto">
-            Jak zdravý je tvůj <span className="bg-gradient-to-r from-red-600 to-green-600 bg-clip-text text-transparent">model podnikání</span>?
+          <h1 className="text-6xl md:text-8xl mb-8 text-white max-w-5xl mx-auto leading-tight">
+            🎁 Tvůj{' '}
+            <span className="bg-gradient-to-r from-yellow-300 via-red-400 to-green-400 bg-clip-text text-transparent font-black">
+              AKČNÍ PLÁN
+            </span>
+            {' '}na rok 2026 – ZDARMA
           </h1>
           
           {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-slate-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Zjisti své <strong>skóre za 3 minuty</strong> a dostaneš personalizovaný akční plán – ještě než začneš nový rok
+          <p className="text-2xl md:text-4xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
+            Vyber si <strong className="text-yellow-300">8-10 otázek</strong>, dostaneš <strong className="text-green-300">personalizovaný plán na 30 dní</strong> + tvé <strong className="text-red-300">byznys skóre</strong>
           </p>
           
-          {/* Benefits Grid */}
-          <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-4xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200/50">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-6 h-6 text-white" />
+          {/* Value Props - BIG 3 */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16 max-w-5xl mx-auto">
+            <div className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border-4 border-yellow-400 transform hover:scale-105 transition-all">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Clock className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-lg mb-2 text-slate-900">
+              <h3 className="text-3xl mb-4 text-slate-900">
                 ⚡ 3 minuty
               </h3>
-              <p className="text-sm text-slate-600">
-                12 otázek. Bez složitých termínů. Jednoduché ANO/NE odpovědi
+              <p className="text-lg text-slate-700 leading-relaxed">
+                8-10 otázek. Žádné složité termíny. Jen <strong>výběr z možností</strong>
               </p>
             </div>
             
-            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200/50">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="w-6 h-6 text-white" />
+            <div className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border-4 border-green-400 transform hover:scale-105 transition-all">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Target className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-lg mb-2 text-slate-900">
-                🎯 Tvé skóre
+              <h3 className="text-3xl mb-4 text-slate-900">
+                🎯 Byznys skóre
               </h3>
-              <p className="text-sm text-slate-600">
-                Zjistíš přesně, kde jsi teď a co potřebuješ zlepšit PRVNÍ
+              <p className="text-lg text-slate-700 leading-relaxed">
+                Zjistíš přesně <strong>kde jsi TEĎ</strong> a co potřebuješ zlepšit <strong>PRVNÍ</strong>
               </p>
             </div>
             
-            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200/50">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-6 h-6 text-white" />
+            <div className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border-4 border-red-400 transform hover:scale-105 transition-all">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Gift className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-lg mb-2 text-slate-900">
-                🎁 Akční plán
+              <h3 className="text-3xl mb-4 text-slate-900">
+                🎁 Plán na 30 dní
               </h3>
-              <p className="text-sm text-slate-600">
-                Personalizovaný plán co udělat hned – ne za měsíc, hned
+              <p className="text-lg text-slate-700 leading-relaxed">
+                Personalizovaný plán co udělat <strong>hned</strong> – ne za měsíc, <strong>HNED</strong>
               </p>
             </div>
           </div>
           
-          {/* CTA Button */}
+          {/* MEGA CTA Button */}
+          <div className="mb-12">
+            <Button
+              onClick={() => setShowQuiz(true)}
+              size="lg"
+              className="bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 hover:from-yellow-500 hover:via-red-600 hover:to-green-600 text-white px-16 py-8 rounded-full text-3xl shadow-2xl hover:shadow-3xl transition-all group border-4 border-white"
+            >
+              <Gift className="w-10 h-10 mr-4 group-hover:scale-125 transition-transform animate-bounce" />
+              🎄 Zjistit ZDARMA své skóre 🎁
+              <ArrowRight className="w-10 h-10 ml-4 group-hover:translate-x-2 transition-transform" />
+            </Button>
+            
+            <p className="mt-8 text-white/90 text-xl">
+              ✅ Bez platby • ✅ Bez kreditky • ✅ Výsledky okamžitě na email
+            </p>
+          </div>
+          
+          {/* Social Proof */}
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 max-w-4xl mx-auto border border-white/20">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+            </div>
+            <p className="text-white text-2xl mb-2">
+              <strong className="text-yellow-300">250+ podnikatelů</strong> už udělalo kvíz
+            </p>
+            <p className="text-white/80 text-lg italic">
+              "Konečně vím co dělat příští týden. 5 minut změnily můj pohled na byznys." – Lenka, e-shop majitelka
+            </p>
+          </div>
+          
+          {/* NOVÁ SEKCE: Proč je to ZDARMA */}
+          <div className="bg-gradient-to-r from-yellow-400/20 to-green-400/20 backdrop-blur-xl rounded-3xl p-10 max-w-4xl mx-auto mt-12 border-2 border-yellow-300/50">
+            <h3 className="text-3xl md:text-4xl text-white mb-4">
+              ❤️ Proč je to <strong className="text-yellow-300">ZDARMA</strong>?
+            </h3>
+            <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
+              Podnikatelům <strong>nikdo nepomáhá</strong>. Všichni jen prodávají.<br/>
+              Rozhodli jsme se to <strong className="text-green-300">změnit</strong>. Proto máš kvíz i plán zdarma – bez podmínek.
+            </p>
+          </div>
+        </div>
+      </section>
+      
+      {/* What You Get Section */}
+      <section className="relative py-24 px-4 bg-white/5 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-5xl md:text-6xl text-center mb-16 text-white">
+            Co dostaneš <span className="text-yellow-300">zdarma</span>?
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-br from-red-600 to-red-800 p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-6xl mb-6">📊</div>
+              <h3 className="text-3xl mb-4">Byznys skóre</h3>
+              <p className="text-xl text-white/90 leading-relaxed">
+                Tvé <strong>přesné skóre</strong> mezi 0-100% a rozbor kde máš <strong>slabá místa</strong> (Finance, Marketing, Systematizace...)
+              </p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-600 to-green-800 p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-6xl mb-6">🎁</div>
+              <h3 className="text-3xl mb-4">Akční plán na 30 dní</h3>
+              <p className="text-xl text-white/90 leading-relaxed">
+                <strong>Konkrétní kroky</strong> co udělat v lednu. S deadliny. S tipy jak na to. Připravený k <strong>vytištění</strong>.
+              </p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-yellow-500 to-amber-600 p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-6xl mb-6">⚠️</div>
+              <h3 className="text-3xl mb-4">Na co si dát pozor</h3>
+              <p className="text-xl text-white/90 leading-relaxed">
+                Konkrétní <strong>rizika</strong> které můžou položit tvůj byznys – a jak jim <strong>předejít</strong>.
+              </p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-6xl mb-6">💡</div>
+              <h3 className="text-3xl mb-4">Doporučení od expertů</h3>
+              <p className="text-xl text-white/90 leading-relaxed">
+                Tipy z <strong>20+ byznysů</strong> které jsme konzultovali. Bez bullshitu. Jen to <strong>co funguje</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Final CTA */}
+      <section className="relative py-24 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-5xl md:text-6xl mb-8 text-white">
+            Naděl si <span className="text-yellow-300">jasno</span> do podnikání
+          </h2>
+          
+          <p className="text-2xl text-white/90 mb-12 leading-relaxed">
+            Místo dalšího svetru dostaneš <strong className="text-green-300">směr</strong> na rok 2026.
+          </p>
+          
           <Button
             onClick={() => setShowQuiz(true)}
             size="lg"
-            className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white px-12 py-6 rounded-full text-xl shadow-2xl hover:shadow-3xl transition-all group"
+            className="bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 hover:from-yellow-500 hover:via-red-600 hover:to-green-600 text-white px-16 py-8 rounded-full text-3xl shadow-2xl hover:shadow-3xl transition-all group border-4 border-white"
           >
-            <Gift className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
-            Zjistit zdarma své skóre
-            <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
+            <Sparkles className="w-10 h-10 mr-4 group-hover:rotate-12 transition-transform" />
+            Začít kvíz ZDARMA
+            <ChevronRight className="w-10 h-10 ml-4 group-hover:translate-x-2 transition-transform" />
           </Button>
           
-          <p className="mt-6 text-slate-600">
-            🎄 Žádná platba • ⏱️ 3 minuty • 📧 Výsledky okamžitě
+          <p className="mt-8 text-white/70 text-lg">
+            🎄 Zabere 3 minuty • 🎁 100% zdarma • ⏱️ Lifetime směr
           </p>
         </div>
       </section>
 
-      {/* 🎯 KVÍZ MODAL - SOLID OVERLAY */}
+      {/* 🎯 KVÍZ MODAL */}
       <BusinessHealthQuiz
         open={showQuiz}
         onOpenChange={setShowQuiz}

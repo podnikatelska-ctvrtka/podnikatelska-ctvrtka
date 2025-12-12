@@ -313,11 +313,9 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
       'Přílišná spokojenost - když to funguje, přestaneš experimentovat a inovovat'
     ];
     recommendations = [
-      '💡 QUICK WIN #1: Vyhraď si 1 hodinu týdně na "Čas na inovace" - testuj nové produkty, kanály, strategie. Investuj 10-15% zisku do testování nových věcí',
-      '💡 QUICK WIN #2: Najmi někoho kdo může převzít část tvé role. Cíl: Uvolnit 20% svého času na strategii místo běžné práce',
-      '💡 QUICK WIN #3: Projdi všechny procesy a najdi 3 věci které můžeš automatizovat (Zapier, Make, AI nástroje)',
-      '💡 QUICK WIN #4: Udělej analýzu konkurence - co dělají jinak? Kde jsou o 10% lepší než ty?',
-      '🎯 DLOUHODOBĚ: Model podnikání ti pomůže najít možnosti pro škálování (nové trhy, produkty, partnerství)'
+      '💡 Vyhraď si 1 hodinu týdně na inovace - testuj nové produkty, kanály, strategie',
+      '💡 Najmi někoho kdo převezme část tvé role - uvolni 20% času na strategii',
+      '💡 Udělej analýzu konkurence - kde jsou lepší než ty? Co můžeš zkopírovat?'
     ];
   } else if (score >= 56) {
     category = 'solid';
@@ -331,11 +329,9 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
       'Nízké % opakovaných zákazníků - získání nového zákazníka stojí 5-7x víc než udržení stávajícího'
     ];
     recommendations = [
-      '💡 QUICK WIN #1: Identifikuj 2-3 nové kanály pro získávání zákazníků. Investuj 20% marketingového rozpočtu do testování (LinkedIn, partnerství, afiliace)',
-      '💡 QUICK WIN #2: Vytvoř tabulku všech procesů které děláš častěji než 1x týdně. Vyber 1 proces a napiš postup krok za krokem - pak můžeš delegovat',
-      '💡 QUICK WIN #3: Pošli email TOP 20 klientům: "Jak se ti líbí naše služby? Co bychom mohli zlepšit?" → zjistíš proč se nevrací',
-      '💡 QUICK WIN #4: Nastav si tabulku se 4 čísly které budeš sledovat každý týden: kolik stojí získání zákazníka, kolik ti průměrně utratí, marže, kolik % se vrací',
-      '🎯 DLOUHODOBĚ: Udělej si Model podnikání a najdi 3-5 způsobů jak zvýšit tržby ze stávajících zákazníků'
+      '💡 Najdi 2-3 nové kanály pro zákazníky - diverzifikace je klíč k růstu',
+      '💡 Zapiš si hlavní procesy které opakuješ - pak můžeš delegovat',
+      '💡 Sleduj 3 čísla každý týden: CAC (náklady na zákazníka), marže, % opakovaných zákazníků'
     ];
   } else if (score >= 31) {
     category = 'unstable';
@@ -349,11 +345,9 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
       'Neznáš svoje čísla - nevíš kolik tě stojí získání zákazníka a kolik ti průměrně utratí'
     ];
     recommendations = [
-      '💡 QUICK WIN #1: Udělej seznam TOP 10 klientů. Pokud 3 dělají víc než 50% tržeb → najdi co nejdřív 5-10 menších klientů jako pojistku',
-      '💡 QUICK WIN #2: Otevři si spořicí účet a dávej tam 10% z každé platby. Cíl: 3 měsíce nákladů na účtě',
-      '💡 QUICK WIN #3: Zapiš si do Excelu JEDEN proces který děláš často (např. co přesně děláš když přijde nový klient) - pak to můžeš předat někomu jinému',
-      '💡 QUICK WIN #4: Spočítej si: Kolik utratíš za získání 1 zákazníka (reklamy, čas, náklady)? Kolik ti prměrně utratí? Pokud nevíš → začni sledovat TEĎ',
-      '🎯 DLOUHODOBĚ: Udělej si Model podnikání (Podnikatelská Čtvrtka) abys viděl VŠECHNY slabiny najednou'
+      '💡 Udělej seznam TOP 10 klientů a analyzuj závislost - najdi nové zákazníky jako pojistku',
+      '💡 Dávej 10% z každé platby stranou - cíl je mít 3 měsíce nákladů jako rezervu',
+      '💡 Začni sledovat 2 čísla: kolik tě stojí získání 1 zákazníka a kolik ti průměrně utratí'
     ];
   } else {
     category = 'critical';
@@ -367,11 +361,9 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
       '⚠️ Žádná systematizace - vše závisí jen na tobě'
     ];
     recommendations = [
-      '🚨 STOP! Přestaň "hasit požáry" a udělej si pořádek',
-      '🚨 Udělej Business Model Canvas - uvidíš kde jsou díry',
-      '🚨 Najdi si druhý zdroj příjmů okamžitě',
-      '🚨 Spočítej si přesně: CAC, marže, break-even',
-      '🚨 Podnikatelská Čtvrtka ti ukáže jak na to krok za krokem'
+      '🚨 Přestaň \"hasit požáry\" - udělej si pořádek v modelu podnikání (Business Model Canvas)',
+      '🚨 Zjisti přesně svoječísla: kolik tě stojí získání zákazníka, jaká je tvá marže',
+      '🚨 Najdi si druhý zdroj příjmů OKAMŽITĚ - diverzifikace zachraňuje byznysy'
     ];
   }
   

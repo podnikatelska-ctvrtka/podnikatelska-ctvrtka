@@ -287,9 +287,22 @@ export async function handler(event, context) {
     `;
     
     try {
+      // ✅ UNIFIED EMAIL SUBJECT with emoji + category
+      const emoji = result.category === 'beginner' ? '🌱' :
+                    result.category === 'critical' ? '🔴' :
+                    result.category === 'unstable' ? '🟡' :
+                    result.category === 'solid' ? '🟢' :
+                    result.category === 'advanced' ? '💎' : '🎯';
+      
+      const categoryName = result.category === 'beginner' ? 'Začínáš' :
+                           result.category === 'critical' ? 'Kritický stav' :
+                           result.category === 'unstable' ? 'Nestabilní' :
+                           result.category === 'solid' ? 'Solidní základ' :
+                           result.category === 'advanced' ? 'Pokročilý' : 'Výsledky';
+      
       await sendEmail(
         email,
-        `🎁 Tvoje skóre: ${result.score}% - ${result.categoryLabel}`,
+        `${emoji} ${categoryName} (${result.score}%) - Tvůj model podnikání`,
         emailHtml
       );
       console.log('✅ Email sent successfully!');

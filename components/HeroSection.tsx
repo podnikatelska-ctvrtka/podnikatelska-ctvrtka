@@ -70,10 +70,7 @@ export function HeroSection() {
         console.warn('⚠️ Netlify functions not available (running locally without netlify dev?)');
         console.warn('💡 TIP: Use "npm run dev:netlify" to test with functions locally');
         
-        // Close quiz modal i tak
-        setIsQuizOpen(false);
-        
-        // Meta Pixel tracking
+        // 📊 Meta Pixel tracking
         if (typeof window !== 'undefined' && (window as any).fbq) {
           (window as any).fbq('track', 'CompleteRegistration', {
             content_name: 'Business Health Quiz',
@@ -81,7 +78,14 @@ export function HeroSection() {
           });
         }
         
-        return; // Exit early - no error, just skip API
+        // ✅ DIRECT REDIRECT - nekomplikuj to, prostě redirect!
+        const params = new URLSearchParams({
+          email: email,
+          score: result.score.toString(),
+          category: result.category
+        });
+        window.location.href = `/kviz/hotovo?${params.toString()}`;
+        return;
       }
       
       const responseText = await response.text();
@@ -103,9 +107,6 @@ export function HeroSection() {
       
       console.log('✅ Quiz submitted successfully!', data);
       
-      // ✅ Close quiz modal
-      setIsQuizOpen(false);
-      
       // 📊 Track completion in Meta Pixel
       if (typeof window !== 'undefined' && (window as any).fbq) {
         (window as any).fbq('track', 'CompleteRegistration', {
@@ -114,7 +115,7 @@ export function HeroSection() {
         });
       }
       
-      // ✅ REDIRECT na děkovnou stránku s parametry
+      // ✅ DIRECT REDIRECT - modal se zavře sám kvůli page change
       const params = new URLSearchParams({
         email: email,
         score: result.score.toString(),
@@ -125,8 +126,7 @@ export function HeroSection() {
     } catch (error) {
       console.error('❌ Quiz submission error:', error);
       
-      // ✅ I přes chybu redirect (email se pošle z edge funkce)
-      setIsQuizOpen(false);
+      // ✅ I přes chybu redirect (email se pošle z edge funkce) - BEZ zavírání modalu!
       window.location.href = `/kviz/hotovo`;
     }
   };
