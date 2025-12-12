@@ -1,14 +1,27 @@
-// Quiz submission function
-// Saves quiz results to Supabase and sends emails
+// ====================================
+// QUIZ SUBMIT - PRODUCTION VERSION
+// ====================================
+// Webhook pro Business Health Quiz
+// URL: /.netlify/functions/quiz-submit
+// UPDATED: Using same pattern as fapi-webhook.js
 
-import { createClient } from '@supabase/supabase-js';
+// Supabase client helper
+async function createSupabaseClient() {
+  const { createClient } = await import('@supabase/supabase-js');
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY // ✅ SAME AS PAYMENT WEBHOOK
+  );
+}
 
-// ✅ RESEND EMAIL HELPER (same as fapi-webhook.js)
+// Resend email sending function
 async function sendEmail(to, subject, html) {
+  console.log('📨 Sending email via Resend to:', to);
+  
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, // ✅ SAME AS PAYMENT WEBHOOK
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -19,15 +32,20 @@ async function sendEmail(to, subject, html) {
     }),
   });
   
+  console.log('📧 Resend Response Status:', response.status);
+  
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Resend email failed: ${error}`);
+    console.error('❌ Resend error:', error);
+    throw new Error(`Email failed: ${error}`);
   }
   
   const data = await response.json();
+  console.log('✅ Email sent via Resend:', data.id);
   return data;
 }
 
+// Main handler
 export async function handler(event, context) {
   console.log('🚀 quiz-submit function called');
   
@@ -66,7 +84,8 @@ export async function handler(event, context) {
     console.log('📊 Full result object:', result);
     
     // Validate
-    if (!email || !result || !answers) {
+    if (!email || !result) {
+      console.error('❌ Missing required fields');
       return {
         statusCode: 400,
         headers,
@@ -74,276 +93,200 @@ export async function handler(event, context) {
       };
     }
     
-    // ══════════════════════════════════════════════════════════
-    //  TEST MODE: Override category based on email
-    // ═══════════════════════════════════════════════════════════
-    let finalResult = { ...result };
-    
-    if (email.includes('test+critical@')) {
-      console.log('🧪 TEST MODE: Forcing CRITICAL category');
-      finalResult = {
-        score: 25,
-        category: 'critical',
-        categoryLabel: 'Kritický stav',
-        categoryDescription: 'Tvůj byznys potřebuje okamžitou pozornost!',
-        risks: ['100% závislost na jednom klientovi', 'Nulové rezervy', 'Neznáš svá čísla'],
-        recommendations: ['Diverzifikuj zdroje příjmů ASAP', 'Vytvoř finanční polštář', 'Nastav sledování metrik']
-      };
-    } else if (email.includes('test+unstable@')) {
-      console.log('🧪 TEST MODE: Forcing UNSTABLE category');
-      finalResult = {
-        score: 45,
-        category: 'unstable',
-        categoryLabel: 'Nestabilní',
-        categoryDescription: 'Tvůj byznys funguje, ale stojí na vratkých základech.',
-        risks: ['Závislost na 2-3 klientech', 'Nedostatečné rezervy', 'Málo systematizace'],
-        recommendations: ['Rozlož riziko', 'Navyš rezervy', 'Systematizuj procesy']
-      };
-    } else if (email.includes('test+solid@')) {
-      console.log('🧪 TEST MODE: Forcing SOLID category');
-      finalResult = {
-        score: 65,
-        category: 'solid',
-        categoryLabel: 'Solidní základ',
-        categoryDescription: 'Tvůj byznys má solidní základ! Teď je čas optimalizovat.',
-        risks: ['Potenciál pro větší růst', 'Neoptimalizované procesy'],
-        recommendations: ['Optimalizuj metriky', 'Automatizuj procesy', 'Škáluj']
-      };
-    } else if (email.includes('test+advanced@')) {
-      console.log('🧪 TEST MODE: Forcing ADVANCED category');
-      finalResult = {
-        score: 85,
-        category: 'advanced',
-        categoryLabel: 'Pokročilý',
-        categoryDescription: 'Tvůj byznys je na high level!',
-        risks: ['Příležitosti pro expanzi'],
-        recommendations: ['Strategic partnerships', 'Škálování', 'Systemizace']
-      };
-    } else if (email.includes('test+beginner@')) {
-      console.log('🧪 TEST MODE: Forcing BEGINNER category');
-      finalResult = {
-        score: 75,
-        category: 'beginner',
-        categoryLabel: 'Začínám',
-        categoryDescription: 'Jsi na začátku cesty!',
-        risks: ['Neověřený model', 'Nejasná strategie'],
-        recommendations: ['Validuj nápad', 'Najdi prvních zákazníků', 'Učení & iterace']
-      };
-    }
-    
-    // Use finalResult (which might be overridden) for the rest of the function
-    const resultToSave = finalResult;
-    
     // ──────────────────────────────────────────
     // 💾 SAVE TO SUPABASE
     // ──────────────────────────────────────────
-    const supabaseUrl = process.env.SUPABASE_URL || 'https://jdcpzswpecntlqiyzxac.supabase.co';
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    console.log('💾 Saving quiz results to Supabase...');
+    const supabase = await createSupabaseClient();
     
-    if (!supabaseKey) {
-      console.error('❌ Missing Supabase service role key');
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ error: 'Server configuration error' })
-      };
-    }
-    
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    
-    // Save quiz results
-    const { data: quizData, error: quizError } = await supabase
+    const { data: quizResult, error: insertError } = await supabase
       .from('quiz_results')
       .insert({
-        email,
-        name: name || '',
+        email: email,
+        name: name || email.split('@')[0],
         quiz_type: quizType,
-        answers,
-        score: resultToSave.score,
-        category: resultToSave.category,
-        category_label: resultToSave.categoryLabel,
-        risks: resultToSave.risks,
-        recommendations: resultToSave.recommendations,
-        created_at: new Date().toISOString()
+        score: result.score,
+        category: result.category,
+        category_label: result.categoryLabel,
+        category_description: result.categoryDescription || '',
+        risks: result.risks || [],
+        recommendations: result.recommendations || [],
+        answers: answers,
+        submitted_at: new Date().toISOString()
       })
       .select()
       .single();
     
-    if (quizError) {
-      console.error('❌ Error saving quiz results:', quizError);
-      throw new Error('Failed to save quiz results');
+    if (insertError) {
+      console.error('❌ Supabase insert error:', insertError);
+      throw new Error(`Database error: ${insertError.message}`);
     }
     
-    console.log('✅ Quiz results saved to Supabase:', quizData.id);
+    console.log('✅ Quiz results saved to Supabase:', quizResult.id);
     
-    // ─────────────────────────────────────────
-    // 📧 ADD TO SMARTEMAILING LIST
     // ──────────────────────────────────────────
-    const SMARTEMAILING_USERNAME = process.env.SMARTEMAILING_USERNAME;
-    const SMARTEMAILING_API_KEY = process.env.SMARTEMAILING_API_KEY;
-    const SMARTEMAILING_LIST_ID = process.env.SMARTEMAILING_LIST_KVIZ; // ✅ Jeden list pro všechny kategorie
+    // 🏷️ ADD TO SMARTEMAILING LIST 4
+    // ──────────────────────────────────────────
+    console.log('📤 Adding to Smartemailing list 4 (kvíz)...');
     
-    if (SMARTEMAILING_USERNAME && SMARTEMAILING_API_KEY && SMARTEMAILING_LIST_ID) {
-      try {
-        const authToken = Buffer.from(`${SMARTEMAILING_USERNAME}:${SMARTEMAILING_API_KEY}`).toString('base64');
+    try {
+      const seApiKey = process.env.SMARTEMAILING_API_KEY;
+      const seUsername = process.env.SMARTEMAILING_USERNAME;
+      const seListId = process.env.SMARTEMAILING_LIST_KVIZ || '4'; // ✅ LIST 4 FOR QUIZ
+      
+      console.log('🔑 SmartEmailing credentials:', {
+        hasUsername: !!seUsername,
+        hasApiKey: !!seApiKey,
+        listId: seListId
+      });
+      
+      if (!seApiKey || !seUsername) {
+        console.warn('⚠️ Missing SmartEmailing credentials - skipping');
+      } else {
+        const seAuthString = Buffer.from(`${seUsername}:${seApiKey}`).toString('base64');
         
-        console.log(`📤 Adding to Smartemailing list (category: ${resultToSave.category}, listId: ${SMARTEMAILING_LIST_ID})`);
-        
-        const smartemailingResponse = await fetch(`https://app.smartemailing.cz/api/v3/import`, {
+        // ✅ USE SAME PATTERN AS PAYMENT WEBHOOK
+        const seResponse = await fetch('https://app.smartemailing.cz/api/v3/import', {
           method: 'POST',
           headers: {
-            'Authorization': `Basic ${authToken}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Basic ${seAuthString}`,
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             settings: {
-              update: true,
+              update: true, // Update existing contacts
               field_policy: 'FILL_IN_EMPTY'
             },
             data: [{
               emailaddress: email,
               name: name || '',
               surname: '',
-              contactlists: [
-                {
-                  id: parseInt(SMARTEMAILING_LIST_ID),
-                  status: 'confirmed'
-                }
-              ],
+              contactlists: [{
+                id: parseInt(seListId), // ✅ LIST 4
+                status: 'confirmed'
+              }],
               customfields: [
                 {
                   id: 4, // source
-                  value: 'quiz'
+                  value: 'quiz_landing_page'
                 },
                 {
-                  id: 6, // purchased
-                  value: '' // Initialize for later webhook update
+                  id: 7, // quiz_category (assuming ID 7)
+                  value: result.category
+                },
+                {
+                  id: 8, // quiz_score (assuming ID 8)
+                  value: result.score.toString()
                 }
               ]
             }]
           })
         });
         
-        const smartemailingData = await smartemailingResponse.json();
+        const seData = await seResponse.json();
+        console.log('📥 SmartEmailing response:', seData);
         
-        // ⚠️ DŮLEŽITÉ: Smartemailing vrací různé statusy při úspěchu!
-        // "ok" = update existujícího kontaktu
-        // "created" = nový kontakt vytvořen
         const successStatuses = ['ok', 'created'];
-        
-        if (smartemailingResponse.ok && successStatuses.includes(smartemailingData.status)) {
-          console.log('✅ Added to Smartemailing:', smartemailingData.status);
+        if (seResponse.ok && successStatuses.includes(seData.status)) {
+          console.log('✅ Added to Smartemailing:', seData.status);
         } else {
-          console.error('⚠️ Smartemailing API error:', smartemailingData);
+          console.error('⚠️ SmartEmailing failed:', seData);
         }
-      } catch (seError) {
-        console.error('⚠️ Smartemailing failed (non-critical):', seError.message);
       }
-    } else {
-      console.log('⚠️ Smartemailing not configured - skipping');
+    } catch (seError) {
+      console.error('⚠️ SmartEmailing error (non-critical):', seError.message);
+      // Don't fail the whole function if SE fails
     }
     
-    // ─────────────────────────────────────────
-    // 📨 SEND IMMEDIATE EMAIL VIA RESEND
     // ──────────────────────────────────────────
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    // 📧 SEND EMAIL WITH RESULTS
+    // ──────────────────────────────────────────
+    console.log('📨 Sending quiz results email...');
     
-    if (RESEND_API_KEY) {
-      try {
-        console.log('📨 Sending email via Resend...');
-        
-        //  CREATE ACTION PLAN URL
-        const actionPlanUrl = `https://podnikatelskactvrtka.cz/action-plans?category=${resultToSave.category}&score=${resultToSave.score}&name=${encodeURIComponent(name || 'podnikateli')}`;
-        
-        // Create email HTML
-        const emailHtml = `
+    const emailHtml = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Výsledky kvízu - Zdraví tvého byznysu</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+<body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f3f4f6;">
     <tr>
-      <td align="center" style="padding: 40px 0;">
-        <table role="presentation" style="width: 600px; max-width: 100%; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           
           <!-- Header -->
           <tr>
-            <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px;">Tvoje výsledky jsou tady! 🎉</h1>
+            <td style="background: linear-gradient(135deg, #dc2626 0%, #15803d 100%); padding: 40px 20px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
+                🎁 Tvoje výsledky jsou tady!
+              </h1>
             </td>
           </tr>
           
-          <!-- Score -->
+          <!-- Content -->
           <tr>
-            <td style="padding: 40px; text-align: center;">
-              <div style="font-size: 64px; font-weight: bold; color: ${resultToSave.score >= 70 ? '#16a34a' : resultToSave.score >= 40 ? '#eab308' : '#dc2626'}; margin-bottom: 16px;">
-                ${resultToSave.score}%
-              </div>
-              <h2 style="margin: 0 0 16px 0; color: ${resultToSave.score >= 70 ? '#16a34a' : resultToSave.score >= 40 ? '#eab308' : '#dc2626'}; font-size: 24px;">
-                ${resultToSave.categoryLabel}
-              </h2>
-              <p style="margin: 0; color: #64748b; font-size: 18px; line-height: 1.6;">
-                ${resultToSave.categoryDescription}
+            <td style="padding: 40px 30px;">
+              <p style="margin: 0 0 20px 0; color: #111827; font-size: 18px; line-height: 1.6;">
+                Ahoj <strong>${name || 'podnikateli'}</strong>! 👋
               </p>
-            </td>
-          </tr>
-          
-          <!-- Risks -->
-          <tr>
-            <td style="padding: 0 40px 40px;">
-              <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
-                <h3 style="margin: 0 0 16px 0; color: #dc2626; font-size: 20px;">
-                  ⚠️ Tvá největší rizika:
-                </h3>
-                <ul style="margin: 0; padding-left: 20px; color: #475569;">
-                  ${resultToSave.risks.map(risk => `<li style="margin-bottom: 8px;">${risk}</li>`).join('')}
-                </ul>
+              
+              <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                Tvůj byznys má skóre <strong style="color: #dc2626; font-size: 24px;">${result.score}%</strong>
+              </p>
+              
+              <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                <p style="margin: 0 0 10px 0; font-weight: 700; color: #92400e; font-size: 18px;">
+                  📊 Tvoje kategorie: ${result.categoryLabel}
+                </p>
+                <p style="margin: 0; font-size: 14px; color: #78350f; line-height: 1.5;">
+                  ${result.categoryDescription}
+                </p>
               </div>
               
-              <!-- Recommendations -->
-              <div style="background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 20px; border-radius: 4px;">
-                <h3 style="margin: 0 0 16px 0; color: #16a34a; font-size: 20px;">
-                  ✅ Co s tím:
-                </h3>
-                <ul style="margin: 0; padding-left: 20px; color: #475569;">
-                  ${resultToSave.recommendations.map(rec => `<li style="margin-bottom: 8px;">${rec}</li>`).join('')}
+              ${result.risks && result.risks.length > 0 ? `
+              <div style="margin: 30px 0;">
+                <h2 style="color: #dc2626; font-size: 20px; margin: 0 0 15px 0;">⚠️ Na co si dát pozor:</h2>
+                <ul style="margin: 0; padding-left: 20px; color: #374151;">
+                  ${result.risks.map(risk => `<li style="margin-bottom: 8px;">${risk}</li>`).join('')}
                 </ul>
               </div>
-            </td>
-          </tr>
-          
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 📄 AKČNÍ PLÁN CTA -->
-          <!-- ═══════════════════════════════════════════ -->
-          <tr>
-            <td style="padding: 0 40px 40px;">
-              <div style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); border-radius: 8px; padding: 32px; text-align: center;">
-                <h3 style="margin: 0 0 16px 0; color: #ffffff; font-size: 24px;">
-                  📄 Tvůj personalizovaný akční plán je připravený!
-                </h3>
-                <p style="margin: 0 0 24px 0; color: #e0e7ff; font-size: 16px;">
-                  Konkrétní kroky a checklisty připravené přímo pro tvůj byznys.<br/>
-                  Můžeš si ho vytisknout nebo uložit jako PDF.
-                </p>
-                <a href="${actionPlanUrl}" style="display: inline-block; background: #ffffff; color: #2563eb; padding: 16px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 18px;">
-                  📥 Zobrazit můj akční plán
-                </a>
+              ` : ''}
+              
+              ${result.recommendations && result.recommendations.length > 0 ? `
+              <div style="margin: 30px 0;">
+                <h2 style="color: #15803d; font-size: 20px; margin: 0 0 15px 0;">✅ Co dělat PRVNÍ:</h2>
+                <ul style="margin: 0; padding-left: 20px; color: #374151;">
+                  ${result.recommendations.map(rec => `<li style="margin-bottom: 8px;">${rec}</li>`).join('')}
+                </ul>
               </div>
+              ` : ''}
+              
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 30px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="https://podnikatelskactvrtka.cz/kviz" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #15803d 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 18px; font-weight: 600; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);">
+                      🎄 Zobrazit kompletní výsledky
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 20px 0 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+                Přejeme ti úspěšný rok 2026! 🚀<br>
+                <strong>Podnikatelská Čtvrtka</strong>
+              </p>
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 20px 40px; text-align: center; border-top: 1px solid #e2e8f0;">
-              <p style="margin: 0 0 8px 0; color: #64748b; font-size: 14px;">
-                Díky za vyplnění kvízu! 🙏
-              </p>
-              <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-                Podnikatelská Čtvrtka | podnikatelskactvrtka.cz
+            <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0; color: #6b7280; font-size: 14px;">
+                Podnikatelská Čtvrtka<br>
+                <a href="https://podnikatelskactvrtka.cz" style="color: #dc2626; text-decoration: none;">podnikatelskactvrtka.cz</a>
               </p>
             </td>
           </tr>
@@ -354,32 +297,32 @@ export async function handler(event, context) {
   </table>
 </body>
 </html>
-        `;
-        
-        const emailData = await sendEmail(email, `Tvoje výsledky: ${resultToSave.categoryLabel} (${resultToSave.score}%)`, emailHtml);
-        
-        if (emailData) {
-          console.log('✅ Email sent via Resend:', emailData.id);
-        } else {
-          console.error('⚠️ Resend API error:', emailData);
-        }
-      } catch (emailError) {
-        console.error('⚠️ Email sending failed (non-critical):', emailError.message);
-      }
-    } else {
-      console.log('⚠️ Resend not configured - skipping email');
+    `;
+    
+    try {
+      await sendEmail(
+        email,
+        `🎁 Tvoje skóre: ${result.score}% - ${result.categoryLabel}`,
+        emailHtml
+      );
+      console.log('✅ Email sent successfully!');
+    } catch (emailError) {
+      console.error('❌ Email send failed:', emailError);
+      // Don't throw - quiz was saved, email is bonus
     }
     
     // ──────────────────────────────────────────
-    // ✅ SUCCESS RESPONSE
-    // ─────────────────────────────────────────
+    // ✅ SUCCESS
+    // ──────────────────────────────────────────
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'Quiz results saved and emails sent',
-        quizId: quizData.id
+        message: 'Quiz results saved and email sent',
+        quizId: quizResult.id,
+        score: result.score,
+        category: result.category
       })
     };
     
@@ -390,7 +333,7 @@ export async function handler(event, context) {
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        error: error.message || 'Failed to process quiz submission'
+        error: error.message || 'Failed to submit quiz'
       })
     };
   }
