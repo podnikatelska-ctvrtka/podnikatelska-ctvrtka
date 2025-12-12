@@ -1,7 +1,7 @@
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle, AlertCircle, TrendingUp, TrendingDown, Minus, ArrowRight, Mail, User, ChevronLeft } from 'lucide-react';
+import { CheckCircle, AlertCircle, TrendingUp, TrendingDown, Minus, ArrowRight, Mail, User, ChevronLeft, Sparkles, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { trackQuizCompleted, trackQuizStarted } from '../lib/analytics';
@@ -283,7 +283,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
       risks: score >= 70 
         ? ['Nedostatečné testování produktu před plným spuštěním', 'Podcenění marketingu v prvních měsících']
         : score >= 40
-        ? ['Nejasná cílová skupina → promrhané peníze v marketingu', 'Chybějící finanční plán → nevíš kdy dojdou peníze', 'Neotestovaný nápad → možná nikdo nechce co nabízí��']
+        ? ['Nejasná cílová skupina → promrhané peníze v marketingu', 'Chybějící finanční plán → nevíš kdy dojdou peníze', 'Neotestovaný nápad → možná nikdo nechce co nabízí']
         : ['Žádný konkrtní plán → budeš váhat a prokrastinovat', 'Neznáš své čísla → nevíš jestli děláš zisk nebo ztrátu', 'Nemáš jasno v hodnotě → proč by si tě měli vybrat?'],
       recommendations: score >= 70
         ? ['Udělej si detailní akční plán na prvních 90 dní', 'Připrav si MVP (minimum viable product) co nejrychleji', 'Najdi si 3-5 beta testerů a získej feedback']

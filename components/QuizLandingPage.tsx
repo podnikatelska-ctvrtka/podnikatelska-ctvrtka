@@ -38,6 +38,33 @@ export function QuizLandingPage() {
       });
       
       console.log('📥 Response status:', response.status);
+      
+      // ⚠️ LOKÁLNÍ DEV FALLBACK - pokud Netlify functions nefungují (404)
+      if (response.status === 404) {
+        console.warn('⚠️ Netlify functions not available (running locally without netlify dev?)');
+        console.warn('💡 TIP: Use "npm run dev:netlify" to test with functions locally');
+        
+        // Ukáž výsledky i tak (pro lokální testování UX)
+        setShowQuiz(false);
+        setQuizData({
+          email,
+          score: result.score,
+          category: result.category,
+          subScores: result.subScores || []
+        });
+        setShowResults(true);
+        
+        // Meta Pixel tracking
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'CompleteRegistration', {
+            content_name: 'Business Health Quiz',
+            status: result.category
+          });
+        }
+        
+        return; // Exit early - no error, just skip API
+      }
+      
       const data = await response.json();
       console.log('📥 Response data:', data);
       
