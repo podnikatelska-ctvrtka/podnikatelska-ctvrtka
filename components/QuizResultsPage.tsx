@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle, Mail, Sparkles, Printer } from 'lucide-react';
+import { Printer, ArrowLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ActionPlanPDF } from './ActionPlanPDF';
 
@@ -32,7 +32,7 @@ export function QuizResultsPage({
     if (propsSubScores) setSubScores(propsSubScores);
     if (propsName) setName(propsName);
     
-    // ✅ PRIORITA 2: URL params (když se naviguje přímo na /kviz)
+    // ✅ PRIORITA 2: URL params (když se naviguje přímo na /kviz/vysledky)
     if (!propsEmail) {
       const urlParams = new URLSearchParams(window.location.search);
       const emailParam = urlParams.get('email');
@@ -44,6 +44,7 @@ export function QuizResultsPage({
       if (emailParam) setEmail(emailParam);
       if (scoreParam) setScore(parseInt(scoreParam));
       if (categoryParam) setCategory(categoryParam);
+      if (nameParam) setName(decodeURIComponent(nameParam));
       if (subScoresParam) {
         try {
           setSubScores(JSON.parse(decodeURIComponent(subScoresParam)));
@@ -51,7 +52,6 @@ export function QuizResultsPage({
           console.error('Failed to parse subScores:', e);
         }
       }
-      if (nameParam) setName(nameParam);
     }
   }, [propsEmail, propsScore, propsCategory, propsSubScores, propsName]);
 
@@ -66,201 +66,170 @@ export function QuizResultsPage({
     return '🎯';
   };
 
+  const getCategoryLabel = () => {
+    if (category === 'critical') return 'Kritický stav';
+    if (category === 'unstable') return 'Nestabilní';
+    if (category === 'solid') return 'Solidní základ';
+    if (category === 'advanced') return 'Pokročilý';
+    if (category === 'beginner') return 'Začínáš';
+    return 'Výsledky';
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-2xl w-full"
-      >
-        {/* Success Card */}
-        <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/50 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        
+        {/* 🎯 HEADER - NEVIDITELNÝ PŘI TISKU */}
+        <div className="print:hidden mb-8">
+          <button
+            onClick={() => window.location.href = '/'}
+            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Zpět na hlavní stránku
+          </button>
           
-          {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
-            >
-              <CheckCircle className="w-10 h-10 text-green-500" />
-            </motion.div>
-            
-            <h1 className="text-4xl mb-3 text-white">
-              Skvělá práce! 🎉
-            </h1>
-            <p className="text-xl text-indigo-100">
-              Kvíz máš za sebou
-            </p>
-          </div>
-
-          {/* Content */}
-          <div className="p-8 md:p-12 space-y-8">
-            
-            {/* Score Preview (mini) */}
-            {score !== null && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-center"
-              >
-                <div className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 rounded-2xl border border-indigo-200/50">
-                  <span className="text-3xl">{getCategoryEmoji()}</span>
-                  <div className="text-left">
-                    <p className="text-sm text-slate-600">Tvé skóre</p>
-                    <p className="text-2xl text-slate-900">{score}/100 bodů</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* ✅ SUB-SCORES Progress Bars */}
-            {subScores.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="bg-gradient-to-br from-slate-50 to-indigo-50/50 rounded-2xl p-6 border border-slate-200/50"
-              >
-                <h3 className="text-lg text-slate-900 mb-4 text-center">
-                  📊 Detailní rozpad skóre
-                </h3>
-                <div className="space-y-4">
-                  {subScores.map((sub, idx) => {
-                    const color = sub.score >= 70 ? 'bg-green-500' : sub.score >= 40 ? 'bg-yellow-500' : 'bg-red-500';
-                    const textColor = sub.score >= 70 ? 'text-green-700' : sub.score >= 40 ? 'text-yellow-700' : 'text-red-700';
-                    
-                    return (
-                      <div key={idx} className="space-y-2">
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-slate-700">
-                            <span className="mr-2">{sub.icon}</span>
-                            {sub.label}
-                          </span>
-                          <span className={`font-bold ${textColor}`}>
-                            {sub.score}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${sub.score}%` }}
-                            transition={{ delay: 0.4 + (idx * 0.1), duration: 0.6, ease: 'easeOut' }}
-                            className={`h-2.5 rounded-full ${color}`}
-                          />
-                        </div>
-                        {sub.score < 40 && (
-                          <p className="text-xs text-red-600 mt-1">
-                            ⚠️ POZOR! Tohle potřebuješ urgentně vyřešit
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Email Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200/50"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg text-slate-900 mb-2">
-                    Výsledky posíláme na tvůj email
-                  </h3>
-                  {email && (
-                    <p className="text-sm text-blue-700 mb-3">
-                      📧 {email}
-                    </p>
-                  )}
-                  <p className="text-sm text-slate-700 leading-relaxed">
-                    V emailu najdeš detailní analýzu, konkrétní rizika a doporučení jak zlepšit své podnikání
-                  </p>
-                </div>
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 md:p-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl text-slate-900 mb-2">
+                  {getCategoryEmoji()} Tvé výsledky
+                </h1>
+                <p className="text-slate-600">
+                  Detailní analýza tvého modelu podnikání
+                </p>
               </div>
-            </motion.div>
-
-            {/* Sparkles Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex items-start gap-3 text-center justify-center"
-            >
-              <Sparkles className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-slate-600 max-w-md">
-                Personalizované doporučení ti pomohou posunout se dál – ať už teprve začínáš nebo už máš zákazníky
-              </p>
-            </motion.div>
-
-            {/* 🎯 AKČNÍ PLÁN - JEN PRO TVOJI KATEGORII! */}
-            {category && score !== null && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-                className="border-t-2 border-dashed border-slate-200 pt-8"
-              >
-                <div className="bg-gradient-to-r from-red-50 to-green-50 rounded-2xl p-6 mb-6 border-2 border-red-600/20">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl text-slate-900">
-                      🎁 Tvůj personalizovaný akční plán
-                    </h2>
-                    <button
-                      onClick={() => window.print()}
-                      className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg border border-slate-300 transition-colors print:hidden"
-                    >
-                      <Printer className="w-4 h-4" />
-                      Vytisknout
-                    </button>
-                  </div>
-                  <p className="text-sm text-slate-600">
-                    📋 Konkrétní kroky, které potřebuješ udělat PRVNÍ. Můžeš si to vytisknout nebo uložit jako PDF.
-                  </p>
-                </div>
-                
-                {/* ✅ AKČNÍ PLÁN - JEN JEDEN PRO TVOJI KATEGORII */}
-                <ActionPlanPDF 
-                  category={category as 'critical' | 'unstable' | 'solid' | 'advanced' | 'beginner'} 
-                  score={score} 
-                  name={name || email.split('@')[0] || 'podnikateli'} 
-                />
-              </motion.div>
-            )}
-
-            {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="pt-4"
-            >
               <button
-                onClick={() => window.location.href = '/'}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full py-4 px-8 text-lg font-semibold transition-all shadow-lg hover:shadow-xl"
+                onClick={() => window.print()}
+                className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white px-6 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl"
               >
-                Mezitím si můžeš přečíst o čem je Podnikatelská Čtvrtka
+                <Printer className="w-5 h-5" />
+                Vytisknout
               </button>
-            </motion.div>
-
-            {/* Subtle note */}
-            <p className="text-center text-xs text-slate-500">
-              Email by měl dorazit do 2 minut. Nezapomeň zkontrolovat i spam složku 📬
-            </p>
+            </div>
           </div>
         </div>
-      </motion.div>
+
+        {/* 📊 PROGRESS BARY - NEVIDITELNÉ PŘI TISKU */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 md:p-8 mb-8 print:hidden"
+        >
+          <h2 className="text-2xl text-slate-900 mb-6">
+            📊 Detailní rozpad skóre
+          </h2>
+          
+          {/* Overall Score */}
+          {score !== null && (
+            <div className="mb-8 text-center">
+              <div className="inline-flex items-center gap-4 bg-gradient-to-r from-indigo-50 to-purple-50 px-8 py-6 rounded-2xl border border-indigo-200/50">
+                <span className="text-5xl">{getCategoryEmoji()}</span>
+                <div className="text-left">
+                  <p className="text-sm text-slate-600 uppercase tracking-wide">Celkové skóre</p>
+                  <p className="text-4xl text-slate-900">{score}/100</p>
+                  <p className="text-sm text-indigo-600 mt-1">{getCategoryLabel()}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub-Scores Progress Bars */}
+          {subScores.length > 0 && (
+            <div className="space-y-6">
+              {subScores.map((sub, idx) => {
+                const color = sub.score >= 70 ? 'bg-green-500' : sub.score >= 40 ? 'bg-yellow-500' : 'bg-red-500';
+                const bgColor = sub.score >= 70 ? 'bg-green-50' : sub.score >= 40 ? 'bg-yellow-50' : 'bg-red-50';
+                const textColor = sub.score >= 70 ? 'text-green-700' : sub.score >= 40 ? 'text-yellow-700' : 'text-red-700';
+                const borderColor = sub.score >= 70 ? 'border-green-200' : sub.score >= 40 ? 'border-yellow-200' : 'border-red-200';
+                
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + (idx * 0.1), duration: 0.5 }}
+                    className={`${bgColor} rounded-xl p-5 border ${borderColor}`}
+                  >
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{sub.icon}</span>
+                        <span className="text-slate-900 font-medium">
+                          {sub.label}
+                        </span>
+                      </div>
+                      <span className={`text-2xl ${textColor}`}>
+                        {sub.score}%
+                      </span>
+                    </div>
+                    
+                    <div className="w-full bg-white rounded-full h-3 overflow-hidden shadow-inner">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${sub.score}%` }}
+                        transition={{ delay: 0.2 + (idx * 0.1), duration: 0.8, ease: 'easeOut' }}
+                        className={`h-3 rounded-full ${color}`}
+                      />
+                    </div>
+                    
+                    {sub.score < 40 && (
+                      <p className="text-sm text-red-700 mt-3 font-medium">
+                        ⚠️ POZOR! Tohle potřebuješ urgentně vyřešit
+                      </p>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </motion.div>
+
+        {/* 🎁 AKČNÍ PLÁN - VIDITELNÝ PŘI TISKU */}
+        {category && score !== null && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <div className="bg-gradient-to-r from-red-50 to-green-50 rounded-2xl p-6 mb-6 border-2 border-red-600/20 print:hidden">
+              <h2 className="text-2xl text-slate-900 mb-2">
+                🎁 Tvůj personalizovaný akční plán
+              </h2>
+              <p className="text-sm text-slate-600">
+                📋 Konkrétní kroky, které potřebuješ udělat PRVNÍ. Vytiskni si to nebo ulož jako PDF.
+              </p>
+            </div>
+            
+            {/* ✅ AKČNÍ PLÁN - JEN JEDEN PRO TVOJI KATEGORII */}
+            <ActionPlanPDF 
+              category={category as 'critical' | 'unstable' | 'solid' | 'advanced' | 'beginner'} 
+              score={score} 
+              name={name || email.split('@')[0] || 'podnikateli'} 
+            />
+          </motion.div>
+        )}
+
+      </div>
+
+      {/* 🖨️ PRINT STYLES - TISKNE SE JEN AKČNÍ PLÁN! */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+          /* Hide everything except ActionPlanPDF */
+          @page {
+            margin: 0;
+            size: A4;
+          }
+        }
+      ` }} />
     </div>
   );
 }

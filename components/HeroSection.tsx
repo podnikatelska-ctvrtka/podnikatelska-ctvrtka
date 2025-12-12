@@ -119,14 +119,14 @@ export function HeroSection() {
         score: result.score.toString(),
         category: result.category
       });
-      window.location.href = `/kviz/vysledky?${params.toString()}`;
+      window.location.href = `/kviz/hotovo?${params.toString()}`;
       
     } catch (error) {
       console.error('❌ Quiz submission error:', error);
       
       // ✅ I přes chybu redirect (email se pošle z edge funkce)
       setIsQuizOpen(false);
-      window.location.href = `/kviz/vysledky`;
+      window.location.href = `/kviz/hotovo`;
     }
   };
 

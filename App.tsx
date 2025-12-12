@@ -2,6 +2,7 @@ import { ChristmasRemarketingAd } from "./components/ChristmasRemarketingAd"; //
 import { RemarketingAdsPreview } from "./components/RemarketingAdsPreview"; // ✅ REMARKETING ADS PREVIEW
 import { QuizLandingPage } from "./components/QuizLandingPage"; // ✅ QUIZ LANDING PAGE
 import { QuizResultsPage } from "./components/QuizResultsPage"; // ✅ QUIZ RESULTS PAGE
+import { QuizThankYouPage } from "./components/QuizThankYouPage"; // ✅ QUIZ THANK YOU PAGE
 import { ActionPlanPreview } from "./components/ActionPlanPreview"; // ✅ ACTION PLAN PDF
 import { KonzultacePage } from "./components/KonzultacePage"; // ✅ FREE KONZULTACE PAGE
 import { StickyQuizButton } from "./components/StickyQuizButton"; // ✅ STICKY QUIZ BUTTON
@@ -134,6 +135,7 @@ export default function App() {
   const [showZasilkovnaModel, setShowZasilkovnaModel] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [showQuizResults, setShowQuizResults] = useState(false); // ✅ NOVÝ - kvíz výsledky
+  const [showQuizThankYou, setShowQuizThankYou] = useState(false); // ✅ NOVÝ - kvíz děkovná stránka
   const [showActionPlans, setShowActionPlans] = useState(false); // ✅ PDF Preview
   const [showZaloha, setShowZaloha] = useState(false); // ✅ BACKUP: Original landing page
   const [showRemarketingAds, setShowRemarketingAds] = useState(false); // ✅ REMARKETING ADS
@@ -299,6 +301,14 @@ export default function App() {
       } else if (path === '/kviz/vysledky') {
         // ✅ NOVÝ ROUTING pro výsledkovou stránku
         setShowQuizResults(true);
+        setShowQuiz(false);
+        setShowQuizThankYou(false);
+        setShowZasilkovnaModel(false);
+        setShowKonzultace(false);
+      } else if (path === '/kviz/hotovo') {
+        // ✅ NOVÝ ROUTING pro děkovnou stránku
+        setShowQuizThankYou(true);
+        setShowQuizResults(false);
         setShowQuiz(false);
         setShowZasilkovnaModel(false);
         setShowKonzultace(false);
@@ -1251,6 +1261,17 @@ export default function App() {
       <>
         <CriticalCSS />
         <QuizResultsPage />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // ✅ Show Quiz Thank You page if URL has /kviz/hotovo
+  if (showQuizThankYou) {
+    return (
+      <>
+        <CriticalCSS />
+        <QuizThankYouPage />
         <Toaster position="top-right" />
       </>
     );
