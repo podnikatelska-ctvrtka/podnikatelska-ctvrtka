@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Progress } from './ui/progress';
 import { trackQuizStarted, trackQuizCompleted } from '../lib/metaPixel';
+import { toast } from 'react-toastify';
 
 // Typy pro kvíz
 type QuizType = 'beginner' | 'existing' | null;
@@ -288,7 +289,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
         ? ['Udělej si detailní akční plán na prvních 90 dní', 'Připrav si MVP (minimum viable product) co nejrychleji', 'Najdi si 3-5 beta testerů a získej feedback']
         : score >= 40
         ? ['Udělej si Business Model Canvas → uvidíš mezery', 'Nadefinuj přesně KOMU prodáváš (ne "všem")', 'Spočítej si minimální měsíční obrat na přežití']
-        : ['STOP. Než uděláš cokoli dalšího, udělej si pořádný pl��n', 'Začni s Business Model Canvas → Podnikatelská Čtvrtka ti ukáže jak', 'Testuj nápad s reálnými lidmi PŘED investicí'],
+        : ['STOP. Než uděláš cokoli dalšího, udělej si pořádný plán', 'Začni s Business Model Canvas → Podnikatelská Čtvrtka ti ukáže jak', 'Testuj nápad s reálnými lidmi PŘED investicí'],
       subScores
     };
   }
@@ -314,7 +315,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
     recommendations = [
       '💡 QUICK WIN #1: Vyhraď si 1 hodinu týdně na "Čas na inovace" - testuj nové produkty, kanály, strategie. Investuj 10-15% zisku do testování nových věcí',
       '💡 QUICK WIN #2: Najmi někoho kdo může převzít část tvé role. Cíl: Uvolnit 20% svého času na strategii místo běžné práce',
-      '💡 QUICK WIN #3: Projdi všechny procesy a najdi 3 v��ci které můžeš automatizovat (Zapier, Make, AI nástroje)',
+      '💡 QUICK WIN #3: Projdi všechny procesy a najdi 3 věci které můžeš automatizovat (Zapier, Make, AI nástroje)',
       '💡 QUICK WIN #4: Udělej analýzu konkurence - co dělají jinak? Kde jsou o 10% lepší než ty?',
       '🎯 DLOUHODOBĚ: Model podnikání ti pomůže najít možnosti pro škálování (nové trhy, produkty, partnerství)'
     ];
@@ -442,30 +443,47 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
     
     setIsSubmitting(true);
     
-    const calculatedResult = calculateResult(answers, quizType);
-    console.log('🔍 DEBUG: calculatedResult =', calculatedResult);
-    setResult(calculatedResult);
-    
-    // 📊 Track quiz completion
-    trackQuizCompleted(
-      quizType || 'existing',
-      calculatedResult.score,
-      calculatedResult.category
-    );
-    
-    // Zavolej callback pro uložení do DB a odeslání emailu
-    if (onComplete) {
-      console.log('🔍 DEBUG: Calling onComplete callback...');
-      await onComplete(calculatedResult, email, answers);
-      console.log('🔍 DEBUG: onComplete finished!');
-    } else {
-      console.log('⚠️ DEBUG: No onComplete callback provided!');
+    try {
+      const calculatedResult = calculateResult(answers, quizType);
+      console.log('🔍 DEBUG: calculatedResult =', calculatedResult);
+      setResult(calculatedResult);
+      
+      // 📊 Track quiz completion
+      trackQuizCompleted(
+        quizType || 'existing',
+        calculatedResult.score,
+        calculatedResult.category
+      );
+      
+      // Zavolej callback pro uložení do DB a odeslání emailu
+      if (onComplete) {
+        console.log('🔍 DEBUG: Calling onComplete callback...');
+        try {
+          await onComplete(calculatedResult, email, answers);
+          console.log('✅ DEBUG: onComplete finished successfully!');
+        } catch (callbackError) {
+          console.error('❌ ERROR in onComplete callback:', callbackError);
+          toast.error(`Chyba při ukládání: ${callbackError.message || 'Neznámá chyba'}`, {
+            duration: 8000,
+          });
+          setIsSubmitting(false);
+          return; // ⚠️ STOP - nezavírej kvíz, ať user vidí error
+        }
+      } else {
+        console.log('⚠️ DEBUG: No onComplete callback provided!');
+      }
+      
+      setIsSubmitting(false);
+      
+      // ✅ Parent (QuizLandingPage) se postará o zobrazení completion modalu
+      // NEBUDEME zavírat modal tady - nechám to na parent component
+    } catch (error) {
+      console.error('❌ CRITICAL ERROR in handleEmailSubmit:', error);
+      toast.error(`Kritická chyba: ${error.message || 'Neznámá chyba'}`, {
+        duration: 10000,
+      });
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
-    
-    // ✅ Parent (QuizLandingPage) se postará o zobrazení completion modalu
-    // NEBUDEME zavírat modal tady - nechám to na parent component
   };
 
   return (

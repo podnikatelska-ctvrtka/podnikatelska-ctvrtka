@@ -14,17 +14,8 @@ export function QuizLandingPage() {
     try {
       console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
       
-      // ✅ IMMEDIATELY show results (no flash!)
-      setShowQuiz(false);
-      setQuizData({
-        email,
-        score: result.score,
-        category: result.category,
-        subScores: result.subScores || []
-      });
-      setShowResults(true);
-      
-      // ✅ THEN call API in background
+      // ✅ THEN call API FIRST (before showing results!)
+      console.log('📤 Calling quiz-submit API...');
       const response = await fetch('/.netlify/functions/quiz-submit', {
         method: 'POST',
         headers: {
@@ -46,13 +37,26 @@ export function QuizLandingPage() {
         })
       });
       
+      console.log('📥 Response status:', response.status);
       const data = await response.json();
+      console.log('📥 Response data:', data);
       
       if (!response.ok) {
         console.error('❌ Quiz submit error:', data);
-      } else {
-        console.log('✅ Quiz submitted successfully!', data);
+        throw new Error(data.error || 'Failed to submit quiz');
       }
+      
+      console.log('✅ Quiz submitted successfully!', data);
+      
+      // ✅ NOW show results (only after successful save)
+      setShowQuiz(false);
+      setQuizData({
+        email,
+        score: result.score,
+        category: result.category,
+        subScores: result.subScores || []
+      });
+      setShowResults(true);
       
       // 📊 Track completion in Meta Pixel
       if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -64,7 +68,8 @@ export function QuizLandingPage() {
       
     } catch (error) {
       console.error('❌ Quiz submission error:', error);
-      // Results already showing, no need to do anything
+      // ⚠️ THROW ERROR BACK to BusinessHealthQuiz so it can show toast!
+      throw error;
     }
   };
 
