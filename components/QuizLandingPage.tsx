@@ -14,7 +14,17 @@ export function QuizLandingPage() {
     try {
       console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
       
-      // ✅ CALL NETLIFY FUNCTION (has full Resend + SmartEmailing logic)
+      // ✅ IMMEDIATELY show results (no flash!)
+      setShowQuiz(false);
+      setQuizData({
+        email,
+        score: result.score,
+        category: result.category,
+        subScores: result.subScores || []
+      });
+      setShowResults(true);
+      
+      // ✅ THEN call API in background
       const response = await fetch('/.netlify/functions/quiz-submit', {
         method: 'POST',
         headers: {
@@ -40,13 +50,9 @@ export function QuizLandingPage() {
       
       if (!response.ok) {
         console.error('❌ Quiz submit error:', data);
-        throw new Error(data.error || 'Failed to submit quiz');
+      } else {
+        console.log('✅ Quiz submitted successfully!', data);
       }
-      
-      console.log('✅ Quiz submitted successfully!', data);
-      
-      // ✅ Close quiz modal
-      setShowQuiz(false);
       
       // 📊 Track completion in Meta Pixel
       if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -56,31 +62,13 @@ export function QuizLandingPage() {
         });
       }
       
-      // ✅ SHOW RESULTS PAGE (in-app, no reload!)
-      setQuizData({
-        email,
-        score: result.score,
-        category: result.category,
-        subScores: result.subScores || []
-      });
-      setShowResults(true);
-      
     } catch (error) {
       console.error('❌ Quiz submission error:', error);
-      
-      // ✅ I přes chybu show results
-      setShowQuiz(false);
-      setQuizData({
-        email: '',
-        score: 0,
-        category: 'beginner',
-        subScores: []
-      });
-      setShowResults(true);
+      // Results already showing, no need to do anything
     }
   };
 
-  // ✅ IF showing results, render results page
+  // ✅ CHECK RESULTS FIRST (before rendering landing)
   if (showResults && quizData) {
     return <QuizResultsPage />;
   }

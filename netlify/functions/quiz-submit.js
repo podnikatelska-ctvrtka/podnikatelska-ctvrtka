@@ -3,6 +3,31 @@
 
 import { createClient } from '@supabase/supabase-js';
 
+// ✅ RESEND EMAIL HELPER (same as fapi-webhook.js)
+async function sendEmail(to, subject, html) {
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Podnikatelská Čtvrtka <kurz@podnikatelskactvrtka.cz>',
+      to: [to],
+      subject: subject,
+      html: html,
+    }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Resend email failed: ${error}`);
+  }
+  
+  const data = await response.json();
+  return data;
+}
+
 export async function handler(event, context) {
   // Only accept POST requests
   if (event.httpMethod !== 'POST') {
@@ -207,7 +232,7 @@ export async function handler(event, context) {
       console.log('⚠️ Smartemailing not configured - skipping');
     }
     
-    // ──────────────────────────────────────���───
+    // ─────────────────────────────────────────
     // 📨 SEND IMMEDIATE EMAIL VIA RESEND
     // ──────────────────────────────────────────
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -216,7 +241,7 @@ export async function handler(event, context) {
       try {
         console.log('📨 Sending email via Resend...');
         
-        // ✅ CREATE ACTION PLAN URL
+        // �� CREATE ACTION PLAN URL
         const actionPlanUrl = `https://podnikatelskactvrtka.cz/action-plans?category=${resultToSave.category}&score=${resultToSave.score}&name=${encodeURIComponent(name || 'podnikateli')}`;
         
         // Create email HTML
@@ -320,26 +345,12 @@ export async function handler(event, context) {
 </html>
         `;
         
-        const resendResponse = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${RESEND_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            from: 'Podnikatelská Čtvrtka <ahoj@podnikatelskactvrtka.cz>',
-            to: email,
-            subject: `Tvoje výsledky: ${resultToSave.categoryLabel} (${resultToSave.score}%)`,
-            html: emailHtml
-          })
-        });
+        const emailData = await sendEmail(email, `Tvoje výsledky: ${resultToSave.categoryLabel} (${resultToSave.score}%)`, emailHtml);
         
-        const resendData = await resendResponse.json();
-        
-        if (resendResponse.ok) {
-          console.log('✅ Email sent via Resend:', resendData.id);
+        if (emailData) {
+          console.log('✅ Email sent via Resend:', emailData.id);
         } else {
-          console.error('⚠️ Resend API error:', resendData);
+          console.error('⚠️ Resend API error:', emailData);
         }
       } catch (emailError) {
         console.error('⚠️ Email sending failed (non-critical):', emailError.message);
