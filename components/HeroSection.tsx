@@ -38,74 +38,69 @@ export function HeroSection() {
     try {
       console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
       
-      // ✅ Save directly to Supabase from frontend
-      const supabaseUrl = 'https://jdcpzswpecntlqiyzxac.supabase.co';
-      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppY3B6c3dwZWNudGxxaXl6eGFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MjQyNDksImV4cCI6MjA0OTUwMDI0OX0.t_vJZdYq0RfPp5QyWLRCaL9X8pVMB9zOQKEHCbdH3gE';
+      // ✅ CALL NETLIFY FUNCTION (same as QuizLandingPage!)
+      console.log('📤 Calling quiz-submit API...');
       
-      // Save to Supabase
-      const saveResponse = await fetch(`${supabaseUrl}/rest/v1/quiz_results`, {
+      const response = await fetch('/.netlify/functions/quiz-submit', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseAnonKey,
-          'Authorization': `Bearer ${supabaseAnonKey}`,
-          'Prefer': 'return=representation'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           email,
-          name: '',
-          quiz_type: result.category === 'beginner' ? 'beginner' : 'existing',
+          name: email.split('@')[0], // Use email prefix as name
+          quizType: result.category === 'beginner' ? 'beginner' : 'existing',
           answers,
-          score: result.score,
-          category: result.category,
-          category_label: result.categoryLabel,
-          risks: result.risks,
-          recommendations: result.recommendations,
-          created_at: new Date().toISOString()
-        })
-      });
-      
-      console.log('📊 Supabase save response:', saveResponse.status);
-      
-      if (!saveResponse.ok) {
-        const errorText = await saveResponse.text();
-        console.error('❌ Supabase error:', errorText);
-      } else {
-        console.log('✅ Quiz data saved to Supabase!');
-      }
-      
-      // ──────────────────────────────────────────
-      // 📧 SEND EMAIL + ADD TO SMARTEMAILING
-      // ──────────────────────────────────────────
-      try {
-        console.log('📧 Sending quiz results email...');
-        
-        const emailResponse = await fetch(`${supabaseUrl}/functions/v1/make-server-8e1fcf9a/send-quiz-results`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseAnonKey}`
-          },
-          body: JSON.stringify({
-            email,
+          result: {
             score: result.score,
             category: result.category,
             categoryLabel: result.categoryLabel,
-            name: email.split('@')[0] // Použijeme email jako jméno
-          })
-        });
+            categoryDescription: result.categoryDescription || '',
+            risks: result.risks || [],
+            recommendations: result.recommendations || []
+          }
+        })
+      });
+      
+      console.log('📥 Response status:', response.status);
+      
+      // ⚠️ LOKÁLNÍ DEV FALLBACK - pokud Netlify functions nefungují (404)
+      if (response.status === 404) {
+        console.warn('⚠️ Netlify functions not available (running locally without netlify dev?)');
+        console.warn('💡 TIP: Use "npm run dev:netlify" to test with functions locally');
         
-        const emailData = await emailResponse.json();
+        // Close quiz modal i tak
+        setIsQuizOpen(false);
         
-        if (emailResponse.ok) {
-          console.log('✅ Quiz results email sent:', emailData);
-        } else {
-          console.error('❌ Email sending failed:', emailData);
+        // Meta Pixel tracking
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'CompleteRegistration', {
+            content_name: 'Business Health Quiz',
+            status: result.category
+          });
         }
-      } catch (emailError) {
-        console.error('❌ Email error:', emailError);
-        // Continue anyway - data was saved
+        
+        return; // Exit early - no error, just skip API
       }
+      
+      const responseText = await response.text();
+      console.log('📥 Response text:', responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('📥 Response data:', data);
+      } catch (e) {
+        console.error('❌ Failed to parse response as JSON:', e);
+        throw new Error(`Invalid JSON response: ${responseText}`);
+      }
+      
+      if (!response.ok) {
+        console.error('❌ Quiz submit error:', data);
+        throw new Error(data.error || 'Failed to submit quiz');
+      }
+      
+      console.log('✅ Quiz submitted successfully!', data);
       
       // ✅ Close quiz modal
       setIsQuizOpen(false);
@@ -138,7 +133,7 @@ export function HeroSection() {
   const tooltipData = {
     'partners': {
       title: 'Klíčová partnerství',
-      content: 'Zjistíte, kdo vám může pomoct ušetřit čas a peníze - místo abyste ve d��lali sami'
+      content: 'Zjistíte, kdo vám může pomoct ušetřit čas a peníze - místo abyste ve dlali sami'
     },
     'activities': {
       title: 'Klíčové aktivity', 
