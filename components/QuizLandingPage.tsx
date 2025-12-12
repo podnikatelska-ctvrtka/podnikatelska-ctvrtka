@@ -3,52 +3,50 @@ import { useState, useEffect } from 'react';
 import { CheckCircle, TrendingUp, Zap, Target, Shield, ArrowRight, ChevronRight, Mail, BookOpen, Gift, Sparkles, Calendar } from 'lucide-react';
 import { Button } from './ui/button';
 import { Snowfall } from './Snowfall';
+import { QuizResultsPage } from './QuizResultsPage'; // ✅ IMPORT results page
 
 export function QuizLandingPage() {
   const [showQuiz, setShowQuiz] = useState(false);
+  const [showResults, setShowResults] = useState(false); // ✅ NOVÝ state
+  const [quizData, setQuizData] = useState<any>(null); // ✅ Store quiz data
 
   const handleQuizComplete = async (result: any, email: string, answers: Record<string, number>) => {
     try {
       console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
       
-      // ✅ FALLBACK: Save directly to Supabase from frontend
-      const supabaseUrl = 'https://jdcpzswpecntlqiyzxac.supabase.co';
-      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppY3B6c3dwZWNudGxxaXl6eGFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MjQyNDksImV4cCI6MjA0OTUwMDI0OX0.t_vJZdYq0RfPp5QyWLRCaL9X8pVMB9zOQKEHCbdH3gE';
-      
-      // Save to Supabase
-      const saveResponse = await fetch(`${supabaseUrl}/rest/v1/quiz_results`, {
+      // ✅ CALL NETLIFY FUNCTION (has full Resend + SmartEmailing logic)
+      const response = await fetch('/.netlify/functions/quiz-submit', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseAnonKey,
-          'Authorization': `Bearer ${supabaseAnonKey}`,
-          'Prefer': 'return=representation'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           email,
-          name: '',
-          quiz_type: result.category === 'beginner' ? 'beginner' : 'existing',
+          name: email.split('@')[0], // Use email prefix as name
+          quizType: result.category === 'beginner' ? 'beginner' : 'existing',
           answers,
-          score: result.score,
-          category: result.category,
-          category_label: result.categoryLabel,
-          risks: result.risks,
-          recommendations: result.recommendations,
-          created_at: new Date().toISOString()
+          result: {
+            score: result.score,
+            category: result.category,
+            categoryLabel: result.categoryLabel,
+            categoryDescription: result.categoryDescription || '',
+            risks: result.risks || [],
+            recommendations: result.recommendations || []
+          }
         })
       });
       
-      console.log('📊 Supabase save response:', saveResponse.status);
+      const data = await response.json();
       
-      if (!saveResponse.ok) {
-        const errorText = await saveResponse.text();
-        console.error('❌ Supabase error:', errorText);
+      if (!response.ok) {
+        console.error('❌ Quiz submit error:', data);
+        throw new Error(data.error || 'Failed to submit quiz');
       }
+      
+      console.log('✅ Quiz submitted successfully!', data);
       
       // ✅ Close quiz modal
       setShowQuiz(false);
-      
-      console.log('✅ Quiz submitted successfully!');
       
       // 📊 Track completion in Meta Pixel
       if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -58,28 +56,34 @@ export function QuizLandingPage() {
         });
       }
       
-      // ✅ REDIRECT na děkovnou stránku s parametry
-      const params = new URLSearchParams({
-        email: email,
-        score: result.score.toString(),
-        category: result.category
+      // ✅ SHOW RESULTS PAGE (in-app, no reload!)
+      setQuizData({
+        email,
+        score: result.score,
+        category: result.category,
+        subScores: result.subScores || []
       });
-      
-      // ✅ Přidej sub-scores pokud existují
-      if (result.subScores && result.subScores.length > 0) {
-        params.set('subScores', encodeURIComponent(JSON.stringify(result.subScores)));
-      }
-      
-      window.location.href = `/kviz/vysledky?${params.toString()}`;
+      setShowResults(true);
       
     } catch (error) {
-      console.error(' Quiz submission error:', error);
+      console.error('❌ Quiz submission error:', error);
       
-      // ✅ I přes chybu redirect
+      // ✅ I přes chybu show results
       setShowQuiz(false);
-      window.location.href = `/kviz/vysledky`;
+      setQuizData({
+        email: '',
+        score: 0,
+        category: 'beginner',
+        subScores: []
+      });
+      setShowResults(true);
     }
   };
+
+  // ✅ IF showing results, render results page
+  if (showResults && quizData) {
+    return <QuizResultsPage />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-900 via-green-900 to-red-800 relative">
