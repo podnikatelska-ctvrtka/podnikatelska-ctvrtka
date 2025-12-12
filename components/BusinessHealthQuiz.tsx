@@ -352,7 +352,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
   } else {
     category = 'critical';
     categoryLabel = 'Kritický stav 🔴';
-    categoryDescription = 'Tvůj model má vážné trhliny. Pokud to nevyřešíš TEĎ, mže to skončit krachem.';
+    categoryDescription = 'Tvůj model má vážné trhliny. Pokud to nevyřešíš TEĎ, může to skončit krachem.';
     categoryColor = 'text-red-600';
     risks = [
       '⚠️ 100% závislost na jednom kanálu/klientovi - když padne, padáš s ním',
@@ -822,7 +822,7 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                           size="lg"
-                          onClick={() => window.location.href = '/#objednavka'}
+                          onClick={() => window.location.hash = 'objednavka'}
                           className="bg-white text-blue-600 hover:bg-slate-100"
                         >
                           Koupit Podnikatelskou Čtvrtku (4999 Kč)

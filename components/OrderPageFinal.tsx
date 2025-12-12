@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle, Lock, Clock, Shield, Zap, AlertCircle, ArrowLeft, HelpCircle, Sparkles, AlertTriangle, Lightbulb, Target, TrendingUp, Users, DollarSign, X, Check } from 'lucide-react';
+import { CheckCircle, Lock, Clock, Shield, Zap, AlertCircle, ArrowLeft, HelpCircle, Sparkles, AlertTriangle, Lightbulb, Target, TrendingUp, Users, DollarSign, X, Check, Gift, BookOpen, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
@@ -13,7 +13,7 @@ interface OrderPageProps {
 }
 
 export default function OrderPage({ expired = false, testMode = false }: OrderPageProps) {
-  const [timeLeft, setTimeLeft] = useState(24 * 60 * 60); // 24 hours in seconds
+  const [timeLeft, setTimeLeft] = useState(72 * 60 * 60); // 72 hours in seconds (3 days)
   const [isExpired, setIsExpired] = useState(expired);
   const [showStickyCTA, setShowStickyCTA] = useState(false);
   const [heroCTAClicked, setHeroCTAClicked] = useState(false);
@@ -69,7 +69,7 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
 
     // localStorage key for countdown start timestamp
     const COUNTDOWN_KEY = 'podnikatelska_ctvrtka_countdown_start';
-    const COUNTDOWN_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const COUNTDOWN_DURATION = 72 * 60 * 60 * 1000; // 72 hours in milliseconds (3 days)
 
     // 🎯 URL PARAMETR: Preferuje se před localStorage (funguje i v anonymu!)
     const urlParams = new URLSearchParams(window.location.search);
@@ -865,6 +865,125 @@ export default function OrderPage({ expired = false, testMode = false }: OrderPa
                 Platíš jednou. Máš navždy. Včetně všech budoucích updatů a novinek.
               </p>
             </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* 🎁 BONUSY - Co ještě dostaneš NAVÍC */}
+      <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 py-16 md:py-20">
+        <div className="max-w-5xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm mb-6 font-semibold shadow-lg">
+                <Gift className="w-4 h-4" />
+                <span>Bonusy v ceně</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl mb-4 font-black">
+                🎁 Co ještě dostaneš <span className="text-purple-600">ZDARMA</span>
+              </h2>
+              <p className="text-xl text-gray-600">
+                (k hlavnímu kurzu navíc, bez příplatku)
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Bonus 1 - FB skupina */}
+              <motion.div 
+                className="bg-white rounded-2xl p-6 border-2 border-purple-200 hover:border-purple-400 hover:shadow-2xl transition-all"
+                whileHover={{ y: -4 }}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl p-3 flex-shrink-0">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-black mb-2">Přístup do privátní FB skupiny</h3>
+                    <p className="text-sm text-purple-600 mb-2">Hodnota: Nevyčíslitelné</p>
+                  </div>
+                </div>
+                <p className="text-gray-700">
+                  Diskuze s dalšími podnikateli, sdílení zkušeností, tipy na řešení konkrétních problémů
+                </p>
+              </motion.div>
+
+              {/* Bonus 2 - Konzultace */}
+              <motion.div 
+                className="bg-white rounded-2xl p-6 border-2 border-orange-200 hover:border-orange-400 hover:shadow-2xl transition-all"
+                whileHover={{ y: -4 }}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-xl p-3 flex-shrink-0">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-black mb-2">1× konzultace ZDARMA</h3>
+                    <p className="text-sm text-orange-600 mb-2">Hodnota: 2.500 Kč</p>
+                  </div>
+                </div>
+                <p className="text-gray-700">
+                  Můžeš si nechat zkontrolovat svůj byznys model a dostat konkrétní tipy přímo od nás
+                </p>
+              </motion.div>
+
+              {/* Bonus 3 - Lifetime updaty */}
+              <motion.div 
+                className="bg-white rounded-2xl p-6 border-2 border-indigo-200 hover:border-indigo-400 hover:shadow-2xl transition-all"
+                whileHover={{ y: -4 }}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl p-3 flex-shrink-0">
+                    <TrendingUp className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-black mb-2">Všechny budoucí updaty navždy</h3>
+                    <p className="text-sm text-indigo-600 mb-2">Hodnota: ∞</p>
+                  </div>
+                </div>
+                <p className="text-gray-700">
+                  Vylepšení, grafy, nové moduly, šablony... vše co přidáme v budoucnu dostaneš automaticky zdarma
+                </p>
+              </motion.div>
+
+              {/* Bonus 4 - Newsletter */}
+              <motion.div 
+                className="bg-white rounded-2xl p-6 border-2 border-green-200 hover:border-green-400 hover:shadow-2xl transition-all"
+                whileHover={{ y: -4 }}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl p-3 flex-shrink-0">
+                    <Mail className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-black mb-2">Měsíční newsletter s tipy <span className="text-sm text-gray-500">(coming soon)</span></h3>
+                    <p className="text-sm text-green-600 mb-2">Hodnota: 999 Kč/měsíc</p>
+                  </div>
+                </div>
+                <p className="text-gray-700">
+                  Konkrétní strategie, nástroje a best practices pro tvůj model podnikání přímo do mailu
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Celková hodnota */}
+            <motion.div 
+              className="mt-10 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-3xl p-8 text-center shadow-2xl"
+              whileHover={{ scale: 1.02 }}
+              data-dark-section
+            >
+              <p className="text-2xl md:text-3xl mb-3">
+                <span className="opacity-75">Celková hodnota bonusů:</span> <span className="line-through">Nevyčíslitelná</span>
+              </p>
+              <p className="text-4xl md:text-6xl font-black mb-2">
+                Ty platíš: {!isExpired || testMode ? '4.999 Kč' : '8.499 Kč'}
+              </p>
+              <p className="text-lg text-white/90">
+                (kurz + všechny bonusy v ceně, žádné skryté poplatky)
+              </p>
+            </motion.div>
           </motion.div>
         </div>
       </div>

@@ -129,16 +129,16 @@ export function QuizLandingPage() {
           
           {/* Main Headline */}
           <h1 className="text-6xl md:text-8xl mb-8 text-white max-w-5xl mx-auto leading-tight">
-            🎁 Tvůj{' '}
+            🚀 Dostaň{' '}
             <span className="bg-gradient-to-r from-yellow-300 via-red-400 to-green-400 bg-clip-text text-transparent font-black">
-              AKČNÍ PLÁN
+              KONKRÉTNÍ KROKY
             </span>
-            {' '}na rok 2026 – ZDARMA
+            {' '}jak zachránit, stabilizovat nebo rozjet svůj byznys – ZDARMA
           </h1>
           
           {/* Subheadline */}
           <p className="text-2xl md:text-4xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-            Vyber si <strong className="text-yellow-300">8-10 otázek</strong>, dostaneš <strong className="text-green-300">personalizovaný plán na 30 dní</strong> + tvé <strong className="text-red-300">byznys skóre</strong>
+            Každý podnikatel je v <strong className="text-yellow-300">jiné fázi</strong>. Proto dostaneš plán šitý <strong className="text-green-300">NA MÍRU</strong> podle zdraví tvého modelu podnikání + tvé <strong className="text-red-300">byznys skóre</strong>
           </p>
           
           {/* Value Props - BIG 3 */}
@@ -151,7 +151,7 @@ export function QuizLandingPage() {
                 ⚡ 3 minuty
               </h3>
               <p className="text-lg text-slate-700 leading-relaxed">
-                8-10 otázek. Žádné složité termíny. Jen <strong>výběr z možností</strong>
+                Už ŽÁDNÉ <strong>"nevím co dělat"</strong>. Za 3 minuty budeš mít jasno
               </p>
             </div>
             
@@ -163,7 +163,7 @@ export function QuizLandingPage() {
                 🎯 Byznys skóre
               </h3>
               <p className="text-lg text-slate-700 leading-relaxed">
-                Zjistíš přesně <strong>kde jsi TEĎ</strong> a co potřebuješ zlepšit <strong>PRVNÍ</strong>
+                Zjistíš <strong>pravdu</strong>: Zachraňuješ, stabilizuješ nebo rosteš?
               </p>
             </div>
             
@@ -175,7 +175,7 @@ export function QuizLandingPage() {
                 🎁 Plán na 30 dní
               </h3>
               <p className="text-lg text-slate-700 leading-relaxed">
-                Personalizovaný plán co udělat <strong>hned</strong> – ne za měsíc, <strong>HNED</strong>
+                Konkrétní kroky <strong>pro TVOU situaci</strong> - ne obecné rady z internetu
               </p>
             </div>
           </div>
@@ -185,14 +185,14 @@ export function QuizLandingPage() {
             <Button
               onClick={() => setShowQuiz(true)}
               size="lg"
-              className="bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 hover:from-yellow-500 hover:via-red-600 hover:to-green-600 text-white px-16 py-8 rounded-full text-3xl shadow-2xl hover:shadow-3xl transition-all group border-4 border-white"
+              className="bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 hover:from-yellow-500 hover:via-red-600 hover:to-green-600 text-white px-8 sm:px-12 md:px-16 py-6 sm:py-7 md:py-8 rounded-full text-xl sm:text-2xl md:text-3xl shadow-2xl hover:shadow-3xl transition-all group border-4 border-white w-full sm:w-auto"
             >
-              <Gift className="w-10 h-10 mr-4 group-hover:scale-125 transition-transform animate-bounce" />
-              🎄 Zjistit ZDARMA své skóre 🎁
-              <ArrowRight className="w-10 h-10 ml-4 group-hover:translate-x-2 transition-transform" />
+              <Gift className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 mr-3 sm:mr-4 group-hover:scale-125 transition-transform animate-bounce flex-shrink-0" />
+              <span className="text-center">🎄 Zjistit ZDARMA své skóre 🎁</span>
+              <ArrowRight className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 ml-3 sm:ml-4 group-hover:translate-x-2 transition-transform flex-shrink-0" />
             </Button>
             
-            <p className="mt-8 text-white/90 text-xl">
+            <p className="mt-8 text-white/90 text-base sm:text-lg md:text-xl">
               ✅ Bez platby • ✅ Bez kreditky • ✅ Výsledky okamžitě na email
             </p>
           </div>
@@ -231,39 +231,70 @@ export function QuizLandingPage() {
       <section className="relative py-24 px-4 bg-white/5 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-5xl md:text-6xl text-center mb-16 text-white">
-            Co dostaneš <span className="text-yellow-300">zdarma</span>?
+            Co <span className="text-yellow-300">přesně</span> dostaneš?
           </h2>
           
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gradient-to-br from-red-600 to-red-800 p-10 rounded-3xl shadow-2xl text-white">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-10 rounded-3xl shadow-2xl text-white border-2 border-yellow-400/30">
               <div className="text-6xl mb-6">📊</div>
-              <h3 className="text-3xl mb-4">Byznys skóre</h3>
-              <p className="text-xl text-white/90 leading-relaxed">
-                Tvé <strong>přesné skóre</strong> mezi 0-100% a rozbor kde máš <strong>slabá místa</strong> (Finance, Marketing, Systematizace...)
+              <h3 className="text-3xl mb-4">Tvoje přesné skóre</h3>
+              <div className="bg-slate-950/50 rounded-2xl p-6 mb-4 border border-slate-700">
+                <p className="text-2xl text-yellow-300 mb-3">Byznys skóre: 67/100</p>
+                <div className="space-y-2 text-base">
+                  <p>💰 Finance & Čísla: <span className="text-green-400">82%</span> ✅</p>
+                  <p>🎯 Diverzifikace: <span className="text-red-400">45%</span> ⚠️</p>
+                  <p>⚙️ Systematizace: <span className="text-yellow-400">71%</span> 🔶</p>
+                  <p>❤️ Loajalita zákazníků: <span className="text-yellow-400">60%</span> 🔶</p>
+                </div>
+              </div>
+              <p className="text-lg text-white/90 leading-relaxed">
+                Zjistíš <strong>přesně</strong> kde stojíš a co tě brzdí v růstu
               </p>
             </div>
             
             <div className="bg-gradient-to-br from-green-600 to-green-800 p-10 rounded-3xl shadow-2xl text-white">
-              <div className="text-6xl mb-6">🎁</div>
-              <h3 className="text-3xl mb-4">Akční plán na 30 dní</h3>
-              <p className="text-xl text-white/90 leading-relaxed">
-                <strong>Konkrétní kroky</strong> co udělat v lednu. S deadliny. S tipy jak na to. Připravený k <strong>vytištění</strong>.
+              <div className="text-6xl mb-6">🎯</div>
+              <h3 className="text-3xl mb-4">Tvůj první krok</h3>
+              <div className="bg-green-950/50 rounded-2xl p-6 mb-4 border border-green-700">
+                <p className="text-xl mb-3">
+                  💡 <strong>Příští týden:</strong>
+                </p>
+                <p className="text-base leading-relaxed">
+                  "Najdi 2-3 nové kanály pro zákazníky - diverzifikace je klíč k růstu. Začni s LinkedIn nebo newsletterem."
+                </p>
+              </div>
+              <p className="text-lg text-white/90 leading-relaxed">
+                Konkrétní akce <strong>pro TVOU situaci</strong> - ne obecné rady
               </p>
             </div>
             
-            <div className="bg-gradient-to-br from-yellow-500 to-amber-600 p-10 rounded-3xl shadow-2xl text-white">
+            <div className="bg-gradient-to-br from-red-600 to-red-800 p-10 rounded-3xl shadow-2xl text-white">
               <div className="text-6xl mb-6">⚠️</div>
-              <h3 className="text-3xl mb-4">Na co si dát pozor</h3>
-              <p className="text-xl text-white/90 leading-relaxed">
-                Konkrétní <strong>rizika</strong> které můžou položit tvůj byznys – a jak jim <strong>předejít</strong>.
+              <h3 className="text-3xl mb-4">Tvoje největší riziko</h3>
+              <div className="bg-red-950/50 rounded-2xl p-6 mb-4 border border-red-700">
+                <p className="text-base leading-relaxed">
+                  🚨 <strong>"Chybějící diverzifikace příjmů"</strong><br/>
+                  Co když přijdeš o hlavní kanál? 50% byznysů zkrachuje kvůli závislosti na jednom zdroji
+                </p>
+              </div>
+              <p className="text-lg text-white/90 leading-relaxed">
+                Vidíš <strong>konkrétně</strong> co může položit tvůj byznys
               </p>
             </div>
             
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-10 rounded-3xl shadow-2xl text-white">
-              <div className="text-6xl mb-6">💡</div>
-              <h3 className="text-3xl mb-4">Doporučení od expertů</h3>
-              <p className="text-xl text-white/90 leading-relaxed">
-                Tipy z <strong>20+ byznysů</strong> které jsme konzultovali. Bez bullshitu. Jen to <strong>co funguje</strong>.
+            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-6xl mb-6">📋</div>
+              <h3 className="text-3xl mb-4">Plán na 30 dní</h3>
+              <div className="bg-purple-950/50 rounded-2xl p-6 mb-4 border border-purple-700">
+                <div className="space-y-2 text-base">
+                  <p>✅ Týden 1: Analyzuj současné kanály</p>
+                  <p>✅ Týden 2: Vytvoř LinkedIn profil</p>
+                  <p>✅ Týden 3: První post + networking</p>
+                  <p>✅ Týden 4: Změř výsledky</p>
+                </div>
+              </div>
+              <p className="text-lg text-white/90 leading-relaxed">
+                Konkrétní kroky s <strong>deadliny</strong> - připravený k vytištění
               </p>
             </div>
           </div>
@@ -274,11 +305,11 @@ export function QuizLandingPage() {
       <section className="relative py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl mb-8 text-white">
-            Naděl si <span className="text-yellow-300">jasno</span> do podnikání
+            🚀 Konec nejistoty. <span className="text-yellow-300">Začátek směru.</span>
           </h2>
           
           <p className="text-2xl text-white/90 mb-12 leading-relaxed">
-            Místo dalšího svetru dostaneš <strong className="text-green-300">směr</strong> na rok 2026.
+            Za 3 minuty budeš v��dět <strong className="text-green-300">co dělat</strong> v roce 2026.
           </p>
           
           <Button

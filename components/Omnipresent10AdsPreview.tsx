@@ -1,6 +1,14 @@
 import { omnipresentAdCopy } from './OmnipresentAdCopy';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Copy } from 'lucide-react';
+import { Value2GainStatic } from './Value2GainStatic';
+import { Value3DontStart } from './Value3DontStart';
+import { Warm4ObjectionHandlerAdjusted } from './WarmAdsAdjusted';
+import { ZasilkovnaAdOmnipresent } from './ZasilkovnaAdOmnipresent';
+import { Demo3VideoLook } from './Demonstration3AdsNew';
+import { Testimonial3MessageStyle, Testimonial4DeepDive } from './Testimonial3AdsNew';
+import { TestimonialEshopPetr } from './TestimonialEshopPetr';
+import { CtaStart2026 } from './CtaAdNew';
 
 export function Omnipresent10AdsPreview() {
   const [currentAd, setCurrentAd] = useState(0);

@@ -1,5 +1,3 @@
-import { ChristmasRemarketingAd } from "./components/ChristmasRemarketingAd"; // ✅ CHRISTMAS AD
-import { RemarketingAdsPreview } from "./components/RemarketingAdsPreview"; // ✅ REMARKETING ADS PREVIEW
 import { QuizLandingPage } from "./components/QuizLandingPage"; // ✅ QUIZ LANDING PAGE
 import { QuizResultsPage } from "./components/QuizResultsPage"; // ✅ QUIZ RESULTS PAGE
 import { QuizThankYouPage } from "./components/QuizThankYouPage"; // ✅ QUIZ THANK YOU PAGE
@@ -8,6 +6,10 @@ import { KonzultacePage } from "./components/KonzultacePage"; // ✅ FREE KONZUL
 import { StickyQuizButton } from "./components/StickyQuizButton"; // ✅ STICKY QUIZ BUTTON
 import { ZasilkovnaBusinessModel } from "./components/ZasilkovnaBusinessModel"; // ✅ ZASILKOVNA BUSINESS MODEL
 import { QuizTestPage } from "./components/QuizTestPage"; // ✅ QUIZ TEST PAGE
+import { CourseDemoV3 } from "./components/CourseDemoV3"; // ✅ COURSE V3
+import { MiniCourse } from "./components/MiniCourse"; // ✅ MINI COURSE
+import { ZalohaLanding } from "./components/ZalohaLanding"; // ✅ ZALOHA LANDING (BACKUP)
+import { FinalCTA } from "./components/FinalCTA"; // ✅ FINAL CTA (no email box)
 
 import { HeroSection } from "./components/HeroSection";
 import { ProblemsSectionCompact } from "./components/ProblemsSectionCompact";
@@ -54,6 +56,7 @@ import { Omnipresent10AdsPreview } from "./components/Omnipresent10AdsPreview";
 import { Value3Versions } from "./components/Value3Versions";
 import { Value3NewDesigns } from "./components/Value3NewDesigns";
 import { Value3MediumDesigns } from "./components/Value3MediumDesigns";
+import { RemarketingAdsPreview } from "./components/RemarketingAdsPreview";
 
 import { Analytics } from "./components/Analytics";
 import { AnalyticsTracking } from "./components/AnalyticsTracking";
@@ -72,40 +75,47 @@ import { initMetaPixel, trackPageView } from "./lib/metaPixel";
 import { initAllAnalytics } from "./lib/analytics";
 
 export default function App() {
-  // 🚀 READY TO DEPLOY - Fresh version with all ads and improvements!
-  // Toggle between modes: early-access / prelaunch / normal-sale  
-  const saleMode = "prelaunch"; // "early-access" | "prelaunch" | "normal-sale" - ✅ AGGRESSIVE FLIP!
+  // ✅ HELPER: Inicializace state podle URL (aby nedošlo k probliknutí)
+  const getInitialPath = () => {
+    if (typeof window === 'undefined') return null;
+    const hash = window.location.hash;
+    const path = window.location.pathname;
+    return { hash, path };
+  };
   
-  // 🔐 AUTH STATE: Check if user is logged in
+  const initialPath = getInitialPath();
+  
+  // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   
-  // 🎯 DEMO MODE: Pro testování Step 2 v modalu (změň na true)
-  const demoModalStep2 = false; // true = vidíš rovnou Step 2 success screen
-  
-  // 🎨 AD CREATIVES MODE: Pro zobrazení FB reklam (změň na true)
-  const showAdCreatives = false; // ✅ VYPNUTO - Landing page je aktivní!
-  const showFinalAdSets = true; // 3 FINÁLNÍ AD SETY (Problem, Value, Social Proof)
-  
-  // 🎯 CHECKLIST PAGE MODE: Pro zobrazení checklist stránky
-  const [showChecklist, setShowChecklist] = useState(false);
-  // 🎓 COURSE MODE: Hlavní kurz (CourseDemoV3)
-  const [showCourseDemo, setShowCourseDemo] = useState(false);
-  const [showCourseV2, setShowCourseV2] = useState(false);
-  const [showCourseV3, setShowCourseV3] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
-  const [showInteractiveCourse, setShowInteractiveCourse] = useState(false);
-
+  // 🏠 COURSE: Interactive Course Demo v3 (NEW!!)
+  const [showCourseV3, setShowCourseV3] = useState(
+    initialPath?.hash.startsWith('#course-v3') || initialPath?.path === '/course-v3'
+  );
+  // 🏠 MINI-COURSE: Mini Course (FREE LEAD MAGNET)
+  const [showMiniCourse, setShowMiniCourse] = useState(
+    initialPath?.hash.startsWith('#minikurz') || initialPath?.path === '/minikurz'
+  );
   // 🛒 ORDER PAGE: Sales page
-  const [showOrderPage, setShowOrderPage] = useState(false);
+  const [showOrderPage, setShowOrderPage] = useState(
+    initialPath?.hash.startsWith('#objednavka') || initialPath?.path === '/objednavka'
+  );
   // 🛒 ORDER EXPIRED: Expired offer page
   const [showOrderExpired, setShowOrderExpired] = useState(false);
   // 🧪 TEST MODE: Pro vypnutí timeru (použij ?test=true v URL)
   const [orderPageTestMode, setOrderPageTestMode] = useState(false);
   // 📄 LEGAL PAGES
-  const [showTerms, setShowTerms] = useState(false);
-  const [showGDPR, setShowGDPR] = useState(false);
-  const [showThankYou, setShowThankYou] = useState(false);
+  const [showTerms, setShowTerms] = useState(
+    initialPath?.hash.startsWith('#obchodni-podminky') || initialPath?.path === '/obchodni-podminky'
+  );
+  const [showGDPR, setShowGDPR] = useState(
+    initialPath?.hash.startsWith('#ochrana-osobnich-udaju') || initialPath?.path === '/ochrana-osobnich-udaju'
+  );
+  const [showThankYou, setShowThankYou] = useState(
+    initialPath?.hash.startsWith('#dekuji') || initialPath?.path === '/dekuji'
+  );
+  
   // 🎯 AD PREVIEW PAGE
   const [showAdPreview, setShowAdPreview] = useState(false);
   const [showCreativeAds, setShowCreativeAds] = useState(false);
@@ -131,15 +141,36 @@ export default function App() {
   const [showValue3Versions, setShowValue3Versions] = useState(false);
   const [showValue3NewDesigns, setShowValue3NewDesigns] = useState(false);
   const [showValue3MediumDesigns, setShowValue3MediumDesigns] = useState(false);
-  const [showKonzultace, setShowKonzultace] = useState(false);
-  const [showZasilkovnaModel, setShowZasilkovnaModel] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [showQuizResults, setShowQuizResults] = useState(false); // ✅ NOVÝ - kvíz výsledky
-  const [showQuizThankYou, setShowQuizThankYou] = useState(false); // ✅ NOVÝ - kvíz děkovná stránka
-  const [showActionPlans, setShowActionPlans] = useState(false); // ✅ PDF Preview
-  const [showZaloha, setShowZaloha] = useState(false); // ✅ BACKUP: Original landing page
-  const [showRemarketingAds, setShowRemarketingAds] = useState(false); // ✅ REMARKETING ADS
-  const [showQuizTest, setShowQuizTest] = useState(false); // ✅ QUIZ TEST PAGE
+  const [showKonzultace, setShowKonzultace] = useState(
+    initialPath?.hash.startsWith('#konzultace') || initialPath?.path === '/konzultace'
+  );
+  const [showZasilkovnaModel, setShowZasilkovnaModel] = useState(
+    initialPath?.hash.startsWith('#zasilkovna') || initialPath?.path === '/zasilkovna' || 
+    initialPath?.hash.startsWith('#business-model-zasilkovna') || initialPath?.path === '/business-model-zasilkovna'
+  );
+  const [showQuiz, setShowQuiz] = useState(
+    initialPath?.hash.startsWith('#kviz') || initialPath?.path === '/kviz'
+  );
+  const [showQuizResults, setShowQuizResults] = useState(
+    initialPath?.path === '/kviz/vysledky'
+  );
+  const [showQuizThankYou, setShowQuizThankYou] = useState(
+    initialPath?.path === '/kviz/hotovo'
+  );
+  const [showActionPlans, setShowActionPlans] = useState(false);
+  const [showZaloha, setShowZaloha] = useState(false);
+  const [showRemarketingAds, setShowRemarketingAds] = useState(false);
+  const [showQuizTest, setShowQuizTest] = useState(false);
+  const [showChecklist, setShowChecklist] = useState(false);
+  const [showCourseDemo, setShowCourseDemo] = useState(false);
+  const [showCourseV2, setShowCourseV2] = useState(false);
+  const [showAdCreatives, setShowAdCreatives] = useState(false);
+  const [showFinalAdSets, setShowFinalAdSets] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [showInteractiveCourse, setShowInteractiveCourse] = useState(false);
+  
+  // 🛍️ SALES MODE: "prelaunch" | "early-access" | "normal-sale"
+  const saleMode = "prelaunch";
   
   // 📊 META PIXEL: Inicializace
   useEffect(() => {

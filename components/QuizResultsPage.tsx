@@ -195,47 +195,38 @@ export function QuizResultsPage({
                   Detailní analýza tvého modelu podnikání
                 </p>
               </div>
-              <button
-                onClick={() => window.print()}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl"
-              >
-                <Printer className="w-5 h-5" />
-                Vytisknout
-              </button>
             </div>
           </div>
         </div>
 
-        {/* 🎯 HERO SKÓRE - Větší, centered */}
-        {score !== null && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="mb-6 print:hidden"
-          >
-            <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-3xl shadow-2xl p-8 text-center">
-              <div className="inline-flex flex-col items-center gap-3">
-                <span className="text-8xl animate-bounce">{getCategoryEmoji()}</span>
-                <div>
-                  <p className="text-white/80 text-sm uppercase tracking-widest mb-2">Celkové skóre</p>
-                  <p className="text-white text-7xl mb-2">{score}<span className="text-5xl text-white/70">/100</span></p>
-                  <p className="text-white text-2xl bg-white/20 px-6 py-2 rounded-full backdrop-blur-sm">{getCategoryLabel()}</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* 📊 TWO-COLUMN LAYOUT: Progress Bars + Action Plan SIDE BY SIDE */}
+        {/* 📊 TWO-COLUMN LAYOUT: Skóre + Progress Bars SIDE BY SIDE */}
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
           
-          {/* LEFT: Progress Bary */}
-          {subScores.length > 0 && (
+          {/* LEFT: Celkové skóre - MENŠÍ BOX */}
+          {score !== null && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
+              transition={{ duration: 0.5 }}
+              className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-lg p-8 text-center print:hidden"
+            >
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-5xl">{getCategoryEmoji()}</span>
+                <div>
+                  <p className="text-white/80 text-xs uppercase tracking-widest mb-1">Celkové skóre</p>
+                  <p className="text-white text-5xl mb-2">{score}<span className="text-3xl text-white/70">/100</span></p>
+                  <p className="text-white text-lg bg-white/20 px-4 py-1 rounded-full backdrop-blur-sm">{getCategoryLabel()}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* RIGHT: Progress Bary */}
+          {subScores.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
               className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 print:hidden"
             >
               <h2 className="text-xl text-slate-900 mb-4 flex items-center gap-2">
@@ -255,7 +246,7 @@ export function QuizResultsPage({
                       key={idx}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + (idx * 0.1), duration: 0.4 }}
+                      transition={{ delay: 0.2 + (idx * 0.1), duration: 0.4 }}
                       className={`${bgColor} rounded-xl p-4 border ${borderColor}`}
                     >
                       <div className="flex justify-between items-center mb-2">
@@ -274,7 +265,7 @@ export function QuizResultsPage({
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${sub.score}%` }}
-                          transition={{ delay: 0.4 + (idx * 0.1), duration: 0.8, ease: 'easeOut' }}
+                          transition={{ delay: 0.3 + (idx * 0.1), duration: 0.8, ease: 'easeOut' }}
                           className={`h-2 rounded-full ${color}`}
                         />
                       </div>
@@ -290,42 +281,9 @@ export function QuizResultsPage({
               </div>
             </motion.div>
           )}
-
-          {/* RIGHT: Akční plán preview */}
-          {category && score !== null && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="bg-gradient-to-br from-red-50 to-green-50 rounded-2xl shadow-lg border-2 border-red-600/20 p-6 print:hidden"
-            >
-              <h2 className="text-xl text-slate-900 mb-2 flex items-center gap-2">
-                <span className="text-2xl">🎁</span>
-                Tvůj akční plán
-              </h2>
-              <p className="text-sm text-slate-600 mb-4">
-                📋 Konkrétní kroky co udělat PRVNÍ
-              </p>
-              
-              {/* Mini preview - scroll hint */}
-              <div className="bg-white/60 backdrop-blur rounded-xl p-4 border border-slate-200 mb-4">
-                <p className="text-sm text-slate-700">
-                  ✅ 3 konkrétní akce na tento týden<br/>
-                  📅 Timeline s deadliny<br/>
-                  💡 Tipy jak na to<br/>
-                  🖨️ Připraveno k vytištění
-                </p>
-              </div>
-              
-              <div className="flex items-center gap-2 text-indigo-600 animate-bounce">
-                <span className="text-2xl">👇</span>
-                <p className="text-sm">Scroll dolů pro celý plán</p>
-              </div>
-            </motion.div>
-          )}
         </div>
 
-        {/* 🎁 AKČNÍ PLÁN - VIDITELNÝ PŘI TISKU */}
+        {/* 🎁 AKČNÍ PLÁN - S TLAČÍTKEM VYTISKNOUT */}
         {category && score !== null && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -333,12 +291,23 @@ export function QuizResultsPage({
             transition={{ delay: 0.3, duration: 0.5 }}
           >
             <div className="bg-gradient-to-r from-red-50 to-green-50 rounded-2xl p-6 mb-6 border-2 border-red-600/20 print:hidden">
-              <h2 className="text-2xl text-slate-900 mb-2">
-                🎁 Tvůj personalizovaný akční plán
-              </h2>
-              <p className="text-sm text-slate-600">
-                📋 Konkrétní kroky, které potřebuješ udělat PRVNÍ. Vytiskni si to nebo ulož jako PDF.
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl text-slate-900 mb-2">
+                    🎁 Tvůj personalizovaný akční plán
+                  </h2>
+                  <p className="text-sm text-slate-600">
+                    📋 Konkrétní kroky, které potřebuješ udělat PRVNÍ. Vytiskni si to nebo ulož jako PDF.
+                  </p>
+                </div>
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl flex-shrink-0"
+                >
+                  <Printer className="w-5 h-5" />
+                  Vytisknout
+                </button>
+              </div>
             </div>
             
             {/* ✅ AKČNÍ PLÁN - JEN JEDEN PRO TVOJI KATEGORII */}

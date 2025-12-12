@@ -18,51 +18,51 @@ export function OrganicPost26TimeValue() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (stage === 0) {
-        // Stage 0: Question intro (2s)
+        // Stage 0: Question intro (3s → déle)
         setStage(1);
       } else if (stage === 1) {
-        // Stage 1: Kalkulačka appear (1s)
-        setTimeout(() => setStage(2), 1000);
+        // Stage 1: Kalkulačka appear (2s → déle)
+        setTimeout(() => setStage(2), 2000);
       } else if (stage === 2) {
-        // Stage 2: Calculation animation (2s)
-        // Animuj číslo od 0 do 250
+        // Stage 2: Calculation animation (3s → pomalejší)
+        // Animuj číslo od 0 do 250 POMALEJI
         let count = 0;
         const interval = setInterval(() => {
           count += 10;
           setCalculatedRate(Math.min(count, 250));
           if (count >= 250) {
             clearInterval(interval);
-            setTimeout(() => setStage(3), 1000);
+            setTimeout(() => setStage(3), 1500); // Pauza po dokončení
           }
-        }, 40);
+        }, 80); // POMALEJI (bylo 40ms)
       } else if (stage === 3) {
-        // Stage 3: Reality check (3s)
-        // Animuj reálnou sazbu
+        // Stage 3: Reality check (4s → déle na přečtení)
+        // Animuj reálnou sazbu POMALEJI
         let count = 250;
         const interval = setInterval(() => {
           count -= 10;
           setRealRate(Math.max(count, 100));
           if (count <= 100) {
             clearInterval(interval);
-            setTimeout(() => setStage(4), 2000);
+            setTimeout(() => setStage(4), 2500); // Víc času na přečtení textu
           }
-        }, 60);
+        }, 100); // POMALEJI (bylo 60ms)
       } else if (stage === 4) {
-        // Stage 4: Comparison with job (3s)
-        setTimeout(() => setStage(5), 3000);
+        // Stage 4: Comparison with job (4s → déle)
+        setTimeout(() => setStage(5), 4000);
       } else if (stage === 5) {
-        // Stage 5: Why? (3s)
-        setTimeout(() => setStage(6), 3000);
+        // Stage 5: Why? (4s → déle)
+        setTimeout(() => setStage(6), 4000);
       } else if (stage === 6) {
-        // Stage 6: Solution (4s)
+        // Stage 6: Solution (5s → déle na přečtení CTA)
         setTimeout(() => {
           // Reset
           setStage(0);
           setCalculatedRate(0);
           setRealRate(0);
-        }, 4000);
+        }, 5000);
       }
-    }, stage === 0 ? 2000 : 0);
+    }, stage === 0 ? 3000 : 0); // První stage déle (3s)
 
     return () => clearTimeout(timer);
   }, [stage]);

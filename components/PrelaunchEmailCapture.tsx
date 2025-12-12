@@ -74,7 +74,7 @@ export function PrelaunchEmailCapture() {
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error("⚠️ Zadejte platnou emailovou adresu", {
+      toast.error("⚠ Zadejte platnou emailovou adresu", {
         duration: 4000,
       });
       return;
@@ -266,7 +266,7 @@ export function PrelaunchEmailCapture() {
   };
 
   if (isSubmitted) {
-    // 📝 WAITLIST SUCCESS SCREEN
+    // 📝 WAITLIST SUCCESS SCREEN → REDIRECT NA KVÍZ!
     if (wasWaitlist) {
       return (
         <motion.section 
@@ -277,66 +277,46 @@ export function PrelaunchEmailCapture() {
         >
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div
-              className="bg-white rounded-2xl p-8 shadow-lg border border-blue-200"
+              className="bg-white rounded-2xl p-8 shadow-lg border border-red-200"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <Mail className="w-16 h-16 text-blue-500 mx-auto mb-6" />
+              <div className="text-6xl mb-6">😔</div>
               <h2 className="text-3xl font-bold text-gray-900 mb-4 leading-tight">
-                📝 PŘIDÁNI NA ČEKACÍ LISTINU!
+                ⚠️ PRVNÍCH 50 MÍST VYPRODÁNO!
               </h2>
-              <p className="text-lg text-gray-600 mb-6">
-                <strong className="text-blue-600">Děkujeme za zájem!</strong> Všechna místa v prvním kole jsou obsazena.<br/><br/>
-                <strong className="text-gray-700">Přidali jsme vás na čekací listinu:</strong><br/>
-                • 📧 <strong>Dáme vám vědět až spustíme další kolo</strong><br/>
-                • 🎯 <strong>Budete mezi prvními kdo se dozví</strong><br/>
-                • 💡 <strong>Možná dostanete exkluzivní slevu</strong>
+              <p className="text-lg text-gray-600 mb-8">
+                Bohužel jsi to nestihl/a... <strong className="text-red-600">Všech 50 míst už je obsazeno.</strong><br/><br/>
+                <strong className="text-blue-600">ALE NEZTRAŤ ČAS!</strong><br/>
+                Udělej si kvíz a dostaneš <strong className="text-green-600">personalizovaný akční plán ZDARMA</strong>
               </p>
 
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-                  <div className="flex items-center gap-2 text-blue-700 font-bold mb-2">
-                    <Mail className="w-5 h-5" />
-                    <span>📝 ČEKACÍ LISTINA</span>
-                  </div>
-                  <p className="text-sm text-blue-600 font-medium">Ozveme se brzy!</p>
+              <div className="grid md:grid-cols-2 gap-4 mb-8">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+                  <div className="text-4xl mb-3">🎯</div>
+                  <h3 className="font-bold text-blue-900 mb-2">Byznys skóre</h3>
+                  <p className="text-sm text-blue-600">Zjistíš přesně kde jsi TEĎ</p>
                 </div>
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
-                  <div className="flex items-center gap-2 text-purple-700 font-bold mb-2">
-                    <Star className="w-5 h-5" />
-                    <span>🎁 MOŽNÁ SLEVA</span>
-                  </div>
-                  <p className="text-sm text-purple-600 font-medium">Pro čekající!</p>
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
+                  <div className="text-4xl mb-3">🎁</div>
+                  <h3 className="font-bold text-green-900 mb-2">Plán na 30 dní</h3>
+                  <p className="text-sm text-green-600">Co udělat HNED v lednu</p>
                 </div>
               </div>
 
-              <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
-                <h3 className="text-xl font-bold text-blue-900 mb-3">📧 Co dál?</h3>
-                <ul className="text-left space-y-3 text-blue-700">
-                  <li className="flex items-start gap-3">
-                    <Mail className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <strong className="block">Zkontrolujte email</strong>
-                      <span className="text-sm text-blue-600">Potvrzení čekací listiny (i spam/hromadné!)</span>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <strong className="block">Čekejte na další kolo</strong>
-                      <span className="text-sm text-blue-600">Dáme vám vědět jako prvním</span>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Star className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <strong className="block text-purple-700">Možná dostanete slevu</strong>
-                      <span className="text-sm text-purple-600">Pro ty co čekali!</span>
-                    </div>
-                  </li>
-                </ul>
-              </div>
+              <Button 
+                onClick={() => {
+                  window.location.href = '/kviz';
+                }}
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-6 text-xl font-bold shadow-lg hover:shadow-xl transition-all mb-4"
+              >
+                🎁 UDĚLAT KVÍZ ZDARMA (3 minuty)
+              </Button>
+              
+              <p className="text-sm text-gray-500">
+                ✅ Bez platby • ✅ Výsledky okamžitě na email • ✅ 100% zdarma
+              </p>
             </motion.div>
           </div>
         </motion.section>
@@ -403,7 +383,7 @@ export function PrelaunchEmailCapture() {
             {/* Big CTA */}
             <Button 
               onClick={() => {
-                window.location.href = '/#objednavka';
+                window.location.hash = 'objednavka';
               }}
               className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-6 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
             >
@@ -482,8 +462,8 @@ export function PrelaunchEmailCapture() {
             <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
               {!isCampaignFull() ? (
                 <>
-                  <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">STAŇTE SE PRŮKOPNÍKEM!</span><br/>
-                  <span className="text-white text-2xl md:text-4xl">Získejte 40% slevu na prvních 24 hodin 🔥</span>
+                  <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">PŘIPRAVEN/Á NA ZMĚNU?</span><br/>
+                  <span className="text-white text-2xl md:text-4xl">Podnikatelská Čtvrtka je tady 🎯</span>
                 </>
               ) : (
                 <>
@@ -498,7 +478,7 @@ export function PrelaunchEmailCapture() {
                 {!isCampaignFull() ? (
                   <>
                     90 minut práce = Celý byznys na 1 listu papíru<br/>
-                    <strong className="text-orange-300">Registrujte se teď a získejte slevu (platnost 24h)</strong>
+                    <strong className="text-orange-300">Připraven/a vytvořit svůj model podnikání?</strong>
                   </>
                 ) : (
                   <>
@@ -562,7 +542,7 @@ export function PrelaunchEmailCapture() {
                   </div>
                 </div>
 
-                {/* Urgency sekce */}
+                {/* Urgency sekce - NAHRADIT ZA PRODEJNÍ TEXT */}
                 <motion.div
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-white/30"
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -570,43 +550,15 @@ export function PrelaunchEmailCapture() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.6 }}
                 >
-                  {!isCampaignFull() ? (
-                    <>
-                      <div className="text-center mb-4">
-                        <h3 className="text-xl font-bold text-white mb-2">🔥 OMEZENÁ KAPACITA</h3>
-                        <div className="text-orange-300 text-base font-bold mb-3">
-                          {getUrgencyText(remainingSpots)}
-                        </div>
-                        <div className="text-white/70 text-sm">
-                          Sleva 40% jen pro první registrace
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 text-white/80 text-sm">
-                          <Clock className="w-4 h-4 text-orange-300" />
-                          <span>Sleva 40% do emailu (platnost 24h)</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-white/80 text-sm">
-                          <CheckCircle className="w-4 h-4 text-green-300" />
-                          <span>Ušetříte 3.500,- Kč</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-white/80 text-sm">
-                          <Gift className="w-4 h-4 text-purple-300" />
-                          <span>BONUS: Mini kurz po nákupu</span>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center">
-                      <h3 className="text-xl font-bold text-red-300 mb-2">⚠️ PLNÉ!</h3>
-                      <div className="text-white/90 text-base mb-3">
-                        Všech 50 míst obsazeno
-                      </div>
-                      <div className="text-white/70 text-sm">
-                        Přihlaste se na čekací listinu
-                      </div>
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-white mb-2">⚡ PŘIPRAVEN/Á ZAČÍT?</h3>
+                    <div className="text-white/90 text-base mb-3">
+                      Za 90 minut budeš mít jasno v byznysu
                     </div>
-                  )}
+                    <div className="text-white/70 text-sm">
+                      Žádné složité teorie. Jen konkrétní kroky.
+                    </div>
+                  </div>
                 </motion.div>
 
               </div>
@@ -679,106 +631,68 @@ export function PrelaunchEmailCapture() {
                   </div>
                   
                   <div className="text-center border-t border-white/20 pt-4">
-                    {!isCampaignFull() ? (
-                      <>
-                        <div className="text-orange-300 font-medium text-sm mb-2">📧 PO REGISTRACI OBDRŽÍTE:</div>
-                        <div className="text-white/90 text-sm space-y-1">
-                          <div>💰 Slevu 40% do emailu (platnost 24h)</div>
-                          <div>🎯 Link na objednávkovou stránku</div>
-                          <div>🎁 BONUS po nákupu: Mini kurz (997 Kč)</div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="text-blue-300 font-medium text-sm mb-2">📧 PO PŘIHLÁŠENÍ NA ČEKACÍ LISTINU:</div>
-                        <div className="text-white/90 text-sm space-y-1">
-                          <div>📝 Potvrzení registrace do emailu</div>
-                          <div>🔔 Upozornění na další kolo (jako první!)</div>
-                          <div>💡 Možná exkluzivní sleva pro čekající</div>
-                        </div>
-                      </>
-                    )}
+                    <div className="text-orange-300 font-medium text-sm mb-4">🎯 CO DOSTANEŠ:</div>
+                    <div className="text-white/90 text-sm space-y-1 mb-6">
+                      <div>✅ Interaktivní kurz (vyplň si svou Čtvrtku)</div>
+                      <div>✅ Tvůj model podnikání na 1 listu</div>
+                      <div>✅ Akční plán na 30 dní</div>
+                      <div>✅ Online přístup 24/7</div>
+                    </div>
+                    
+                    {/* CTA Tlačítko */}
+                    <Button 
+                      onClick={() => {
+                        window.location.href = '/objednavka';
+                      }}
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white py-6 text-xl rounded-xl shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/40 hover:scale-[1.02] group mb-4"
+                    >
+                      <span>Chci Podnikatelskou Čtvrtku</span>
+                      <ArrowRight className="w-6 h-6 ml-2 inline-block group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                    
+                    {/* Sekundární CTA */}
+                    <button 
+                      onClick={() => {
+                        window.location.href = '/kviz';
+                      }}
+                      className="w-full text-white/80 hover:text-white text-sm underline transition-colors"
+                    >
+                      Nebo začni kvízem zdarma (3 min)
+                    </button>
+                    
+                    {/* Trust indicators */}
+                    <div className="mt-6 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-6 text-sm text-white/70">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-300" />
+                        <span>Okamžitý přístup</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-300" />
+                        <span>Bezpečná platba</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-300" />
+                        <span>Online 24/7</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <Input
-                      type="email"
-                      placeholder="váš@email.cz"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-12 py-6 md:py-7 text-lg md:text-xl bg-white/95 backdrop-blur-sm border border-white/60 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/30 text-gray-900 placeholder:text-gray-500 shadow-lg transition-all hover:shadow-xl hover:scale-[1.02]"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="flex md:justify-center">
-                    <Button 
-                      type="submit"
-                      disabled={isLoading}
-                      className="group w-full md:w-auto md:min-w-80 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 md:py-6 px-8 text-lg md:text-xl font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-[1.08] disabled:opacity-50 disabled:cursor-not-allowed border border-blue-400/50 relative overflow-hidden"
-                    >
-                    {/* Glow effect on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/20 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    
-                    {isLoading ? (
-                      "🚀 PŘIPOJUJI VÁS..."
-                    ) : isCampaignFull() ? (
-                      <>
-                        <span className="relative z-10">
-                          📝 ČEKACÍ LISTINA
-                        </span>
-                        <ArrowRight className="ml-2 w-5 h-5 inline-block relative z-10" />
-                      </>
-                    ) : (
-                      <>
-                        <span className="block sm:hidden relative z-10">
-                          🔥 REZERVOVAT (zbývá {remainingSpots})
-                        </span>
-                        <span className="hidden sm:block relative z-10">
-                          🔥 CHCI SLEVU 40% (zbývá {remainingSpots} míst)
-                        </span>
-                        <ArrowRight className="ml-2 w-5 h-5 inline-block relative z-10" />
-                      </>
-                    )}
-                    </Button>
-                  </div>
-                </form>
-                
-                <div className="text-center mt-4 space-y-2">
-                  <div className="flex items-center justify-center gap-2 text-white/80 text-sm">
-                    <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                      </svg>
-                    </div>
-                    <span>🔒 Žádný spam • Odhlásit kdykoliv</span>
-                  </div>
-                  <div className="flex flex-wrap justify-center items-center gap-x-2 md:gap-x-3 gap-y-1 text-white/60 text-xs">
-                    <span>🛡️ Bez rizika</span>
-                    <span className="text-white/40 hidden sm:inline">•</span>
-                    <span>🎯 Pouze email</span>
-                    <span className="text-white/40 hidden sm:inline">•</span>
-                    <span>⚡ Okamžitý přístup</span>
-                  </div>
-                  
-                  {/* Právní odkazy */}
-                  <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-white/50 text-xs mt-3 pt-3 border-t border-white/10">
-                    <a href="/obchodni-podminky" className="hover:text-white/80 transition-colors underline">
-                      Obchodní podmínky
-                    </a>
-                    <span className="text-white/30">•</span>
-                    <a href="/ochrana-osobnich-udaju" className="hover:text-white/80 transition-colors underline">
-                      Ochrana osobních údajů
-                    </a>
-                    <span className="text-white/30">•</span>
-                    <a href="mailto:kurz@podnikatelskactvrtka.cz" className="hover:text-white/80 transition-colors">
-                      kurz@podnikatelskactvrtka.cz
-                    </a>
-                  </div>
+                {/* Právní odkazy */}
+                <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-white/50 text-xs mt-4">
+                  <a href="/obchodni-podminky" className="hover:text-white/80 transition-colors underline">
+                    Obchodní podmínky
+                  </a>
+                  <span className="text-white/30">•</span>
+                  <a href="/ochrana-osobnich-udaju" className="hover:text-white/80 transition-colors underline">
+                    Ochrana osobních údajů
+                  </a>
+                  <span className="text-white/30">•</span>
+                  <a href="mailto:kurz@podnikatelskactvrtka.cz" className="hover:text-white/80 transition-colors">
+                    kurz@podnikatelskactvrtka.cz
+                  </a>
                 </div>
+
               </motion.div>
             </div>
             </div>
