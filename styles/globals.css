@@ -357,6 +357,40 @@ input[type="number"].no-spinner {
       page-break-inside: avoid;
     }
     
+    /* 🎯 ACTION PLAN: Prevent checkbox items from breaking across pages */
+    label {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      orphans: 3;
+      widows: 3;
+    }
+    
+    .space-y-3 > * {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    
+    /* Prevent week sections from orphaning */
+    .mb-5,
+    .mb-6 {
+      page-break-inside: auto;
+      orphans: 2;
+      widows: 2;
+    }
+    
+    /* Keep headers with their content */
+    h3 {
+      page-break-after: avoid;
+      orphans: 3;
+      widows: 3;
+    }
+    
+    /* Specific fixes for long checklist items */
+    label p {
+      orphans: 2;
+      widows: 2;
+    }
+    
     /* Remove backgrounds for better print */
     body {
       background: white !important;

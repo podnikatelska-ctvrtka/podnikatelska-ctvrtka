@@ -130,3 +130,46 @@ export const trackCustomEvent = (eventName: string, params?: any) => {
   window.fbq('trackCustom', eventName, params);
   console.log('🎨 Meta Pixel: Custom event tracked:', eventName, params);
 };
+
+// ══════════════════════════════════════════════════════════
+// 📊 QUIZ TRACKING EVENTS
+// ══════════════════════════════════════════════════════════
+
+// Track Quiz Started
+export const trackQuizStarted = (quizType: 'existing' | 'beginner') => {
+  if (!window.fbq) return;
+  
+  window.fbq('trackCustom', 'QuizStarted', {
+    quiz_type: quizType,
+    content_name: 'Business Health Quiz',
+  });
+  
+  console.log('🎯 Meta Pixel: QuizStarted tracked -', quizType);
+};
+
+// Track Quiz Completed
+export const trackQuizCompleted = (quizType: 'existing' | 'beginner', score: number, category: string) => {
+  if (!window.fbq) return;
+  
+  window.fbq('trackCustom', 'QuizCompleted', {
+    quiz_type: quizType,
+    score: score,
+    category: category,
+    content_name: 'Business Health Quiz',
+  });
+  
+  console.log('✅ Meta Pixel: QuizCompleted tracked -', category, score);
+};
+
+// Track PDF Downloaded/Viewed
+export const trackPDFViewed = (category: string, score: number) => {
+  if (!window.fbq) return;
+  
+  window.fbq('trackCustom', 'PDFViewed', {
+    category: category,
+    score: score,
+    content_name: 'Action Plan PDF',
+  });
+  
+  console.log('📄 Meta Pixel: PDFViewed tracked -', category);
+};

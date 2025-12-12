@@ -4,6 +4,7 @@ import { ChevronRight, ChevronLeft, CheckCircle, AlertTriangle, TrendingUp, Spar
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Progress } from './ui/progress';
+import { trackQuizStarted, trackQuizCompleted } from '../lib/metaPixel';
 
 // Typy pro kvíz
 type QuizType = 'beginner' | 'existing' | null;
@@ -26,6 +27,11 @@ interface QuizResult {
   categoryColor: string;
   risks: string[];
   recommendations: string[];
+  subScores?: { // ✅ NOVÝ - detailní rozpad skóre
+    label: string;
+    score: number;
+    icon: string;
+  }[];
 }
 
 // Otázky pro začínající podnikatele
@@ -229,6 +235,39 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
   const values = Object.values(answers);
   const score = Math.round(values.reduce((sum, val) => sum + val, 0) / values.length);
   
+  // ✅ CALCULATE SUB-SCORES based on quiz type
+  let subScores: { label: string; score: number; icon: string }[] = [];
+  
+  if (quizType === 'existing') {
+    // Pro podnikající - 5 kategorií
+    const finance = Math.round(((answers.e3 || 0) + (answers.e4 || 0) + (answers.e7 || 0)) / 3);
+    const diverzifikace = Math.round(((answers.e1 || 0) + (answers.e2 || 0) + (answers.e9 || 0)) / 3);
+    const systematizace = Math.round(((answers.e5 || 0) + (answers.e10 || 0)) / 2);
+    const customerValue = answers.e6 || 0;
+    const rust = answers.e8 || 0;
+    
+    subScores = [
+      { label: 'Finance & Čísla', score: finance, icon: '💰' },
+      { label: 'Diverzifikace', score: diverzifikace, icon: '🎯' },
+      { label: 'Systematizace', score: systematizace, icon: '⚙️' },
+      { label: 'Loajalita zákazníků', score: customerValue, icon: '❤️' },
+      { label: 'Růst', score: rust, icon: '📈' }
+    ];
+  } else if (quizType === 'beginner') {
+    // Pro začínající - 4 kategorie
+    const priprava = Math.round(((answers.b1 || 0) + (answers.b2 || 0) + (answers.b4 || 0)) / 3);
+    const finance = Math.round(((answers.b3 || 0) + (answers.b6 || 0)) / 2);
+    const produkt = Math.round(((answers.b5 || 0) + (answers.b8 || 0)) / 2);
+    const administrativa = answers.b7 || 0;
+    
+    subScores = [
+      { label: 'Příprava & Plán', score: priprava, icon: '📋' },
+      { label: 'Finance', score: finance, icon: '💰' },
+      { label: 'Produkt & Hodnota', score: produkt, icon: '🎁' },
+      { label: 'Administrativa', score: administrativa, icon: '📄' }
+    ];
+  }
+  
   if (quizType === 'beginner') {
     return {
       score,
@@ -249,7 +288,8 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
         ? ['Udělej si detailní akční plán na prvních 90 dní', 'Připrav si MVP (minimum viable product) co nejrychleji', 'Najdi si 3-5 beta testerů a získej feedback']
         : score >= 40
         ? ['Udělej si Business Model Canvas → uvidíš mezery', 'Nadefinuj přesně KOMU prodáváš (ne "všem")', 'Spočítej si minimální měsíční obrat na přežití']
-        : ['STOP. Než uděláš cokoli dalšího, udělej si pořádný plán', 'Začni s Business Model Canvas → Podnikatelská Čtvrtka ti ukáže jak', 'Testuj nápad s reálnými lidmi PŘED investicí']
+        : ['STOP. Než uděláš cokoli dalšího, udělej si pořádný pl��n', 'Začni s Business Model Canvas → Podnikatelská Čtvrtka ti ukáže jak', 'Testuj nápad s reálnými lidmi PŘED investicí'],
+      subScores
     };
   }
   
@@ -274,7 +314,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
     recommendations = [
       '💡 QUICK WIN #1: Vyhraď si 1 hodinu týdně na "Čas na inovace" - testuj nové produkty, kanály, strategie. Investuj 10-15% zisku do testování nových věcí',
       '💡 QUICK WIN #2: Najmi někoho kdo může převzít část tvé role. Cíl: Uvolnit 20% svého času na strategii místo běžné práce',
-      '💡 QUICK WIN #3: Projdi všechny procesy a najdi 3 věci které můžeš automatizovat (Zapier, Make, AI nástroje)',
+      '💡 QUICK WIN #3: Projdi všechny procesy a najdi 3 v��ci které můžeš automatizovat (Zapier, Make, AI nástroje)',
       '💡 QUICK WIN #4: Udělej analýzu konkurence - co dělají jinak? Kde jsou o 10% lepší než ty?',
       '🎯 DLOUHODOBĚ: Model podnikání ti pomůže najít možnosti pro škálování (nové trhy, produkty, partnerství)'
     ];
@@ -308,7 +348,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
       'Neznáš svoje čísla - nevíš kolik tě stojí získání zákazníka a kolik ti průměrně utratí'
     ];
     recommendations = [
-      '💡 QUICK WIN #1: Udělej seznam TOP 10 klientů. Pokud 3 dělají víc než 50% tržeb → najdi ASAP 5-10 menších klientů jako pojistku',
+      '💡 QUICK WIN #1: Udělej seznam TOP 10 klientů. Pokud 3 dělají víc než 50% tržeb → najdi co nejdřív 5-10 menších klientů jako pojistku',
       '💡 QUICK WIN #2: Otevři si spořicí účet a dávej tam 10% z každé platby. Cíl: 3 měsíce nákladů na účtě',
       '💡 QUICK WIN #3: Zapiš si do Excelu JEDEN proces který děláš často (např. co přesně děláš když přijde nový klient) - pak to můžeš předat někomu jinému',
       '💡 QUICK WIN #4: Spočítej si: Kolik utratíš za získání 1 zákazníka (reklamy, čas, náklady)? Kolik ti prměrně utratí? Pokud nevíš → začni sledovat TEĎ',
@@ -328,13 +368,13 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
     recommendations = [
       '🚨 STOP! Přestaň "hasit požáry" a udělej si pořádek',
       '🚨 Udělej Business Model Canvas - uvidíš kde jsou díry',
-      '🚨 Najdi si druhý zdroj příjmů ASAP',
+      '🚨 Najdi si druhý zdroj příjmů okamžitě',
       '🚨 Spočítej si přesně: CAC, marže, break-even',
       '🚨 Podnikatelská Čtvrtka ti ukáže jak na to krok za krokem'
     ];
   }
   
-  return { score, category, categoryLabel, categoryDescription, categoryColor, risks, recommendations };
+  return { score, category, categoryLabel, categoryDescription, categoryColor, risks, recommendations, subScores };
 }
 
 interface BusinessHealthQuizProps {
@@ -405,6 +445,13 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
     const calculatedResult = calculateResult(answers, quizType);
     console.log('🔍 DEBUG: calculatedResult =', calculatedResult);
     setResult(calculatedResult);
+    
+    // 📊 Track quiz completion
+    trackQuizCompleted(
+      quizType || 'existing',
+      calculatedResult.score,
+      calculatedResult.category
+    );
     
     // Zavolej callback pro uložení do DB a odeslání emailu
     if (onComplete) {
@@ -515,6 +562,8 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
                       onClick={() => {
                         setQuizType('beginner');
                         setStep('quiz');
+                        // 📊 Track quiz start
+                        trackQuizStarted('beginner');
                       }}
                     >
                       <div className="space-y-4">
@@ -531,6 +580,8 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
                       onClick={() => {
                         setQuizType('existing');
                         setStep('quiz');
+                        // 📊 Track quiz start
+                        trackQuizStarted('existing');
                       }}
                     >
                       <div className="space-y-4">

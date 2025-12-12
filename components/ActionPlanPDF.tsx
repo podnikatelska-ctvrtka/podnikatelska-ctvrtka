@@ -52,19 +52,19 @@ function CriticalPlan({ userName, score }: { userName: string; score: number }) 
         <div className="bg-gray-50 p-4 rounded space-y-2">
           <div className="flex gap-3">
             <span className="text-red-600">❌</span>
-            <p>100% závislost na jednom kanálu/klientovi - když padne, padáš s ním</p>
+            <p>Chybí ti dlouhodobá strategie růstu</p>
           </div>
           <div className="flex gap-3">
             <span className="text-red-600">❌</span>
-            <p>Nulové rezervy - jeden výpadek a jsi v existenčním problému</p>
+            <p>Řešíš jen to co hoří teď, místo prevence</p>
           </div>
           <div className="flex gap-3">
             <span className="text-red-600">❌</span>
-            <p>Neznáš svá čísla - nevíš jestli děláš zisk nebo ztrátu</p>
+            <p>Nemáš jasný plán co dělat příštích 6 měsíců</p>
           </div>
           <div className="flex gap-3">
             <span className="text-red-600">❌</span>
-            <p>Žádná systematizace - vše závisí jen na tobě</p>
+            <p>Nevíš kde přesně tratíš peníze v byznysu</p>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ function CriticalPlan({ userName, score }: { userName: string; score: number }) 
             <label className="flex items-start gap-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
               <input type="checkbox" className="mt-1 w-5 h-5 flex-shrink-0" />
               <div>
-                <p className="font-semibold">DEN 3-4: Udělej Business Model Canvas</p>
+                <p className="font-semibold">DEN 3-4: Udělej si Model podnikání</p>
                 <p className="text-sm text-gray-600 mt-1">
                   → Stáhni si šablonu (Google: "business model canvas šablona")<br/>
                   → Vyplň všech 9 políček - uvidíš OKAMŽITĚ kde máš díry<br/>
@@ -105,7 +105,7 @@ function CriticalPlan({ userName, score }: { userName: string; score: number }) 
             <label className="flex items-start gap-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
               <input type="checkbox" className="mt-1 w-5 h-5 flex-shrink-0" />
               <div>
-                <p className="font-semibold">DEN 5-7: Najdi si druhý zdroj příjmů ASAP</p>
+                <p className="font-semibold">DEN 5-7: Najdi si druhý zdroj příjmů okamžitě</p>
                 <p className="text-sm text-gray-600 mt-1">
                   → Napiš seznam 5 způsobů jak získat peníze do 14 dní<br/>
                   → Může to být: drobná zakázka, prodej něčeho co nepotřebuješ, půjčka od rodiny<br/>
@@ -245,26 +245,7 @@ function CriticalPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* CTA Box */}
-      <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-6 mt-6">
-        <h3 className="text-xl font-bold text-blue-900 mb-3">💡 CHCEŠ TO RYCHLEJI?</h3>
-        <p className="text-gray-700 mb-4">
-          Místo 30 dnů můžeš mít jasný plán za 90 minut s Podnikatelskou Čtvrtkou:
-        </p>
-        <ul className="space-y-2 mb-4 text-sm">
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Celý Business Model Canvas krok za krokem</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Value Proposition (NA KOHO a CO nabídnout)</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> 4 vzorové modely funkčních byznysů</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Konkrétní akční plán co dělat zítra</li>
-        </ul>
-        <p className="text-sm text-gray-600 mb-4">
-          ✓ 14 dní garance vrácení peněz (max 3 lekce)<br/>
-          ✓ 90 minut. Hotovo. 4999 Kč.
-        </p>
-        <p className="text-center font-bold text-blue-900">
-          → podnikatelskactvrtka.cz/objednavka
-        </p>
-      </div>
+
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -304,19 +285,19 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
         <div className="bg-gray-50 p-4 rounded space-y-2">
           <div className="flex gap-3">
             <span className="text-yellow-600">⚠️</span>
-            <p>Kritická závislost na 1-2 klientech/kanálech - pokud zmizí, tratíš 50%+ tržeb</p>
+            <p>Nemáš plán B když něco selže</p>
           </div>
           <div className="flex gap-3">
             <span className="text-yellow-600">⚠️</span>
-            <p>Žádné finanční rezervy - jeden výpadek (nemoc, problém) a jsi v existenčním problému</p>
+            <p>Spoléháš se víc na štěstí než na systém</p>
           </div>
           <div className="flex gap-3">
             <span className="text-yellow-600">⚠️</span>
-            <p>Všechno dělá majitel - když onemocníš nebo chceš dovolenou, byznys stojí</p>
+            <p>Marketing je chaotický, ne systematický</p>
           </div>
           <div className="flex gap-3">
             <span className="text-yellow-600">⚠️</span>
-            <p>Neznáš svoje čísla - nevíš kolik tě stojí získání zákazníka a kolik ti průměrně utratí</p>
+            <p>Nemáš jasno kam chceš růst</p>
           </div>
         </div>
       </div>
@@ -336,7 +317,7 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
                 <p className="text-sm text-gray-600 mt-1">
                   → Udělej seznam všech klientů<br/>
                   → Spočítej kolik % tržeb dělá každý<br/>
-                  → Pokud 3 klienti dělají víc než 50% → najdi ASAP 5-10 menších klientů jako pojistku
+                  → Pokud 3 klienti dělají víc než 50% → najdi co nejdřív 5-10 menších klientů jako pojistku
                 </p>
               </div>
             </label>
@@ -434,7 +415,7 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
                 <p className="text-sm text-gray-600 mt-1">
                   → Co děláš co může dělat někdo jiný za míň peněz?<br/>
                   → Účetnictví, grafika, administriva?<br/>
-                  → Zkus najít freelancera na Upwork nebo lokálně<br/>
+                  → Najdi si freelancera nebo brigádníka (Freelo.cz, LinkedIn, nebo doporučení)<br/>
                   💡 Cíl: Uvolnit 5-10 hodin měsíčně na strategii
                 </p>
               </div>
@@ -473,7 +454,7 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
             <label className="flex items-start gap-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
               <input type="checkbox" className="mt-1 w-5 h-5 flex-shrink-0" />
               <div>
-                <p className="font-semibold">DEN 25-27: Udělej si Business Model Canvas</p>
+                <p className="font-semibold">DEN 25-27: Udělej si Model podnikání</p>
                 <p className="text-sm text-gray-600 mt-1">
                   → Stáhni si šablonu (Google: "business model canvas šablona")<br/>
                   → Vyplň všech 9 políček<br/>
@@ -498,26 +479,7 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* CTA Box */}
-      <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-6 mt-6">
-        <h3 className="text-xl font-bold text-blue-900 mb-3">💡 RYCHLEJŠÍ CESTA KE STABILITĚ</h3>
-        <p className="text-gray-700 mb-4">
-          Podnikatelská Čtvrtka ti pomůže najít všechny slabiny najednou a udělat konkrétní plán:
-        </p>
-        <ul className="space-y-2 mb-4 text-sm">
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Business Model Canvas - celý byznys na 1 stránce</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Value Proposition - NA KOHO a CO nabídnout</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> 4 vzorové modely funkčních byznysů</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Konkrétní akční plán co dělat zítra</li>
-        </ul>
-        <p className="text-sm text-gray-600 mb-4">
-          ✓ 14 dní garance vrácení peněz (max 3 lekce)<br/>
-          ✓ 90 minut. Hotovo. 4999 Kč.
-        </p>
-        <p className="text-center font-bold text-blue-900">
-          → podnikatelskactvrtka.cz/objednavka
-        </p>
-      </div>
+
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -557,19 +519,19 @@ function SolidPlan({ userName, score }: { userName: string; score: number }) {
         <div className="bg-gray-50 p-4 rounded space-y-2">
           <div className="flex gap-3">
             <span className="text-orange-600">⚠️</span>
-            <p>Chybějící diverzifikace příjmů - co když přijdeš o hlavní kanál?</p>
+            <p>Funguje to, ale hodně tě to stojí čas a energii</p>
           </div>
           <div className="flex gap-3">
             <span className="text-orange-600">⚠️</span>
-            <p>Nízká škálovatelnost - musíš být "v byznysu" místo "na byznysu"</p>
+            <p>Necháváš peníze na stole - nevyužitý potenciál</p>
           </div>
           <div className="flex gap-3">
             <span className="text-orange-600">⚠️</span>
-            <p>Neoptimalizované procesy - tratíš 20-30% času na věci které by mohly být automatizované</p>
+            <p>Chybí ti struktura pro efektivní škálování</p>
           </div>
           <div className="flex gap-3">
             <span className="text-orange-600">⚠️</span>
-            <p>Nízké % opakovaných zákazníků - získání nového stojí 5-7x víc než udržení stávajícího</p>
+            <p>Marketing by mohl být mnohem efektivnější</p>
           </div>
         </div>
       </div>
@@ -700,7 +662,7 @@ function SolidPlan({ userName, score }: { userName: string; score: number }) {
                 <p className="text-sm text-gray-600 mt-1">
                   → Cena získání zákazníka (kolik stojí získání zákazníka)<br/>
                   → Hodnota zákazníka (kolik ti průměrně utratí za celou dobu)<br/>
-                  → Marže (kolik ti zbude po nákladech)<br/>
+                  → Marže (kolik ti zbyde po nákladech)<br/>
                   → Míra návratnosti (kolik % se vrací)
                 </p>
               </div>
@@ -727,9 +689,10 @@ function SolidPlan({ userName, score }: { userName: string; score: number }) {
             <label className="flex items-start gap-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
               <input type="checkbox" className="mt-1 w-5 h-5 flex-shrink-0" />
               <div>
-                <p className="font-semibold">DEN 25-27: Udělej si Model podnikání (BMC)</p>
+                <p className="font-semibold">DEN 25-27: Udělej si Model podnikání</p>
                 <p className="text-sm text-gray-600 mt-1">
-                  → Business Model Canvas - celý byznys na 1 stránce<br/>
+                  → Stáhni si šablonu (Google: "business model canvas šablona")<br/>
+                  → Celý byznys na 1 stránce - uvidíš přehled<br/>
                   → Uvidíš 3-5 způsobů jak zvýšit tržby ze stávajících<br/>
                   → Najdeš nové příležitosti (partnerství, nové trhy)<br/>
                   💡 Podnikatelská Čtvrtka ti to projde za 90 minut krok za krokem
@@ -752,26 +715,7 @@ function SolidPlan({ userName, score }: { userName: string; score: number }) {
         </div>
       </div>
 
-      {/* CTA Box */}
-      <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-6 mt-6">
-        <h3 className="text-xl font-bold text-blue-900 mb-3">💡 CHCEŠ TO SYSTEMATICKY?</h3>
-        <p className="text-gray-700 mb-4">
-          Podnikatelská Čtvrtka ti pomůže najít všechny příležitosti najednou:
-        </p>
-        <ul className="space-y-2 mb-4 text-sm">
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Business Model Canvas - uvidíš celý byznys na 1 stránce</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Value Proposition - NA KOHO a CO nabídnout (pro vyšší ceny)</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> 4 vzorové modely funkčních byznysů (inspirace na škálování)</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Konkrétní akční plán co dělat zítra</li>
-        </ul>
-        <p className="text-sm text-gray-600 mb-4">
-          ✓ 14 dní garance vrácení peněz (max 3 lekce)<br/>
-          ✓ 90 minut. Hotovo. 4999 Kč.
-        </p>
-        <p className="text-center font-bold text-blue-900">
-          → podnikatelskactvrtka.cz/objednavka
-        </p>
-      </div>
+
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -882,7 +826,7 @@ function AdvancedPlan({ userName, score }: { userName: string; score: number }) 
                 <p className="text-sm text-gray-600 mt-1">
                   → Cíl: Uvolnit 20% svého času na strategii místo běžné práce<br/>
                   → Co děláš co může dělat junior za míň peněz?<br/>
-                  → Projektový manažer, sales, marketing, ops?<br/>
+                  → Projektový manažer, obchodník, marketér, administrativa?<br/>
                   💡 Začni s part-time nebo freelancerem na zkoušku
                 </p>
               </div>
@@ -907,8 +851,8 @@ function AdvancedPlan({ userName, score }: { userName: string; score: number }) 
                 <p className="font-semibold">DEN 14: Time audit - kam mizí tvůj čas?</p>
                 <p className="text-sm text-gray-600 mt-1">
                   → Sleduj 1 týden co děláš každou hodinu<br/>
-                  → Kategorizuj: Strategy, Operations, Waste<br/>
-                  → Cíl: 50%+ času na strategii, max 30% na operations
+                  → Kategorizuj: Strategie, Provoz, Plýtvání<br/>
+                  → Cíl: 50%+ času na strategii, max 30% na provoz
                 </p>
               </div>
             </label>
@@ -968,7 +912,7 @@ function AdvancedPlan({ userName, score }: { userName: string; score: number }) 
               <div>
                 <p className="font-semibold">DEN 22-24: Udělej si Model podnikání - najdi škálovací příležitosti</p>
                 <p className="text-sm text-gray-600 mt-1">
-                  → Business Model Canvas ti ukáže nové trhy, produkty, partnerství<br/>
+                  → Model podnikání ti ukáže nové trhy, produkty, partnerství<br/>
                   → Kde můžeš 10x růst? (ne jen 10% improvement)<br/>
                   → Jaké jsou tvoje unfair advantages?<br/>
                   💡 Podnikatelská Čtvrtka ti pomůže najít skryté příležitosti
@@ -1005,26 +949,7 @@ function AdvancedPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* CTA Box */}
-      <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-6 mt-6">
-        <h3 className="text-xl font-bold text-blue-900 mb-3">💡 NAJDI SKRYTÉ PŘÍLEŽITOSTI</h3>
-        <p className="text-gray-700 mb-4">
-          I pokročilé byznysy nechávají peníze na stole. Podnikatelská Čtvrtka ti pomůže najít:
-        </p>
-        <ul className="space-y-2 mb-4 text-sm">
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Nové trhy a segmenty (kde můžeš expandovat)</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Partnerství a aliance (škálování bez nákladů)</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Zdroje příjmů které jsi přehlédl</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Optimalizace modelu pro vyšší marže</li>
-        </ul>
-        <p className="text-sm text-gray-600 mb-4">
-          ✓ 14 dní garance vrácení peněz (max 3 lekce)<br/>
-          ✓ 90 minut. Hotovo. 4999 Kč.
-        </p>
-        <p className="text-center font-bold text-blue-900">
-          → podnikatelskactvrtka.cz/objednavka
-        </p>
-      </div>
+
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -1129,7 +1054,7 @@ function BeginnerPlan({ userName, score }: { userName: string; score: number }) 
                 <p className="text-sm text-gray-600 mt-1">
                   → NE "všem" - musíš být konkrétní!<br/>
                   → Věk, pohlaví, kde pracují, kolik vydělávají, jaké mají problémy?<br/>
-                  → Napiš si 3-5 konkrétních lidí které znáš a hodí se ti<br/>
+                  → Napiš si 3-5 konkrétních lidí které znáš a se hodí jako tvůj ideální klient<br/>
                   💡 Čím užší cílová skupina, tím lepší marketing a prodej
                 </p>
               </div>
@@ -1151,7 +1076,7 @@ function BeginnerPlan({ userName, score }: { userName: string; score: number }) 
             <label className="flex items-start gap-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
               <input type="checkbox" className="mt-1 w-5 h-5 flex-shrink-0" />
               <div>
-                <p className="font-semibold">DEN 5-7: Udělaj si Business Model Canvas (ZÁKLAD!)</p>
+                <p className="font-semibold">DEN 5-7: Udělej si Model podnikání (ZÁKLAD!)</p>
                 <p className="text-sm text-gray-600 mt-1">
                   → Stáhni si šablonu (Google: "business model canvas šablona")<br/>
                   → Vyplň všech 9 políček - uvidíš mezery<br/>
@@ -1186,7 +1111,7 @@ function BeginnerPlan({ userName, score }: { userName: string; score: number }) 
                 <p className="font-semibold">DEN 11-12: Kolik budeš účtovat?</p>
                 <p className="text-sm text-gray-600 mt-1">
                   → Zjisti ceny konkurence<br/>
-                  → Spočítej: kolik ti zbude po nákladech? (marže)<br/>
+                  → Spočítej: kolik ti zbyde po nákladech? (marže)<br/>
                   → Kolik klientů/projektů potřebuješ měsíčně na bod zvratu?<br/>
                   💡 Začátečníci často účtují příliš málo - nesoutěž cenou!
                 </p>
@@ -1297,26 +1222,7 @@ function BeginnerPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* CTA Box */}
-      <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-6 mt-6">
-        <h3 className="text-xl font-bold text-blue-900 mb-3">💡 ZKRAŤ SI CESTU</h3>
-        <p className="text-gray-700 mb-4">
-          Místo 30 dnů experimentování můžeš mít jasný plán za 90 minut:
-        </p>
-        <ul className="space-y-2 mb-4 text-sm">
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Business Model Canvas krok za krokem (komu, co, jak)</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Value Proposition - jak najít SPRÁVNOU cílovou skupinu</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> 4 vzorové modely funkčních byznysů (inspirace)</li>
-          <li className="flex gap-2"><span className="text-green-600">✓</span> Konkrétní akční plán na prvních 90 dní</li>
-        </ul>
-        <p className="text-sm text-gray-600 mb-4">
-          ✓ 14 dní garance vrácení peněz (max 3 lekce)<br/>
-          ✓ 90 minut. Hotovo. 4999 Kč.
-        </p>
-        <p className="text-center font-bold text-blue-900">
-          → podnikatelskactvrtka.cz
-        </p>
-      </div>
+
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">

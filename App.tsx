@@ -4,9 +4,9 @@ import { QuizLandingPage } from "./components/QuizLandingPage"; // ✅ QUIZ LAND
 import { QuizResultsPage } from "./components/QuizResultsPage"; // ✅ QUIZ RESULTS PAGE
 import { ActionPlanPreview } from "./components/ActionPlanPreview"; // ✅ ACTION PLAN PDF
 import { KonzultacePage } from "./components/KonzultacePage"; // ✅ FREE KONZULTACE PAGE
-import { ZasilkovnaBusinessModel } from "./components/ZasilkovnaBusinessModel"; // ✅ ZASILKOVNA MODEL
-import { MiniCourse } from "./components/MiniCourse"; // ✅ MINI KURZ
-import { CourseDemoV3 } from "./components/CourseDemoV3"; // ✅ MAIN COURSE
+import { StickyQuizButton } from "./components/StickyQuizButton"; // ✅ STICKY QUIZ BUTTON
+import { ZasilkovnaBusinessModel } from "./components/ZasilkovnaBusinessModel"; // ✅ ZASILKOVNA BUSINESS MODEL
+import { QuizTestPage } from "./components/QuizTestPage"; // ✅ QUIZ TEST PAGE
 
 import { HeroSection } from "./components/HeroSection";
 import { ProblemsSectionCompact } from "./components/ProblemsSectionCompact";
@@ -137,6 +137,7 @@ export default function App() {
   const [showActionPlans, setShowActionPlans] = useState(false); // ✅ PDF Preview
   const [showZaloha, setShowZaloha] = useState(false); // ✅ BACKUP: Original landing page
   const [showRemarketingAds, setShowRemarketingAds] = useState(false); // ✅ REMARKETING ADS
+  const [showQuizTest, setShowQuizTest] = useState(false); // ✅ QUIZ TEST PAGE
   
   // 📊 META PIXEL: Inicializace
   useEffect(() => {
@@ -223,6 +224,12 @@ export default function App() {
       
       if (hash.startsWith('#action-plans') || path === '/action-plans') {
         setShowActionPlans(true);
+        setShowQuiz(false);
+        setShowZasilkovnaModel(false);
+        setShowKonzultace(false);
+      } else if (hash.startsWith('#quiz-test') || path === '/quiz-test') {
+        setShowQuizTest(true);
+        setShowActionPlans(false);
         setShowQuiz(false);
         setShowZasilkovnaModel(false);
         setShowKonzultace(false);
@@ -1381,6 +1388,12 @@ export default function App() {
       
       {/* Cookie consent banner */}
       <CookieConsent />
+      
+      {/* ✅ STICKY QUIZ BUTTON - Shows after scrolling 400px */}
+      <StickyQuizButton onClick={() => {
+        // Open quiz modal (need to add state and handler)
+        window.location.href = '/kviz';
+      }} />
     </div>
     </>
   );

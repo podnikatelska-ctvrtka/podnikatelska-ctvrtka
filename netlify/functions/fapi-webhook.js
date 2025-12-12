@@ -134,7 +134,7 @@ export async function handler(event, context) {
     console.log('📄 Invoice PDF URL:', invoicePdfUrl);
     console.log('📄 Order Status URL:', orderStatusUrl);
     
-    // ──────────────────────────────────────────
+    // ────────────────���─────────────────────────
     // ❌ HANDLE FAILED/CANCELLED PAYMENT
     // ──────────────────────────────────────────
     if (!isPaid || isCancelled) {
@@ -349,7 +349,7 @@ export async function handler(event, context) {
                 </tr>
               </table>
               
-              <p>Děkujeme za zakoupení kurzu <strong>Podnikatelská Čtvrtka</strong>! 🚀</p>
+              <p>Děkujeme za zakoupení kurzu <strong>Podnikatelská Čtvrtka</strong>!</p>
               <p><strong>Váš přístup je připraven:</strong></p>
               
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #f8f9fa; border-radius: 8px; margin: 30px 0;">
@@ -469,31 +469,56 @@ export async function handler(event, context) {
     // ──────────────────────────────────────────
     // 🏷️ ADD TAG TO SMARTEMAILING
     // ──────────────────────────────────────────
-    console.log('🏷️ Adding "purchased" tag to SmartEmailing...');
+    console.log('🏷️ Adding "purchased" custom field to SmartEmailing...');
     
     try {
       const seApiKey = process.env.SMARTEMAILING_API_KEY;
-      if (seApiKey) {
-        const seAuthString = Buffer.from(`${seApiKey}:x`).toString('base64');
+      const seUsername = process.env.SMARTEMAILING_USERNAME;
+      
+      if (seApiKey && seUsername) {
+        const seAuthString = Buffer.from(`${seUsername}:${seApiKey}`).toString('base64');
         
-        await fetch('https://app.smartemailing.cz/api/v3/contacts', {
+        // ✅ USE /import ENDPOINT with CUSTOM FIELDS (not tags!)
+        const seResponse = await fetch('https://app.smartemailing.cz/api/v3/import', {
           method: 'POST',
           headers: {
             'Authorization': `Basic ${seAuthString}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            emailaddress: email,
-            tags: ['purchased']
+            settings: {
+              update: true, // Update existing contact
+              add_tags: false, // Not using tags
+              field_policy: 'FILL_IN_EMPTY'
+            },
+            data: [{
+              emailaddress: email,
+              customfields: [
+                {
+                  id: 6, // purchased
+                  value: 'true'
+                },
+                {
+                  id: 4, // source
+                  value: 'purchase'
+                }
+              ]
+            }]
           })
         });
         
-        console.log('✅ Tag "purchased" added to SmartEmailing');
+        const seData = await seResponse.json();
+        
+        if (seResponse.ok && ['ok', 'created'].includes(seData.status)) {
+          console.log('✅ Custom field "purchased" added to SmartEmailing:', seData.status);
+        } else {
+          console.error('⚠️ SmartEmailing custom field failed:', seData);
+        }
       } else {
-        console.log('⚠️ SmartEmailing API key not found - skipping tag');
+        console.log('⚠️ SmartEmailing API credentials not found - skipping custom field');
       }
     } catch (seError) {
-      console.error('⚠️ SmartEmailing tag failed (non-critical):', seError.message);
+      console.error('⚠️ SmartEmailing custom field failed (non-critical):', seError.message);
       // Don't fail the webhook if SE tagging fails
     }
     

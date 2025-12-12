@@ -43,7 +43,7 @@ export function OrganicPost25NoDiscounts() {
         // Stage 0: Inbox intro (2s)
         setStage(1);
       } else if (stage === 1) {
-        // Stage 1: Emails přibývají (každých 0.8s)
+        // Stage 1: Emails p��ibývají (každých 0.8s)
         if (visibleEmails < 4) {
           setVisibleEmails(prev => prev + 1);
         } else {
@@ -59,12 +59,12 @@ export function OrganicPost25NoDiscounts() {
         // Stage 4: Truth reveal (4s)
         setTimeout(() => setStage(5), 4000);
       } else if (stage === 5) {
-        // Stage 5: CTA (3s)
+        // Stage 5: CTA (4s) ← PRODLOUŽENO o 1s
         setTimeout(() => {
           // Reset pro loop
           setStage(0);
           setVisibleEmails(0);
-        }, 3000);
+        }, 4000);
       }
     }, stage === 0 ? 2000 : stage === 1 ? 800 : 0);
 

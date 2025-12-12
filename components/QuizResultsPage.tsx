@@ -6,6 +6,7 @@ export function QuizResultsPage() {
   const [email, setEmail] = useState('');
   const [score, setScore] = useState<number | null>(null);
   const [category, setCategory] = useState('');
+  const [subScores, setSubScores] = useState<{ label: string; score: number; icon: string }[]>([]);
 
   useEffect(() => {
     // Získej data z URL query parametrů
@@ -13,10 +14,18 @@ export function QuizResultsPage() {
     const emailParam = urlParams.get('email');
     const scoreParam = urlParams.get('score');
     const categoryParam = urlParams.get('category');
+    const subScoresParam = urlParams.get('subScores');
 
     if (emailParam) setEmail(emailParam);
     if (scoreParam) setScore(parseInt(scoreParam));
     if (categoryParam) setCategory(categoryParam);
+    if (subScoresParam) {
+      try {
+        setSubScores(JSON.parse(decodeURIComponent(subScoresParam)));
+      } catch (e) {
+        console.error('Failed to parse subScores:', e);
+      }
+    }
   }, []);
 
   // Emoji podle kategorie
@@ -77,6 +86,53 @@ export function QuizResultsPage() {
                     <p className="text-sm text-slate-600">Tvé skóre</p>
                     <p className="text-2xl text-slate-900">{score}/100 bodů</p>
                   </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ✅ SUB-SCORES Progress Bars */}
+            {subScores.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+                className="bg-gradient-to-br from-slate-50 to-indigo-50/50 rounded-2xl p-6 border border-slate-200/50"
+              >
+                <h3 className="text-lg text-slate-900 mb-4 text-center">
+                  📊 Detailní rozpad skóre
+                </h3>
+                <div className="space-y-4">
+                  {subScores.map((sub, idx) => {
+                    const color = sub.score >= 70 ? 'bg-green-500' : sub.score >= 40 ? 'bg-yellow-500' : 'bg-red-500';
+                    const textColor = sub.score >= 70 ? 'text-green-700' : sub.score >= 40 ? 'text-yellow-700' : 'text-red-700';
+                    
+                    return (
+                      <div key={idx} className="space-y-2">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-slate-700">
+                            <span className="mr-2">{sub.icon}</span>
+                            {sub.label}
+                          </span>
+                          <span className={`font-bold ${textColor}`}>
+                            {sub.score}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${sub.score}%` }}
+                            transition={{ delay: 0.4 + (idx * 0.1), duration: 0.6, ease: 'easeOut' }}
+                            className={`h-2.5 rounded-full ${color}`}
+                          />
+                        </div>
+                        {sub.score < 40 && (
+                          <p className="text-xs text-red-600 mt-1">
+                            ⚠️ POZOR! Tohle potřebuješ urgentně vyřešit
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

@@ -31,7 +31,9 @@ export function ActionPlanPreview() {
     { value: 'unstable' as const, label: 'Nestabilní (31-55%)', score: 45 },
     { value: 'solid' as const, label: 'Solidní (56-75%)', score: 65 },
     { value: 'advanced' as const, label: 'Pokročilý (76-100%)', score: 85 },
-    { value: 'beginner' as const, label: 'Začínající (high)', score: 75 },
+    { value: 'beginner' as const, label: 'Začínající - Připravený (70%+)', score: 75 },
+    { value: 'beginner' as const, label: 'Začínající - Základ (40-69%)', score: 55 },
+    { value: 'beginner' as const, label: 'Začínající - Chybí příprava (0-39%)', score: 25 },
   ];
 
   const handlePrint = () => {

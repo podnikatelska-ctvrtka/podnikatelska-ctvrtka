@@ -434,7 +434,7 @@ export function ZasilkovnaBusinessModel() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
-                onClick={() => window.location.hash = '#objednavka'}
+                onClick={() => window.location.href = '/objednavka'}
                 className="group bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/40 hover:scale-105"
               >
                 <span>Chci Podnikatelskou Čtvrtku</span>
@@ -468,7 +468,7 @@ export function ZasilkovnaBusinessModel() {
           <div className="inline-block bg-slate-100 rounded-xl p-6 border border-slate-200">
             <p className="text-slate-600 text-sm leading-relaxed max-w-2xl">
               <strong className="text-slate-700">📝 Upozornění:</strong> Toto je náš nezávislý rozbor modelu podnikání Zásilkovny 
-              pro vzdělávací účely. Nespolupracujeme se spole��ností Zásilkovna a.s. 
+              pro vzdělávací účely. Nespolupracujeme se společností Zásilkovna a.s. 
               Veškeré informace jsou získány z veřejně dostupných zdrojů.
             </p>
           </div>

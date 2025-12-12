@@ -86,10 +86,20 @@ export async function handler(event, context) {
             }
           ],
           // 🎯 Custom fields - tag pro waitlist
-          customfields: {
-            source: isWaitlist ? 'landing_page_waitlist' : 'landing_page_prelaunch',
-            waitlist: isWaitlist ? 'true' : 'false'
-          }
+          customfields: [
+            {
+              id: 4, // source
+              value: isWaitlist ? 'landing_page_waitlist' : 'landing_page_prelaunch'
+            },
+            {
+              id: 2, // waitlist
+              value: isWaitlist ? 'true' : 'false'
+            },
+            {
+              id: 6, // purchased
+              value: '' // Initialize for later webhook update
+            }
+          ]
         }]
       })
     });

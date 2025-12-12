@@ -44,7 +44,7 @@ export async function handler(event, context) {
     }
     
     // ══════════════════════════════════════════════════════════
-    // �� TEST MODE: Override category based on email
+    //  TEST MODE: Override category based on email
     // ═══════════════════════════════════════════════════════════
     let finalResult = { ...result };
     
@@ -179,12 +179,16 @@ export async function handler(event, context) {
                   status: 'confirmed'
                 }
               ],
-              customfields: {
-                source: 'quiz',
-                quiz_type: quizType,
-                quiz_category: resultToSave.category,
-                quiz_score: resultToSave.score.toString()
-              }
+              customfields: [
+                {
+                  id: 4, // source
+                  value: 'quiz'
+                },
+                {
+                  id: 6, // purchased
+                  value: '' // Initialize for later webhook update
+                }
+              ]
             }]
           })
         });
@@ -203,7 +207,7 @@ export async function handler(event, context) {
       console.log('⚠️ Smartemailing not configured - skipping');
     }
     
-    // ──────────────────────────────────────────
+    // ──────────────────────────────────────���───
     // 📨 SEND IMMEDIATE EMAIL VIA RESEND
     // ──────────────────────────────────────────
     const RESEND_API_KEY = process.env.RESEND_API_KEY;

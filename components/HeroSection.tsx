@@ -1,4 +1,4 @@
-import { CheckCircle, Map, Users, Compass, ChevronDown, X } from "lucide-react";
+import { CheckCircle, Map, Users, Compass, ChevronDown, X, Gift } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useState, useEffect } from "react";
 import { EnhancedCTA } from "./EnhancedCTA";
@@ -74,6 +74,39 @@ export function HeroSection() {
         console.log('✅ Quiz data saved to Supabase!');
       }
       
+      // ──────────────────────────────────────────
+      // 📧 SEND EMAIL + ADD TO SMARTEMAILING
+      // ──────────────────────────────────────────
+      try {
+        console.log('📧 Sending quiz results email...');
+        
+        const emailResponse = await fetch(`${supabaseUrl}/functions/v1/make-server-8e1fcf9a/send-quiz-results`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseAnonKey}`
+          },
+          body: JSON.stringify({
+            email,
+            score: result.score,
+            category: result.category,
+            categoryLabel: result.categoryLabel,
+            name: email.split('@')[0] // Použijeme email jako jméno
+          })
+        });
+        
+        const emailData = await emailResponse.json();
+        
+        if (emailResponse.ok) {
+          console.log('✅ Quiz results email sent:', emailData);
+        } else {
+          console.error('❌ Email sending failed:', emailData);
+        }
+      } catch (emailError) {
+        console.error('❌ Email error:', emailError);
+        // Continue anyway - data was saved
+      }
+      
       // ✅ Close quiz modal
       setIsQuizOpen(false);
       
@@ -105,7 +138,7 @@ export function HeroSection() {
   const tooltipData = {
     'partners': {
       title: 'Klíčová partnerství',
-      content: 'Zjistíte, kdo vám může pomoct ušetřit čas a peníze - místo abyste vše dělali sami'
+      content: 'Zjistíte, kdo vám může pomoct ušetřit čas a peníze - místo abyste ve d��lali sami'
     },
     'activities': {
       title: 'Klíčové aktivity', 
@@ -243,14 +276,17 @@ export function HeroSection() {
                   <TouchFeedback>
                     <button
                       onClick={() => setIsQuizOpen(true)}
-                      className="w-full px-8 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl"
+                      className="w-full px-8 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl group"
                     >
-                      🎯 Zjisti ZDARMA jak zdravý je tvůj model podnikání
+                      <div className="flex items-center justify-center gap-3">
+                        <Gift className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                        <span>Rosteš nebo tratíš? Zjisti to za 3 min</span>
+                      </div>
                     </button>
                   </TouchFeedback>
                   
                   <p className="text-sm text-gray-600 mt-3">
-                    ⏱️ 3 minuty • Personalizované výsledky • Akční plán na míru
+                    🎁 Zdarma • 📊 Personalizovaný plán • ⚡ Okamžité výsledky
                   </p>
                 </div>
               </div>
@@ -333,7 +369,7 @@ export function HeroSection() {
                     <span className="text-2xl">
                       {tooltipData[activeCanvasBlock as keyof typeof tooltipData] ? 
                         Object.entries({
-                          partners: "🤝", activities: "⚡", value: "💎", relationships: "🤝", 
+                          partners: "🤝", activities: "⚡", value: "💎", relationships: "", 
                           segments: "🎯", resources: "🔧", channels: "📢", costs: "💰", revenue: "💸"
                         }).find(([key]) => key === activeCanvasBlock)?.[1] : "🤝"
                       }

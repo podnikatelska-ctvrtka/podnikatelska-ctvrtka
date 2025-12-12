@@ -24,7 +24,7 @@ export function QuizAdRemarketing1() {
 
       {/* Subheadline */}
       <p className="text-3xl text-white/95 mb-10 max-w-3xl relative z-10">
-        Zjisti <span className="font-black">přesně co ti chybí</span> k tomu, aby tvůj byznys fungoval líp
+        Zjisti <span className="font-black">přesně, co ti chybí</span> k tomu, aby tvůj byznys fungoval líp
       </p>
 
       {/* Benefits box */}

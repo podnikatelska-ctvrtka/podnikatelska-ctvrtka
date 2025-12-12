@@ -10,6 +10,7 @@ import { OrganicPost22WeekValidation } from './OrganicPost22WeekValidation';
 import { OrganicPost23Domino } from './OrganicPost23Domino';
 import { OrganicPost24SplitScreen } from './OrganicPost24SplitScreen';
 import { OrganicPost25NoDiscounts } from './OrganicPost25NoDiscounts';
+import { OrganicPost26TimeValue } from './OrganicPost26TimeValue';
 
 /**
  * 🎯 ORGANIC POSTS - 30 DNÍ SÉRIE
@@ -1421,61 +1422,168 @@ Systematicky. S daty. Pro tvůj byznys.
     type: 'animated',
     format: '4:5',
     title: 'Post #25: PROČ SLEVY NEFUNGUJÍ',
-    copy: `Každé ráno ti přijde do mailu:
+    copy: `Slevy nefungují.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-🎁 "ZDARMA na zkoušku!"
+Každé ráno dostaneš:
+
 ⚡ "50% SLEVA - pouze dnes!"
-🔥 "GRATIS konzultace v hodnotě 5000 Kč"
-💎 "Exkluzivní nabídka - 70% OFF"
+🎁 "ZDARMA na zkoušku!"
+🔥 "GRATIS v hodnotě 5000 Kč"
+
+A co s tím uděláš?
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-Otevřeš něco z toho?
+❌ NIC.
 
-❌ NE.
-
-━━━━━━━━━━━━━━━━━━━━━━━
-
-Proč?
+Automaticky to ignoruješ.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-💡 Protože když nemáš HODNOTU kterou potřebuješ...
+💡 PROČ?
 
-...nepomůže ti ani SLEVA 70%
-...ani ZDARMA
+Protože když nemáš problém, který daná věc řeší...
+
+...je ti úplně JEDNO jestli stojí 10 000 Kč nebo je ZDARMA.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
 A přesně TAK přemýšlí i TVOJI zákazníci.
 
-Když nemají problém = neřeší slevu.
-Když mají problém = řeší hodnotu.
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Neřeší CENU.
+Řeší jestli to VYŘEŠÍ jejich problém.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-💎 ZAMĚŘ SE NA HODNOTU
+💎 CO TO ZNAMENÁ PRO TEBE?
 
-Na to CO nabízíš, ne JAK LEVNĚ.
+Přestaň se točit kolem ceny a slev.
 
-Vybuduj produkt/službu, kterou lidé OPRAVDU CHTĚJÍ.
+Zaměř se na HODNOTU:
+
+✅ Komu přesně pomáháš?
+✅ Jaký problém řešíš?
+✅ Proč by si měli vybrat právě TEBE?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Když máš jasnou HODNOTU pro správný segment...
+
+...cena přestane být primární námitka.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ A přesně tohle řeší Podnikatelská Čtvrtka.
+🎯 Podnikatelská Čtvrtka tě naučí:
 
-Pomůžeme ti vytvořit hodnotu, kterou tvoji zákazníci POTŘEBUJÍ.
+→ Nadefinovat přesně KOMU prodáváš
+→ Najít jejich SKUTEČNÝ problém
+→ Vytvořit nabídku kterou CHTĚJÍ koupit (ne jen levnou)
 
 ━━━━━━━━━━━━━━━━━━━━━━━
+
+Hodnota > Sleva.
+Vždycky.
 
 👉 www.podnikatelskactvrtka.cz
 
-Podnikatelská Čtvrtka → 4 999 Kč
-14 dní záruka vrácení peněz
+#podnikani #hodnota #marketing #segment`
+  },
 
-#podnikani #hodnota #marketing #positioning`
+  // POST #26: KOLIK STOJÍ TVŮJ ČAS? (NÁVRH na zítřek)
+  {
+    id: 26,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #26: KOLIK STOJÍ TVŮJ ČAS?',
+    copy: `Spočítal sis někdy, kolik SKUTEČNĚ vyděláš za hodinu?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Rychlá kalkulačka:
+
+Vydělal jsi minulý měsíc: 50 000 Kč
+Odpracoval jsi: 200 hodin
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 Tvoje hodinová sazba = 250 Kč/hod
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ ALE POZOR.
+
+Z toho musíš odečíst:
+
+- Náklady na provoz
+- Daně a pojištění
+- Čas na administrativu
+- Marketing který nefunguje
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💔 REALITA?
+
+Často vyjdeš na 80-120 Kč/hodinu.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Méně než dostaneš v práci.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+A v práci:
+
+✅ Nemáš stres z faktur
+✅ Nemáš nespavé noci
+✅ Nemáš strach co bude zítra
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 PROČ SE TO DĚJE?
+
+Protože nemáš jasný MODEL.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Nevíš:
+
+❌ Kolik OPRAVDU stojí získání zákazníka
+❌ Která práce ti dělá ZISK a která ztrátu
+❌ Kde tratíš čas na zbytečnosti
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 ŘEŠ TO TEĎ.
+
+Ne za měsíc.
+Ne až "bude čas".
+TEĎ.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Podnikatelská Čtvrtka ti ukáže:
+
+→ Kde tratíš čas (a peníze)
+→ Jak zvýšit hodnotu každé hodiny
+→ Jak vybudovat byznys který má smysl
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+90 minut investice = roky lepších rozhodnutí.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Tvůj čas je tvoje nejdražší investice.
+
+Přestaň ho mrhat.
+
+👉 www.podnikatelskactvrtka.cz
+
+#podnikani #cas #hodnota #efektivita`
   },
 ];
 
@@ -5273,6 +5381,15 @@ function Post25NoDiscounts() {
   );
 }
 
+// Post #26: Time Value (Animated)
+function Post26TimeValue() {
+  return (
+    <PostContainer format="4:5" id={26} title="Post #26: KOLIK STOJÍ TVŮJ ČAS?">
+      <OrganicPost26TimeValue />
+    </PostContainer>
+  );
+}
+
 // Main component
 export default function OrganicPosts() {
   const [currentPost, setCurrentPost] = useState(0);
@@ -5311,6 +5428,7 @@ export default function OrganicPosts() {
       case 22: return <Post23Domino />;
       case 23: return <Post24SplitScreen />;
       case 24: return <Post25NoDiscounts />;
+      case 25: return <Post26TimeValue />;
       default: return <Post1Static />;
     }
   };
