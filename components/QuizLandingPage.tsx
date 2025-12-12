@@ -7,16 +7,16 @@ import { Snowfall } from './Snowfall';
 export function QuizLandingPage() {
   const [showQuiz, setShowQuiz] = useState(false);
 
-  const handleQuizComplete = async (result: any, email: string, answers: Record<string, number>) => {
+  const handleQuizComplete = async (result: any, email: string, name: string, answers: Record<string, number>) => {
     try {
-      console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
+      console.log('🔍 DEBUG: handleQuizComplete called', { result, email, name });
       
       // ✅ THEN call API FIRST (before showing results!)
       console.log('📤 Calling quiz-submit API...');
       console.log('📤 URL:', '/.netlify/functions/quiz-submit');
       console.log('📤 Payload:', JSON.stringify({
         email,
-        name: email.split('@')[0],
+        name,
         quizType: result.category === 'beginner' ? 'beginner' : 'existing',
         answers,
         result
@@ -29,7 +29,7 @@ export function QuizLandingPage() {
         },
         body: JSON.stringify({
           email,
-          name: email.split('@')[0], // Use email prefix as name
+          name,
           quizType: result.category === 'beginner' ? 'beginner' : 'existing',
           answers,
           result: {

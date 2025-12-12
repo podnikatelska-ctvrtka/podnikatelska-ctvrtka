@@ -379,7 +379,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
 }
 
 interface BusinessHealthQuizProps {
-  onComplete?: (result: QuizResult, email: string, answers: Record<string, number>) => void;
+  onComplete?: (result: QuizResult, email: string, name: string, answers: Record<string, number>) => void;
   open?: boolean; // ✅ NOVÝ - pro dialog control
   onOpenChange?: (open: boolean) => void; // ✅ NOVÝ - pro zavření dialogu
 }
@@ -459,7 +459,7 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
       if (onComplete) {
         console.log('🔍 DEBUG: Calling onComplete callback...');
         try {
-          await onComplete(calculatedResult, email, answers);
+          await onComplete(calculatedResult, email, name, answers);
           console.log('✅ DEBUG: onComplete finished successfully!');
         } catch (callbackError) {
           console.error('❌ ERROR in onComplete callback:', callbackError);
@@ -711,7 +711,21 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm text-slate-700 mb-2">
-                            Tvůj email
+                            Tvé jméno
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Jak ti máme říkat?"
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm text-slate-700 mb-2">
+                            Email
                           </label>
                           <input
                             type="email"
@@ -719,19 +733,6 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="tvuj@email.cz"
-                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm text-slate-700 mb-2">
-                            Jméno (nepovinné)
-                          </label>
-                          <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Jak ti máme říkat?"
                             className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
                           />
                         </div>

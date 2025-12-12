@@ -101,7 +101,7 @@ export function QuizResultsPage({
               </div>
               <button
                 onClick={() => window.print()}
-                className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white px-6 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl"
               >
                 <Printer className="w-5 h-5" />
                 Vytisknout

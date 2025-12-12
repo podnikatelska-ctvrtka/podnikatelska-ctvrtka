@@ -871,10 +871,14 @@ export default function App() {
     // Check on mount
     checkHash();
     
-    // Listen for hash changes
+    // Listen for hash changes AND pathname changes
     window.addEventListener('hashchange', checkHash);
+    window.addEventListener('popstate', checkHash);
     
-    return () => window.removeEventListener('hashchange', checkHash);
+    return () => {
+      window.removeEventListener('hashchange', checkHash);
+      window.removeEventListener('popstate', checkHash);
+    };
   }, []);
   
   // 🔐 AUTO-REDIRECT: DISABLED - User can see landing page even when authenticated

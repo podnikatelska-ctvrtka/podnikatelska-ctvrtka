@@ -34,9 +34,9 @@ export function HeroSection() {
   }, []);
   
   // ✅ HANDLER pro dokončení kvízu
-  const handleQuizComplete = async (result: any, email: string, answers: Record<string, number>) => {
+  const handleQuizComplete = async (result: any, email: string, name: string, answers: Record<string, number>) => {
     try {
-      console.log('🔍 DEBUG: handleQuizComplete called', { result, email });
+      console.log('🔍 DEBUG: handleQuizComplete called', { result, email, name });
       
       // ✅ CALL NETLIFY FUNCTION (same as QuizLandingPage!)
       console.log('📤 Calling quiz-submit API...');
@@ -48,7 +48,7 @@ export function HeroSection() {
         },
         body: JSON.stringify({
           email,
-          name: email.split('@')[0], // Use email prefix as name
+          name,
           quizType: result.category === 'beginner' ? 'beginner' : 'existing',
           answers,
           result: {
@@ -57,7 +57,8 @@ export function HeroSection() {
             categoryLabel: result.categoryLabel,
             categoryDescription: result.categoryDescription || '',
             risks: result.risks || [],
-            recommendations: result.recommendations || []
+            recommendations: result.recommendations || [],
+            subScores: result.subScores || []
           }
         })
       });
