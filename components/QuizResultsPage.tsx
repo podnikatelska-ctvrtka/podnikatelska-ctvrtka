@@ -2,31 +2,51 @@ import { useEffect, useState } from 'react';
 import { CheckCircle, Mail, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 
-export function QuizResultsPage() {
+interface QuizResultsPageProps {
+  email?: string;
+  score?: number;
+  category?: string;
+  subScores?: { label: string; score: number; icon: string }[];
+}
+
+export function QuizResultsPage({ 
+  email: propsEmail, 
+  score: propsScore, 
+  category: propsCategory, 
+  subScores: propsSubScores 
+}: QuizResultsPageProps = {}) {
   const [email, setEmail] = useState('');
   const [score, setScore] = useState<number | null>(null);
   const [category, setCategory] = useState('');
   const [subScores, setSubScores] = useState<{ label: string; score: number; icon: string }[]>([]);
 
   useEffect(() => {
-    // Získej data z URL query parametrů
-    const urlParams = new URLSearchParams(window.location.search);
-    const emailParam = urlParams.get('email');
-    const scoreParam = urlParams.get('score');
-    const categoryParam = urlParams.get('category');
-    const subScoresParam = urlParams.get('subScores');
+    // ✅ PRIORITA 1: Props (když se volá z QuizLandingPage)
+    if (propsEmail) setEmail(propsEmail);
+    if (propsScore !== undefined) setScore(propsScore);
+    if (propsCategory) setCategory(propsCategory);
+    if (propsSubScores) setSubScores(propsSubScores);
+    
+    // ✅ PRIORITA 2: URL params (když se naviguje přímo na /kviz)
+    if (!propsEmail) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const emailParam = urlParams.get('email');
+      const scoreParam = urlParams.get('score');
+      const categoryParam = urlParams.get('category');
+      const subScoresParam = urlParams.get('subScores');
 
-    if (emailParam) setEmail(emailParam);
-    if (scoreParam) setScore(parseInt(scoreParam));
-    if (categoryParam) setCategory(categoryParam);
-    if (subScoresParam) {
-      try {
-        setSubScores(JSON.parse(decodeURIComponent(subScoresParam)));
-      } catch (e) {
-        console.error('Failed to parse subScores:', e);
+      if (emailParam) setEmail(emailParam);
+      if (scoreParam) setScore(parseInt(scoreParam));
+      if (categoryParam) setCategory(categoryParam);
+      if (subScoresParam) {
+        try {
+          setSubScores(JSON.parse(decodeURIComponent(subScoresParam)));
+        } catch (e) {
+          console.error('Failed to parse subScores:', e);
+        }
       }
     }
-  }, []);
+  }, [propsEmail, propsScore, propsCategory, propsSubScores]);
 
   // Emoji podle kategorie
   const getCategoryEmoji = () => {

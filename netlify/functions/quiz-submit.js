@@ -29,8 +29,11 @@ async function sendEmail(to, subject, html) {
 }
 
 export async function handler(event, context) {
+  console.log('🚀 quiz-submit function called');
+  
   // Only accept POST requests
   if (event.httpMethod !== 'POST') {
+    console.log('❌ Wrong method:', event.httpMethod);
     return {
       statusCode: 405,
       body: JSON.stringify({ error: 'Method not allowed' })
@@ -47,6 +50,7 @@ export async function handler(event, context) {
   
   // Handle OPTIONS preflight request
   if (event.httpMethod === 'OPTIONS') {
+    console.log('✅ OPTIONS preflight');
     return {
       statusCode: 200,
       headers,
@@ -55,9 +59,11 @@ export async function handler(event, context) {
   }
   
   try {
+    console.log('📦 Raw event body:', event.body);
     const { email, name, quizType, answers, result } = JSON.parse(event.body);
     
     console.log('📝 Quiz submission:', { email, quizType, category: result.category, score: result.score });
+    console.log('📊 Full result object:', result);
     
     // Validate
     if (!email || !result || !answers) {

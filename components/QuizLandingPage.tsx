@@ -16,6 +16,15 @@ export function QuizLandingPage() {
       
       // ✅ THEN call API FIRST (before showing results!)
       console.log('📤 Calling quiz-submit API...');
+      console.log('📤 URL:', '/.netlify/functions/quiz-submit');
+      console.log('📤 Payload:', JSON.stringify({
+        email,
+        name: email.split('@')[0],
+        quizType: result.category === 'beginner' ? 'beginner' : 'existing',
+        answers,
+        result
+      }, null, 2));
+      
       const response = await fetch('/.netlify/functions/quiz-submit', {
         method: 'POST',
         headers: {
@@ -38,6 +47,11 @@ export function QuizLandingPage() {
       });
       
       console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', response.headers);
+      
+      // ⚠️ WAIT 2 seconds so you can see console logs!
+      console.log('⏳ Waiting 2 seconds so you can see logs...');
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // ⚠️ LOKÁLNÍ DEV FALLBACK - pokud Netlify functions nefungují (404)
       if (response.status === 404) {
@@ -65,8 +79,17 @@ export function QuizLandingPage() {
         return; // Exit early - no error, just skip API
       }
       
-      const data = await response.json();
-      console.log('📥 Response data:', data);
+      const responseText = await response.text();
+      console.log('📥 Response text:', responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('📥 Response data:', data);
+      } catch (e) {
+        console.error('❌ Failed to parse response as JSON:', e);
+        throw new Error(`Invalid JSON response: ${responseText}`);
+      }
       
       if (!response.ok) {
         console.error('❌ Quiz submit error:', data);
@@ -102,7 +125,14 @@ export function QuizLandingPage() {
 
   // ✅ CHECK RESULTS FIRST (before rendering landing)
   if (showResults && quizData) {
-    return <QuizResultsPage />;
+    return (
+      <QuizResultsPage 
+        email={quizData.email}
+        score={quizData.score}
+        category={quizData.category}
+        subScores={quizData.subScores}
+      />
+    );
   }
 
   return (
