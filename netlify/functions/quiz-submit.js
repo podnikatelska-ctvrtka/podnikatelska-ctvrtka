@@ -220,7 +220,12 @@ export async function handler(event, context) {
         
         const smartemailingData = await smartemailingResponse.json();
         
-        if (smartemailingResponse.ok && ['ok', 'created'].includes(smartemailingData.status)) {
+        // ⚠️ DŮLEŽITÉ: Smartemailing vrací různé statusy při úspěchu!
+        // "ok" = update existujícího kontaktu
+        // "created" = nový kontakt vytvořen
+        const successStatuses = ['ok', 'created'];
+        
+        if (smartemailingResponse.ok && successStatuses.includes(smartemailingData.status)) {
           console.log('✅ Added to Smartemailing:', smartemailingData.status);
         } else {
           console.error('⚠️ Smartemailing API error:', smartemailingData);
@@ -241,7 +246,7 @@ export async function handler(event, context) {
       try {
         console.log('📨 Sending email via Resend...');
         
-        // �� CREATE ACTION PLAN URL
+        //  CREATE ACTION PLAN URL
         const actionPlanUrl = `https://podnikatelskactvrtka.cz/action-plans?category=${resultToSave.category}&score=${resultToSave.score}&name=${encodeURIComponent(name || 'podnikateli')}`;
         
         // Create email HTML
