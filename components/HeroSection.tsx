@@ -13,6 +13,7 @@ export function HeroSection() {
   const [isQuizOpen, setIsQuizOpen] = useState(false); // ✅ NOVÝ - pro kvíz
   const [mobileTooltip, setMobileTooltip] = useState<string | null>(null);
   const [remainingSpots, setRemainingSpots] = useState(50);
+  const [quizCompleted, setQuizCompleted] = useState(false); // ✅ TRACKING kvízu
   
   // 🚀 PERFORMANCE: Detect if user prefers reduced motion
   const prefersReducedMotion = useReducedMotion();
@@ -31,6 +32,10 @@ export function HeroSection() {
   // Update spots on mount
   useEffect(() => {
     setRemainingSpots(getRemainingSpots());
+    
+    // ✅ Check if quiz is completed
+    const completed = localStorage.getItem('quiz_completed') === 'true';
+    setQuizCompleted(completed);
   }, []);
   
   // ✅ HANDLER pro dokončení kvízu
@@ -267,23 +272,54 @@ export function HeroSection() {
               <div 
                 className="text-center mt-8 hidden md:block"
               >
-                <div className="max-w-md mx-auto">
-                  {/* 🎯 PRIMARY CTA - KVÍZ (soft offer, dominantní) */}
-                  <TouchFeedback>
-                    <button
-                      onClick={() => setIsQuizOpen(true)}
-                      className="w-full px-8 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl group"
-                    >
-                      <div className="flex items-center justify-center gap-3">
-                        <Gift className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        <span>Rosteš nebo tratíš? Zjisti to za 3 min</span>
-                      </div>
-                    </button>
-                  </TouchFeedback>
+                <div className="max-w-md mx-auto relative">
+                  {/* 🎅 Vánoční dekorace - vlevo nahoře */}
+                  <div className="absolute -top-6 -left-6 text-6xl transform -rotate-12 z-10">🎅</div>
+                  {/* 🎄 Vánoční dekorace - vpravo nahoře */}
+                  <div className="absolute -top-6 -right-6 text-6xl transform rotate-12 z-10">🎄</div>
                   
-                  <p className="text-sm text-gray-600 mt-3">
-                    🎁 Zdarma • 📊 Personalizovaný plán • ⚡ Okamžité výsledky
-                  </p>
+                  {/* 🎯 PRIMARY CTA - CONDITIONAL: kvíz NEBO koupit kurz */}
+                  {!quizCompleted ? (
+                    <>
+                      <TouchFeedback>
+                        <button
+                          onClick={() => setIsQuizOpen(true)}
+                          className="w-full px-8 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl group"
+                        >
+                          <div className="flex items-center justify-center gap-3">
+                            <Gift className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                            <span>Rosteš nebo tratíš? Zjisti to za 3 min</span>
+                          </div>
+                        </button>
+                      </TouchFeedback>
+                      
+                      <p className="text-sm text-gray-600 mt-3">
+                        🎁 Zdarma • 📊 Personalizovaný plán • ⚡ Okamžité výsledky
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <TouchFeedback>
+                        <button
+                          onClick={() => {
+                            const orderSection = document.getElementById('order');
+                            if (orderSection) {
+                              orderSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                          }}
+                          className="w-full px-8 py-5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl group"
+                        >
+                          <div className="flex items-center justify-center gap-3">
+                            <span>Koupit kurz (SLEVA 40%)</span>
+                          </div>
+                        </button>
+                      </TouchFeedback>
+                      
+                      <p className="text-sm text-gray-600 mt-3">
+                        ✅ Kvíz dokončen • 🎯 Ušetři 3.500 Kč • ⏰ Jen do Vánoc
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -450,17 +486,39 @@ export function HeroSection() {
                 transition={{ delay: 1.0 }}
               >
                 <div className="max-w-xs mx-auto">
-                  {/* 🎯 PRIMARY CTA - KVÍZ (soft offer, dominantní) */}
-                  <button 
-                    onClick={() => setIsQuizOpen(true)}
-                    className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl active:from-blue-700 active:to-indigo-700 transition-all duration-200 shadow-lg font-semibold text-lg"
-                  >
-                    🎯 Zjisti ZDARMA jak zdravý je tvůj byznys
-                  </button>
-                  
-                  <p className="text-xs text-gray-600 mt-3">
-                    ⏱️ 3 min • Personalizované výsledky • Akční plán
-                  </p>
+                  {/* 🎯 PRIMARY CTA - CONDITIONAL: kvíz NEBO koupit kurz */}
+                  {!quizCompleted ? (
+                    <>
+                      <button 
+                        onClick={() => setIsQuizOpen(true)}
+                        className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl active:from-blue-700 active:to-indigo-700 transition-all duration-200 shadow-lg font-semibold text-lg"
+                      >
+                        🎯 Zjisti ZDARMA jak zdravý je tvůj byznys
+                      </button>
+                      
+                      <p className="text-xs text-gray-600 mt-3">
+                        ⏱️ 3 min • Personalizované výsledky • Akční plán
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <button 
+                        onClick={() => {
+                          const orderSection = document.getElementById('order');
+                          if (orderSection) {
+                            orderSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          }
+                        }}
+                        className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl active:from-green-700 active:to-emerald-700 transition-all duration-200 shadow-lg font-semibold text-lg"
+                      >
+                        💰 Koupit kurz (SLEVA 40%)
+                      </button>
+                      
+                      <p className="text-xs text-gray-600 mt-3">
+                        ✅ Kvíz hotovo • 🎯 Ušetři 3.500 Kč
+                      </p>
+                    </>
+                  )}
                 </div>
               </motion.div>
 

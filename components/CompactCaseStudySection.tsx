@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { TrendingUp, CheckCircle, Zap, ArrowDown } from "lucide-react";
+import { TrendingUp, CheckCircle, Zap } from "lucide-react";
 import { TakeawaysTimeline } from "./TakeawaysTimeline";
 import { TimelineTabs } from "./TimelineTabs";
 
@@ -9,7 +9,7 @@ export function CompactCaseStudySection() {
   };
 
   return (
-    <section className="case-study-section py-12 bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 relative overflow-hidden" data-section="case-study">
+    <section className="case-study-section py-12 pb-30 bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 relative overflow-hidden" data-section="case-study">
       {/* Background elements */}
       <div className="absolute inset-0">
         <motion.div
@@ -249,41 +249,6 @@ export function CompactCaseStudySection() {
           </div>
           
           <TakeawaysTimeline />
-        </motion.div>
-
-        {/* Jednoduchý CTA - bez dalšího boxu */}
-        <motion.div
-          className="mt-20 md:mt-28 text-center"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="space-y-3">
-            <button
-              onClick={() => {
-                const emailSection = document.getElementById('email-form');
-                if (emailSection) {
-                  // Scroll to email section
-                  emailSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  // Focus on email input after scroll
-                  setTimeout(() => {
-                    const emailInput = emailSection.querySelector('input[type="email"]') as HTMLInputElement;
-                    if (emailInput) {
-                      emailInput.focus();
-                    }
-                  }, 600);
-                }
-              }}
-              className="inline-flex items-center justify-center px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold text-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group cursor-pointer"
-            >
-              Chci svou Čtvrtku za průkopnickou cenu
-              <ArrowDown className="ml-3 w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" />
-            </button>
-            <p className="text-gray-600 text-sm">
-              Mini kurz ZDARMA • Průkopnická cena kurzu (4.999,- Kč)
-            </p>
-          </div>
         </motion.div>
 
       </div>

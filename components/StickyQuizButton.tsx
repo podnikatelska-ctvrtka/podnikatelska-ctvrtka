@@ -9,11 +9,16 @@ interface StickyQuizButtonProps {
 export function StickyQuizButton({ onClick }: StickyQuizButtonProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   useEffect(() => {
+    // Check if quiz is completed
+    const completed = localStorage.getItem('quiz_completed') === 'true';
+    setQuizCompleted(completed);
+    
     // Show button after scrolling 400px
     const handleScroll = () => {
-      if (isDismissed) return;
+      if (isDismissed || completed) return;
       
       const scrollPosition = window.scrollY;
       setIsVisible(scrollPosition > 400);
@@ -31,7 +36,7 @@ export function StickyQuizButton({ onClick }: StickyQuizButtonProps) {
 
   return (
     <AnimatePresence>
-      {isVisible && !isDismissed && (
+      {isVisible && !isDismissed && !quizCompleted && (
         <motion.div
           className="fixed bottom-6 right-6 z-50 px-4 w-full max-w-sm md:max-w-md"
           initial={{ x: 100, opacity: 0 }}
@@ -43,10 +48,14 @@ export function StickyQuizButton({ onClick }: StickyQuizButtonProps) {
           <div className="hidden md:block relative">
             <button
               onClick={onClick}
-              className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white px-6 py-4 rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all hover:scale-105 font-bold text-lg flex items-center justify-center gap-2 group"
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white px-5 py-3 rounded-full transition-all hover:scale-105 font-bold text-base flex items-center justify-center gap-2 group relative"
+              style={{
+                boxShadow: '0 0 30px rgba(255, 255, 255, 0.5), 0 0 50px rgba(251, 146, 60, 0.3), 0 10px 40px rgba(236, 72, 153, 0.4)',
+                border: '2px solid rgba(255, 255, 255, 0.4)'
+              }}
             >
               <Gift className="w-5 h-5 animate-bounce" />
-              <span>Spustit kvíz zdarma</span>
+              <span>Rosteš nebo tratíš? Zjisti to za 3 min</span>
             </button>
             
             {/* Dismiss button */}
@@ -63,10 +72,14 @@ export function StickyQuizButton({ onClick }: StickyQuizButtonProps) {
           <div className="md:hidden relative">
             <button
               onClick={onClick}
-              className="w-full bg-gradient-to-r from-orange-500 to-pink-600 active:from-orange-600 active:to-pink-700 text-white px-5 py-3.5 rounded-full shadow-2xl font-bold text-base flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-600 active:from-orange-600 active:to-pink-700 text-white px-4 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 relative"
+              style={{
+                boxShadow: '0 0 25px rgba(255, 255, 255, 0.5), 0 0 40px rgba(251, 146, 60, 0.3), 0 8px 30px rgba(236, 72, 153, 0.4)',
+                border: '2px solid rgba(255, 255, 255, 0.4)'
+              }}
             >
-              <Gift className="w-5 h-5 animate-bounce" />
-              <span>Kvíz zdarma</span>
+              <Gift className="w-4 h-4 animate-bounce" />
+              <span>Rosteš nebo tratíš?</span>
             </button>
             
             {/* Dismiss button */}

@@ -254,7 +254,7 @@ export async function handler(event, context) {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://podnikatelskactvrtka.cz/kviz/vysledky?email=${encodeURIComponent(email)}&score=${result.score}&category=${encodeURIComponent(result.category)}" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #15803d 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 18px; font-weight: 600; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);">
+                    <a href="https://podnikatelskactvrtka.cz/kviz/vysledky?email=${encodeURIComponent(email)}&score=${result.score}&category=${encodeURIComponent(result.category)}&name=${encodeURIComponent(name || '')}&subScores=${encodeURIComponent(JSON.stringify(result.subScores || []))}" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #15803d 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 18px; font-weight: 600; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);">
                       🎄 Zobrazit kompletní výsledky a akční plán
                     </a>
                   </td>

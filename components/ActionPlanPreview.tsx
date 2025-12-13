@@ -74,8 +74,26 @@ export function ActionPlanPreview() {
       {/* Print styles */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          body { margin: 0; }
-          .print\\:hidden { display: none !important; }
+          body { 
+            margin: 0; 
+            padding: 0;
+          }
+          .print\\\\:hidden { 
+            display: none !important; 
+          }
+          /* Remove empty first page + add proper margins */
+          @page {
+            margin: 1.5cm;
+          }
+          /* Add padding to content */
+          .max-w-4xl {
+            padding: 0.5cm 1cm !important;
+          }
+          /* Ensure no page breaks inside important sections */
+          .print\\\\:break-inside-avoid {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
         }
       ` }} />
     </div>

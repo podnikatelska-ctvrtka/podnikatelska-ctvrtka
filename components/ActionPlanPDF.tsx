@@ -28,8 +28,12 @@ export function ActionPlanPDF({ category, score, name }: ActionPlanPDFProps) {
 // ═══════════════════════════════════════════════════════════
 
 function SellBox() {
+  const handleClick = () => {
+    window.open('https://podnikatelskactvrtka.cz/objednavka', '_blank');
+  };
+
   return (
-    <div className="mt-8 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6 print:break-inside-avoid">
+    <div className="mt-8 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6 print:hidden">
       <h3 className="text-xl font-bold text-blue-900 mb-3 flex items-center gap-2">
         <span className="text-2xl">💡</span> 
         Potřebuješ pomoc s implementací?
@@ -50,15 +54,18 @@ function SellBox() {
         </ul>
       </div>
       
-      <div className="bg-blue-900 text-white rounded-lg p-4 text-center">
+      <button 
+        onClick={handleClick}
+        className="w-full bg-blue-900 text-white rounded-lg p-4 text-center hover:bg-blue-800 transition-colors cursor-pointer"
+      >
         <p className="text-sm mb-2">🎯 Chceš začít HNED?</p>
         <p className="font-bold text-lg mb-2">
           Podnikatelská Čtvrtka - Model podnikání za 90 minut
         </p>
         <p className="text-sm text-blue-200">
-          Zjisti víc na: <span className="font-bold">podnikatelskactvrtka.cz/objednavka</span>
+          Klikni pro více info →
         </p>
-      </div>
+      </button>
       
       <p className="text-xs text-gray-500 mt-4 text-center italic">
         💪 Máš hotový plán. Teď ho jen naplnit životem. Jdeme do toho!

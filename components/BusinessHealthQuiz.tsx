@@ -221,7 +221,7 @@ const existingQuestions: QuizQuestion[] = [
   },
   {
     id: 'e10',
-    question: 'Máš napsané procesy pro hlavní činnosti v byznysu?',
+    question: 'Má�� napsané procesy pro hlavní činnosti v byznysu?',
     type: 'single',
     options: [
       { value: 0, label: 'Ne, všechno mám jen v hlavě' },
@@ -468,7 +468,11 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
       setIsSubmitting(false);
       
       // ✅ Parent (QuizLandingPage) se postará o zobrazení completion modalu
-      // NEBUDEME zavírat modal tady - nechám to na parent component
+      // ✅ Ukládáme, že uživatel dokončil kvíz, pro změnu CTA
+      localStorage.setItem('quiz_completed', 'true');
+      
+      // Přepnout na výsledky
+      setStep('result');
     } catch (error) {
       console.error('❌ CRITICAL ERROR in handleEmailSubmit:', error);
       toast.error(`Kritická chyba: ${error.message || 'Neznámá chyba'}`, {

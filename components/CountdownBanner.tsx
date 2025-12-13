@@ -83,7 +83,7 @@ export function CountdownBanner() {
                   Celková hodnota: 11.000 Kč
                 </div>
                 <div className="text-green-600 text-sm">
-                  Kurz (<span className="line-through text-gray-500">8.499,- Kč</span>) + BONUS konzultace (2.500,- Kč)
+                  Kurz (<span className="line-through text-gray-500">8.499,- Kč</span>) + BONUS 3-denní kurz (2.500,- Kč)
                 </div>
               </div>
             </div>
@@ -114,7 +114,7 @@ export function CountdownBanner() {
                 </div>
                 <div className="flex items-center gap-2 sm:col-span-2">
                   <Star className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  <span className="text-blue-800">BONUS: 60min konzultace (2.500,- Kč)</span>
+                  <span className="text-blue-800">BONUS: 3-denní mini kurz ZDARMA</span>
                 </div>
               </div>
             </div>
@@ -180,10 +180,10 @@ export function CountdownBanner() {
             
               <div className="bg-gray-50 rounded-lg p-3 mb-3">
                 <p className="text-center mb-2 text-sm">
-                  <span className="text-blue-600">60min konzultace</span>
+                  <span className="text-blue-600">3-denní mini kurz</span>
                 </p>
                 <p className="text-gray-600 text-center text-xs">
-                  Společně vyplníme vaši čtvrtku
+                  Emaily které tě provedou základy
                 </p>
               </div>
               
@@ -216,15 +216,15 @@ export function CountdownBanner() {
                 <div className="text-xs text-gray-700 space-y-1">
                   <div className="flex items-center gap-1">
                     <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
-                    <span>Společné vyplnění čtvrtky</span>
+                    <span>3 denní emailový průvodce</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
-                    <span>Akční kroky na 30 dní</span>
+                    <span>Praktické rady a tipy</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
-                    <span>Odpovědi na otázky</span>
+                    <span>Šablony k okamžitému použití</span>
                   </div>
                 </div>
               </div>

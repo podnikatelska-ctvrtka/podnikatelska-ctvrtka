@@ -20,6 +20,7 @@ import { CompactCaseStudySection } from "./components/CompactCaseStudySection";
 import { CountdownBanner } from "./components/CountdownBanner";
 import { PrelaunchEmailCapture } from "./components/PrelaunchEmailCapture";
 import { EarlyAccessSale } from "./components/EarlyAccessSale";
+import { PrelaunchCTA } from "./components/PrelaunchCTA";
 
 import { AdCreativesShowcase } from "./components/FacebookAdCreatives";
 import { FinalAdSetsShowcase } from "./components/FinalAdSets";
@@ -170,7 +171,7 @@ export default function App() {
   const [showInteractiveCourse, setShowInteractiveCourse] = useState(false);
   
   // 🛍️ SALES MODE: "prelaunch" | "early-access" | "normal-sale"
-  const saleMode = "prelaunch";
+  const saleMode = "normal-sale";
   
   // 📊 META PIXEL: Inicializace
   useEffect(() => {
@@ -1436,7 +1437,7 @@ export default function App() {
       <div id="order">
         {saleMode === "early-access" && <EarlyAccessSale />}
         {saleMode === "prelaunch" && <PrelaunchEmailCapture />}
-        {saleMode === "normal-sale" && <CountdownBanner />}
+        {saleMode === "normal-sale" && <PrelaunchCTA />}
       </div>
       
       {/* Toast notifikace */}
