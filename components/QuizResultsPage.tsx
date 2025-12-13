@@ -29,13 +29,13 @@ export function QuizResultsPage({
     const style = document.createElement('style');
     style.textContent = `
       @media print {
-        /* ✅ FIX #1: Nastav @page jako první */
+        /* ✅ KLÍČOVÉ: @page s marginy */
         @page {
           size: A4;
-          margin: 1.5cm 1.5cm 1.5cm 1.5cm; /* Top Right Bottom Left - odsazení od kraje papíru */
+          margin: 1cm; /* Rovnoměrné odsazení ze všech stran */
         }
         
-        /* ✅ FIX #2: Reset HTML a BODY - bez pozicování */
+        /* Reset HTML a BODY */
         html {
           margin: 0 !important;
           padding: 0 !important;
@@ -69,12 +69,14 @@ export function QuizResultsPage({
           visibility: hidden !important;
         }
         
-        /* ✅ FIX #3: Print-keep BEZ absolute position - jen static flow */
+        /* ✅ OPRAVENO: Print-keep s paddingem a static position */
         .print-keep {
-          position: static !important; /* Důležité: ne absolute! */
+          position: absolute;
+          left: 0;
+          top: 0;
           width: 100% !important;
           margin: 0 !important;
-          padding: 0 !important; /* Odsazení je už v @page margin */
+          padding: 0.5cm !important; /* Vnitřní padding pro obsah */
         }
         
         /* Kompaktní layout */
@@ -84,15 +86,16 @@ export function QuizResultsPage({
           margin: 0 !important;
         }
         
-        /* ✅ FIX #4: Lepší page breaks - vyhnout se rozkouskování */
+        /* ✅ Lepší page breaks - vyhnout se rozkouskování */
         .bg-white, .rounded-2xl, .rounded-xl, .mb-5, .space-y-3 > * {
           page-break-inside: avoid !important;
           break-inside: avoid !important;
         }
         
-        /* Týdenní sekce - vždy začínat na nové stránce pokud potřeba */
+        /* Týdenní sekce - nepřerušovat */
         h3.font-bold {
           page-break-after: avoid !important;
+          page-break-inside: avoid !important;
         }
         
         /* Checkbox položky - nepřerušovat */
@@ -101,18 +104,54 @@ export function QuizResultsPage({
           break-inside: avoid !important;
         }
         
-        /* Menší mezery pro úsporu místa */
-        .space-y-8 {
-          gap: 0.3rem !important;
+        /* ✅ KOMPAKTNÍ MEZERY - ušetří místo */
+        .space-y-8, .space-y-8 > * + * {
+          margin-top: 0.3rem !important;
         }
         
-        .space-y-6 {
-          gap: 0.2rem !important;
+        .space-y-6, .space-y-6 > * + * {
+          margin-top: 0.25rem !important;
         }
         
-        .space-y-3 {
-          gap: 0.1rem !important;
+        .space-y-5, .space-y-5 > * + * {
+          margin-top: 0.2rem !important;
         }
+        
+        .space-y-3, .space-y-3 > * + * {
+          margin-top: 0.15rem !important;
+        }
+        
+        /* ✅ KOMPAKTNÍ PADDING */
+        .p-4 { padding: 0.3rem !important; }
+        .p-6 { padding: 0.4rem !important; }
+        .p-8 { padding: 0.5rem !important; }
+        
+        .px-4, .px-6 {
+          padding-left: 0.3rem !important;
+          padding-right: 0.3rem !important;
+        }
+        
+        .py-4, .py-6 {
+          padding-top: 0.3rem !important;
+          padding-bottom: 0.3rem !important;
+        }
+        
+        .mb-5, .mb-6 {
+          margin-bottom: 0.25rem !important;
+        }
+        
+        .mb-3, .mb-4 {
+          margin-bottom: 0.2rem !important;
+        }
+        
+        /* ✅ KOMPAKTNÍ NADPISY */
+        h1 { font-size: 1.2rem !important; margin-bottom: 0.2rem !important; }
+        h2 { font-size: 1.1rem !important; margin-bottom: 0.15rem !important; }
+        h3 { font-size: 1rem !important; margin-bottom: 0.15rem !important; }
+        
+        /* ✅ KOMPAKTNÍ TEXT */
+        p { font-size: 0.8rem !important; line-height: 1.2 !important; margin-bottom: 0.15rem !important; }
+        li { font-size: 0.8rem !important; line-height: 1.2 !important; }
         
         /* Skrýt stíny */
         * {
@@ -120,13 +159,6 @@ export function QuizResultsPage({
           text-shadow: none !important;
           print-color-adjust: exact !important;
           -webkit-print-color-adjust: exact !important;
-        }
-      }
-      
-      /* Screen-only styles */
-      @media screen {
-        .screen-only {
-          display: block;
         }
       }
     `;
