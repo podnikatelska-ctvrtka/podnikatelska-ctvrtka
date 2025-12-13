@@ -237,8 +237,8 @@ export function QuizResultsPage({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 py-8 px-4">
-      <div className="max-w-7xl mx-auto print-keep">{/* ✅ Wider for 2-column layout */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 py-8 px-4 print-keep">
+      <div className="max-w-7xl mx-auto">{/* ✅ Wider for 2-column layout */}
         
         {/* 🎯 HEADER - NEVIDITELNÝ PŘI TISKU */}
         <div className="print:hidden mb-6">

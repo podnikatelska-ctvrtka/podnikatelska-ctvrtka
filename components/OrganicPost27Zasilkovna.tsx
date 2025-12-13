@@ -195,9 +195,25 @@ export function OrganicPost27Zasilkovna() {
               transition={{ delay: 1 }}
               className="mt-12"
             >
-              <p className="text-2xl text-white">
+              <p className="text-2xl text-white mb-6">
                 Všechno začalo <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent font-bold">správným modelem</span>
               </p>
+              
+              {/* CTA na detailní rozbor */}
+              <motion.a
+                href="https://podnikatelskactvrtka.cz/zasilkovna"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3 }}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-full text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                <span>📖 Celý rozbor modelu Zásilkovny</span>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </motion.a>
             </motion.div>
           </motion.div>
         )}
