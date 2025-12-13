@@ -6,7 +6,7 @@ import { TouchFeedback } from "./TouchFeedback";
 export function PrelaunchCTA() {
   return (
     <motion.section 
-      className="relative py-24 px-4 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 overflow-hidden"
+      className="relative py-12 md:py-16 lg:py-24 px-4 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 overflow-hidden"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}

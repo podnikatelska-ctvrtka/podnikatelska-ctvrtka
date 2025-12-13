@@ -467,12 +467,12 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
       
       setIsSubmitting(false);
       
-      // ✅ Parent (QuizLandingPage) se postará o zobrazení completion modalu
+      // ✅ Parent (QuizLandingPage) se postará o redirect na /kviz/hotovo
       // ✅ Ukládáme, že uživatel dokončil kvíz, pro změnu CTA
       localStorage.setItem('quiz_completed', 'true');
       
-      // Přepnout na výsledky
-      setStep('result');
+      // ⚠️ NEMĚŇ step na 'result' - parent dělá redirect na /kviz/hotovo!
+      // Kdyby se změnil step, uživatel by viděl probliknutí result page před redirectem
     } catch (error) {
       console.error('❌ CRITICAL ERROR in handleEmailSubmit:', error);
       toast.error(`Kritická chyba: ${error.message || 'Neznámá chyba'}`, {

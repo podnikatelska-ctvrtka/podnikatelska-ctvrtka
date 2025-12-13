@@ -83,7 +83,7 @@ export function EarlyAccessSale() {
 
   return (
     <motion.section 
-      className="py-16 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 relative overflow-hidden"
+      className="py-12 md:py-16 lg:py-24 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 relative overflow-hidden"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

@@ -9,7 +9,7 @@ export function CompactCaseStudySection() {
   };
 
   return (
-    <section className="case-study-section py-12 pb-30 bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 relative overflow-hidden" data-section="case-study">
+    <section className="case-study-section py-12 md:py-16 lg:py-24 bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 relative overflow-hidden" data-section="case-study">
       {/* Background elements */}
       <div className="absolute inset-0">
         <motion.div

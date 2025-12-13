@@ -1,9 +1,17 @@
+import { useState, useEffect } from "react";
+import { Toaster } from "./components/ui/sonner";
+import * as Sentry from "@sentry/react";
+import { supabase } from "./lib/supabase";
+import { initMetaPixel, trackPageView } from "./lib/metaPixel";
+import { initAllAnalytics } from "./lib/analytics";
+
 import { QuizLandingPage } from "./components/QuizLandingPage"; // ✅ QUIZ LANDING PAGE
 import { QuizResultsPage } from "./components/QuizResultsPage"; // ✅ QUIZ RESULTS PAGE
 import { QuizThankYouPage } from "./components/QuizThankYouPage"; // ✅ QUIZ THANK YOU PAGE
 import { ActionPlanPreview } from "./components/ActionPlanPreview"; // ✅ ACTION PLAN PDF
 import { KonzultacePage } from "./components/KonzultacePage"; // ✅ FREE KONZULTACE PAGE
 import { StickyQuizButton } from "./components/StickyQuizButton"; // ✅ STICKY QUIZ BUTTON
+import { OptimizedMobileCTA } from "./components/OptimizedMobileCTA"; // ✅ BLUE SALES BUTTON (after quiz)
 import { ZasilkovnaBusinessModel } from "./components/ZasilkovnaBusinessModel"; // ✅ ZASILKOVNA BUSINESS MODEL
 import { QuizTestPage } from "./components/QuizTestPage"; // ✅ QUIZ TEST PAGE
 import { CourseDemoV3 } from "./components/CourseDemoV3"; // ✅ COURSE V3
@@ -58,22 +66,13 @@ import { Value3Versions } from "./components/Value3Versions";
 import { Value3NewDesigns } from "./components/Value3NewDesigns";
 import { Value3MediumDesigns } from "./components/Value3MediumDesigns";
 import { RemarketingAdsPreview } from "./components/RemarketingAdsPreview";
-
 import { Analytics } from "./components/Analytics";
 import { AnalyticsTracking } from "./components/AnalyticsTracking";
 import { CriticalCSS } from "./components/CriticalCSS";
 import { MobileProgressBar } from "./components/MobileProgressBar";
-import { OptimizedMobileCTA } from "./components/OptimizedMobileCTA";
 import { CookieConsent } from "./components/CookieConsent";
 import { InstallPrompt } from "./components/InstallPrompt";
 import { DevBadge } from "./components/DevModeBanner";
-
-import { Toaster } from "./components/ui/sonner";
-import { useEffect, useState } from "react";
-import { supabase } from "./lib/supabase";
-import * as Sentry from "@sentry/react";
-import { initMetaPixel, trackPageView } from "./lib/metaPixel";
-import { initAllAnalytics } from "./lib/analytics";
 
 export default function App() {
   // ✅ HELPER: Inicializace state podle URL (aby nedošlo k probliknutí)
@@ -173,6 +172,9 @@ export default function App() {
   // 🛍️ SALES MODE: "prelaunch" | "early-access" | "normal-sale"
   const saleMode = "normal-sale";
   
+  // ✅ QUIZ STATE: Track if user completed quiz (for showing blue CTA button)
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  
   // 📊 META PIXEL: Inicializace
   useEffect(() => {
     initMetaPixel();
@@ -183,6 +185,13 @@ export default function App() {
   // 📊 ANALYTICS: Inicializace GA4 + Clarity
   useEffect(() => {
     initAllAnalytics();
+  }, []);
+  
+  // ✅ QUIZ COMPLETED: Check localStorage for quiz completion status
+  useEffect(() => {
+    const completed = localStorage.getItem('quiz_completed') === 'true';
+    setQuizCompleted(completed);
+    console.log('🎯 Quiz completed check:', completed);
   }, []);
   
   // 📱 PWA AUTO-REDIRECT: Pokud user otevře PWA z desktopu a má uložený token
@@ -1392,6 +1401,7 @@ export default function App() {
       }
       
       console.log('✅ Quiz submitted successfully');
+      setQuizCompleted(true);
     } catch (error) {
       console.error('❌ Quiz submission error:', error);
     }
@@ -1413,7 +1423,6 @@ export default function App() {
       
       {/* Mobile UX Enhancements */}
       <MobileProgressBar />
-      <OptimizedMobileCTA />
     <div className="min-h-screen">
       {/* 1. Úvod a hlavní nabídka */}
       <HeroSection />
@@ -1451,6 +1460,9 @@ export default function App() {
         // Open quiz modal (need to add state and handler)
         window.location.href = '/kviz';
       }} />
+      
+      {/* ✅ OPTIMIZED MOBILE CTA - Shows ONLY when quiz is completed */}
+      {quizCompleted && <OptimizedMobileCTA />}
     </div>
     </>
   );

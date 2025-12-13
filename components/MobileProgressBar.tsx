@@ -11,7 +11,7 @@ export function MobileProgressBar() {
     { id: 'testimonials', label: '⭐ Úspěchy' },
     { id: 'benefits', label: '🎁 Co získáte' },
     { id: 'case-study', label: '📈 Příklad' },
-    { id: 'order', label: '✨ Registrace' }
+    { id: 'order', label: '🔥 Získat kurz' }
   ];
 
   useEffect(() => {
@@ -67,8 +67,8 @@ export function MobileProgressBar() {
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-blue-600 font-semibold flex-shrink-0 ml-2 overflow-hidden">
-            <span className="flex-shrink-0">✨</span>
-            <span className="hidden xs:inline">Registrace</span>
+            <span className="flex-shrink-0">🔥</span>
+            <span className="hidden xs:inline">Získat kurz</span>
           </div>
         </div>
         

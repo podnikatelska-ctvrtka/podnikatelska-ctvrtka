@@ -45,13 +45,11 @@ function SellBox() {
       
       <div className="bg-white rounded-lg p-4 mb-4 border border-blue-200">
         <p className="text-sm text-gray-600 mb-2">
-          📧 <strong>Za 24 hodin ti pošleme email</strong> s nabídkou:
+          📧 <strong>Za 24 hodin ti pošleme email</strong> s dotazem jak ti jde akční plán a kde bychom ti mohli pomoci.
         </p>
-        <ul className="text-sm text-gray-700 space-y-1 ml-6">
-          <li>✓ Krok-za-krokem video návod jak udělat svůj Model podnikání</li>
-          <li>✓ Konkrétní příklady z byznysu podobného tomu tvému</li>
-          <li>✓ Šablony a checklists které můžeš hned použít</li>
-        </ul>
+        <p className="text-sm text-gray-700 mt-2">
+          Když budeš chtít udělat svůj Model podnikání pomocí videa, příkladů a šablon — dáme ti vědět.
+        </p>
       </div>
       
       <button 

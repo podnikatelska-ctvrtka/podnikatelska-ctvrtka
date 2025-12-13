@@ -401,7 +401,7 @@ export function PrelaunchEmailCapture() {
   return (
     <motion.section 
       id="email-form"
-      className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 relative overflow-hidden"
+      className="py-12 md:py-16 lg:py-24 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 relative overflow-hidden"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

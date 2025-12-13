@@ -29,6 +29,30 @@ export function QuizResultsPage({
     const style = document.createElement('style');
     style.textContent = `
       @media print {
+        /* ✅ FIX #1: Nastav @page jako první */
+        @page {
+          size: A4;
+          margin: 1.5cm 1.5cm 1.5cm 1.5cm; /* Top Right Bottom Left - odsazení od kraje papíru */
+        }
+        
+        /* ✅ FIX #2: Reset HTML a BODY - bez pozicování */
+        html {
+          margin: 0 !important;
+          padding: 0 !important;
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        
+        body {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: white !important;
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+        }
+        
         /* Skrýt VŠECHNO kromě main contentu */
         body * {
           visibility: hidden;
@@ -45,26 +69,12 @@ export function QuizResultsPage({
           visibility: hidden !important;
         }
         
-        /* Optimalizace pro tisk - FIX PRÁZDNÁ PRVNÍ STRÁNKA */
-        body {
-          margin: 0 !important;
-          padding: 0 !important;
-          background: white !important;
-        }
-        
-        html {
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-        
-        /* Výsledkový plán na celou šířku - BEZ TOP MARGIN */
+        /* ✅ FIX #3: Print-keep BEZ absolute position - jen static flow */
         .print-keep {
-          position: absolute;
-          left: 0;
-          top: 0;
+          position: static !important; /* Důležité: ne absolute! */
           width: 100% !important;
           margin: 0 !important;
-          padding: 1cm 1.5cm !important; /* Lepší odsazení pro tisk */
+          padding: 0 !important; /* Odsazení je už v @page margin */
         }
         
         /* Kompaktní layout */
@@ -74,48 +84,42 @@ export function QuizResultsPage({
           margin: 0 !important;
         }
         
-        /* Menší mezery */
+        /* ✅ FIX #4: Lepší page breaks - vyhnout se rozkouskování */
+        .bg-white, .rounded-2xl, .rounded-xl, .mb-5, .space-y-3 > * {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
+        
+        /* Týdenní sekce - vždy začínat na nové stránce pokud potřeba */
+        h3.font-bold {
+          page-break-after: avoid !important;
+        }
+        
+        /* Checkbox položky - nepřerušovat */
+        label.flex {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
+        
+        /* Menší mezery pro úsporu místa */
         .space-y-8 {
-          gap: 0.5rem !important;
+          gap: 0.3rem !important;
         }
         
-        /* KLÍČOVÉ: Zachovat VŠECHNY barvy při tisku! */
-        @page {
-          size: A4;
-          margin: 0; /* Žádné extra margins od browseru */
+        .space-y-6 {
+          gap: 0.2rem !important;
         }
         
-        html {
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important;
-          color-adjust: exact !important;
-        }
-        
-        body {
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important;
-        }
-        
-        * {
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important;
-        }
-        
-        /* Optimalizované page breaks */
-        .bg-white, .rounded-2xl, .rounded-xl {
-          page-break-inside: avoid;
-          break-inside: avoid;
+        .space-y-3 {
+          gap: 0.1rem !important;
         }
         
         /* Skrýt stíny */
         * {
           box-shadow: none !important;
           text-shadow: none !important;
-        }
-        
-        /* Emoji support */
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
         }
       }
       
