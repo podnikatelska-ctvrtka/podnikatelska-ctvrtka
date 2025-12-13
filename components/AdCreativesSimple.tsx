@@ -202,7 +202,7 @@ export default function AdCreativesSimple() {
             3 reklamy • Méně textu • Větší fonty • Jasnější message!
           </p>
           <div className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-bold">
-            ✅ Screenshot Ready ��� Bez jargonu • Bez bullshitu
+            ✅ Screenshot Ready • Bez jargonu • Bez bullshitu
           </div>
         </div>
 
@@ -333,7 +333,7 @@ Ne teorie. Ne guru kecy. Jen konkrétní kroky které fungují.
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-bold text-gray-300 mb-2">HEADLINE:</p>
-                    <p className="text-sm bg-black/30 p-3 rounded">Konečně mějte jasno v podnikání</p>
+                    <p className="text-sm bg-black/30 p-3 rounded">Konečně mějte jasno v podnikán��</p>
                   </div>
                   <div>
                     <p className="text-sm font-bold text-gray-300 mb-2">CTA:</p>

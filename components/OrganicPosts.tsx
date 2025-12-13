@@ -11,6 +11,9 @@ import { OrganicPost23Domino } from './OrganicPost23Domino';
 import { OrganicPost24SplitScreen } from './OrganicPost24SplitScreen';
 import { OrganicPost25NoDiscounts } from './OrganicPost25NoDiscounts';
 import { OrganicPost26TimeValue } from './OrganicPost26TimeValue';
+import { OrganicPost27Zasilkovna } from './OrganicPost27Zasilkovna';
+import { OrganicPost28FOMO } from './OrganicPost28FOMO';
+import { OrganicPost29QuizTeaser } from './OrganicPost29QuizTeaser';
 
 /**
  * 🎯 ORGANIC POSTS - 30 DNÍ SÉRIE
@@ -41,6 +44,10 @@ import { OrganicPost26TimeValue } from './OrganicPost26TimeValue';
  * - Post #23: DOMINO EFEKT (animated, chain reaction - 9 bloků = 9 domino kostek) ✅
  * - Post #24: SPLIT SCREEN (static, 2 podnikatelé - chaos vs systém) ✅
  * - Post #25: PROČ SLEVY NEFUNGUJÍ (animated, inbox spam - hodnota > sleva) ✅
+ * - Post #26: KOLIK STOJÍ TVŮJ ČAS (animated, kalkulačka - reálná hodinová sazba) ✅
+ * - Post #27: ZÁSILKOVNA (animated, case study - jak poslali poštu do kolen) ✅
+ * - Post #28: ZATÍMCO TY VÁHÁŠ (animated, FOMO - konkurence validuje) ✅
+ * - Post #29: QUIZ TEASER (animated, mockup - 3 minuty odhalí zdraví) ✅
  */
 
 interface PostData {
@@ -1584,6 +1591,247 @@ Přestaň ho mrhat.
 👉 www.podnikatelskactvrtka.cz
 
 #podnikani #cas #hodnota #efektivita`
+  },
+
+  // POST #27: ZÁSILKOVNA (Case study)
+  {
+    id: 27,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #27: ZÁSILKOVNA',
+    copy: `Jak Zásilkovna poslala Českou poštu do kolen?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+😤 PROBLÉM:
+
+Česká pošta štvala lidi roky.
+
+❌ Dlouhé fronty
+❌ Zavřeno když potřebuješ
+❌ Drahá doprava
+❌ Nespolehlivá
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 PAK PŘIŠLA ZÁSILKOVNA.
+
+Neřešili produkt.
+Změnili MODEL.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ 10,000+ výdejních míst (blízko tebe)
+✅ Boxy 24/7 (flexibilita)
+✅ Levnější než pošta
+✅ Jednoduché (přijde kód, vyzvednuš)
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Odstranili největší bolesti.
+
+Vytvořili síť partnerství (benzinky, večerky).
+
+Oboustranně výhodné - propagace zdarma.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 VÝSLEDKY:
+
+→ 10,000+ výdejních míst
+→ 10+ mld Kč hodnota
+→ 30+ zemí
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Z "šíleného nápadu" na dominantního hráče.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💎 TAJEMSTVÍ?
+
+Ne produkt.
+Ne capital.
+Ne luck.
+
+MODEL PODNIKÁNÍ.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Podnikatelská Čtvrtka tě naučí:
+
+→ Jak najít skutečné bolesti zákazníků
+→ Jak postavit model který funguje
+→ Jak vybudovat partnerství
+→ Jak škálovat bez miliard
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+90 minut = tvůj systematický plán.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Takhle se dělá byznys.
+
+👉 www.podnikatelskactvrtka.cz
+
+📊 nebo udělej KVÍZ: Jak zdravý je tvůj model? → /kviz
+
+#podnikani #zasilkovna #model #uspech`
+  },
+
+  // POST #28: ZATÍMCO TY VÁHÁŠ (FOMO)
+  {
+    id: 28,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #28: ZATÍMCO TY VÁHÁŠ',
+    copy: `Zatímco čteš tento post...
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+⏱️ PRÁVĚ TEĎ:
+
+→ 47 podnikatelů validuje svůj nápad
+→ 23 otestovalo svůj první segment
+→ 12 ušetřilo 50.000 Kč špatnou investicí
+→ 8 našlo svůj ziskový kanál
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❓ A CO TY?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+"Ještě si to rozmyslím..."
+"Až budu mít čas..."
+"Možná to zkusím později..."
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💔 REALITA:
+
+Zatímco ty váháš:
+
+❌ Konkurence už testuje zákazníky
+❌ Trh se mění
+❌ Nejlepší příležitosti mizí
+❌ Tvůj nápad stárne
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+⏰ KAŽDÝ DEN ČEKÁNÍ = ZTRÁTA.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Ne proto, že spěcháme s prodejem.
+
+Ale proto, že TVŮJ čas tikuje.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 DVĚ MOŽNOSTI:
+
+1️⃣ Čekat další měsíc a doufat
+2️⃣ Investovat 90 minut a VĚDĚT
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Podnikatelská Čtvrtka ti dá:
+
+✅ Jasný plán co dělat PRVNÍ
+✅ Nástroje pro validaci do týdne
+✅ Jistotu že jdeš správným směrem
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Není to o nás.
+Je to o TOBĚ.
+
+A tvém byznysu, který si zaslouží šanci.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Přestaň váhat. Začni validovat.
+
+👉 www.podnikatelskactvrtka.cz
+
+#podnikani #akce #validace #rozhodnuti`
+  },
+
+  // POST #29: QUIZ TEASER (Animated mockup)
+  {
+    id: 29,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #29: QUIZ TEASER',
+    copy: `3 minuty odhalí zdraví tvého modelu 🎯
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❓ JAK TO FUNGUJE:
+
+10 jednoduchých otázek
+
+→ Zákaznické segmenty
+→ Hodnotová nabídka
+→ Zdroje příjmů
+→ Klíčové aktivity
+→ ... a všech 9 bloků
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 CO DOSTANEŠ:
+
+✅ Tvé SKÓRE (0-100 bodů)
+✅ Diagnózu stavu modelu
+✅ Kritické problémy odhalené
+✅ Personalizovaný plán kroků
+✅ Konkrétní nástroje na validaci
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ UKÁZKA VÝSLEDKU:
+
+"Skóre: 38/100 - RIZIKOVÝ MODEL
+
+❌ Nedefinované segmenty
+❌ Netestovaná hodnota  
+❌ Neznámá ekonomika
+
+→ Tvůj plán: Začni validací problému u 5 zákazníků během 3 dnů"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💎 PROČ TO FUNGUJE:
+
+Ne obecné rady.
+Ne bullshit.
+
+KONKRÉTNÍ kroky podle TVÉHO stavu.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Někdo potřebuje opravit model.
+Někdo ho postavit od nuly.
+Někdo validovat rychle.
+
+Každý dostane CO POTŘEBUJE.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+⏱️ 3 MINUTY. ZDARMA.
+
+A víš PŘESNĚ kde stojíš a co dělat PRVNÍ.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Přestaň hádat.
+Začni měřit.
+
+👉 www.podnikatelskactvrtka.cz/kviz
+
+#podnikani #kviz #validace #model`
   },
 ];
 
@@ -5390,6 +5638,33 @@ function Post26TimeValue() {
   );
 }
 
+// Post #27: Zásilkovna (Animated)
+function Post27Zasilkovna() {
+  return (
+    <PostContainer format="4:5" id={27} title="Post #27: ZÁSILKOVNA">
+      <OrganicPost27Zasilkovna />
+    </PostContainer>
+  );
+}
+
+// Post #28: FOMO - Zatímco ty váháš (Animated)
+function Post28FOMO() {
+  return (
+    <PostContainer format="4:5" id={28} title="Post #28: ZATÍMCO TY VÁHÁŠ">
+      <OrganicPost28FOMO />
+    </PostContainer>
+  );
+}
+
+// Post #29: Quiz Teaser (Animated)
+function Post29QuizTeaser() {
+  return (
+    <PostContainer format="4:5" id={29} title="Post #29: QUIZ TEASER">
+      <OrganicPost29QuizTeaser />
+    </PostContainer>
+  );
+}
+
 // Main component
 export default function OrganicPosts() {
   const [currentPost, setCurrentPost] = useState(0);
@@ -5429,6 +5704,9 @@ export default function OrganicPosts() {
       case 23: return <Post24SplitScreen />;
       case 24: return <Post25NoDiscounts />;
       case 25: return <Post26TimeValue />;
+      case 26: return <Post27Zasilkovna />;
+      case 27: return <Post28FOMO />;
+      case 28: return <Post29QuizTeaser />;
       default: return <Post1Static />;
     }
   };

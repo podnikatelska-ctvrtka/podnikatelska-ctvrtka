@@ -90,7 +90,17 @@ export function QuizLandingPage() {
       
       console.log('✅ Quiz submitted successfully!', data);
       
-      // ✅ REDIRECT na děkovnou stránku s parametry
+      // ✅ ULOŽIT DATA DO sessionStorage (aby URL nebyla dlouhá!)
+      sessionStorage.setItem('quizResult', JSON.stringify({
+        email,
+        name,
+        score: result.score,
+        category: result.category,
+        categoryLabel: result.categoryLabel,
+        subScores: result.subScores || []
+      }));
+      
+      // ✅ REDIRECT na děkovnou stránku - JEN s emailem (krátká URL!)
       const params = new URLSearchParams({
         email,
         score: result.score.toString(),
@@ -122,13 +132,13 @@ export function QuizLandingPage() {
         
         <div className="max-w-6xl mx-auto text-center relative z-10">
           {/* Christmas Badge */}
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white px-8 py-4 rounded-full text-lg mb-8 shadow-2xl animate-pulse">
-            <Gift className="w-6 h-6" />
-            <span className="font-bold">🎄 VÁNOČNÍ DÁREK PRO PODNIKATELE 🎁</span>
+          <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg mb-8 shadow-2xl animate-pulse">
+            <Gift className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+            <span className="font-bold text-sm sm:text-base md:text-lg">🎄 VÁNOČNÍ DÁREK PRO PODNIKATELE 🎁</span>
           </div>
           
           {/* Main Headline */}
-          <h1 className="text-6xl md:text-8xl mb-8 text-white max-w-5xl mx-auto leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl mb-8 text-white max-w-5xl mx-auto leading-tight px-2">
             🚀 Dostaň{' '}
             <span className="bg-gradient-to-r from-yellow-300 via-red-400 to-green-400 bg-clip-text text-transparent font-black">
               KONKRÉTNÍ KROKY
@@ -137,7 +147,7 @@ export function QuizLandingPage() {
           </h1>
           
           {/* Subheadline */}
-          <p className="text-2xl md:text-4xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-4xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-light px-2">
             Každý podnikatel je v <strong className="text-yellow-300">jiné fázi</strong>. Proto dostaneš plán šitý <strong className="text-green-300">NA MÍRU</strong> podle zdraví tvého modelu podnikání + tvé <strong className="text-red-300">byznys skóre</strong>
           </p>
           
@@ -198,29 +208,29 @@ export function QuizLandingPage() {
           </div>
           
           {/* Social Proof */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 max-w-4xl mx-auto border border-white/20">
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 max-w-4xl mx-auto border border-white/20">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
-              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
-              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
-              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
-              <Star className="w-6 h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 fill-yellow-300" />
+              <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 fill-yellow-300" />
             </div>
-            <p className="text-white text-2xl mb-2">
+            <p className="text-white text-xl sm:text-2xl mb-2">
               <strong className="text-yellow-300">250+ podnikatelů</strong> už udělalo kvíz
             </p>
-            <p className="text-white/80 text-lg italic">
+            <p className="text-white/80 text-base sm:text-lg italic px-2">
               "Konečně vím co dělat příští týden. 5 minut změnily můj pohled na byznys." – Lenka, e-shop majitelka
             </p>
           </div>
           
           {/* NOVÁ SEKCE: Proč je to ZDARMA */}
-          <div className="bg-gradient-to-r from-yellow-400/20 to-green-400/20 backdrop-blur-xl rounded-3xl p-10 max-w-4xl mx-auto mt-12 border-2 border-yellow-300/50">
-            <h3 className="text-3xl md:text-4xl text-white mb-4">
+          <div className="bg-gradient-to-r from-yellow-400/20 to-green-400/20 backdrop-blur-xl rounded-3xl p-6 sm:p-8 md:p-10 max-w-4xl mx-auto mt-12 border-2 border-yellow-300/50">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl text-white mb-4">
               ❤️ Proč je to <strong className="text-yellow-300">ZDARMA</strong>?
             </h3>
-            <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
-              Podnikatelům <strong>nikdo nepomáhá</strong>. Všichni jen prodávají.<br/>
+            <p className="text-lg sm:text-xl md:text-2xl text-white/90 leading-relaxed px-2">
+              Podnikatelům <strong>nikdo nepomáhá</strong>. Všichni jen prodávají.<br className="hidden sm:block" />
               Rozhodli jsme se to <strong className="text-green-300">změnit</strong>. Proto máš kvíz i plán zdarma – bez podmínek.
             </p>
           </div>
@@ -230,70 +240,70 @@ export function QuizLandingPage() {
       {/* What You Get Section */}
       <section className="relative py-24 px-4 bg-white/5 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl md:text-6xl text-center mb-16 text-white">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center mb-16 text-white px-2">
             Co <span className="text-yellow-300">přesně</span> dostaneš?
           </h2>
           
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-10 rounded-3xl shadow-2xl text-white border-2 border-yellow-400/30">
-              <div className="text-6xl mb-6">📊</div>
-              <h3 className="text-3xl mb-4">Tvoje přesné skóre</h3>
-              <div className="bg-slate-950/50 rounded-2xl p-6 mb-4 border border-slate-700">
-                <p className="text-2xl text-yellow-300 mb-3">Byznys skóre: 67/100</p>
-                <div className="space-y-2 text-base">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl text-white border-2 border-yellow-400/30">
+              <div className="text-5xl sm:text-6xl mb-6">📊</div>
+              <h3 className="text-2xl sm:text-3xl mb-4">Tvoje přesné skóre</h3>
+              <div className="bg-slate-950/50 rounded-2xl p-4 sm:p-6 mb-4 border border-slate-700">
+                <p className="text-xl sm:text-2xl text-yellow-300 mb-3">Byznys skóre: 67/100</p>
+                <div className="space-y-2 text-sm sm:text-base">
                   <p>💰 Finance & Čísla: <span className="text-green-400">82%</span> ✅</p>
                   <p>🎯 Diverzifikace: <span className="text-red-400">45%</span> ⚠️</p>
-                  <p>⚙️ Systematizace: <span className="text-yellow-400">71%</span> 🔶</p>
-                  <p>❤️ Loajalita zákazníků: <span className="text-yellow-400">60%</span> 🔶</p>
+                  <p>⚙️ Systematizace: <span className="text-yellow-400">71%</span> 🟡</p>
+                  <p>❤️ Loajalita zákazníků: <span className="text-orange-400">60%</span> 🟠</p>
                 </div>
               </div>
-              <p className="text-lg text-white/90 leading-relaxed">
+              <p className="text-base sm:text-lg text-white/90 leading-relaxed">
                 Zjistíš <strong>přesně</strong> kde stojíš a co tě brzdí v růstu
               </p>
             </div>
             
-            <div className="bg-gradient-to-br from-green-600 to-green-800 p-10 rounded-3xl shadow-2xl text-white">
-              <div className="text-6xl mb-6">🎯</div>
-              <h3 className="text-3xl mb-4">Tvůj první krok</h3>
-              <div className="bg-green-950/50 rounded-2xl p-6 mb-4 border border-green-700">
-                <p className="text-xl mb-3">
+            <div className="bg-gradient-to-br from-green-600 to-green-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-5xl sm:text-6xl mb-6">🎯</div>
+              <h3 className="text-2xl sm:text-3xl mb-4">Tvůj první krok</h3>
+              <div className="bg-green-950/50 rounded-2xl p-4 sm:p-6 mb-4 border border-green-700">
+                <p className="text-lg sm:text-xl mb-3">
                   💡 <strong>Příští týden:</strong>
                 </p>
-                <p className="text-base leading-relaxed">
+                <p className="text-sm sm:text-base leading-relaxed">
                   "Najdi 2-3 nové kanály pro zákazníky - diverzifikace je klíč k růstu. Začni s LinkedIn nebo newsletterem."
                 </p>
               </div>
-              <p className="text-lg text-white/90 leading-relaxed">
+              <p className="text-base sm:text-lg text-white/90 leading-relaxed">
                 Konkrétní akce <strong>pro TVOU situaci</strong> - ne obecné rady
               </p>
             </div>
             
-            <div className="bg-gradient-to-br from-red-600 to-red-800 p-10 rounded-3xl shadow-2xl text-white">
-              <div className="text-6xl mb-6">⚠️</div>
-              <h3 className="text-3xl mb-4">Tvoje největší riziko</h3>
-              <div className="bg-red-950/50 rounded-2xl p-6 mb-4 border border-red-700">
-                <p className="text-base leading-relaxed">
+            <div className="bg-gradient-to-br from-red-600 to-red-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-5xl sm:text-6xl mb-6">⚠️</div>
+              <h3 className="text-2xl sm:text-3xl mb-4">Tvoje největší riziko</h3>
+              <div className="bg-red-950/50 rounded-2xl p-4 sm:p-6 mb-4 border border-red-700">
+                <p className="text-sm sm:text-base leading-relaxed">
                   🚨 <strong>"Chybějící diverzifikace příjmů"</strong><br/>
                   Co když přijdeš o hlavní kanál? 50% byznysů zkrachuje kvůli závislosti na jednom zdroji
                 </p>
               </div>
-              <p className="text-lg text-white/90 leading-relaxed">
+              <p className="text-base sm:text-lg text-white/90 leading-relaxed">
                 Vidíš <strong>konkrétně</strong> co může položit tvůj byznys
               </p>
             </div>
             
-            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-10 rounded-3xl shadow-2xl text-white">
-              <div className="text-6xl mb-6">📋</div>
-              <h3 className="text-3xl mb-4">Plán na 30 dní</h3>
-              <div className="bg-purple-950/50 rounded-2xl p-6 mb-4 border border-purple-700">
-                <div className="space-y-2 text-base">
-                  <p>✅ Týden 1: Analyzuj současné kanály</p>
-                  <p>✅ Týden 2: Vytvoř LinkedIn profil</p>
-                  <p>✅ Týden 3: První post + networking</p>
-                  <p>✅ Týden 4: Změř výsledky</p>
+            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl text-white">
+              <div className="text-5xl sm:text-6xl mb-6">📋</div>
+              <h3 className="text-2xl sm:text-3xl mb-4">Plán na 30 dní</h3>
+              <div className="bg-purple-950/50 rounded-2xl p-4 sm:p-6 mb-4 border border-purple-700">
+                <div className="space-y-2 text-sm sm:text-base">
+                  <p>✅ Den 8-10: Spočítej marže a bod zvratu</p>
+                  <p>✅ Den 11-12: Najdi VŠECHNY kanály klientů</p>
+                  <p>✅ Den 16-17: Zapiš si JEDEN proces</p>
+                  <p>✅ Den 22-24: Najdi nový kanál na získávání klientů</p>
                 </div>
               </div>
-              <p className="text-lg text-white/90 leading-relaxed">
+              <p className="text-base sm:text-lg text-white/90 leading-relaxed">
                 Konkrétní kroky s <strong>deadliny</strong> - připravený k vytištění
               </p>
             </div>
@@ -304,22 +314,22 @@ export function QuizLandingPage() {
       {/* Final CTA */}
       <section className="relative py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl mb-8 text-white">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-8 text-white px-2">
             🚀 Konec nejistoty. <span className="text-yellow-300">Začátek směru.</span>
           </h2>
           
-          <p className="text-2xl text-white/90 mb-12 leading-relaxed">
-            Za 3 minuty budeš v��dět <strong className="text-green-300">co dělat</strong> v roce 2026.
+          <p className="text-xl sm:text-2xl text-white/90 mb-12 leading-relaxed px-2">
+            Za 3 minuty budeš vědět <strong className="text-green-300">co dělat</strong> v roce 2026.
           </p>
           
           <Button
             onClick={() => setShowQuiz(true)}
             size="lg"
-            className="bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 hover:from-yellow-500 hover:via-red-600 hover:to-green-600 text-white px-16 py-8 rounded-full text-3xl shadow-2xl hover:shadow-3xl transition-all group border-4 border-white"
+            className="bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 hover:from-yellow-500 hover:via-red-600 hover:to-green-600 text-white px-8 sm:px-12 md:px-16 py-6 sm:py-7 md:py-8 rounded-full text-xl sm:text-2xl md:text-3xl shadow-2xl hover:shadow-3xl transition-all group border-4 border-white w-full sm:w-auto"
           >
-            <Sparkles className="w-10 h-10 mr-4 group-hover:rotate-12 transition-transform" />
-            Začít kvíz ZDARMA
-            <ChevronRight className="w-10 h-10 ml-4 group-hover:translate-x-2 transition-transform" />
+            <Sparkles className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 mr-3 sm:mr-4 group-hover:rotate-12 transition-transform flex-shrink-0" />
+            <span className="text-center">Začít kvíz ZDARMA</span>
+            <ChevronRight className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 ml-3 sm:ml-4 group-hover:translate-x-2 transition-transform flex-shrink-0" />
           </Button>
           
           <p className="mt-8 text-white/70 text-lg">

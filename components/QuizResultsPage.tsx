@@ -45,25 +45,30 @@ export function QuizResultsPage({
           visibility: hidden !important;
         }
         
-        /* Optimalizace pro tisk */
+        /* Optimalizace pro tisk - FIX PRÁZDNÁ PRVNÍ STRÁNKA */
         body {
           margin: 0 !important;
           padding: 0 !important;
           background: white !important;
         }
         
-        /* Výsledkový plán na celou šířku */
+        html {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        /* Výsledkový plán na celou šířku - BEZ TOP MARGIN */
         .print-keep {
           position: absolute;
           left: 0;
           top: 0;
           width: 100% !important;
           margin: 0 !important;
-          padding: 0.5cm !important;
+          padding: 1cm 1.5cm !important; /* Lepší odsazení pro tisk */
         }
         
         /* Kompaktní layout */
-        .max-w-7xl {
+        .max-w-4xl, .max-w-7xl {
           max-width: 100% !important;
           padding: 0 !important;
           margin: 0 !important;
@@ -77,7 +82,7 @@ export function QuizResultsPage({
         /* KLÍČOVÉ: Zachovat VŠECHNY barvy při tisku! */
         @page {
           size: A4;
-          margin: 1cm;
+          margin: 0; /* Žádné extra margins od browseru */
         }
         
         html {
@@ -113,6 +118,13 @@ export function QuizResultsPage({
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
         }
       }
+      
+      /* Screen-only styles */
+      @media screen {
+        .screen-only {
+          display: block;
+        }
+      }
     `;
     document.head.appendChild(style);
     return () => {
@@ -128,8 +140,25 @@ export function QuizResultsPage({
     if (propsSubScores) setSubScores(propsSubScores);
     if (propsName) setName(propsName);
     
-    // ✅ PRIORITA 2: URL params (když se naviguje přímo na /kviz/vysledky)
+    // ✅ PRIORITA 2: sessionStorage (nejnovější data z kvízu - krátká URL!)
     if (!propsEmail) {
+      const storedResult = sessionStorage.getItem('quizResult');
+      if (storedResult) {
+        try {
+          const data = JSON.parse(storedResult);
+          if (data.email) setEmail(data.email);
+          if (data.score !== undefined) setScore(data.score);
+          if (data.category) setCategory(data.category);
+          if (data.subScores) setSubScores(data.subScores);
+          if (data.name) setName(data.name);
+          console.log('✅ Loaded quiz results from sessionStorage');
+          return; // Don't load from URL if we have sessionStorage
+        } catch (e) {
+          console.error('Failed to parse sessionStorage quizResult:', e);
+        }
+      }
+      
+      // ✅ PRIORITA 3: URL params (fallback pro share/bookmark)
       const urlParams = new URLSearchParams(window.location.search);
       const emailParam = urlParams.get('email');
       const scoreParam = urlParams.get('score');

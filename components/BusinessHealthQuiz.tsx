@@ -362,7 +362,7 @@ function calculateResult(answers: Record<string, number>, quizType: QuizType): Q
     ];
     recommendations = [
       '🚨 Přestaň \"hasit požáry\" - udělej si pořádek v modelu podnikání (Business Model Canvas)',
-      '🚨 Zjisti přesně svoječísla: kolik tě stojí získání zákazníka, jaká je tvá marže',
+      '🚨 Zjisti přesně svoje čísla: kolik tě stojí získání zákazníka, jaká je tvá marže',
       '🚨 Najdi si druhý zdroj příjmů OKAMŽITĚ - diverzifikace zachraňuje byznysy'
     ];
   }

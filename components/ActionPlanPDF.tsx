@@ -24,6 +24,50 @@ export function ActionPlanPDF({ category, score, name }: ActionPlanPDFProps) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// SOFT SELL BOX - použito ve všech plánech
+// ═══════════════════════════════════════════════════════════
+
+function SellBox() {
+  return (
+    <div className="mt-8 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6 print:break-inside-avoid">
+      <h3 className="text-xl font-bold text-blue-900 mb-3 flex items-center gap-2">
+        <span className="text-2xl">💡</span> 
+        Potřebuješ pomoc s implementací?
+      </h3>
+      
+      <p className="text-gray-700 mb-4 leading-relaxed">
+        Tento plán ti ukázal <strong>co dělat</strong>. Ale možná si říkáš: "OK, ale <strong>JAK PŘESNĚ</strong> to mám udělat?"
+      </p>
+      
+      <div className="bg-white rounded-lg p-4 mb-4 border border-blue-200">
+        <p className="text-sm text-gray-600 mb-2">
+          📧 <strong>Za 24 hodin ti pošleme email</strong> s nabídkou:
+        </p>
+        <ul className="text-sm text-gray-700 space-y-1 ml-6">
+          <li>✓ Krok-za-krokem video návod jak udělat svůj Model podnikání</li>
+          <li>✓ Konkrétní příklady z byznysu podobného tomu tvému</li>
+          <li>✓ Šablony a checklists které můžeš hned použít</li>
+        </ul>
+      </div>
+      
+      <div className="bg-blue-900 text-white rounded-lg p-4 text-center">
+        <p className="text-sm mb-2">🎯 Chceš začít HNED?</p>
+        <p className="font-bold text-lg mb-2">
+          Podnikatelská Čtvrtka - Model podnikání za 90 minut
+        </p>
+        <p className="text-sm text-blue-200">
+          Zjisti víc na: <span className="font-bold">podnikatelskactvrtka.cz/objednavka</span>
+        </p>
+      </div>
+      
+      <p className="text-xs text-gray-500 mt-4 text-center italic">
+        💪 Máš hotový plán. Teď ho jen naplnit životem. Jdeme do toho!
+      </p>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
 // KRITICKÝ STAV (0-30%)
 // ═══════════════════════════════════════════════════════════
 
@@ -245,7 +289,8 @@ function CriticalPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-
+      {/* Sell Box */}
+      <SellBox />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -479,7 +524,8 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-
+      {/* Sell Box */}
+      <SellBox />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -715,7 +761,8 @@ function SolidPlan({ userName, score }: { userName: string; score: number }) {
         </div>
       </div>
 
-
+      {/* Sell Box */}
+      <SellBox />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -949,7 +996,8 @@ function AdvancedPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-
+      {/* Sell Box */}
+      <SellBox />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -1222,7 +1270,8 @@ function BeginnerPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-
+      {/* Sell Box */}
+      <SellBox />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">

@@ -44,7 +44,7 @@ const INITIAL_CANVAS: CanvasSection[] = [
   { id: "channels", title: "Kanály", items: [], gridArea: "channels" },
   { id: "segments", title: "Zákaznické segmenty", items: [], gridArea: "segments", valueLabel: "Průměrná útrata (Kč)" }, // ✅ Průměr na návštěvu
   { id: "costs", title: "Struktura nákladů", items: [], gridArea: "costs", valueLabel: "Náklady (Kč/měsíc)" },
-  { id: "revenue", title: "Zdroje příjmů", items: [], gridArea: "revenue", valueLabel: "Příjmy (K��/měsíc)" },
+  { id: "revenue", title: "Zdroje příjmů", items: [], gridArea: "revenue", valueLabel: "Příjmy (Kč/měsíc)" },
 ];
 
 interface Props {
@@ -535,11 +535,11 @@ export function BusinessModelCanvasV2({ userId, highlightSection, onAchievementU
               </div>
             </div>
 
-            {/* Příjmy - SUMA (fix) */}
+            {/* P��íjmy - SUMA (fix) */}
             <div className="bg-white rounded-lg p-4 border-2 border-green-200">
               <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="w-4 h-4 text-green-600" />
-                <span className="text-sm text-gray-600 font-semibold">Příjmy (měsí��ně)</span>
+                <span className="text-sm text-gray-600 font-semibold">Příjmy (měsíčně)</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-gray-500">CELKEM:</span>
