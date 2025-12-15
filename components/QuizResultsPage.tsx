@@ -29,112 +29,31 @@ export function QuizResultsPage({
     const style = document.createElement('style');
     style.textContent = `
       @media print {
-        /* Skrýt VŠECHNO kromě main contentu */
-        body * {
-          visibility: hidden;
+        /* ⚡ ULTRA SIMPLE - žádné marginy, žádný padding */
+        @page {
+          margin: 0;
+          size: A4 portrait;
         }
         
-        /* Zobraz jen výsledkový plán */
-        .print-keep, .print-keep * {
-          visibility: visible;
+        html {
+          margin: 0 !important;
+          padding: 0 !important;
         }
         
-        /* Skrýt elementy s print:hidden */
-        .print\\:hidden {
-          display: none !important;
-          visibility: hidden !important;
-        }
-        
-        /* Optimalizace pro tisk */
         body {
           margin: 0 !important;
           padding: 0 !important;
           background: white !important;
         }
         
-        /* Výsledkový plán na celou šířku */
-        .print-keep {
-          position: relative !important;
-          left: 0 !important;
-          top: 0 !important;
-          width: 100% !important;
-          margin: 0 !important;
-          padding: 0.5cm !important;
+        /* Hide header, buttons, scores */
+        .print\\:hidden {
+          display: none !important;
         }
         
-        /* Kompaktní layout */
-        .max-w-4xl, .max-w-7xl {
-          max-width: 100% !important;
-          padding: 0 !important;
-          margin: 0 !important;
-        }
-        
-        /* ✅ Potlačit py-8 px-4 z main divu */
-        .py-8 {
-          padding-top: 0 !important;
-          padding-bottom: 0 !important;
-        }
-        
-        .px-4 {
-          padding-left: 0 !important;
-          padding-right: 0 !important;
-        }
-        
-        /* Menší mezery mezi sekcemi */
-        .space-y-8, .space-y-8 > * + * {
-          margin-top: 0.3rem !important;
-        }
-        
-        .space-y-6, .space-y-6 > * + * {
-          margin-top: 0.25rem !important;
-        }
-        
-        .space-y-5, .space-y-5 > * + * {
-          margin-top: 0.2rem !important;
-        }
-        
-        .space-y-3, .space-y-3 > * + * {
-          margin-top: 0.15rem !important;
-        }
-        
-        /* Kompaktní padding */
-        .p-4 { padding: 0.3rem !important; }
-        .p-6 { padding: 0.4rem !important; }
-        .p-8 { padding: 0.5rem !important; }
-        
-        .px-4, .px-6 {
-          padding-left: 0.3rem !important;
-          padding-right: 0.3rem !important;
-        }
-        
-        .py-4, .py-6 {
-          padding-top: 0.3rem !important;
-          padding-bottom: 0.3rem !important;
-        }
-        
-        .mb-5, .mb-6 {
-          margin-bottom: 0.25rem !important;
-        }
-        
-        .mb-3, .mb-4 {
-          margin-bottom: 0.2rem !important;
-        }
-        
-        /* Kompaktní nadpisy */
-        h1 { font-size: 1.2rem !important; margin-bottom: 0.2rem !important; }
-        h2 { font-size: 1.1rem !important; margin-bottom: 0.15rem !important; }
-        h3 { font-size: 1rem !important; margin-bottom: 0.15rem !important; }
-        
-        /* Kompaktní text */
-        p { font-size: 0.8rem !important; line-height: 1.2 !important; margin-bottom: 0.15rem !important; }
-        li { font-size: 0.8rem !important; line-height: 1.2 !important; }
-        
-        /* Skrýt stíny */
-        * {
-          box-shadow: none !important;
-          text-shadow: none !important;
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important;
+        /* Action plan PDF má mít padding */
+        .action-plan-container {
+          padding: 1cm !important;
         }
       }
     `;
@@ -361,25 +280,6 @@ export function QuizResultsPage({
         )}
 
       </div>
-
-      {/* 🖨️ PRINT STYLES - TISKNE SE JEN AKČNÍ PLÁN! */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media print {
-          body {
-            margin: 0;
-            padding: 0;
-            background: white;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-          /* Hide everything except ActionPlanPDF */
-          @page {
-            margin: 0;
-            size: A4;
-          }
-        }
-      ` }} />
     </div>
   );
 }

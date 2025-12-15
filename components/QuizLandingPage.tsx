@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { CheckCircle, TrendingUp, Zap, Target, Shield, ArrowRight, ChevronRight, Mail, BookOpen, Gift, Sparkles, Calendar, Clock, Award, Star } from 'lucide-react';
 import { Button } from './ui/button';
 import { Snowfall } from './Snowfall';
+import { trackLead, trackQuizCompleted } from '../lib/metaPixel'; // ✅ PŘIDÁNO: Meta Pixel tracking
 
 export function QuizLandingPage() {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -52,6 +53,14 @@ export function QuizLandingPage() {
         console.warn('⚠️ Netlify functions not available (running locally without netlify dev?)');
         console.warn('💡 TIP: Use "npm run dev:netlify" to test with functions locally');
         
+        // 🎯 META PIXEL: Track Lead conversion (even in local dev)
+        trackLead(email);
+        trackQuizCompleted(
+          result.category === 'beginner' ? 'beginner' : 'existing',
+          result.score,
+          result.category
+        );
+        
         // ✅ REDIRECT na děkovnou stránku i tak (pro lokální testování UX)
         const params = new URLSearchParams({
           email,
@@ -59,14 +68,6 @@ export function QuizLandingPage() {
           category: result.category
         });
         window.location.href = `/kviz/hotovo?${params.toString()}`;
-        
-        // Meta Pixel tracking
-        if (typeof window !== 'undefined' && (window as any).fbq) {
-          (window as any).fbq('track', 'CompleteRegistration', {
-            content_name: 'Business Health Quiz',
-            status: result.category
-          });
-        }
         
         return; // Exit early - no error, just skip API
       }
@@ -89,6 +90,14 @@ export function QuizLandingPage() {
       }
       
       console.log('✅ Quiz submitted successfully!', data);
+      
+      // 🎯 META PIXEL: Track Lead conversion!
+      trackLead(email);
+      trackQuizCompleted(
+        result.category === 'beginner' ? 'beginner' : 'existing',
+        result.score,
+        result.category
+      );
       
       // ✅ ULOŽIT DATA DO sessionStorage (aby URL nebyla dlouhá!)
       sessionStorage.setItem('quizResult', JSON.stringify({

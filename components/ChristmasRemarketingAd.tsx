@@ -77,7 +77,7 @@ export function ChristmasRemarketingAd() {
 
       {/* Bottom message */}
       <p className="text-white text-xl mt-6 relative z-10 font-bold max-w-3xl drop-shadow-lg">
-        💪 Zatímco ostatní ještě spí, <span className="text-yellow-300">ty už budeš vědět kam jdeš.</span>
+        🚀 Leden 2026 může být tvůj nejlepší měsíc. Začni teď.
       </p>
     </div>
   );

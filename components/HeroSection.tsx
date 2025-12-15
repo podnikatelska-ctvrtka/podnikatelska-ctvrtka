@@ -38,6 +38,29 @@ export function HeroSection() {
     setQuizCompleted(completed);
   }, []);
   
+  // ✅ RELIABLE SCROLL - počká až se stránka načte
+  const scrollToOrder = () => {
+    const scroll = () => {
+      const orderSection = document.getElementById('order');
+      if (orderSection) {
+        // Počkej na dokončení layoutu
+        setTimeout(() => {
+          orderSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    };
+    
+    // Pokud už je stránka načtená, scrolluj rovnou
+    if (document.readyState === 'complete') {
+      scroll();
+    } else {
+      // Jinak počkej na load event
+      window.addEventListener('load', scroll, { once: true });
+      // Backup: scrolluj po 300ms i když load neskončí
+      setTimeout(scroll, 300);
+    }
+  };
+  
   // ✅ HANDLER pro dokončení kvízu
   const handleQuizComplete = async (result: any, email: string, name: string, answers: Record<string, number>) => {
     try {
@@ -301,12 +324,7 @@ export function HeroSection() {
                     <>
                       <TouchFeedback>
                         <button
-                          onClick={() => {
-                            const orderSection = document.getElementById('order');
-                            if (orderSection) {
-                              orderSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                          }}
+                          onClick={scrollToOrder}
                           className="w-full px-8 py-5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl group"
                         >
                           <div className="flex items-center justify-center gap-3">
@@ -503,19 +521,14 @@ export function HeroSection() {
                   ) : (
                     <>
                       <button 
-                        onClick={() => {
-                          const orderSection = document.getElementById('order');
-                          if (orderSection) {
-                            orderSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          }
-                        }}
+                        onClick={scrollToOrder}
                         className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl active:from-green-700 active:to-emerald-700 transition-all duration-200 shadow-lg font-semibold text-lg"
                       >
                         💰 Koupit kurz (SLEVA 40%)
                       </button>
                       
                       <p className="text-xs text-gray-600 mt-3">
-                        ✅ Kvíz hotovo • 🎯 Ušetři 3.500 Kč
+                        ✅ Kvíz hotovo • ���� Ušetři 3.500 Kč
                       </p>
                     </>
                   )}
