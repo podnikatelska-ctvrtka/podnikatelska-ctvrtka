@@ -101,24 +101,24 @@ function EmailReminderSection() {
         <label className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
           <input type="checkbox" className="mt-1 w-5 h-5 accent-blue-500 flex-shrink-0" />
           <div>
-            <p className="font-semibold text-slate-900">📬 Email 1: Přečetl jsem (přijde za 24h)</p>
-            <p className="text-sm text-slate-600">→ Jak Ti šel akční plán? + soft intro do Čtvrtky</p>
+            <p className="font-semibold text-slate-900">📬 Email 1: Přečetl jsem</p>
+            <p className="text-sm text-slate-600">(přijde za 24 hodin)</p>
           </div>
         </label>
 
         <label className="flex items-start gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer hover:bg-purple-100 transition-colors">
           <input type="checkbox" className="mt-1 w-5 h-5 accent-purple-500 flex-shrink-0" />
           <div>
-            <p className="font-semibold text-slate-900">📬 Email 2: Přečetl jsem (přijde za 48h)</p>
-            <p className="text-sm text-slate-600">→ Proč jsme vytvořili Podnikatelskou Čtvrtku (nejsilnější email)</p>
+            <p className="font-semibold text-slate-900">📬 Email 2: Přečetl jsem</p>
+            <p className="text-sm text-slate-600">(přijde za 48 hodin)</p>
           </div>
         </label>
 
         <label className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg cursor-pointer hover:bg-green-100 transition-colors">
           <input type="checkbox" className="mt-1 w-5 h-5 accent-green-500 flex-shrink-0" />
           <div>
-            <p className="font-semibold text-slate-900">📬 Email 3: Přečetl jsem (přijde za 72h)</p>
-            <p className="text-sm text-slate-600">→ Poslední šance: Co Tě brzdí v rozhodnutí?</p>
+            <p className="font-semibold text-slate-900">📬 Email 3: Přečetl jsem</p>
+            <p className="text-sm text-slate-600">(přijde za 72 hodin)</p>
           </div>
         </label>
       </div>

@@ -54,9 +54,9 @@ export function QuizResultsPage({
         
         /* Výsledkový plán na celou šířku */
         .print-keep {
-          position: absolute;
-          left: 0;
-          top: 0;
+          position: relative !important;
+          left: 0 !important;
+          top: 0 !important;
           width: 100% !important;
           margin: 0 !important;
           padding: 0.5cm !important;

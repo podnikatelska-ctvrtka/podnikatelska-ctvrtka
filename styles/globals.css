@@ -334,6 +334,16 @@ input[type="number"].no-spinner {
   
   /* 🖨️ PRINT STYLES - Action Plan friendly */
   @media print {
+    /* Remove any first page blank issue */
+    * {
+      margin-top: 0 !important;
+    }
+    
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
     /* Hide non-essential elements */
     button,
     nav,
@@ -426,8 +436,13 @@ input[type="number"].no-spinner {
     
     /* Page margins */
     @page {
-      margin: 2cm;
+      margin: 0.5cm;
       size: A4;
+    }
+    
+    /* První stránka bez marginu */
+    @page :first {
+      margin-top: 0;
     }
   }
 }
