@@ -24,45 +24,6 @@ export function QuizResultsPage({
   const [subScores, setSubScores] = useState<{ label: string; score: number; icon: string }[]>([]);
   const [name, setName] = useState('');
 
-  // 🖨️ PRINT STYLES - optimalizované pro tisk
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      @media print {
-        /* ⚡ ULTRA SIMPLE - žádné marginy, žádný padding */
-        @page {
-          margin: 0;
-          size: A4 portrait;
-        }
-        
-        html {
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-        
-        body {
-          margin: 0 !important;
-          padding: 0 !important;
-          background: white !important;
-        }
-        
-        /* Hide header, buttons, scores */
-        .print\\:hidden {
-          display: none !important;
-        }
-        
-        /* Action plan PDF má mít padding */
-        .action-plan-container {
-          padding: 1cm !important;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
   useEffect(() => {
     // ✅ PRIORITA 1: Props (když se volá z QuizLandingPage)
     if (propsEmail) setEmail(propsEmail);
@@ -132,11 +93,11 @@ export function QuizResultsPage({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 py-8 px-4 print-keep">
-      <div className="max-w-7xl mx-auto">{/* ✅ Wider for 2-column layout */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 py-8 px-4 print:py-0 print:px-0 print:m-0 print-keep">
+      <div className="max-w-7xl mx-auto print:max-w-none print:mx-0">{/* ✅ Wider for 2-column layout */}
         
         {/* 🎯 HEADER - NEVIDITELNÝ PŘI TISKU */}
-        <div className="print:hidden mb-6">
+        <div data-print-hide="true" className="print:hidden mb-6">
           <button
             onClick={() => window.location.href = '/'}
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-4 transition-colors"
@@ -160,7 +121,7 @@ export function QuizResultsPage({
         </div>
 
         {/* 📊 TWO-COLUMN LAYOUT: Skóre + Progress Bars SIDE BY SIDE */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        <div data-print-hide="true" className="grid lg:grid-cols-2 gap-6 mb-6">
           
           {/* LEFT: Celkové skóre - MENŠÍ BOX */}
           {score !== null && (
@@ -250,7 +211,7 @@ export function QuizResultsPage({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <div className="bg-gradient-to-r from-red-50 to-green-50 rounded-2xl p-6 mb-6 border-2 border-red-600/20 print:hidden">
+            <div data-print-hide="true" className="bg-gradient-to-r from-red-50 to-green-50 rounded-2xl p-6 mb-6 border-2 border-red-600/20 print:hidden">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl text-slate-900 mb-2">
@@ -280,6 +241,29 @@ export function QuizResultsPage({
         )}
 
       </div>
+      
+      {/* 🖨️ INLINE PRINT STYLES - spolehlivější než useEffect */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          /* Hide all elements with data-print-hide attribute */
+          [data-print-hide="true"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          
+          /* Backup: also hide print:hidden class elements */
+          .print\\:hidden { 
+            display: none !important; 
+          }
+          
+          @page {
+            margin: 1.5cm;
+          }
+        }
+      `}} />
     </div>
   );
 }

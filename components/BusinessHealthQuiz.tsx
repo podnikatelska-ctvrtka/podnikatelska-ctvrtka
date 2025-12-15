@@ -2,7 +2,7 @@ import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle, AlertCircle, TrendingUp, TrendingDown, Minus, ArrowRight, Mail, User, ChevronLeft, Sparkles, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { trackQuizCompleted, trackQuizStarted } from '../lib/analytics';
 import { Progress } from './ui/progress';
@@ -221,7 +221,7 @@ const existingQuestions: QuizQuestion[] = [
   },
   {
     id: 'e10',
-    question: 'Má�� napsané procesy pro hlavní činnosti v byznysu?',
+    question: 'Má napsané procesy pro hlavní činnosti v byznysu?',
     type: 'single',
     options: [
       { value: 0, label: 'Ne, všechno mám jen v hlavě' },
@@ -388,6 +388,74 @@ export function BusinessHealthQuiz({ onComplete, open = false, onOpenChange }: B
 
   const questions = quizType === 'beginner' ? beginnerQuestions : existingQuestions;
   const progress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  // ✅ NOVÝ - Load quiz state from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedAnswers = localStorage.getItem('quiz_answers');
+      const savedQuizType = localStorage.getItem('quiz_type');
+      const savedEmail = localStorage.getItem('quiz_email');
+      const savedName = localStorage.getItem('quiz_name');
+      const savedCurrentQuestion = localStorage.getItem('quiz_current_question');
+      
+      if (savedAnswers) {
+        setAnswers(JSON.parse(savedAnswers));
+      }
+      if (savedQuizType) {
+        setQuizType(savedQuizType as QuizType);
+      }
+      if (savedEmail) {
+        setEmail(savedEmail);
+      }
+      if (savedName) {
+        setName(savedName);
+      }
+      if (savedCurrentQuestion && savedQuizType) {
+        setCurrentQuestion(parseInt(savedCurrentQuestion, 10));
+        // Pokud má uložené odpovědi, začni rovnou v kvízu
+        if (savedAnswers && JSON.parse(savedAnswers) && Object.keys(JSON.parse(savedAnswers)).length > 0) {
+          setStep('quiz');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error loading quiz from localStorage:', error);
+    }
+  }, []);
+  
+  // ✅ NOVÝ - Save answers to localStorage whenever they change
+  useEffect(() => {
+    if (Object.keys(answers).length > 0) {
+      localStorage.setItem('quiz_answers', JSON.stringify(answers));
+    }
+  }, [answers]);
+  
+  // ✅ NOVÝ - Save quizType to localStorage
+  useEffect(() => {
+    if (quizType) {
+      localStorage.setItem('quiz_type', quizType);
+    }
+  }, [quizType]);
+  
+  // ✅ NOVÝ - Save email to localStorage
+  useEffect(() => {
+    if (email) {
+      localStorage.setItem('quiz_email', email);
+    }
+  }, [email]);
+  
+  // ✅ NOVÝ - Save name to localStorage
+  useEffect(() => {
+    if (name) {
+      localStorage.setItem('quiz_name', name);
+    }
+  }, [name]);
+  
+  // ✅ NOVÝ - Save currentQuestion to localStorage
+  useEffect(() => {
+    if (quizType) {
+      localStorage.setItem('quiz_current_question', currentQuestion.toString());
+    }
+  }, [currentQuestion, quizType]);
   
   // ✅ NOVÝ - Reset state při zavření
   const handleClose = () => {

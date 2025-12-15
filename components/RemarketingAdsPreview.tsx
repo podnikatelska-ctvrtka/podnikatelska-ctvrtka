@@ -1,34 +1,47 @@
 // 🎯 REMARKETING ADS - CONVERSIONS CAMPAIGN
-// 2 ANGLES: Christmas "Chceme pomoct" + Quiz Diagnostic
+// 2 ANGLES: "Máš plán nebo jen improvizuješ?" + "Proč ti byznys neroste?"
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ChristmasRemarketingAd } from './ChristmasRemarketingAd';
+import { ChevronLeft, ChevronRight, Copy, Check } from 'lucide-react';
+import { QuizAdPlanLeden } from './QuizAdPlanLeden';
 import { QuizAdRemarketing1 } from './QuizAdRemarketing1';
 
 export function RemarketingAdsPreview() {
   const [currentAd, setCurrentAd] = useState(0);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const ads = [
     {
-      id: 'christmas-help',
-      name: 'AD #1: CHRISTMAS',
-      subtitle: 'Chceme opravdu pomoct',
-      format: 'Emotional • Helpful positioning',
-      budget: '50 Kč/den',
+      id: 'plan-leden',
+      name: 'AD #1: LEDEN PLÁN',
+      subtitle: 'Máš plán nebo jen improvizuješ?',
+      format: 'Seasonal • Planning urgency',
+      budget: '75 Kč/den (cold) nebo 50 Kč/den (remarketing)',
       objective: 'CONVERSIONS',
-      trigger: 'End of year • Empathy • Mission-driven • Fairness',
-      color: 'from-green-700 to-red-600'
+      trigger: 'New year planning • Konkrétní akční plán na leden',
+      color: 'from-purple-600 to-orange-500',
+      copy: {
+        headline: 'Máš plán nebo jen improvizuješ?',
+        primary: 'Zjisti PŘESNĚ, co dělat první a dostaň konkrétní plán na LEDEN 2026.',
+        description: 'Pro začínající i pokročilé živnostníky a OSVČ',
+        cta: 'Chci mít jasnej plán na leden'
+      }
     },
     {
-      id: 'quiz-diagnostic',
-      name: 'AD #2: DIAGNOSTIC',
-      subtitle: 'Proč ti byznys neroste?',
+      id: 'co-chybi',
+      name: 'AD #2: CO CHYBÍ',
+      subtitle: 'Proč ti byznys neroste jak by mohl?',
       format: 'Problem diagnostic',
-      budget: '50 Kč/den',
+      budget: '75 Kč/den (pouze cold)',
       objective: 'CONVERSIONS',
       trigger: 'Frustration • Diagnostic • Solution-seeking',
-      color: 'from-orange-500 to-yellow-500'
+      color: 'from-orange-500 to-yellow-500',
+      copy: {
+        headline: 'Proč ti byznys neroste jak by mohl?',
+        primary: 'Zjisti přesně, co ti chybí k tomu, aby tvůj byznys fungoval líp',
+        description: '3 minuty • Zdarma',
+        cta: 'Spustit kvíz zdarma'
+      }
     }
   ];
 
@@ -40,13 +53,23 @@ export function RemarketingAdsPreview() {
     setCurrentAd((prev) => (prev - 1 + ads.length) % ads.length);
   };
 
+  const handleCopy = async (text: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 flex flex-col">
       {/* Header */}
       <div className="bg-black/30 backdrop-blur-sm border-b border-white/10 p-6">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-black text-white mb-2">
-            🎯 REMARKETING ADS - CONVERSIONS CAMPAIGN
+            🎯 CONVERSION ADS - KVÍZ VARIANTS
           </h1>
           <p className="text-xl text-gray-300">
             {ads[currentAd].name} - {ads[currentAd].subtitle}
@@ -62,9 +85,9 @@ export function RemarketingAdsPreview() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-white/5 rounded-xl p-4">
-              <p className="text-sm text-gray-400 mb-2">Audience:</p>
-              <p className="text-lg font-bold text-white">Remarketing</p>
-              <p className="text-sm text-gray-400">Viděli omnipresent kampaň</p>
+              <p className="text-sm text-gray-400 mb-2">Campaigns:</p>
+              <p className="text-lg font-bold text-white">Cold + Remarketing</p>
+              <p className="text-sm text-gray-400">AD #1 v obou, AD #2 pouze v cold</p>
             </div>
             <div className="bg-white/5 rounded-xl p-4">
               <p className="text-sm text-gray-400 mb-2">Lead Magnet:</p>
@@ -72,9 +95,9 @@ export function RemarketingAdsPreview() {
               <p className="text-sm text-gray-400">Personalizované výsledky + segmentace</p>
             </div>
             <div className="bg-white/5 rounded-xl p-4">
-              <p className="text-sm text-gray-400 mb-2">Cíl:</p>
-              <p className="text-lg font-bold text-white">Lead Collection</p>
-              <p className="text-sm text-gray-400">Segmentace do Smartemailing listů</p>
+              <p className="text-sm text-gray-400 mb-2">Total Budget:</p>
+              <p className="text-lg font-bold text-white">200 Kč/den</p>
+              <p className="text-sm text-gray-400">Cold 150 + Remarketing 50</p>
             </div>
           </div>
         </div>
@@ -128,7 +151,7 @@ export function RemarketingAdsPreview() {
               height: '1350px'
             }}
           >
-            {currentAd === 0 && <ChristmasRemarketingAd />}
+            {currentAd === 0 && <QuizAdPlanLeden />}
             {currentAd === 1 && <QuizAdRemarketing1 />}
           </div>
         </div>
@@ -186,6 +209,81 @@ export function RemarketingAdsPreview() {
                   <li>→ Cíl: Lead magnet (kvíz)</li>
                   <li>→ Segmentace → Smartemailing → Prodej</li>
                 </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Copy Buttons */}
+          <div className="mt-6 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/50 rounded-2xl p-6">
+            <h3 className="text-2xl font-black text-white mb-4">📋 Kopírovat texty:</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-lg font-bold text-yellow-400 mb-2">Hlavní nadpis:</p>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    value={ads[currentAd].copy.headline}
+                    readOnly
+                    className="w-full px-4 py-2 bg-white/10 text-white rounded-lg"
+                  />
+                  <button
+                    onClick={() => handleCopy(ads[currentAd].copy.headline, 'headline')}
+                    className="ml-2 px-4 py-2 bg-white/10 text-white rounded-lg transition-all hover:bg-white/20"
+                  >
+                    {copiedId === 'headline' ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <p className="text-lg font-bold text-green-400 mb-2">Primární CTA:</p>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    value={ads[currentAd].copy.primary}
+                    readOnly
+                    className="w-full px-4 py-2 bg-white/10 text-white rounded-lg"
+                  />
+                  <button
+                    onClick={() => handleCopy(ads[currentAd].copy.primary, 'primary')}
+                    className="ml-2 px-4 py-2 bg-white/10 text-white rounded-lg transition-all hover:bg-white/20"
+                  >
+                    {copiedId === 'primary' ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <p className="text-lg font-bold text-yellow-400 mb-2">Popis:</p>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    value={ads[currentAd].copy.description}
+                    readOnly
+                    className="w-full px-4 py-2 bg-white/10 text-white rounded-lg"
+                  />
+                  <button
+                    onClick={() => handleCopy(ads[currentAd].copy.description, 'description')}
+                    className="ml-2 px-4 py-2 bg-white/10 text-white rounded-lg transition-all hover:bg-white/20"
+                  >
+                    {copiedId === 'description' ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <p className="text-lg font-bold text-green-400 mb-2">CTA:</p>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    value={ads[currentAd].copy.cta}
+                    readOnly
+                    className="w-full px-4 py-2 bg-white/10 text-white rounded-lg"
+                  />
+                  <button
+                    onClick={() => handleCopy(ads[currentAd].copy.cta, 'cta')}
+                    className="ml-2 px-4 py-2 bg-white/10 text-white rounded-lg transition-all hover:bg-white/20"
+                  >
+                    {copiedId === 'cta' ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

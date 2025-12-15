@@ -14,6 +14,7 @@ import { OrganicPost26TimeValue } from './OrganicPost26TimeValue';
 import { OrganicPost27Zasilkovna } from './OrganicPost27Zasilkovna';
 import { OrganicPost28FOMO } from './OrganicPost28FOMO';
 import { OrganicPost29QuizTeaser } from './OrganicPost29QuizTeaser';
+import { OrganicPost30ThreeReasons } from './OrganicPost30ThreeReasons';
 
 /**
  * 🎯 ORGANIC POSTS - 30 DNÍ SÉRIE
@@ -48,6 +49,7 @@ import { OrganicPost29QuizTeaser } from './OrganicPost29QuizTeaser';
  * - Post #27: ZÁSILKOVNA (animated, case study - jak poslali poštu do kolen) ✅
  * - Post #28: ZATÍMCO TY VÁHÁŠ (animated, FOMO - konkurence validuje) ✅
  * - Post #29: QUIZ TEASER (animated, mockup - 3 minuty odhalí zdraví) ✅
+ * - Post #30: 3 DŮVODY PROČ BYZNYSY UMÍRAJÍ (animated, card flip - education + CTA) ✅
  */
 
 interface PostData {
@@ -288,7 +290,7 @@ Za 90 minut zjistíš:
 
 VÍŠ. PŘEDEM. S DATY.
 
-━━━��━━━━━━━━━━━━━━━━━━━
+━━━��━━━━━━━━━━━━━━━━━���━
 
 Ověř si nápad ještě PŘED tím, než investuješ statisíce.
 
@@ -1765,50 +1767,55 @@ Přestaň váhat. Začni validovat.
     type: 'animated',
     format: '4:5',
     title: 'Post #29: QUIZ TEASER',
-    copy: `3 minuty odhalí zdraví tvého modelu 🎯
+    copy: `Jak zdravý je tvůj model podnikání? 🎯
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-❓ JAK TO FUNGUJE:
+Udělal jsem kvíz, který ti to řekne za 3 minuty.
 
-10 jednoduchých otázek
-
-→ Zákaznické segmenty
-→ Hodnotová nabídka
-→ Zdroje příjmů
-→ Klíčové aktivity
-→ ... a všech 9 bloků
+ZDARMA.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-🎯 CO DOSTANEŠ:
+🔍 PROJDEŠ SI:
 
-✅ Tvé SKÓRE (0-100 bodů)
-✅ Diagnózu stavu modelu
-✅ Kritické problémy odhalené
-✅ Personalizovaný plán kroků
-✅ Konkrétní nástroje na validaci
+✓ Máš jasně definované segmenty?
+✓ Testoval jsi hodnotu u zákazníků?
+✓ Víš kolik zákazníků ti stačí na přežití?
+✓ Znáš svoje čísla? (CAC, LTV, marže)
+✓ Máš validovaný model?
 
-━━━━━━━━━━━━━━━━━━━━━━━
-
-⚡ UKÁZKA VÝSLEDKU:
-
-"Skóre: 38/100 - RIZIKOVÝ MODEL
-
-❌ Nedefinované segmenty
-❌ Netestovaná hodnota  
-❌ Neznámá ekonomika
-
-→ Tvůj plán: Začni validací problému u 5 zákazníků během 3 dnů"
+...a dalších 5 kritických otázek.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-💎 PROČ TO FUNGUJE:
+📊 DOSTANEŠ:
 
-Ne obecné rady.
-Ne bullshit.
+→ Tvoje SKÓRE (0-100)
+→ Kde máš největší problém
+→ Co ti chybí k růstu
+→ Přesný plán, co dělat PRVNÍ
 
-KONKRÉTNÍ kroky podle TVÉHO stavu.
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 PŘÍKLAD:
+
+\"Skóre: 42/100 - NESTABILNÍ MODEL
+
+Problém: Nevíš kolik zákazníků potřebuješ.
+
+Tvůj plán: Sečti fixní náklady → Spočítej kritické množství → Nastav měsíční cíl.\"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎁 PROČ TO NENÍ BULLSHIT:
+
+Ne obecné bláboly.
+Ne \"najdi si svou vášeň\".
+
+KONKRÉTNÍ kroky.
+Podle TVÉHO byznysu.
+Podle TVÉHO skóre.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1816,22 +1823,89 @@ Někdo potřebuje opravit model.
 Někdo ho postavit od nuly.
 Někdo validovat rychle.
 
-Každý dostane CO POTŘEBUJE.
+Každý dostane SVŮJ plán.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-⏱️ 3 MINUTY. ZDARMA.
+⏱️ 3 MINUTY.
+💰 ZDARMA.
+🎯 PŘESNÝ PLÁN.
 
-A víš PŘESNĚ kde stojíš a co dělat PRVNÍ.
+👉 www.podnikatelskactvrtka.cz/kviz
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
 Přestaň hádat.
 Začni měřit.
 
+#podnikani #kviz #validace #model`
+  },
+
+  // POST #30: 3 DŮVODY PROČ BYZNYSY UMÍRAJÍ (Animated card flip)
+  {
+    id: 30,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #30: 3 DŮVODY PROČ BYZNYSY UMÍRAJÍ',
+    copy: `3 důvody proč většina byznysů umírá v prvním roce 💀
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ DŮVOD #1: ŽÁDNÝ PLÁN
+
+Improvizuješ každý den.
+Netestoval jsi NIČCO.
+
+→ Nevíš KDO je tvůj zákazník
+→ Market tě ignoruje
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ DŮVOD #2: NEZNÁŠ ČÍSLA
+
+80% podnikatelů to NEVÍ.
+
+→ Kolik zákazníků ti stačí na přežití?
+→ Kolik tě stojí získat jednoho?
+→ Za kolik měsíců jsi v plusu?
+
+Pak se diví, že "to nejde".
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ DŮVOD #3: VŠECHNO NAJEDNOU
+
+Zkoušíš 10 věcí současně.
+Nevíš co funguje.
+
+→ Spaluješ čas + peníze na bullshit
+→ Důležité věci vůbec neděláš
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 ŘEŠENÍ?
+
+Mít jasnej MODEL PODNIKÁNÍ.
+
+✓ Víš PŘESNĚ co děláš
+✓ Znáš svá čísla
+✓ Víš co je priorita
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 ZJISTI, KDE MÁŠ NEJVĚTŠÍ DÍRY:
+
+3 minuty. ZDARMA.
+Personalizovaný plán podle TVÉHO byznysu.
+
 👉 www.podnikatelskactvrtka.cz/kviz
 
-#podnikani #kviz #validace #model`
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Přestaň hádat.
+Začni měřit.
+
+#podnikani #model #osvč #živnostník`
   },
 ];
 
@@ -5665,6 +5739,15 @@ function Post29QuizTeaser() {
   );
 }
 
+// Post #30: 3 Důvody proč byznysy umírají (Animated)
+function Post30ThreeReasons() {
+  return (
+    <PostContainer format="4:5" id={30} title="Post #30: 3 DŮVODY PROČ BYZNYSY UMÍRAJÍ">
+      <OrganicPost30ThreeReasons />
+    </PostContainer>
+  );
+}
+
 // Main component
 export default function OrganicPosts() {
   const [currentPost, setCurrentPost] = useState(0);
@@ -5707,6 +5790,7 @@ export default function OrganicPosts() {
       case 26: return <Post27Zasilkovna />;
       case 27: return <Post28FOMO />;
       case 28: return <Post29QuizTeaser />;
+      case 29: return <Post30ThreeReasons />;
       default: return <Post1Static />;
     }
   };

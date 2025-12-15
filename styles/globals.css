@@ -336,8 +336,8 @@ input[type="number"].no-spinner {
   @media print {
     /* Remove any first page blank issue */
     @page {
-      margin: 0.5cm;
-      size: A4;
+      margin: 1.5cm 1cm; /* Menší horní/dolní margin, větší levý/pravý */
+      size: A4 portrait;
     }
     
     html, body {

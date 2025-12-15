@@ -22,7 +22,7 @@ export function OrganicPost29QuizTeaser() {
   useEffect(() => {
     const timer = setInterval(() => {
       setStage((prev) => (prev + 1) % 6);
-    }, 2200);
+    }, 3200); // Increased from 2200ms to 3200ms for better readability
     return () => clearInterval(timer);
   }, []);
 
@@ -286,7 +286,7 @@ export function OrganicPost29QuizTeaser() {
                         Tvůj personalizovaný plán:
                       </h4>
                       <p className="text-slate-700 text-sm leading-relaxed">
-                        Dostaneš konkrétní kroky jak opravit všech 9 bloků + nástroje na validaci během týdne
+                        Přesně víš, které kroky udělat PRVNÍ a můžeš začít hned teď (ne za týden)
                       </p>
                     </div>
                   </motion.div>
