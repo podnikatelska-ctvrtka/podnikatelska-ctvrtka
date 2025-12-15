@@ -73,6 +73,60 @@ function SellBox() {
 }
 
 // ═══════════════════════════════════════════════════════════
+// EMAIL REMINDER SECTION - použito ve všech plánech
+// ═══════════════════════════════════════════════════════════
+
+function EmailReminderSection() {
+  return (
+    <div className="mb-6 print:hidden">
+      <h2 className="text-xl font-bold text-gray-800 mb-3">📧 SLEDUJ SVŮJ POKROK</h2>
+      
+      {/* Žlutý reminder */}
+      <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 mb-3">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" className="mt-1 w-5 h-5 accent-yellow-500 flex-shrink-0" />
+          <div>
+            <p className="font-bold text-slate-900">
+              ⭐ Přesunul jsem email do prioritních (DŮLEŽITÉ!)
+            </p>
+            <p className="text-sm text-slate-700 mt-1">
+              Příští 3 dny Ti pošleme emaily s pokračováním. <strong>Zkontroluj SPAM/Hromadné</strong> a přesuň nás do prioritní složky, aby Ti to nepřišlo stranou (zvlášť přes Vánoce!)
+            </p>
+          </div>
+        </label>
+      </div>
+
+      {/* Email checkboxy */}
+      <div className="space-y-2">
+        <label className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
+          <input type="checkbox" className="mt-1 w-5 h-5 accent-blue-500 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-slate-900">📬 Email 1: Přečetl jsem (přijde za 24h)</p>
+            <p className="text-sm text-slate-600">→ Jak Ti šel akční plán? + soft intro do Čtvrtky</p>
+          </div>
+        </label>
+
+        <label className="flex items-start gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer hover:bg-purple-100 transition-colors">
+          <input type="checkbox" className="mt-1 w-5 h-5 accent-purple-500 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-slate-900">📬 Email 2: Přečetl jsem (přijde za 48h)</p>
+            <p className="text-sm text-slate-600">→ Proč jsme vytvořili Podnikatelskou Čtvrtku (nejsilnější email)</p>
+          </div>
+        </label>
+
+        <label className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg cursor-pointer hover:bg-green-100 transition-colors">
+          <input type="checkbox" className="mt-1 w-5 h-5 accent-green-500 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-slate-900">📬 Email 3: Přečetl jsem (přijde za 72h)</p>
+            <p className="text-sm text-slate-600">→ Poslední šance: Co Tě brzdí v rozhodnutí?</p>
+          </div>
+        </label>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
 // KRITICKÝ STAV (0-30%)
 // ═══════════════════════════════════════════════════════════
 
@@ -117,6 +171,8 @@ function CriticalPlan({ userName, score }: { userName: string; score: number }) 
           </div>
         </div>
       </div>
+
+      <EmailReminderSection />
 
       {/* 30denní plán */}
       <div className="mb-6">
@@ -351,6 +407,8 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
           </div>
         </div>
       </div>
+
+      <EmailReminderSection />
 
       {/* 30denní plán */}
       <div className="mb-6">
@@ -587,6 +645,8 @@ function SolidPlan({ userName, score }: { userName: string; score: number }) {
         </div>
       </div>
 
+      <EmailReminderSection />
+
       {/* 30denní plán */}
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-800 mb-3">📋 30DENNÍ PLÁN NA DALŠÍ LEVEL</h2>
@@ -819,6 +879,8 @@ function AdvancedPlan({ userName, score }: { userName: string; score: number }) 
           </div>
         </div>
       </div>
+
+      <EmailReminderSection />
 
       {/* 30denní plán */}
       <div className="mb-6">
@@ -1091,6 +1153,8 @@ function BeginnerPlan({ userName, score }: { userName: string; score: number }) 
           )}
         </div>
       </div>
+
+      <EmailReminderSection />
 
       {/* 30denní plán */}
       <div className="mb-6">

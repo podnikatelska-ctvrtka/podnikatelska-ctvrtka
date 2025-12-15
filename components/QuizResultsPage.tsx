@@ -29,30 +29,6 @@ export function QuizResultsPage({
     const style = document.createElement('style');
     style.textContent = `
       @media print {
-        /* ✅ KLÍČOVÉ: @page s marginy */
-        @page {
-          size: A4;
-          margin: 1cm; /* Rovnoměrné odsazení ze všech stran */
-        }
-        
-        /* Reset HTML a BODY */
-        html {
-          margin: 0 !important;
-          padding: 0 !important;
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important;
-          color-adjust: exact !important;
-        }
-        
-        body {
-          margin: 0 !important;
-          padding: 0 !important;
-          background: white !important;
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
-        }
-        
         /* Skrýt VŠECHNO kromě main contentu */
         body * {
           visibility: hidden;
@@ -69,14 +45,21 @@ export function QuizResultsPage({
           visibility: hidden !important;
         }
         
-        /* ✅ OPRAVENO: Print-keep s paddingem a static position */
+        /* Optimalizace pro tisk */
+        body {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: white !important;
+        }
+        
+        /* Výsledkový plán na celou šířku */
         .print-keep {
           position: absolute;
           left: 0;
           top: 0;
           width: 100% !important;
           margin: 0 !important;
-          padding: 0.5cm !important; /* Vnitřní padding pro obsah */
+          padding: 0.5cm !important;
         }
         
         /* Kompaktní layout */
@@ -86,25 +69,18 @@ export function QuizResultsPage({
           margin: 0 !important;
         }
         
-        /* ✅ Lepší page breaks - vyhnout se rozkouskování */
-        .bg-white, .rounded-2xl, .rounded-xl, .mb-5, .space-y-3 > * {
-          page-break-inside: avoid !important;
-          break-inside: avoid !important;
+        /* ✅ Potlačit py-8 px-4 z main divu */
+        .py-8 {
+          padding-top: 0 !important;
+          padding-bottom: 0 !important;
         }
         
-        /* Týdenní sekce - nepřerušovat */
-        h3.font-bold {
-          page-break-after: avoid !important;
-          page-break-inside: avoid !important;
+        .px-4 {
+          padding-left: 0 !important;
+          padding-right: 0 !important;
         }
         
-        /* Checkbox položky - nepřerušovat */
-        label.flex {
-          page-break-inside: avoid !important;
-          break-inside: avoid !important;
-        }
-        
-        /* ✅ KOMPAKTNÍ MEZERY - ušetří místo */
+        /* Menší mezery mezi sekcemi */
         .space-y-8, .space-y-8 > * + * {
           margin-top: 0.3rem !important;
         }
@@ -121,7 +97,7 @@ export function QuizResultsPage({
           margin-top: 0.15rem !important;
         }
         
-        /* ✅ KOMPAKTNÍ PADDING */
+        /* Kompaktní padding */
         .p-4 { padding: 0.3rem !important; }
         .p-6 { padding: 0.4rem !important; }
         .p-8 { padding: 0.5rem !important; }
@@ -144,12 +120,12 @@ export function QuizResultsPage({
           margin-bottom: 0.2rem !important;
         }
         
-        /* ✅ KOMPAKTNÍ NADPISY */
+        /* Kompaktní nadpisy */
         h1 { font-size: 1.2rem !important; margin-bottom: 0.2rem !important; }
         h2 { font-size: 1.1rem !important; margin-bottom: 0.15rem !important; }
         h3 { font-size: 1rem !important; margin-bottom: 0.15rem !important; }
         
-        /* ✅ KOMPAKTNÍ TEXT */
+        /* Kompaktní text */
         p { font-size: 0.8rem !important; line-height: 1.2 !important; margin-bottom: 0.15rem !important; }
         li { font-size: 0.8rem !important; line-height: 1.2 !important; }
         

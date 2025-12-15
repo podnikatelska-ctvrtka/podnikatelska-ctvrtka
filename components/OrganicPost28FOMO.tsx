@@ -1,10 +1,3 @@
-/**
- * POST #28: ZATÍMCO TY VÁHÁŠ...
- * 
- * Koncept: Live counter/ticker animace - FOMO bez slevy, urgence založená na realitě
- * Visual: Běžící countery + čas tikuje + příležitosti mizí
- */
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock, TrendingUp, Users, Target, AlertCircle } from 'lucide-react';
@@ -17,10 +10,10 @@ export function OrganicPost28FOMO() {
   // 3: "2 možnosti" final
 
   const [counters, setCounters] = useState({
-    validating: 0,
-    tested: 0,
-    saved: 0,
-    found: 0,
+    validating: 42,
+    tested: 18,
+    saved: 12,
+    found: 7,
   });
 
   useEffect(() => {
@@ -30,16 +23,16 @@ export function OrganicPost28FOMO() {
     return () => clearInterval(timer);
   }, []);
 
-  // Animated counters for stage 0
+  // Animated counters for stage 0 - numbers only go UP
   useEffect(() => {
     if (stage === 0) {
       const interval = setInterval(() => {
-        setCounters({
-          validating: Math.floor(Math.random() * 10) + 40,
-          tested: Math.floor(Math.random() * 5) + 20,
-          saved: Math.floor(Math.random() * 8) + 8,
-          found: Math.floor(Math.random() * 5) + 5,
-        });
+        setCounters(prev => ({
+          validating: prev.validating + Math.floor(Math.random() * 3) + 1, // +1 to +3
+          tested: prev.tested + (Math.random() > 0.6 ? 1 : 0), // occasionally +1
+          saved: prev.saved + (Math.random() > 0.7 ? 1 : 0), // occasionally +1
+          found: prev.found + (Math.random() > 0.8 ? 1 : 0), // occasionally +1
+        }));
       }, 800);
       return () => clearInterval(interval);
     }
@@ -336,9 +329,24 @@ export function OrganicPost28FOMO() {
               transition={{ delay: 1 }}
               className="mt-10"
             >
-              <p className="text-2xl md:text-3xl text-white leading-relaxed">
-                Tvůj čas <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent font-black">tikuje</span>
+              <p className="text-2xl md:text-3xl text-white leading-relaxed mb-6">
+                Tvůj čas <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent font-black">tiká</span>
               </p>
+
+              {/* CTA Button */}
+              <motion.a
+                href="/landing-page"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.3 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-block mt-6 px-10 py-5 bg-gradient-to-r from-orange-500 via-orange-400 to-yellow-400 rounded-full text-slate-900 text-xl hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 cursor-pointer"
+              >
+                <span className="flex items-center gap-3">
+                  <span>🚀 Zjisti jak na to</span>
+                </span>
+              </motion.a>
             </motion.div>
           </motion.div>
         )}
