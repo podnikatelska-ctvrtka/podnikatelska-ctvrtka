@@ -18,6 +18,9 @@ import { CourseDemoV3 } from "./components/CourseDemoV3"; // ✅ COURSE V3
 import { MiniCourse } from "./components/MiniCourse"; // ✅ MINI COURSE
 import { ZalohaLanding } from "./components/ZalohaLanding"; // ✅ ZALOHA LANDING (BACKUP)
 import { FinalCTA } from "./components/FinalCTA"; // ✅ FINAL CTA (no email box)
+import { CourseScreenshotMarketing } from "./components/CourseScreenshotMarketing"; // ✅ COURSE DEMO MARKETING
+import { CourseContentShowcase } from "./components/CourseContentShowcase"; // ✅ COURSE CONTENT VALUE-FOCUSED
+import { CourseAnimatedDemo } from "./components/CourseAnimatedDemo"; // ✅ COURSE ANIMATED DEMO (60s video)
 
 import { HeroSection } from "./components/HeroSection";
 import { ProblemsSectionCompact } from "./components/ProblemsSectionCompact";
@@ -145,9 +148,24 @@ export default function App() {
     initialPath?.hash.startsWith('#konzultace') || initialPath?.path === '/konzultace'
   );
   const [showZasilkovnaModel, setShowZasilkovnaModel] = useState(
-    initialPath?.hash.startsWith('#zasilkovna') || initialPath?.path === '/zasilkovna' || 
-    initialPath?.hash.startsWith('#business-model-zasilkovna') || initialPath?.path === '/business-model-zasilkovna'
+    initialPath?.hash.startsWith('#zasilkovna') || initialPath?.path === '/zasilkovna'
   );
+  
+  // 🎬 ANIMATED DEMO: Modal for Course Animated Demo
+  const [showAnimatedDemo, setShowAnimatedDemo] = useState(
+    initialPath?.hash.startsWith('#demo') || initialPath?.path === '/demo'
+  );
+  
+  // 🎨 AD CREATIVES: Ad creatives showcase
+  const [showAdCreatives, setShowAdCreatives] = useState(false);
+  const [showFinalAdSets, setShowFinalAdSets] = useState(false);
+  
+  // 📝 COURSE STATES: Different course versions
+  const [showChecklist, setShowChecklist] = useState(false);
+  const [showCourseDemo, setShowCourseDemo] = useState(false);
+  const [showCourseV2, setShowCourseV2] = useState(false);
+  
+  // 🎯 QUIZ STATES: Quiz pages
   const [showQuiz, setShowQuiz] = useState(
     initialPath?.hash.startsWith('#kviz') || initialPath?.path === '/kviz'
   );
@@ -157,15 +175,24 @@ export default function App() {
   const [showQuizThankYou, setShowQuizThankYou] = useState(
     initialPath?.path === '/kviz/hotovo'
   );
-  const [showActionPlans, setShowActionPlans] = useState(false);
-  const [showZaloha, setShowZaloha] = useState(false);
-  const [showRemarketingAds, setShowRemarketingAds] = useState(false);
-  const [showQuizTest, setShowQuizTest] = useState(false);
-  const [showChecklist, setShowChecklist] = useState(false);
-  const [showCourseDemo, setShowCourseDemo] = useState(false);
-  const [showCourseV2, setShowCourseV2] = useState(false);
-  const [showAdCreatives, setShowAdCreatives] = useState(false);
-  const [showFinalAdSets, setShowFinalAdSets] = useState(false);
+  const [showQuizTest, setShowQuizTest] = useState(
+    initialPath?.hash.startsWith('#quiz-test') || initialPath?.path === '/quiz-test'
+  );
+  const [showActionPlans, setShowActionPlans] = useState(
+    initialPath?.hash.startsWith('#action-plans') || initialPath?.path === '/action-plans'
+  );
+  
+  // 🏠 ZALOHA: Backup landing page
+  const [showZaloha, setShowZaloha] = useState(
+    initialPath?.hash.startsWith('#zaloha') || initialPath?.path === '/zaloha'
+  );
+  
+  // 📢 REMARKETING: Remarketing ads
+  const [showRemarketingAds, setShowRemarketingAds] = useState(
+    initialPath?.hash.startsWith('#remarketing') || initialPath?.path === '/remarketing'
+  );
+  
+  // 🔐 ADMIN: Admin panel
   const [showAdmin, setShowAdmin] = useState(false);
   const [showInteractiveCourse, setShowInteractiveCourse] = useState(false);
   
@@ -278,7 +305,7 @@ export default function App() {
         setShowKonzultace(false);
       } else if (hash.startsWith('#zaloha') || path === '/zaloha') {
         setShowZaloha(true);
-      } else if (hash.startsWith('#zasilkovna') || path === '/zasilkovna' || hash.startsWith('#business-model-zasilkovna') || path === '/business-model-zasilkovna') {
+      } else if (hash.startsWith('#zasilkovna') || path === '/zasilkovna') {
         setShowZasilkovnaModel(true);
         setShowKonzultace(false);
         setShowQuiz(false);
@@ -899,6 +926,8 @@ export default function App() {
         setShowCourseDemo(false);
         setShowAdmin(false);
         setShowInteractiveCourse(false);
+      } else if (hash.startsWith('#demo') || path === '/demo') {
+        setShowAnimatedDemo(true);
       } else {
         setShowChecklist(false);
         setShowOrderPage(false);
@@ -1374,6 +1403,17 @@ export default function App() {
       <>
         <CriticalCSS />
         <ZalohaLanding />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // ✅ Show Course Screenshot Marketing if URL has #demo or /demo
+  if (showAnimatedDemo) {
+    return (
+      <>
+        <CriticalCSS />
+        <CourseAnimatedDemo />
         <Toaster position="top-right" />
       </>
     );

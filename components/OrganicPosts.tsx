@@ -15,9 +15,11 @@ import { OrganicPost27Zasilkovna } from './OrganicPost27Zasilkovna';
 import { OrganicPost28FOMO } from './OrganicPost28FOMO';
 import { OrganicPost29QuizTeaser } from './OrganicPost29QuizTeaser';
 import { OrganicPost30ThreeReasons } from './OrganicPost30ThreeReasons';
+import { OrganicPost31Path } from './OrganicPost31Path';
+import { OrganicPost30DemoWalkthrough } from './OrganicPost30DemoWalkthrough';
 
 /**
- * 🎯 ORGANIC POSTS - 30 DNÍ SÉRIE
+ * 🎯 ORGANIC POSTS - 32 DNÍ SÉRIE
  * 
  * CLEAN verze - JEN posty co skutečně používáme:
  * - Post #1: Kdo je tvůj zákazník (static, pain+sol)
@@ -50,6 +52,8 @@ import { OrganicPost30ThreeReasons } from './OrganicPost30ThreeReasons';
  * - Post #28: ZATÍMCO TY VÁHÁŠ (animated, FOMO - konkurence validuje) ✅
  * - Post #29: QUIZ TEASER (animated, mockup - 3 minuty odhalí zdraví) ✅
  * - Post #30: 3 DŮVODY PROČ BYZNYSY UMÍRAJÍ (animated, card flip - education + CTA) ✅
+ * - Post #31: THE PATH (animated, journey map - cesta z chaosu do jasna) ✅
+ * - Post #32: DEMO WALKTHROUGH (animated, 5-stage Jana cafe story - 90s demo preview) ✅ REPLACED VALUE STACK
  */
 
 interface PostData {
@@ -1898,14 +1902,106 @@ Mít jasnej MODEL PODNIKÁNÍ.
 3 minuty. ZDARMA.
 Personalizovaný plán podle TVÉHO byznysu.
 
-👉 www.podnikatelskactvrtka.cz/kviz
+👉 www.podnikatelskactvrtka.cz
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
-Přestaň hádat.
-Začni měřit.
+#podnikani #validace #model #kviz`
+  },
 
-#podnikani #model #osvč #živnostník`
+  // POST #31: THE PATH (Animated journey map)
+  {
+    id: 31,
+    type: 'animated',
+    format: '4:5',
+    title: 'Post #31: THE PATH - Cesta z chaosu',
+    copy: `CESTA Z CHAOSU DO JASNA 🗺️
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 START: Mám nápad
+  ↓ 
+📍 KDO: Definuji zákazníka
+  ↓
+📍 CO: Validuji nabídku  
+  ↓
+📍 KOLIK: Testuji ekonomiku
+  ↓
+📍 JAK: Mám akční plán
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ VĚTŠINA PODNIKATELŮ nikdy nepřejde první míli.
+
+Uvíznou v nejistotě.
+Nevědí, kam jít dál.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+TY MÁŠ 2 MOŽNOSTI:
+
+1️⃣ Zkoušet a doufat
+   → Měsíce ztraceného času
+   → Pokusy naslepo
+   → Dotazy "Co mám dělat?"
+
+2️⃣ Mít mapu + průvodce
+   → 90 minut struktury
+   → Krok za krokem
+   → Odpovědi "Co dělat TEĎKA"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🗺️ Podnikatelská Čtvrtka
+
+4 999 Kč | 90 minut. Jeden model.
+Jasná cesta. Jasný plán. Jasný úspěch.
+
+👉 www.podnikatelskactvrtka.cz
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+#podnikani #model #validace #startup`
+  },
+
+  // POST #32: DEMO WALKTHROUGH - Jana's cafe (Animated 5-stage demo preview)
+  {
+    id: 32,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #32: DEMO WALKTHROUGH - Jana & kavárna',
+    copy: `🎬 90 sekund = celý proces.
+
+Jana chce kavárnu v Praze.
+Má skvělý nápad, ale...
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❓ Je tam vůbec místo?
+❓ Kolik zákazníků reálně získám?
+❓ Vydělám vůbec?
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Za 90 sekund vidíš celý proces:
+
+🛠️ Nástroje v akci (průzkum + kalkulačky)
+📊 Konkrétní čísla (54k tržby • 25k zisk)
+📋 Akční plán (4 týdny • 16 kroků)
+⏱️ Čas investice: 90 minut
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+[ANIMACE: 5 stages - Hook → Questions → Tools → Results → CTA]
+
+👉 Pusť si ZDARMA: www.podnikatelskactvrtka.cz/demo
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Žádné kecy. Real screen recording.
+Od otázek k plánu za 90 sekund.
+
+#podnikani #demo #validace #realprůvodce`
   },
 ];
 
@@ -5748,6 +5844,24 @@ function Post30ThreeReasons() {
   );
 }
 
+// Post #31: The Path (Animated)
+function Post31Path() {
+  return (
+    <PostContainer format="4:5" id={31} title="Post #31: THE PATH - Cesta z chaosu">
+      <OrganicPost31Path />
+    </PostContainer>
+  );
+}
+
+// Post #32: Demo Walkthrough (Animated) - REPLACED VALUE STACK (92% sleva was too FOMO)
+function Post32ValueStack() {
+  return (
+    <PostContainer format="1:1" id={32} title="Post #32: DEMO WALKTHROUGH - Jana & kavárna">
+      <OrganicPost30DemoWalkthrough />
+    </PostContainer>
+  );
+}
+
 // Main component
 export default function OrganicPosts() {
   const [currentPost, setCurrentPost] = useState(0);
@@ -5791,6 +5905,8 @@ export default function OrganicPosts() {
       case 27: return <Post28FOMO />;
       case 28: return <Post29QuizTeaser />;
       case 29: return <Post30ThreeReasons />;
+      case 30: return <Post31Path />;
+      case 31: return <Post32ValueStack />;
       default: return <Post1Static />;
     }
   };
@@ -5801,7 +5917,7 @@ export default function OrganicPosts() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4">
-            📱 Organic Posts - 30 dní série
+            📱 Organic Posts - 32 dní série
           </h1>
           <p className="text-xl text-slate-300">
             Jeden post denně • Vysoká hodnota • Bez know-how

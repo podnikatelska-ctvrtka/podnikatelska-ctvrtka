@@ -1,10 +1,11 @@
 // 🎯 REMARKETING ADS - CONVERSIONS CAMPAIGN
-// 2 ANGLES: "Máš plán nebo jen improvizuješ?" + "Proč ti byznys neroste?"
+// 3 NOVÉ REKLAMY: Zásilkovna callback, Easy to achieve, Urgency 2026
 
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Copy, Check } from 'lucide-react';
-import { QuizAdPlanLeden } from './QuizAdPlanLeden';
-import { QuizAdRemarketing1 } from './QuizAdRemarketing1';
+import { RemarketingAd1Zasilkovna } from './RemarketingAd1Zasilkovna';
+import { RemarketingAd2Easy } from './RemarketingAd2Easy';
+import { RemarketingAd3Urgency2026 } from './RemarketingAd3Urgency2026';
 
 export function RemarketingAdsPreview() {
   const [currentAd, setCurrentAd] = useState(0);
@@ -12,35 +13,51 @@ export function RemarketingAdsPreview() {
 
   const ads = [
     {
-      id: 'plan-leden',
-      name: 'AD #1: LEDEN PLÁN',
-      subtitle: 'Máš plán nebo jen improvizuješ?',
-      format: 'Seasonal • Planning urgency',
-      budget: '75 Kč/den (cold) nebo 50 Kč/den (remarketing)',
+      id: 'zasilkovna-fresh',
+      name: 'AD #1: ZÁSILKOVNA',
+      subtitle: 'Bonus content - Takhle to udělal gigant',
+      format: 'Fresh content (neběželo v omni) • Case study',
+      budget: '100 Kč/den',
       objective: 'CONVERSIONS',
-      trigger: 'New year planning • Konkrétní akční plán na leden',
-      color: 'from-purple-600 to-orange-500',
+      trigger: 'Fresh content • Giant case study • Quiz CTA',
+      color: 'from-orange-600 to-yellow-500',
       copy: {
-        headline: 'Máš plán nebo jen improvizuješ?',
-        primary: 'Zjisti PŘESNĚ, co dělat první a dostaň konkrétní plán na LEDEN 2026.',
-        description: 'Pro začínající i pokročilé živnostníky a OSVČ',
-        cta: 'Chci mít jasnej plán na leden'
+        headline: 'Takhle to udělal GIGANT. A co tvůj model?',
+        primary: 'Zásilkovna: Ukázka aplikace modelu podnikání na reálném příkladu',
+        description: 'Udělej 3min kvíz a zjisti, kde máš mezery',
+        cta: 'A jak vypadá TVŮJ model?'
       }
     },
     {
-      id: 'co-chybi',
-      name: 'AD #2: CO CHYBÍ',
-      subtitle: 'Proč ti byznys neroste jak by mohl?',
-      format: 'Problem diagnostic',
-      budget: '75 Kč/den (pouze cold)',
+      id: 'diagnostic-pain',
+      name: 'AD #2: DIAGNOSTIC',
+      subtitle: 'Hodně práce, málo peněz → Kvíz',
+      format: 'Pain point • Emotional trigger • Solution',
+      budget: '100 Kč/den',
       objective: 'CONVERSIONS',
-      trigger: 'Frustration • Diagnostic • Solution-seeking',
-      color: 'from-orange-500 to-yellow-500',
+      trigger: 'Pain recognition • Problem identification • Quiz as solution',
+      color: 'from-slate-800 to-slate-900',
       copy: {
-        headline: 'Proč ti byznys neroste jak by mohl?',
-        primary: 'Zjisti přesně, co ti chybí k tomu, aby tvůj byznys fungoval líp',
-        description: '3 minuty • Zdarma',
-        cta: 'Spustit kvíz zdarma'
+        headline: 'Hodně práce. Málo peněz. A pořád dokola...',
+        primary: 'Makáš jako ďábel, ale výsledky neodpovídají úsilí.',
+        description: 'Problém není v TY. Problém je v MODELU.',
+        cta: 'Udělej diagnostiku TEĎKA'
+      }
+    },
+    {
+      id: 'santa-gift',
+      name: 'AD #3: SANTA GIFT',
+      subtitle: 'Ježíšek ti nepomůže + Dárek pro sebe',
+      format: 'Christmas angle • Self-gift • Rejection messaging',
+      budget: '100 Kč/den',
+      objective: 'CONVERSIONS',
+      trigger: 'Holiday urgency • Nobody helps you • Self-care',
+      color: 'from-red-700 to-green-700',
+      copy: {
+        headline: 'Ježíšek ti nepomůže s tvým byznysem.',
+        primary: 'Nikdo ti ho nevyřeší. Tak si dej dárek sám.',
+        description: '3min kvíz • Diagnóza byznysu • Plán na 2026',
+        cta: 'Udělej si dárek ještě LETOS'
       }
     }
   ];
@@ -151,8 +168,9 @@ export function RemarketingAdsPreview() {
               height: '1350px'
             }}
           >
-            {currentAd === 0 && <QuizAdPlanLeden />}
-            {currentAd === 1 && <QuizAdRemarketing1 />}
+            {currentAd === 0 && <RemarketingAd1Zasilkovna />}
+            {currentAd === 1 && <RemarketingAd2Easy />}
+            {currentAd === 2 && <RemarketingAd3Urgency2026 />}
           </div>
         </div>
       </div>

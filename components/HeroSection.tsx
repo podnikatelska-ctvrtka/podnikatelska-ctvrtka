@@ -358,6 +358,19 @@ export function HeroSection() {
                 <p className="text-sm text-gray-600 md:hidden">
                   Klikněte a zjistěte, co políčko řeší
                 </p>
+                
+                {/* ✅ DEMO BUTTON - Above canvas */}
+                <div className="mt-4">
+                  <button
+                    onClick={() => window.location.href = '/demo'}
+                    className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
+                    </svg>
+                    Pusť si demo jak to funguje (90s)
+                  </button>
+                </div>
               </div>
 
               {/* Canvas grid - DESKTOP */}
@@ -528,7 +541,7 @@ export function HeroSection() {
                       </button>
                       
                       <p className="text-xs text-gray-600 mt-3">
-                        ✅ Kvíz hotovo • ���� Ušetři 3.500 Kč
+                        ✅ Kvíz hotovo • Ušetři 3.500 Kč
                       </p>
                     </>
                   )}

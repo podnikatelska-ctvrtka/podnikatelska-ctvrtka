@@ -32,7 +32,7 @@ export function OrganicPost30ThreeReasons() {
       title: 'ŽÁDNÝ PLÁN',
       subtitle: 'Improvizuješ každý den',
       problem: 'Nevíš KDO je zákazník',
-      result: 'Market tě ignoruje',
+      result: 'Zákazníci tě ignorují',
       color: 'from-red-500 to-orange-500'
     },
     {
@@ -49,7 +49,7 @@ export function OrganicPost30ThreeReasons() {
       emoji: '🔀',
       title: 'VŠECHNO NAJEDNOU',
       subtitle: 'Zkoušíš 10 věcí současně',
-      problem: 'Nevíš co funguje, co ne',
+      problem: 'Nevíš, co funguje, co ne',
       result: 'Spaluješ čas + peníze',
       color: 'from-yellow-500 to-red-500'
     }
@@ -172,7 +172,7 @@ export function OrganicPost30ThreeReasons() {
                 return (
                   <div
                     key={reason.number}
-                    className="relative"
+                    className="relative h-[160px]"
                     style={{ perspective: '1000px' }}
                   >
                     <motion.div
@@ -187,7 +187,7 @@ export function OrganicPost30ThreeReasons() {
                       style={{
                         transformStyle: 'preserve-3d',
                       }}
-                      className="relative w-full"
+                      className="relative w-full h-full"
                     >
                       {/* FRONT of card (before flip) */}
                       <div
@@ -247,9 +247,6 @@ export function OrganicPost30ThreeReasons() {
                         </div>
                       </div>
                     </motion.div>
-                    
-                    {/* Spacer for flipped card */}
-                    <div className="h-[160px]" />
                   </div>
                 );
               })}
@@ -300,7 +297,7 @@ export function OrganicPost30ThreeReasons() {
                 <div className="space-y-3 text-left">
                   <div className="flex items-start gap-3 text-slate-300">
                     <span className="text-green-400 text-xl shrink-0">✓</span>
-                    <span className="text-lg">Víš PŘESNĚ co děláš</span>
+                    <span className="text-lg">Víš PŘESNĚ, co děláš</span>
                   </div>
                   <div className="flex items-start gap-3 text-slate-300">
                     <span className="text-green-400 text-xl shrink-0">✓</span>
@@ -308,7 +305,7 @@ export function OrganicPost30ThreeReasons() {
                   </div>
                   <div className="flex items-start gap-3 text-slate-300">
                     <span className="text-green-400 text-xl shrink-0">✓</span>
-                    <span className="text-lg">Víš co je priorita</span>
+                    <span className="text-lg">Víš, co je priorita</span>
                   </div>
                 </div>
               </motion.div>
@@ -338,19 +335,27 @@ export function OrganicPost30ThreeReasons() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-4xl md:text-5xl text-slate-900 mb-4 leading-tight font-black"
+                className="text-4xl md:text-5xl text-slate-900 mb-3 font-black"
               >
-                Zjisti, kde máš<br/>
+                Zjisti, kde máš
+              </motion.h2>
+              
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-4xl md:text-5xl font-black mb-6"
+              >
                 <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
                   NEJVĚTŠÍ DÍRY
                 </span>
-              </motion.h2>
+              </motion.div>
 
               <motion.p
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="text-2xl text-slate-600 mb-8"
+                className="text-2xl text-slate-600 mb-10"
               >
                 3 minuty. ZDARMA. Personalizovaný plán.
               </motion.p>
@@ -361,7 +366,7 @@ export function OrganicPost30ThreeReasons() {
                 transition={{ delay: 0.8 }}
                 className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-8 py-5 rounded-2xl text-2xl font-bold inline-flex items-center gap-3 shadow-2xl"
               >
-                <span>Udělej kvíz TEĎKA</span>
+                <span>Udělej změnu TEĎ</span>
                 <ArrowRight className="w-7 h-7" />
               </motion.div>
 
@@ -369,9 +374,9 @@ export function OrganicPost30ThreeReasons() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
-                className="text-slate-500 mt-6 text-sm"
+                className="text-slate-500 mt-6 text-lg"
               >
-                www.podnikatelskactvrtka.cz/kviz
+                podnikatelskactvrtka.cz
               </motion.p>
             </motion.div>
           )}
