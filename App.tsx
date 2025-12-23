@@ -61,6 +61,19 @@ import UnsubscribePage from "./pages/UnsubscribePage";
 import FBPageAssets from "./components/FBPageAssets";
 import OrganicPosts from "./components/OrganicPosts";
 import { OrganicPostsVideos } from "./components/OrganicPostsVideos";
+import { OrganicPost33Testimonial } from "./components/OrganicPost33Testimonial";
+import { OrganicPost34AntiPerfect } from "./components/OrganicPost34AntiPerfect";
+import { OrganicPost35HiddenCost } from "./components/OrganicPost35HiddenCost";
+import { OrganicPost36QuizData } from "./components/OrganicPost36QuizData";
+import { OrganicPost37CourseMechanics } from "./components/OrganicPost37CourseMechanics";
+import { OrganicPost38FounderStory } from "./components/OrganicPost38FounderStory";
+import { OrganicPost39Alternative } from "./components/OrganicPost39Alternative";
+import { OrganicPost40NYResolution } from "./components/OrganicPost40NYResolution";
+import { YouTubeShorts } from "./components/YouTubeShorts";
+import { YouTubeLogo, YouTubeLogoSimple, YouTubeLogoPTF } from "./components/YouTubeLogo";
+import { YouTubeBanner, YouTubeBannerMinimal, YouTubeBannerBold } from "./components/YouTubeBanner";
+import { PizzaShort } from "./components/shorts/PizzaShort";
+import { ShortsIndex } from "./components/shorts/ShortsIndex";
 import AdOptimizationWeek1 from "./components/AdOptimizationWeek1";
 import StoriesAds from "./components/StoriesAds";
 import { Value3AdsPreview } from "./components/Value3AdsPreview";
@@ -141,9 +154,27 @@ export default function App() {
   const [showValue3Ads, setShowValue3Ads] = useState(false);
   const [showOmnipresent10, setShowOmnipresent10] = useState(false);
   const [showOrganicVideos, setShowOrganicVideos] = useState(false);
+  // 📝 ORGANIC POSTS #33-40 (individual routes)
+  const [showPost33, setShowPost33] = useState(false);
+  const [showPost34, setShowPost34] = useState(false);
+  const [showPost35, setShowPost35] = useState(false);
+  const [showPost36, setShowPost36] = useState(false);
+  const [showPost37, setShowPost37] = useState(false);
+  const [showPost38, setShowPost38] = useState(false);
+  const [showPost39, setShowPost39] = useState(false);
+  const [showPost40, setShowPost40] = useState(false);
   const [showValue3Versions, setShowValue3Versions] = useState(false);
   const [showValue3NewDesigns, setShowValue3NewDesigns] = useState(false);
   const [showValue3MediumDesigns, setShowValue3MediumDesigns] = useState(false);
+  const [showYouTubeShorts, setShowYouTubeShorts] = useState(
+    initialPath?.hash.startsWith('#youtube-shorts') || initialPath?.path === '/youtube-shorts'
+  );
+  const [showShortsIndex, setShowShortsIndex] = useState(
+    initialPath?.hash.startsWith('#shorts-index') || initialPath?.path === '/shorts-index'
+  );
+  const [showYTLogo, setShowYTLogo] = useState(false);
+  const [showYTBanner, setShowYTBanner] = useState(false);
+  const [showPizzaShort, setShowPizzaShort] = useState(false);
   const [showKonzultace, setShowKonzultace] = useState(
     initialPath?.hash.startsWith('#konzultace') || initialPath?.path === '/konzultace'
   );
@@ -441,7 +472,29 @@ export default function App() {
         setShowStoriesAds(true);
         setShowAdOptimization(false);
         setShowOrganicPosts(false);
-        setShowValue3Ads(false);
+        setShowFBAssets(false);
+        setShowUnsubscribe(false);
+        setShowWebhookTester(false);
+        setShowEmailPreview(false);
+        setShowUltimate10Ads(false);
+        setShowFinal6Angles(false);
+        setShowTenAngles(false);
+        setShowAll6AdSets(false);
+        setShowFinalPortfolio(false);
+        setShowAntiGuruDark(false);
+        setShowNewCreativeAds(false);
+        setShowAdComparison(false);
+        setShowCreativeAds(false);
+        setShowAdPreview(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowThankYou(false);
+        setShowOrderExpired(false);
+        setShowOrderPage(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
       } else if (hash.startsWith('#value-ads') || path === '/value-ads') {
         setShowValue3Ads(true);
         setShowStoriesAds(false);
@@ -551,6 +604,18 @@ export default function App() {
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
+      } else if (hash.startsWith('#youtube-shorts') || path === '/youtube-shorts') {
+        setShowYouTubeShorts(true);
+        setShowOrganicVideos(false);
+        setShowOrganicPosts(false);
+        setShowStoriesAds(false);
+        setShowAdOptimization(false);
+        setShowFBAssets(false);
+      } else if (hash.startsWith('#shorts-index') || path === '/shorts-index') {
+        setShowShortsIndex(true);
+        setShowYouTubeShorts(false);
+        setShowOrganicVideos(false);
+        setShowOrganicPosts(false);
       } else if (hash.startsWith('#export-ads') || path === '/export-ads') {
         setShowExportAds(true);
         setShowOrganicPosts(false);
@@ -1016,6 +1081,28 @@ export default function App() {
       <>
         <CriticalCSS />
         <OrganicPostsVideos />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show YouTube Shorts if URL has #youtube-shorts or /youtube-shorts
+  if (showYouTubeShorts) {
+    return (
+      <>
+        <CriticalCSS />
+        <YouTubeShorts />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show Shorts Index if URL has #shorts-index or /shorts-index
+  if (showShortsIndex) {
+    return (
+      <>
+        <CriticalCSS />
+        <ShortsIndex />
         <Toaster position="top-right" />
       </>
     );

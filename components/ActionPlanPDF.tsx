@@ -24,49 +24,29 @@ export function ActionPlanPDF({ category, score, name }: ActionPlanPDFProps) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// SOFT SELL BOX - použito ve všech plánech
+// SOFT SELL BOX - DOČASNĚ VYPNUTO PRO VÁNOCE (23-26.12)
+// Obnoví se 27.12 s "New Year" framingem
 // ═══════════════════════════════════════════════════════════
 
 function SellBox() {
-  const handleClick = () => {
-    window.open('https://podnikatelskactvrtka.cz/objednavka', '_blank');
-  };
+  return null; // ✅ HOLIDAY GIFT MODE - no sales pitch
+}
 
+// ═══════════════════════════════════════════════════════════
+// SOFT FOOTER CTA - super jemné, vánoční verze
+// ═══════════════════════════════════════════════════════════
+
+function SoftFooterCTA() {
   return (
-    <div data-print-hide="true" className="mt-8 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6 print:hidden">
-      <h3 className="text-xl font-bold text-blue-900 mb-3 flex items-center gap-2">
-        <span className="text-2xl">💡</span> 
-        Potřebuješ pomoc s implementací?
-      </h3>
-      
-      <p className="text-gray-700 mb-4 leading-relaxed">
-        Tento plán ti ukázal <strong>co dělat</strong>. Ale možná si říkáš: "OK, ale <strong>JAK PŘESNĚ</strong> to mám udělat?"
+    <div className="mt-8 mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6 print:hidden">
+      <p className="text-center text-slate-700 mb-3">
+        🎁 <strong>Vánoční dárek pro podnikatele</strong>
       </p>
-      
-      <div className="bg-white rounded-lg p-4 mb-4 border border-blue-200">
-        <p className="text-sm text-gray-600 mb-2">
-          📧 <strong>Za 24 hodin ti pošleme email</strong> s dotazem jak ti jde akční plán a kde bychom ti mohli pomoci.
-        </p>
-        <p className="text-sm text-gray-700 mt-2">
-          Když budeš chtít udělat svůj Model podnikání pomocí videa, příkladů a šablon — dáme ti vědět.
-        </p>
-      </div>
-      
-      <button 
-        onClick={handleClick}
-        className="w-full bg-blue-900 text-white rounded-lg p-4 text-center hover:bg-blue-800 transition-colors cursor-pointer"
-      >
-        <p className="text-sm mb-2">🎯 Chceš začít HNED?</p>
-        <p className="font-bold text-lg mb-2">
-          Podnikatelská Čtvrtka - Model podnikání za 90 minut
-        </p>
-        <p className="text-sm text-blue-200">
-          Klikni pro více info →
-        </p>
-      </button>
-      
-      <p className="text-xs text-gray-500 mt-4 text-center italic">
-        💪 Máš hotový plán. Teď ho jen naplnit životem. Jdeme do toho!
+      <p className="text-sm text-slate-600 text-center leading-relaxed">
+        Tento plán ti ukázal <strong>co dělat</strong>. Pokud chceš krok-za-krokem návod <strong>JAK to udělat</strong>, koukni na <a href="https://podnikatelskactvrtka.cz" className="text-blue-600 hover:underline font-semibold">Podnikatelskou Čtvrtku</a> — Model podnikání za 90 minut.
+      </p>
+      <p className="text-xs text-slate-500 text-center mt-3">
+        💪 Ať máš v 2026 jasno, ne chaos!
       </p>
     </div>
   );
@@ -118,108 +98,12 @@ function SmartCheckbox({ id, children, className = '' }: SmartCheckboxProps) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// EMAIL REMINDER SECTION - použito ve všech plánech
+// EMAIL REMINDER SECTION - DOČASNĚ VYPNUTO PRO VÁNOCE (23-26.12)
+// Obnoví se 27.12 s delay na emaily
 // ═══════════════════════════════════════════════════════════
 
 function EmailReminderSection() {
-  const [priorityEmail, setPriorityEmail] = useState(false);
-  const [email1, setEmail1] = useState(false);
-  const [email2, setEmail2] = useState(false);
-  const [email3, setEmail3] = useState(false);
-
-  // ✅ Load from localStorage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('quiz_email_progress');
-      if (saved) {
-        const data = JSON.parse(saved);
-        setPriorityEmail(data.priorityEmail || false);
-        setEmail1(data.email1 || false);
-        setEmail2(data.email2 || false);
-        setEmail3(data.email3 || false);
-      }
-    } catch (error) {
-      console.error('❌ Error loading email progress:', error);
-    }
-  }, []);
-
-  // ✅ Save to localStorage whenever state changes
-  useEffect(() => {
-    localStorage.setItem('quiz_email_progress', JSON.stringify({
-      priorityEmail,
-      email1,
-      email2,
-      email3
-    }));
-  }, [priorityEmail, email1, email2, email3]);
-
-  return (
-    <div className="mb-6 print:hidden">
-      <h2 className="text-xl font-bold text-gray-800 mb-3">📧 SLEDUJ SVŮJ POKROK</h2>
-      
-      {/* Žlutý reminder */}
-      <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 mb-3">
-        <label className="flex items-start gap-3 cursor-pointer">
-          <input 
-            type="checkbox" 
-            checked={priorityEmail}
-            onChange={(e) => setPriorityEmail(e.target.checked)}
-            className="mt-1 w-5 h-5 accent-yellow-500 flex-shrink-0" 
-          />
-          <div>
-            <p className="font-bold text-slate-900">
-              ⭐ Přesunul jsem email do prioritních (DŮLEŽITÉ!)
-            </p>
-            <p className="text-sm text-slate-700 mt-1">
-              Příští 3 dny Ti pošleme emaily s pokračováním. <strong>Zkontroluj SPAM/Hromadné</strong> a přesuň nás do prioritní složky, aby Ti to nepřišlo stranou (zvlášť přes Vánoce!)
-            </p>
-          </div>
-        </label>
-      </div>
-
-      {/* Email checkboxy */}
-      <div className="space-y-2">
-        <label className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
-          <input 
-            type="checkbox" 
-            checked={email1}
-            onChange={(e) => setEmail1(e.target.checked)}
-            className="mt-1 w-5 h-5 accent-blue-500 flex-shrink-0" 
-          />
-          <div>
-            <p className="font-semibold text-slate-900">📬 Email 1: Přečetl jsem</p>
-            <p className="text-sm text-slate-600">(přijde za 24 hodin)</p>
-          </div>
-        </label>
-
-        <label className="flex items-start gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer hover:bg-purple-100 transition-colors">
-          <input 
-            type="checkbox" 
-            checked={email2}
-            onChange={(e) => setEmail2(e.target.checked)}
-            className="mt-1 w-5 h-5 accent-purple-500 flex-shrink-0" 
-          />
-          <div>
-            <p className="font-semibold text-slate-900">📬 Email 2: Přečetl jsem</p>
-            <p className="text-sm text-slate-600">(přijde za 48 hodin)</p>
-          </div>
-        </label>
-
-        <label className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg cursor-pointer hover:bg-green-100 transition-colors">
-          <input 
-            type="checkbox" 
-            checked={email3}
-            onChange={(e) => setEmail3(e.target.checked)}
-            className="mt-1 w-5 h-5 accent-green-500 flex-shrink-0" 
-          />
-          <div>
-            <p className="font-semibold text-slate-900">📬 Email 3: Přečetl jsem</p>
-            <p className="text-sm text-slate-600">(přijde za 72 hodin)</p>
-          </div>
-        </label>
-      </div>
-    </div>
-  );
+  return null; // ✅ HOLIDAY GIFT MODE - no email countdown
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -410,8 +294,8 @@ function CriticalPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* Sell Box */}
-      <SellBox />
+      {/* Soft Footer CTA */}
+      <SoftFooterCTA />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -611,8 +495,8 @@ function UnstablePlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* Sell Box */}
-      <SellBox />
+      {/* Soft Footer CTA */}
+      <SoftFooterCTA />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -814,8 +698,8 @@ function SolidPlan({ userName, score }: { userName: string; score: number }) {
         </div>
       </div>
 
-      {/* Sell Box */}
-      <SellBox />
+      {/* Soft Footer CTA */}
+      <SoftFooterCTA />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -1015,8 +899,8 @@ function AdvancedPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* Sell Box */}
-      <SellBox />
+      {/* Soft Footer CTA */}
+      <SoftFooterCTA />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">
@@ -1255,8 +1139,8 @@ function BeginnerPlan({ userName, score }: { userName: string; score: number }) 
         </div>
       </div>
 
-      {/* Sell Box */}
-      <SellBox />
+      {/* Soft Footer CTA */}
+      <SoftFooterCTA />
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t text-center text-sm text-gray-500">

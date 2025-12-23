@@ -89,23 +89,18 @@ export default function QuizResultsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200/50"
+              className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200/50"
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg text-slate-900 mb-2">
-                    Výsledky posíláme na tvůj email
+                    🎁 Vánoční dárek pro tebe
                   </h3>
-                  {email && (
-                    <p className="text-sm text-blue-700 mb-3">
-                      📧 {email}
-                    </p>
-                  )}
                   <p className="text-sm text-slate-700 leading-relaxed">
-                    V emailu najdeš detailní analýzu, konkrétní rizika a doporučení jak zlepšit své podnikání
+                    Tvůj personalizovaný akční plán je připravený níže. Ukazuje ti konkrétní kroky co zlepšit ve svém podnikání v roce 2026.
                   </p>
                 </div>
               </div>
@@ -120,7 +115,7 @@ export default function QuizResultsPage() {
             >
               <Sparkles className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-slate-600 max-w-md">
-                Personalizované doporučení ti pomohou posunout se dál – ať už teprve začínáš nebo už máš zákazníky
+                Je to úplně ZDARMA. Žádné kecy, jen konkrétní tipy jak růst – ať už teprve začínáš nebo už máš zákazníky 💪
               </p>
             </motion.div>
 
@@ -132,16 +127,16 @@ export default function QuizResultsPage() {
               className="pt-4"
             >
               <button
-                onClick={() => window.location.href = '/'}
+                onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full py-4 px-8 text-lg font-semibold transition-all shadow-lg hover:shadow-xl"
               >
-                Mezitím si můžeš přečíst o čem je Podnikatelská Čtvrtka
+                Zobrazit můj akční plán 🎯
               </button>
             </motion.div>
 
             {/* Subtle note */}
             <p className="text-center text-xs text-slate-500">
-              Email by měl dorazit do 2 minut. Nezapomeň zkontrolovat i spam složku 📬
+              Ať máš v roce 2026 jasno, ne chaos! 🚀
             </p>
           </div>
         </div>

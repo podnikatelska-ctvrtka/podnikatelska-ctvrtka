@@ -17,9 +17,17 @@ import { OrganicPost29QuizTeaser } from './OrganicPost29QuizTeaser';
 import { OrganicPost30ThreeReasons } from './OrganicPost30ThreeReasons';
 import { OrganicPost31Path } from './OrganicPost31Path';
 import { OrganicPost30DemoWalkthrough } from './OrganicPost30DemoWalkthrough';
+import { OrganicPost33Testimonial } from './OrganicPost33Testimonial';
+import { OrganicPost34AntiPerfect } from './OrganicPost34AntiPerfect';
+import { OrganicPost35HiddenCost } from './OrganicPost35HiddenCost';
+import { OrganicPost36QuizData } from './OrganicPost36QuizData';
+import { OrganicPost37CourseMechanics } from './OrganicPost37CourseMechanics';
+import { OrganicPost38FounderStory } from './OrganicPost38FounderStory';
+import { OrganicPost39Alternative } from './OrganicPost39Alternative';
+import { OrganicPost40NYResolution } from './OrganicPost40NYResolution';
 
 /**
- * 🎯 ORGANIC POSTS - 32 DNÍ SÉRIE
+ * 🎯 ORGANIC POSTS - 40 DNÍ SÉRIE
  * 
  * CLEAN verze - JEN posty co skutečně používáme:
  * - Post #1: Kdo je tvůj zákazník (static, pain+sol)
@@ -2002,6 +2010,339 @@ Za 90 sekund vidíš celý proces:
 Od otázek k plánu za 90 sekund.
 
 #podnikani #demo #validace #realprůvodce`
+  },
+
+  // POST #33: TESTIMONIAL - Matěj Reálná čísla (Animated carousel)
+  {
+    id: 33,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #33: Testimonial - Reálná čísla',
+    copy: `Matěj měl e-shop s nápadem. Po 90 minutách měl ČÍSLA.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+E-shop s doplňky pro psy • 29 let • Praha
+
+PŘED KURZEM:
+❌ "Doufám že to vyjde"
+❌ Target: "Majitelé psů" (příliš široké)
+❌ Nevěděl kolik kusů musí prodat
+
+PO KURZU (90 minut):
+✅ Segment: Majitelé středních plemen 25-45 let (230k lidí v ČR)
+✅ Realistický cíl: 180 zákazníků/měsíc
+✅ Marže: 34% = 23k zisk/měsíc
+✅ CAC kalkulace: 145 Kč/zákazník
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💬 "Konečně vím ČÍM začít. Konec zkoušení, reálná čísla."
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👉 podnikatelskactvrtka.cz
+Online kurz • 4 999 Kč • 90 minut
+
+#podnikani #socialproof #realdata`
+  },
+
+  // POST #34: ANTI-PERFECTIONISM (Animated timeline)
+  {
+    id: 34,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #34: Anti-Perfectionism',
+    copy: `Nečekej na dokonalý plán. Neexistuje.
+
+DVA PODNIKATELÉ. STEJNÝ NÁPAD.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👨‍💼 PERFEKTIONIST:
+Měsíc 1-6: Plánuje, vybírá, čeká...
+VÝSLEDEK: Stále nezačal
+
+👨‍💻 VALIDATOR:
+Den 1-7: Testuje, validuje, iteruje
+VÝSLEDEK: Ví co funguje
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Který chceš být?
+
+🎯 Naučíme tě validovat za TÝDEN, ne plánovat MĚSÍCE.
+
+👉 podnikatelskactvrtka.cz
+Online kurz • 90 minut • 4 999 Kč
+
+#podnikani #validace #akceneperfekce`
+  },
+
+  // POST #35: HIDDEN COST (Animated infographic)
+  {
+    id: 35,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #35: Hidden Cost',
+    copy: `"PROSTĚ TO ZKUS."
+
+Slyšel jsi to 100x. Ale nikdo ti neřekl KOLIK to stojí.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💸 HIDDEN COST "JUST START":
+
+❌ 6 měsíců živobytí: 120 000 Kč
+❌ První stock/nájem: 80 000 Kč
+❌ Web + marketing: 40 000 Kč
+❌ Chybné investice: 60 000 Kč
+❌ Ztracené příležitosti: ???
+
+CELKEM RIZIKA: 300 000 Kč+
+
+A pak zjistíš: "Nikdo to nechce."
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ CO KDYBY EXISTOVALA LEVNĚJŠÍ CESTA?
+
+Investice: 4 999 Kč
+Čas: 90 minut
+Ušetříš: potenciálně 295k+ Kč
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+"Just start" je dobrá rada.
+Ale "Start SMART" je lepší.
+
+👉 podnikatelskactvrtka.cz
+
+#podnikani #validace #realcost #smart`
+  },
+
+  // POST #36: QUIZ DATA (Static infographic)
+  {
+    id: 36,
+    type: 'static',
+    format: '1:1',
+    title: 'Post #36: Quiz Data',
+    copy: `Zeptali jsme se 420 podnikatelů. Výsledky šokují.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 VÝSLEDKY:
+
+68% neví kolik zákazníků potřebují k přežití
+81% netestovali produkt před investicí
+73% nemají ekonomický model
+44% neznají velikost svého segmentu
+92% "doufají že to vyjde"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+A pak se divíme proč 70% byznysů umírá v prvním roce.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ JE LEPŠÍ CESTA:
+Validuj PŘED investicí • Měř místo hádání • Testuj místo doufání
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 Udělej si kvíz ZDARMA (3 minuty):
+👉 podnikatelskactvrtka.cz/kviz
+
+Přestaň být součástí statistiky.
+
+#podnikani #data #validace #osvč`
+  },
+
+  // POST #37: COURSE MECHANICS (Animated step-by-step)
+  {
+    id: 37,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #37: Course Mechanics',
+    copy: `"90 MINUT? JE TO DOST?"
+
+Ano. Tady je proč.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 FORMÁT: Online (tvoje tempo)
+
+✅ Krok 1: Registrace (2 min)
+✅ Krok 2: Video lekce (30 min)
+✅ Krok 3: Vyplňování (40 min)
+✅ Krok 4: Validace (20 min)
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 CO DOSTANEŠ:
+✓ Model podnikání (tvůj, ne šablona)
+✓ Ekonomické kalkulace (CAC, LTV, marže)
+✓ Akční plán (30 dní)
+✓ Přístup navždy
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+⏰ PROČ 90 MINUT?
+
+NEMUSÍŠ:
+❌ Čekat na live workshop
+❌ Jet do Prahy
+❌ Blokovat celý den
+❌ Přizpůsobovat se termínu
+
+Chceš v neděli večer? Klidně. Chceš ve vlaku? Go ahead.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 Rychle. Online. Ve tvém tempu.
+
+👉 podnikatelskactvrtka.cz
+4 999 Kč • Přístup navždy
+
+#podnikani #onlinekurz #vlastnitempo`
+  },
+
+  // POST #38: FOUNDER STORY (Animated carousel)
+  {
+    id: 38,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #38: Founder Story',
+    copy: `Proč jsem postavil Čtvrtku? Protože jsem udělal VŠECHNY chyby.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+2018: Můj první byznys.
+Investoval jsem 300k do produktu.
+NETESTOVAL jsem nic.
+
+VÝSLEDEK:
+6 měsíců práce • 300k pryč • 0 zákazníků
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+2019: Objevil jsem Model podnikání.
+Udělal jsem TO CO JSEM MĚL UDĚLAT NA ZAČÁTKU.
+
+Druhý byznys? Úspěch.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Proto jsem vytvořil Čtvrtku.
+
+Abys nemusel udělat stejné chyby.
+Abys netopil 300k.
+Abys měl JASNO od začátku.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Není to o penězích.
+Je to o tom NEUDĚLAT moje chyby.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👉 podnikatelskactvrtka.cz
+Online kurz • 90 minut • 4 999 Kč
+
+#podnikani #story #validace #learnfrommistakes`
+  },
+
+  // POST #39: ALTERNATIVE (Animated comparison)
+  {
+    id: 39,
+    type: 'animated',
+    format: '1:1',
+    title: 'Post #39: Alternative',
+    copy: `JAK VALIDOVAT BYZNYS? 3 MOŽNOSTI. SROVNÁNÍ.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+💼 OPTION A: NAJMI KONZULTANTA
+Cena: 80-200k Kč • Čas: 2-3 měsíce
+❌ Není to TVOJE • ❌ Nevíš JAK • ❌ Nemůžeš použít příště
+
+🤷 OPTION B: UDĚLEJ TO SÁM
+Cena: "Zdarma" (ale...) • Čas: 6-12 měsíců pokusů
+❌ Drahé chyby • ❌ Nevíš jestli správně • ❌ Ztracený čas
+
+🎯 OPTION C: ONLINE KURZ (Čtvrtka)
+Cena: 4 999 Kč • Čas: 90 minut
+✅ TVŮJ model • ✅ Nástroje NA VŽDY • ✅ Online = flexibilita
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Middle-ground řešení:
+Lepší než drahý konzultant.
+Rychlejší než trial/error.
+Flexibilnější než live workshop.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👉 podnikatelskactvrtka.cz
+
+#podnikani #srovnání #validace #smartchoice`
+  },
+
+  // POST #40: NY RESOLUTION KILLER (Static timeline)
+  {
+    id: 40,
+    type: 'static',
+    format: '1:1',
+    title: 'Post #40: NY Resolution Killer',
+    copy: `NOVOROČNÍ PŘEDSEVZETÍ: "V roce 2025 rozjedu byznys."
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ REALITA:
+
+Leden: Plánuješ
+Únor: Ještě plánuješ
+Březen: "Nevím jestli to půjde"
+Duben: Odloženo
+Květen: "Možná příští rok"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ PROBLÉM NENÍ V TOBĚ.
+
+Problém je v tom, že:
+❌ Nemáš plán
+❌ Bojíš se udělat krok
+❌ Nevíš JESTLI to má smysl
+❌ Hledáš "dokonalý moment"
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ CO KDYBY 2025 BYL JINÝ?
+
+Co kdyby 5. ledna (ne 1.!) měl:
+✓ Validovaný segment
+✓ Spočítané čísla
+✓ Jasný akční plán
+✓ Důvod proč to PŮJDE
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 NEPOTŘEBUJEŠ RESOLUTION.
+
+Potřebuješ: 90 minut času • Notebook • Tenhle kurz
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+"2025 je můj rok" ❌
+"5. ledna mám hotový model" ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━
+
+👉 podnikatelskactvrtka.cz
+Online kurz • 90 minut • 4 999 Kč
+
+#podnikani #newyear #noresolutions #action #2025`
   },
 ];
 
@@ -5862,6 +6203,78 @@ function Post32ValueStack() {
   );
 }
 
+// Post #33: Testimonial - Matěj Reálná čísla (Animated carousel)
+function Post33Testimonial() {
+  return (
+    <PostContainer format="1:1" id={33} title="Post #33: Testimonial - Reálná čísla">
+      <OrganicPost33Testimonial />
+    </PostContainer>
+  );
+}
+
+// Post #34: Anti-Perfectionism (Animated timeline)
+function Post34AntiPerfect() {
+  return (
+    <PostContainer format="1:1" id={34} title="Post #34: Anti-Perfectionism">
+      <OrganicPost34AntiPerfect />
+    </PostContainer>
+  );
+}
+
+// Post #35: Hidden Cost (Animated infographic)
+function Post35HiddenCost() {
+  return (
+    <PostContainer format="1:1" id={35} title="Post #35: Hidden Cost">
+      <OrganicPost35HiddenCost />
+    </PostContainer>
+  );
+}
+
+// Post #36: Quiz Data (Static infographic)
+function Post36QuizData() {
+  return (
+    <PostContainer format="1:1" id={36} title="Post #36: Quiz Data">
+      <OrganicPost36QuizData />
+    </PostContainer>
+  );
+}
+
+// Post #37: Course Mechanics (Animated step-by-step)
+function Post37CourseMechanics() {
+  return (
+    <PostContainer format="1:1" id={37} title="Post #37: Course Mechanics">
+      <OrganicPost37CourseMechanics />
+    </PostContainer>
+  );
+}
+
+// Post #38: Founder Story (Animated carousel)
+function Post38FounderStory() {
+  return (
+    <PostContainer format="1:1" id={38} title="Post #38: Founder Story">
+      <OrganicPost38FounderStory />
+    </PostContainer>
+  );
+}
+
+// Post #39: Alternative (Animated comparison)
+function Post39Alternative() {
+  return (
+    <PostContainer format="1:1" id={39} title="Post #39: Alternative">
+      <OrganicPost39Alternative />
+    </PostContainer>
+  );
+}
+
+// Post #40: NY Resolution Killer (Static timeline)
+function Post40NYResolution() {
+  return (
+    <PostContainer format="1:1" id={40} title="Post #40: NY Resolution Killer">
+      <OrganicPost40NYResolution />
+    </PostContainer>
+  );
+}
+
 // Main component
 export default function OrganicPosts() {
   const [currentPost, setCurrentPost] = useState(0);
@@ -5907,6 +6320,14 @@ export default function OrganicPosts() {
       case 29: return <Post30ThreeReasons />;
       case 30: return <Post31Path />;
       case 31: return <Post32ValueStack />;
+      case 32: return <Post33Testimonial />;
+      case 33: return <Post34AntiPerfect />;
+      case 34: return <Post35HiddenCost />;
+      case 35: return <Post36QuizData />;
+      case 36: return <Post37CourseMechanics />;
+      case 37: return <Post38FounderStory />;
+      case 38: return <Post39Alternative />;
+      case 39: return <Post40NYResolution />;
       default: return <Post1Static />;
     }
   };
@@ -5917,7 +6338,7 @@ export default function OrganicPosts() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4">
-            📱 Organic Posts - 32 dní série
+            📱 Organic Posts - 40 dní série
           </h1>
           <p className="text-xl text-slate-300">
             Jeden post denně • Vysoká hodnota • Bez know-how
