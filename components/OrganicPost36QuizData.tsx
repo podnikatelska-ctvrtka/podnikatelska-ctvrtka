@@ -1,171 +1,174 @@
-import { useState, useEffect } from 'react';
-import { TrendingDown, Users, AlertCircle } from 'lucide-react';
+/**
+ * 📊 ORGANIC POST 36 - Quiz Data Stats
+ * 
+ * DVOUSLOUPCOVÝ LAYOUT pro IG/FB Stories (ušetřit výšku!)
+ * - LEFT: Statistiky (92%, 81%, 73%) + red box
+ * - RIGHT: Řešení + CTA kvíz
+ * - Opakující se animace
+ * - Správná česká typografie (mezera před %)
+ */
+
+import { motion } from 'motion/react';
 
 export function OrganicPost36QuizData() {
-  const [showStats, setShowStats] = useState(false);
-
-  const stats = [
-    { percentage: 68, text: "neví kolik zákazníků potřebují k přežití", icon: "❓", color: "red" },
-    { percentage: 81, text: "netestovali produkt před investicí", icon: "⚠️", color: "orange" },
-    { percentage: 73, text: "nemají ekonomický model", icon: "📊", color: "red" },
-    { percentage: 44, text: "neznají velikost svého segmentu", icon: "🎯", color: "orange" },
-    { percentage: 92, text: '"doufají že to vyjde"', icon: "🤞", color: "red" }
-  ];
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowStats(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-2xl">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-900 px-4 py-1.5 rounded-full text-sm font-bold mb-4">
+        <div className="text-center mb-6">
+          <div className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-900 px-3 py-2 rounded-full text-xs font-bold mb-3">
             📊 PRŮZKUM
           </div>
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-6">
-            Zeptali jsme se<br/>420 podnikatelů.
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-2">
+            Zeptali jsme se 49 podnikatelů.
           </h2>
-          <p className="text-2xl md:text-3xl text-red-400 font-bold">
+          <p className="text-lg text-red-400 font-bold">
             Výsledky šokují.
           </p>
         </div>
 
-        {/* Survey Info */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border-2 border-white/20">
-          <div className="flex items-center justify-center gap-3">
-            <Users className="w-6 h-6 text-yellow-400" />
-            <p className="text-white text-lg font-bold">
-              420 ŽIVNOSTNÍKŮ A OSVČ
-            </p>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="bg-white rounded-3xl p-8 md:p-10 shadow-2xl mb-8">
-          <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-8 flex items-center gap-3">
-            <AlertCircle className="w-8 h-8 text-red-600" />
-            VÝSLEDKY:
+        {/* Main Content Card - DVA SLOUPCE */}
+        <div className="bg-white rounded-3xl p-6 shadow-2xl">
+          <h3 className="text-lg font-black text-gray-900 mb-4 text-center">
+            ⚠️ TOP 3 ZJIŠTĚNÍ:
           </h3>
 
-          <div className="space-y-6">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className={`transition-all duration-700 ${
-                  showStats ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'
-                }`}
-                style={{
-                  transitionDelay: `${index * 150}ms`
-                }}
-              >
-                {/* Percentage and Text */}
-                <div className="flex items-center gap-4 mb-2">
-                  <span className="text-3xl">{stat.icon}</span>
-                  <div className="flex-1">
-                    <div className="flex items-baseline gap-3 mb-1">
-                      <span className={`text-4xl md:text-5xl font-black ${
+          <div className="grid grid-cols-2 gap-4">
+            {/* LEFT COLUMN - Statistiky + Red Box */}
+            <div className="space-y-3">
+              {/* Statistiky */}
+              {[
+                { percentage: 92, text: '"doufají že to vyjde"', icon: "🤞", color: "red", delay: 0 },
+                { percentage: 81, text: "netestovali produkt", icon: "⚠️", color: "orange", delay: 0.3 },
+                { percentage: 73, text: "nemají ekonomický model", icon: "📊", color: "red", delay: 0.6 }
+              ].map((stat, i) => (
+                <div key={i} className="bg-gray-50 rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">{stat.icon}</span>
+                    <motion.span 
+                      className={`text-3xl font-black ${
                         stat.color === 'red' ? 'text-red-600' : 'text-orange-600'
-                      }`}>
-                        {stat.percentage}%
-                      </span>
-                      <span className="text-lg md:text-xl text-gray-800 font-bold">
-                        {stat.text}
-                      </span>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-1000 ${
-                          stat.color === 'red'
-                            ? 'bg-gradient-to-r from-red-500 to-red-600'
-                            : 'bg-gradient-to-r from-orange-500 to-orange-600'
-                        }`}
-                        style={{
-                          width: showStats ? `${stat.percentage}%` : '0%',
-                          transitionDelay: `${index * 150}ms`
-                        }}
-                      />
-                    </div>
+                      }`}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ 
+                        delay: stat.delay,
+                        duration: 0.5,
+                        repeat: Infinity,
+                        repeatDelay: 3
+                      }}
+                    >
+                      {stat.percentage} %
+                    </motion.span>
+                  </div>
+                  <p className="text-xs text-gray-800 font-bold mb-2">
+                    {stat.text}
+                  </p>
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div
+                      className={`h-full rounded-full ${
+                        stat.color === 'red'
+                          ? 'bg-gradient-to-r from-red-500 to-red-600'
+                          : 'bg-gradient-to-r from-orange-500 to-orange-600'
+                      }`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${stat.percentage}%` }}
+                      transition={{ 
+                        delay: stat.delay,
+                        duration: 1,
+                        repeat: Infinity,
+                        repeatDelay: 3
+                      }}
+                    />
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
 
-          {/* Shocking Stat */}
-          <div className="mt-10 p-6 bg-red-600 rounded-2xl">
-            <p className="text-white text-xl md:text-2xl font-black text-center">
-              A pak se divíme proč 70% byznysů<br/>umírá v prvním roce.
-            </p>
-          </div>
-        </div>
-
-        {/* Solution */}
-        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl p-8 md:p-10 shadow-2xl mb-8">
-          <h3 className="text-2xl md:text-3xl font-black text-white mb-6 flex items-center gap-3">
-            ✅ JE LEPŠÍ CESTA:
-          </h3>
-
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
-            {[
-              { text: "Validuj PŘED investicí", icon: "🎯" },
-              { text: "Měř místo hádání", icon: "📊" },
-              { text: "Testuj místo doufání", icon: "⚡" }
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center"
-              >
-                <div className="text-4xl mb-2">{item.icon}</div>
-                <p className="text-white font-bold">{item.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA to Quiz */}
-        <div className="bg-white rounded-3xl p-8 shadow-2xl mb-8">
-          <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-4">
-              🎯 Udělej si kvíz ZDARMA
-            </h3>
-            <p className="text-lg text-gray-700 mb-6">
-              Zjistíš kde jsou TVOJE mezery.<br/>
-              Personalizované výsledky + akční plán.
-            </p>
-
-            <div className="inline-block">
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6">
-                <p className="text-white text-xl font-bold mb-2">
-                  👉 podnikatelskactvrtka.cz/kviz
+              {/* Red Box */}
+              <div className="p-3 bg-red-600 rounded-xl">
+                <p className="text-white text-sm font-black text-center leading-tight">
+                  A pak se divíme proč 70 % byznysů umírá v prvním roce.
                 </p>
-                <p className="text-indigo-200 text-sm">
-                  ⏱️ 3 minuty • Personalizované výsledky
-                </p>
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN - Řešení + CTA */}
+            <div className="space-y-3">
+              {/* Solution */}
+              <div className="p-4 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl h-full flex flex-col">
+                <h3 className="text-base font-black text-white mb-3 text-center">
+                  ✅ JE LEPŠÍ CESTA:
+                </h3>
+                
+                <div className="space-y-2 flex-1">
+                  {[
+                    { text: "Validuj PŘED investicí", icon: "🎯", delay: 1.5 },
+                    { text: "Měř místo hádání", icon: "📊", delay: 1.7 },
+                    { text: "Testuj místo doufání", icon: "⚡", delay: 1.9 }
+                  ].map((item, i) => (
+                    <motion.div 
+                      key={i} 
+                      className="bg-white/20 backdrop-blur-sm rounded-lg p-2 flex items-center gap-2"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ 
+                        delay: item.delay,
+                        duration: 0.5,
+                        repeat: Infinity,
+                        repeatDelay: 3
+                      }}
+                    >
+                      <span className="text-xl">{item.icon}</span>
+                      <p className="text-white font-bold text-xs">{item.text}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* CTA inline v RIGHT column */}
+                <div className="mt-3 pt-3 border-t-2 border-white/20">
+                  <h4 className="text-sm font-black text-white mb-2 text-center">
+                    🎯 Udělej si kvíz ZDARMA
+                  </h4>
+                  <motion.div 
+                    className="bg-white/30 backdrop-blur-sm rounded-lg p-2 text-center"
+                    initial={{ scale: 1 }}
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ 
+                      delay: 2.5,
+                      duration: 0.5,
+                      repeat: Infinity,
+                      repeatDelay: 3
+                    }}
+                  >
+                    <p className="text-white text-xs font-bold mb-1">
+                      👉 podnikatelskactvrtka.cz/kviz
+                    </p>
+                    <p className="text-white/80 text-[10px]">
+                      ⏱️ 3 minuty • Personalizované výsledky
+                    </p>
+                  </motion.div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Message */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border-2 border-white/20">
-          <p className="text-2xl md:text-3xl text-white font-black">
+        <motion.div 
+          className="mt-4 bg-white/10 backdrop-blur-sm rounded-2xl p-3 text-center border-2 border-white/20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ 
+            delay: 3,
+            duration: 0.5,
+            repeat: Infinity,
+            repeatDelay: 3
+          }}
+        >
+          <p className="text-lg text-white font-black">
             Přestaň být součástí statistiky.
           </p>
-        </div>
-
-        {/* Hashtags */}
-        <div className="mt-6 flex flex-wrap gap-2 justify-center">
-          {['#podnikani', '#data', '#validace', '#osvč', '#průzkum'].map((tag) => (
-            <span key={tag} className="text-slate-400 text-sm">
-              {tag}
-            </span>
-          ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

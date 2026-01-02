@@ -2,7 +2,6 @@ import { BusinessHealthQuiz } from './BusinessHealthQuiz';
 import { useState } from 'react';
 import { CheckCircle, TrendingUp, Zap, Target, Shield, ArrowRight, ChevronRight, Mail, BookOpen, Gift, Sparkles, Calendar, Clock, Award, Star } from 'lucide-react';
 import { Button } from './ui/button';
-import { Snowfall } from './Snowfall';
 import { trackLead, trackQuizCompleted } from '../lib/metaPixel'; // ✅ PŘIDÁNO: Meta Pixel tracking
 
 export function QuizLandingPage() {
@@ -125,25 +124,30 @@ export function QuizLandingPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-red-900 via-green-900 to-slate-900">
-      {/* ❄️ Snowfall Effect */}
-      <Snowfall />
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-950 via-blue-900 to-purple-950">
+      
+      {/* Background effects - KICKSTART energy */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-20 w-64 h-64 bg-blue-500 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-40 right-40 w-48 h-48 bg-orange-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
       
       {/* Hero Section */}
       <section className="relative pt-20 pb-24 px-4 overflow-hidden">
-        {/* Decorative Elements */}
+        {/* Decorative Elements - KICKSTART THEME */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 text-8xl">🎄</div>
-          <div className="absolute top-40 right-20 text-6xl">✨</div>
-          <div className="absolute bottom-40 left-20 text-7xl">🎁</div>
-          <div className="absolute bottom-20 right-10 text-6xl">⭐</div>
+          <div className="absolute top-20 left-10 text-8xl"></div>
+          <div className="absolute top-40 right-20 text-6xl">⚡</div>
+          <div className="absolute bottom-40 left-20 text-7xl">🎯</div>
+          <div className="absolute bottom-20 right-10 text-6xl">💪</div>
         </div>
         
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          {/* Christmas Badge */}
-          <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg mb-8 shadow-2xl animate-pulse">
-            <Gift className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-            <span className="font-bold text-sm sm:text-base md:text-lg">🎄 VÁNOČNÍ DÁREK PRO PODNIKATELE 🎁</span>
+          {/* KICKSTART Badge */}
+          <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg mb-8 shadow-2xl animate-pulse">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+            <span className="font-bold text-sm sm:text-base md:text-lg">🚀 KICKSTART 2026 - ZAČNI ROK SPRÁVNĚ</span>
           </div>
           
           {/* Main Headline */}
@@ -206,8 +210,8 @@ export function QuizLandingPage() {
               size="lg"
               className="bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 hover:from-yellow-500 hover:via-red-600 hover:to-green-600 text-white px-8 sm:px-12 md:px-16 py-6 sm:py-7 md:py-8 rounded-full text-xl sm:text-2xl md:text-3xl shadow-2xl hover:shadow-3xl transition-all group border-4 border-white w-full sm:w-auto"
             >
-              <Gift className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 mr-3 sm:mr-4 group-hover:scale-125 transition-transform animate-bounce flex-shrink-0" />
-              <span className="text-center">🎄 Zjistit ZDARMA své skóre 🎁</span>
+              <Sparkles className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 mr-3 sm:mr-4 group-hover:rotate-12 transition-transform flex-shrink-0" />
+              <span className="text-center">🚀 Zjistit ZDARMA své skóre</span>
               <ArrowRight className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 ml-3 sm:ml-4 group-hover:translate-x-2 transition-transform flex-shrink-0" />
             </Button>
             
@@ -342,7 +346,7 @@ export function QuizLandingPage() {
           </Button>
           
           <p className="mt-8 text-white/70 text-lg">
-            🎄 Zabere 3 minuty • 🎁 100% zdarma • ⏱️ Lifetime směr
+            ⚡ Zabere 3 minuty • 🎯 100% zdarma • 🚀 Lifetime směr
           </p>
         </div>
       </section>

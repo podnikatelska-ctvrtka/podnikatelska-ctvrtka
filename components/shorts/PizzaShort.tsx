@@ -76,7 +76,7 @@ export function PizzaShort() {
 
       {/* Watermark */}
       <div className="absolute bottom-8 right-8 text-white/30 text-2xl font-black">
-        PročToFunguje
+        Model Podnikání
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 
 /**
- * 🎨 YOUTUBE BANNER - "PročToFunguje"
+ * 🎨 YOUTUBE BANNER - "Model Podnikání"
  * 
  * Dimensions: 2560x1440 (YouTube recommended)
  * Safe area: Center 1546x423
@@ -42,7 +42,7 @@ export function YouTubeBanner() {
           className="mb-8 inline-block"
         >
           <div className="text-[180px] font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 leading-none">
-            ?
+            M
           </div>
         </motion.div>
 
@@ -53,12 +53,12 @@ export function YouTubeBanner() {
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           <h1 className="text-white text-[120px] font-black tracking-tight mb-6 leading-none">
-            PROČ TO FUNGUJE
+            MODEL PODNIKÁNÍ
           </h1>
           
           {/* Subtitle */}
           <p className="text-white/60 text-[48px] tracking-wide">
-            Byznys rozbory • Mystery Shopping • Praktický tipy
+            Rozebírám byznysy za 60 sekund
           </p>
         </motion.div>
 
@@ -73,7 +73,7 @@ export function YouTubeBanner() {
 
       {/* Corner badge */}
       <div className="absolute bottom-12 right-12 text-white/40 text-3xl tracking-widest">
-        BEZ KECŮ • JEN ODPOVĚDI
+        ZAČNI SPRÁVNĚ • BEZ KECŮ
       </div>
     </div>
   );
@@ -93,14 +93,14 @@ export function YouTubeBannerMinimal() {
       {/* Text */}
       <div className="text-center">
         <div className="flex items-center justify-center gap-8 mb-6">
-          <div className="text-[100px] font-black text-orange-500">?</div>
+          <div className="text-[100px] font-black text-orange-500">M</div>
           <div className="text-white text-[100px] font-black tracking-tight">
-            PROČ TO FUNGUJE
+            MODEL PODNIKÁNÍ
           </div>
         </div>
         
         <div className="text-white/50 text-[42px] tracking-widest">
-          BYZNYS ROZBORY BEZ KECŮ
+          BYZNYSY ZA 60 SEKUND
         </div>
       </div>
     </div>
@@ -121,11 +121,11 @@ export function YouTubeBannerBold() {
       {/* Main text */}
       <div className="relative z-10 text-center">
         <div className="text-white text-[140px] font-black tracking-tight leading-none mb-8">
-          PROČ TO FUNGUJE?
+          MODEL PODNIKÁNÍ
         </div>
         
         <div className="text-white/90 text-[52px] font-bold tracking-wide">
-          Rozbíráme byznysy • Hledáme odpovědi • Bez keců
+          Rozebírám byznysy • Ukazuju jak fungují • Bez keců
         </div>
       </div>
     </div>

@@ -52,6 +52,7 @@ import ExportAds from "./components/ExportAds";
 import { AdComparison } from "./pages/AdComparison";
 import OrderPage from "./components/OrderPage";
 import OrderPageFinal from "./components/OrderPageFinal";
+import SalesPage from "./components/SalesPage";
 import TermsPage from "./components/TermsPage";
 import GDPRPage from "./components/GDPRPage";
 import ThankYouPage from "./components/ThankYouPage";
@@ -121,6 +122,10 @@ export default function App() {
   const [showOrderExpired, setShowOrderExpired] = useState(false);
   // 🧪 TEST MODE: Pro vypnutí timeru (použij ?test=true v URL)
   const [orderPageTestMode, setOrderPageTestMode] = useState(false);
+  // 🛒 SALES PAGE: New emotion-driven sales page
+  const [showSalesPage, setShowSalesPage] = useState(
+    initialPath?.hash.startsWith('#sales') || initialPath?.path === '/sales'
+  );
   // 📄 LEGAL PAGES
   const [showTerms, setShowTerms] = useState(
     initialPath?.hash.startsWith('#obchodni-podminky') || initialPath?.path === '/obchodni-podminky'
@@ -279,7 +284,7 @@ export default function App() {
       setIsAuthenticated(!!session);
       setAuthChecked(true);
       
-      // 🚨 SENTRY: Set user context
+      // ���� SENTRY: Set user context
       if (session?.user) {
         Sentry.setUser({
           id: session.user.id,
@@ -949,6 +954,17 @@ export default function App() {
         setShowCourseDemo(false);
         setShowCourseV2(false);
         setShowCourseV3(false);
+      } else if (hash.startsWith('#sales') || path === '/sales') {
+        setShowSalesPage(true);
+        setShowOrderPage(false);
+        setShowAdPreview(false);
+        setShowCreativeAds(false);
+        setShowTerms(false);
+        setShowGDPR(false);
+        setShowChecklist(false);
+        setShowCourseDemo(false);
+        setShowCourseV2(false);
+        setShowCourseV3(false);
       } else if (hash.startsWith('#priprava') || hash.startsWith('#minikurz') || path === '/priprava' || path === '/minikurz') {
         setShowChecklist(true);
         setShowOrderPage(false);
@@ -997,6 +1013,7 @@ export default function App() {
         setShowChecklist(false);
         setShowOrderPage(false);
         setShowOrderExpired(false);
+        setShowSalesPage(false);
         setShowAdPreview(false);
         setShowCreativeAds(false);
         setShowCourseDemo(false);
@@ -1378,6 +1395,17 @@ export default function App() {
       <>
         <CriticalCSS />
         <OrderPage expired={true} />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+  
+  // Show sales page if URL has #sales
+  if (showSalesPage) {
+    return (
+      <>
+        <CriticalCSS />
+        <SalesPage />
         <Toaster position="top-right" />
       </>
     );

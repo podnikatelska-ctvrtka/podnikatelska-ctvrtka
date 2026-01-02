@@ -1,4 +1,4 @@
-import { CheckCircle, Map, Users, Compass, ChevronDown, X, Gift } from "lucide-react";
+import { CheckCircle, Map, Users, Compass, ChevronDown, X, Gift, Zap } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useState, useEffect } from "react";
 import { EnhancedCTA } from "./EnhancedCTA";
@@ -296,10 +296,6 @@ export function HeroSection() {
                 className="text-center mt-8 hidden md:block"
               >
                 <div className="max-w-md mx-auto relative">
-                  {/* 🎅 Vánoční dekorace - vlevo nahoře */}
-                  <div className="absolute -top-6 -left-6 text-6xl transform -rotate-12 z-10">🎅</div>
-                  {/* 🎄 Vánoční dekorace - vpravo nahoře */}
-                  <div className="absolute -top-6 -right-6 text-6xl transform rotate-12 z-10">🎄</div>
                   
                   {/* 🎯 PRIMARY CTA - CONDITIONAL: kvíz NEBO koupit kurz */}
                   {!quizCompleted ? (
@@ -317,7 +313,7 @@ export function HeroSection() {
                       </TouchFeedback>
                       
                       <p className="text-sm text-gray-600 mt-3">
-                        🎁 Zdarma • 📊 Personalizovaný plán • ⚡ Okamžité výsledky
+                        ⚡ Zdarma • 📊 Personalizovaný plán • 🎯 Okamžité výsledky
                       </p>
                     </>
                   ) : (
@@ -325,16 +321,17 @@ export function HeroSection() {
                       <TouchFeedback>
                         <button
                           onClick={scrollToOrder}
-                          className="w-full px-8 py-5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl group"
+                          className="w-full px-8 py-5 bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 text-white rounded-xl hover:from-orange-700 hover:via-red-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-xl group animate-pulse"
                         >
                           <div className="flex items-center justify-center gap-3">
-                            <span>Koupit kurz (SLEVA 40%)</span>
+                            <Zap className="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" />
+                            <span>Koupit kurz za 4 999 Kč</span>
                           </div>
                         </button>
                       </TouchFeedback>
                       
                       <p className="text-sm text-gray-600 mt-3">
-                        ✅ Kvíz dokončen • 🎯 Ušetři 3.500 Kč • ⏰ Jen do Vánoc
+                        ✅ Kvíz dokončen • 🚀 Model podnikání za 90 minut
                       </p>
                     </>
                   )}
@@ -537,11 +534,11 @@ export function HeroSection() {
                         onClick={scrollToOrder}
                         className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl active:from-green-700 active:to-emerald-700 transition-all duration-200 shadow-lg font-semibold text-lg"
                       >
-                        💰 Koupit kurz (SLEVA 40%)
+                        💰 Koupit kurz za 4 999 Kč
                       </button>
                       
                       <p className="text-xs text-gray-600 mt-3">
-                        ✅ Kvíz hotovo • Ušetři 3.500 Kč
+                        ✅ Kvíz hotovo • 🚀 Model podnikání za 90 min
                       </p>
                     </>
                   )}

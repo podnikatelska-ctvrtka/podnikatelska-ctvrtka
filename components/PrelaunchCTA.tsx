@@ -6,22 +6,27 @@ import { TouchFeedback } from "./TouchFeedback";
 export function PrelaunchCTA() {
   return (
     <motion.section 
-      className="relative py-12 md:py-16 lg:py-24 px-4 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 overflow-hidden"
+      className="relative py-12 md:py-16 lg:py-24 px-4 bg-gradient-to-br from-indigo-950 via-blue-900 to-purple-950 overflow-hidden"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
     >
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(99,102,241,0.15),transparent_50%)]" />
+      {/* Background effects - KICKSTART energy */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(59,130,246,0.2),transparent_50%)]" />
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-20 w-64 h-64 bg-blue-500 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-40 right-40 w-48 h-48 bg-orange-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
       
       <div className="max-w-6xl mx-auto relative z-10">
         
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-6 py-3 rounded-full font-black text-base mb-6 shadow-xl">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-full font-black text-base mb-6 shadow-xl">
             <Sparkles className="w-5 h-5" />
-            <span>🎁 VÁNOČNÍ NABÍDKA</span>
+            <span>🚀 KICKSTART 2026</span>
           </div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl mb-6 text-white font-black leading-tight px-2">
@@ -101,7 +106,7 @@ export function PrelaunchCTA() {
               
               <p className="text-sm font-black text-red-600 mb-3 flex items-center justify-center gap-2">
                 <Sparkles className="w-4 h-4" />
-                VÁNOČNÍ SLEVA 40%
+                LEDNOVÁ SLEVA 40%
                 <Sparkles className="w-4 h-4" />
               </p>
               
